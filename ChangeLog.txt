@@ -1,0 +1,3 @@
+Version 0.1 - 12/Jul/2011
+  First release.
+  - added slacky repository to slackpkg

@@ -1,0 +1,13 @@
+SLACKY=on
+
+# Please uncomment a mirror
+#SLACKYMIRROR=http://repository.slacky.eu
+SLACKYMIRROR=http://darkstar.ist.utl.pt/slackware/addon/slacky
+
+SLACKVER=auto
+#SLACKVER=slackware-13.37
+#SLACKVER=slackware64-13.37
+#SLACKVER=slackware-13.1
+#SLACKVER=slackware64-13.1
+
+
