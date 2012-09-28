@@ -1,0 +1,28 @@
+slackpkg+ plugin for third-party repositories
+
+Slackpkg is a package manager for Slackware. 
+ 
+Slackpkg+ is a plugin for slackpkg
+   It add support for third-party repositories.
+   You can add multiple repository to your list
+
+
+To install it copy:
+
+slackpkgplus.conf in /etc/slackpkg
+slackpkgplus.sh in /usr/libexec/slackpkg/functions.d/
+
+
+then launch 
+slackpkg update
+
+
+You may add repositories in slackpkgplus.conf
+
+
+If do you add some repository that does not support MANIFEST.bz2
+you may obtain a warning in slackpkg update.
+Don't warry.. it's no a problem.
+
+
+This is a beta version.

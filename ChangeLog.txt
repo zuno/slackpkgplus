@@ -1,3 +1,8 @@
+Version 0.2beta - 28/Sep/2012
+  - renamed in 'slackpkg+'
+  - allow to add multiple repositories
+  - extends the slackpkg 'PRIORITY'
+
 Version 0.1 - 12/Jul/2011
   First release.
   - added slacky repository to slackpkg
