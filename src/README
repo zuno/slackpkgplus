@@ -9,15 +9,14 @@ Slackpkg+ is a plugin for slackpkg
 
 To install it copy:
 
-slackpkgplus.conf in /etc/slackpkg
-slackpkgplus.sh in /usr/libexec/slackpkg/functions.d/
+slackpkg+.conf in /etc/slackpkg
+slackpkg+.sh in /usr/libexec/slackpkg/functions.d/
 
+edit slackpkg+.conf
+uncomment one or more mirrors and add it in PRIORITYPLUS order
 
 then launch 
 slackpkg update
-
-
-You may add repositories in slackpkgplus.conf
 
 
 If do you add some repository that does not support MANIFEST.bz2
@@ -26,3 +25,11 @@ Don't warry.. it's no a problem.
 
 
 This is a beta version.
+
+KNOWN BUGS:
+
+when used with multiple repositories and two repositories have the same package, slackpkg show only the first (in the order specified in PRIORITY & PRIORITYPLUS configuration).
+
+when one repository contains multiple packages with same name (some repository contains both 32 and 64 bit architectures and/or multiple slackware version, 14.0, 13.37, 13.1 ...), slackpkg show only one package, in a unknown order!! An example is the AlienBob repository.
+slackpkg+ try to detect the best package for your installed slackware, but it may fails!
+ 

@@ -10,6 +10,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   REPOPLUS=${!MIRRORPLUS[*]}
   PRIORITY=( ${PRIORITY[*]} slackpkgplus_$(echo $REPOPLUS|sed 's/ / slackpkgplus_/g') )
 
+  X86_64=$(ls /var/log/packages/aaa_base*x86_64*|head -1 2>/dev/null)
+
   function getfile(){
     local URLFILE
     URLFILE=$1

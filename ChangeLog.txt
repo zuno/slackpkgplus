@@ -1,3 +1,6 @@
+Version 0.3beta - 10/Oct/2012
+  - Added slackware 14.0 in default configuration
+
 Version 0.2beta - 28/Sep/2012
   - renamed in 'slackpkg+'
   - allow to add multiple repositories
