@@ -7,17 +7,14 @@ if [ -e /etc/slackpkg/slackpkgplus.conf ];then
 fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
-  # If CHECKGPG is "on", the system will FAIL the GPG signature of extra repository
-  # Use MD5 check instead
-#  CHECKGPG=off
 
-  REPOPLUS=${!MIRRORPLUS[*]}
+  REPOPLUS=${REPOPLUS[*]}
   PRIORITY=( ${PRIORITY[*]} slackpkgplus_$(echo $REPOPLUS|sed 's/ / slackpkgplus_/g') )
   
 
     # -- merge priorities from PKGS_PRIORITY with PRIORITY, as needed ...
   
-  if [ ! -z "$PKGS_PRIORITY" ] ; then
+  if [ ! -z "$PKGS_PRIORITY" -a "$CMD" != "update" ] ; then
     PREFIX=""
     
     for pp in ${PKGS_PRIORITY[*]} ; do
@@ -40,8 +37,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   function checkgpg() {
     gpg --verify ${1}.asc ${1} 2>/dev/null && echo "1" || echo "0"
     if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
+      X86_64=$(ls /var/log/packages/aaa_base*x86_64*|head -1 2>/dev/null)
       for PREPO in $REPOPLUS;do
-	egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|sed -r "s# \./# ./slackpkgplus_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+	if [ ! -z "$X86_64" ];then
+	  egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -- "-(x86_64|noarch)-" |sed -r "s# \./# ./slackpkgplus_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+	else
+	  egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(x86_64|arm)-" |sed -r "s# \./# ./slackpkgplus_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+	fi
       done
     fi
   }
@@ -54,27 +56,47 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       URLFILE=$(echo $URLFILE|sed "s#^.*/slackpkgplus_$PREPO/#${MIRRORPLUS[$PREPO]}#")
     fi
     
-    $DOWNLOADER $2 $URLFILE
+    if echo $URLFILE | grep -q "^file://" ; then
+      URLFILE=${URLFILE:6}
+      cp -v $URLFILE $2
+    else
+      $DOWNLOADER $2 $URLFILE
+    fi
+
     if [ $(basename $1) = "MANIFEST.bz2" ];then
       if [ ! -s $2 ];then
 	echo -n|bzip2 -c >$2
       fi
     fi
+
     if [ $(basename $1) = "CHECKSUMS.md5" ];then
       for PREPO in $REPOPLUS;do
-	$DOWNLOADER $2-$PREPO ${MIRRORPLUS[${PREPO/slackpkgplus_}]}CHECKSUMS.md5
+	URLFILE=${MIRRORPLUS[${PREPO/slackpkgplus_}]}CHECKSUMS.md5
+	if echo $URLFILE | grep -q "^file://" ; then
+	  URLFILE=${URLFILE:6}
+	  cp -v $URLFILE $2-$PREPO
+	else
+	  $DOWNLOADER $2-$PREPO $URLFILE
+	fi
       done
     fi
+
     if [ $(basename $1) = "CHECKSUMS.md5.asc" ];then
       for PREPO in $REPOPLUS;do
-	$DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc ${MIRRORPLUS[${PREPO/slackpkgplus_}]}CHECKSUMS.md5.asc
+	URLFILE=${MIRRORPLUS[${PREPO/slackpkgplus_}]}CHECKSUMS.md5.asc
+	if echo $URLFILE | grep -q "^file://" ; then
+	  URLFILE=${URLFILE:6}
+	  cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
+	else
+	  $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc $URLFILE
+	fi
 	if [ $? -eq 0 ];then
 	  if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO) -ne 1 ];then
 	    echo
 	    echo "                        !!! F A T A L !!!"
 	    echo "    Repository '$PREPO' FAILS to check CHECKSUMS.md5 signature"
 	    echo "    The file may be corrupted or the gpg key may be not valid."
-	    echo "    Remember to import keys by launching 'slackpkg update gpg'."
+	    echo "    Remember to import keys launching 'slackpkg update gpg'."
 	    echo
 	    sleep 5
 	    echo > ${TMPDIR}/CHECKSUMS.md5
@@ -92,14 +114,27 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     if [ $(basename $1) = "ChangeLog.txt" ];then
       for PREPO in $REPOPLUS;do
-	$DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/slackpkgplus_}]}PACKAGES.TXT
+        # Not all repositories have the ChangeLog.txt, so I use md5 of PACKAGES.TXT instead
+	URLFILE=${MIRRORPLUS[${PREPO/slackpkgplus_}]}PACKAGES.TXT
+	if echo $URLFILE | grep -q "^file://" ; then
+	  URLFILE=${URLFILE:6}
+	  cp -v $URLFILE $2-tmp
+	else
+	  $DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/slackpkgplus_}]}PACKAGES.TXT
+	fi
 	echo $PREPO $(md5sum $2-tmp|awk '{print $1}') >>$2
 	rm $2-tmp
       done
     fi
     if [ $(basename $1) = "GPG-KEY" ];then
       for PREPO in $REPOPLUS;do
-	$DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/slackpkgplus_}]}GPG-KEY
+	URLFILE=${MIRRORPLUS[${PREPO/slackpkgplus_}]}GPG-KEY
+	if echo $URLFILE | grep -q "^file://" ; then
+	  URLFILE=${URLFILE:6}
+	  cp -v $URLFILE $2-tmp
+	else
+	  $DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/slackpkgplus_}]}GPG-KEY
+        fi
 	if [ $? -eq 0 ];then
 	  gpg --import $2-tmp
 	else
