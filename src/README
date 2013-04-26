@@ -7,15 +7,12 @@ Slackpkg+ is a plugin for slackpkg
    You can add multiple repository to your list
 
 
-To install it copy:
-
-slackpkg+.conf in /etc/slackpkg
-slackpkg+.sh in /usr/libexec/slackpkg/functions.d/
-
-edit slackpkg+.conf
-uncomment one or more mirrors and add it in PRIORITYPLUS order
+edit slackpkgplus.conf
+uncomment one or more mirrors
+optionally set PKGS_PRIORITY to give priority order for packages presents in multiple repositories
 
 then launch 
+slackpkg update gpg
 slackpkg update
 
 

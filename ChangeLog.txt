@@ -1,3 +1,8 @@
+Version 0.9test1 - 26/Apr/2013
+  - added a priority system for repository and single packages
+  - added gpg support
+  - added explicit support for alienbob multilibs
+
 Version 0.3beta - 10/Oct/2012
   - Added slackware 14.0 in default configuration
 
