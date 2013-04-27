@@ -1,3 +1,9 @@
+Version 0.9beta2 - 27/Apr/2013
+  - fixed a 'package' bug that override slackpkgplus.conf (instead .new)
+  - added doinst.sh that auto-select a configuration file depending $ARCH
+  - fixed priority system bug when two repositories have package with the same
+    full name
+
 Version 0.9beta1 - 26/Apr/2013
   - added repositories in conf file
   - added a priority system for repository only

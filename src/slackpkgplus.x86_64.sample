@@ -15,21 +15,21 @@ SLACKPKGPLUS=on
 #
 
 # List repository you want to use (defined below)
-REPOPLUS=( slacky zerouno restricted alienbob salixos salixext rlworkman slackel slackers )
+REPOPLUS=( alienbob restricted slacky )
 
 
 # Define mirrors (uncomment one or more mirror)
-# Note: You MUST disable gpg check if you select the 'salixext' or 'zerouno' !!!
-#
+# Note: only multilib,alienbob,restricted,slacky repositories does supports GPG. If you add other
+#       you may need to disable gpg check in slackpkg.conf
 
 # Slackware 14.0 - x86_64
 #MIRRORPLUS['multilib']=http://taper.alienbase.nl/mirrors/people/alien/multilib/14.0/
 MIRRORPLUS['alienbob']=http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86_64/
 MIRRORPLUS['restricted']=http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86_64/
 MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware64-14.0/
-MIRRORPLUS['salixos']=http://download.salixos.org/x86_64/14.0/
-MIRRORPLUS['salixext']=http://people.salixos.org/ralvex/packages/x86_64/14.0/
-MIRRORPLUS['rlworkman']=http://rlworkman.net/pkgs/14.0/
+#MIRRORPLUS['salixos']=http://download.salixos.org/x86_64/14.0/
+#MIRRORPLUS['salixext']=http://people.salixos.org/ralvex/packages/x86_64/14.0/
+#MIRRORPLUS['rlworkman']=http://rlworkman.net/pkgs/14.0/
 
 # Slackware 14.0 - i386
 #MIRRORPLUS['alienbob']=http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86/
@@ -41,9 +41,9 @@ MIRRORPLUS['rlworkman']=http://rlworkman.net/pkgs/14.0/
 
 # Slackware current - x86_64
 #MIRRORPLUS['multilib']=http://taper.alienbase.nl/mirrors/people/alien/multilib/current/
-MIRRORPLUS['slackel']=http://www.slackel.gr/repo/x86_64/current/
-MIRRORPLUS['zerouno']=http://www.z01.eu/repo-slack/slackware64-current/
-MIRRORPLUS['slackers']=http://www.slackers.it/repository/
+#MIRRORPLUS['slackel']=http://www.slackel.gr/repo/x86_64/current/
+#MIRRORPLUS['zerouno']=http://www.z01.eu/repo-slack/slackware64-current/
+#MIRRORPLUS['slackers']=http://www.slackers.it/repository/
 
 # Slackware current - i386
 #MIRRORPLUS['slackel']=http://www.slackel.gr/repo/i486/current/

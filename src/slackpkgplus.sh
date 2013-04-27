@@ -153,7 +153,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   }
 
-
+    # Global variable required by givepriority() 
+    # 
+  PRIORITYIDX=1
+  
     # Found packages in repository. 
     # This function selects the package from the higher priority
     # repository directories.
@@ -183,11 +186,30 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		  if echo "$CPRIORITY " | grep -q "[a-zA-Z0-9]\+[:]" ; then
 		    DIR=$(echo "$CPRIORITY" | cut -f1 -d":")
 		    PAT=$(echo "$CPRIORITY" | cut -f2- -d":")
-		  
-
-		    if echo "$ARGUMENT" | grep -q "$PAT" ; then
-		      PKGDATA=( $(grep "^${DIR} ${ARGUMENT} " ${TMPDIR}/pkglist) )
-			
+		    
+				# ARGUMENT is always a basename. But PAT can be: 
+				#   1. a regular expression (ie .*)
+				#   2. a basename (openjdk)
+				#   3. a partial (or complete) package name (vlc-2.0.6, ).
+				#
+				# The current "enhanced priority rule" is applied :
+				#   + In case (1) and (2) when ARGUMENT contains the pattern PAT
+				#   + In the case (3) when ARGUMENT starts the pattern PAT.
+				# 
+		    if echo "$ARGUMENT" | grep -q "$PAT" || echo "$PAT" | grep "^$ARGUMENT" ; then
+			  PKGDATA=""
+			  PKGINFOS=$(grep -n -m 1 "^${DIR} ${ARGUMENT} " ${TMPDIR}/pkglist)
+			  
+			  if [ ! -z "$PKGINFOS" ] ; then
+			    LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
+				PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
+				
+					# -- move the line at #LINEIDX to #PRIORITYIDX and
+					#    increment PRIORITYIDX
+					#
+				sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
+				(( PRIORITYIDX++ ))
+			  fi
 		    fi
 		  else	
 		    PKGDATA=( $(grep "^${CPRIORITY} ${ARGUMENT} " ${TMPDIR}/pkglist) )

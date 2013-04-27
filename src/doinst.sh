@@ -1,0 +1,39 @@
+config() {
+  NEW="$1"
+  OLD="$(dirname $NEW)/$(basename $NEW .new)"
+  # If there's no config file by that name, mv it over:
+  if [ ! -r $OLD ]; then
+    mv $NEW $OLD
+  elif [ "$(cat $OLD | md5sum)" = "$(cat $NEW | md5sum)" ]; then # toss the redundant copy
+    rm $NEW
+  fi
+  # Otherwise, we leave the .new copy for the admin to consider...
+}
+
+remove() {
+  FILE="$1"
+  if [ -r $FILE ]; then
+    rm $FILE
+  fi
+}
+
+copy_config_file() {
+  ARCH=$(uname -m)
+  case $ARCH in
+    i386|i486|i586|i686)
+      SRCMIRROR=slackpkgplus.x86.sample
+    ;;
+    x86-64|x86_64|X86-64|X86_64)
+      SRCMIRROR=slackpkgplus.x86_64.sample
+    ;;
+    *)
+      SRCMIRROR=slackpkgplus.x86.sample
+    ;;
+  esac
+  cp usr/doc/slackpkg+-0.9beta2/$SRCMIRROR etc/slackpkg/slackpkgplus.conf.new
+}
+
+copy_config_file
+config etc/slackpkg/slackpkgplus.conf.new
+remove var/lib/slackpkg/ChangeLog.txt
+remove var/lib/slackpkg/pkglist
