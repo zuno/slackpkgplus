@@ -1,6 +1,7 @@
 #!/bin/bash
 
-VERSION=0.9beta2
+VERSION=0.9rc1
+BUILD=3mt
 
 CWD=`pwd`
 PKG=$CWD/../slackpkg+-$VERSION
@@ -17,6 +18,7 @@ mkdir -p install/
 cp $CWD/slackpkgplus.sh usr/libexec/slackpkg/functions.d/
 cp $CWD/slackpkgplus.conf etc/slackpkg/slackpkgplus.conf.new
 cp $CWD/README usr/doc/slackpkg+-$VERSION/
+cp $CWD/repositories.txt usr/doc/slackpkg+-$VERSION/
 cp $CWD/slackpkg+.SlackBuild usr/doc/slackpkg+-$VERSION/
 cp $CWD/slackpkgplus.*.sample usr/doc/slackpkg+-$VERSION/
 cp $CWD/slack-desc install/
@@ -25,7 +27,7 @@ cat $CWD/doinst.sh|sed "s/SLPVERSION/$VERSION/" > install/doinst.sh
 chmod +x usr/libexec/slackpkg/functions.d/slackpkgplus.sh
 
 
-makepkg -l y -c y ../slackpkg+-$VERSION-noarch-1mt.txz
+makepkg -l y -c y ../slackpkg+-$VERSION-noarch-$BUILD.txz
 
 
 

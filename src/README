@@ -46,12 +46,26 @@ alienbob:openjdk
 multilib:.* mean 'all packages in repository multilib'
 
 
+If you want a multilib system, add the repository 'multilib', add "PKGS_PRIORITY=( multilib:.* )" then launch:
+
+the first time:
+# slackpkg update gpg
+# slackpkg update
+# slackpkg install-new
+# slackpkg upgrade-all
+
+next:
+# slackpkg update
+# slackpkg upgrade-all
+
+
 Supported repository are (for now):
 
 multilib:         http://taper.alienbase.nl/mirrors/people/alien/multilib/
 alienbob:         http://taper.alienbase.nl/mirrors/people/alien/sbrepos/
 alien restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/
 slacky:           http://repository.slacky.eu/
+ponce:            http://ponce.cc/slackware/
 salixos:          http://download.salixos.org/
 salixext:         http://people.salixos.org/ralvex/packages/
 rlworkman:        http://rlworkman.net/pkgs/
@@ -60,6 +74,8 @@ zerouno:          http://www.z01.eu/repo-slack/
 slackers:         http://www.slackers.it/repository/
 
 but you can add other yourself.
+See repositories.txt for details.
+
 
 Currently only the alien repositories (multilib, alienbob and restricted) and the slacky repositories does supports GPG.
 If configure the other repositories, you may need to set "CHECKGPG=off" in slackpkg.conf

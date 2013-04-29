@@ -1,3 +1,6 @@
+Version 0.9rc1 - 29/Apr/2013
+  - added some repository
+
 Version 0.9beta2 - 27/Apr/2013
   - fixed a 'package' bug that override slackpkgplus.conf (instead .new)
   - added doinst.sh that auto-select a configuration file depending $ARCH
