@@ -1,7 +1,7 @@
 #!/bin/bash
 
-VERSION=0.9rc1
-BUILD=3mt
+VERSION=0.9rc2
+BUILD=1mt
 
 CWD=`pwd`
 PKG=$CWD/../slackpkg+-$VERSION

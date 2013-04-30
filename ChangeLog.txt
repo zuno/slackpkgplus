@@ -1,3 +1,9 @@
+Version 0.9rc2 - 30/Apr/2013
+  - added config file checks
+  - fixed a bug that try to check gpg even if CHECKGPG is set to off
+  - fixed a bug that show compat32 packages as duplicated
+  - implemented 'slackpkg search'
+
 Version 0.9rc1 - 29/Apr/2013
   - added some repository
 

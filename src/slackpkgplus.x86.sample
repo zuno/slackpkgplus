@@ -11,11 +11,13 @@ SLACKPKGPLUS=on
 #PKGS_PRIORITY=( restricted:vlc )
 #
 
-# List repository you want to use (defined below)
+# List repository you want to use (defined below).
+# remember to launch 'slackpkg update' if you modify that row.
 REPOPLUS=( alienbob restricted slacky ponce )
 
 
-# Define mirrors (uncomment one or more mirror)
+
+# Define mirrors (uncomment one or more mirror; remember to add it to REPOPLUS)
 # Note: only multilib,alienbob,restricted,slacky,ponce repositories does supports GPG. If you add other
 #       you may need to disable gpg check in slackpkg.conf
 

@@ -8,7 +8,7 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
-  REPOPLUS=${REPOPLUS[*]}
+  REPOPLUS=$(echo "${REPOPLUS[*]} ${PKGS_PRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}')
   PRIORITY=( ${PRIORITY[*]} slackpkgplus_$(echo $REPOPLUS|sed 's/ / slackpkgplus_/g') )
   
 
@@ -82,35 +82,39 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     if [ $(basename $1) = "CHECKSUMS.md5.asc" ];then
-      for PREPO in $REPOPLUS;do
-	URLFILE=${MIRRORPLUS[${PREPO/slackpkgplus_}]}CHECKSUMS.md5.asc
-	if echo $URLFILE | grep -q "^file://" ; then
-	  URLFILE=${URLFILE:6}
-	  cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
-	else
-	  $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc $URLFILE
-	fi
-	if [ $? -eq 0 ];then
-	  if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO) -ne 1 ];then
+      if [ "CHECKGPG" = "on" ];then
+	for PREPO in $REPOPLUS;do
+	  URLFILE=${MIRRORPLUS[${PREPO/slackpkgplus_}]}CHECKSUMS.md5.asc
+	  if echo $URLFILE | grep -q "^file://" ; then
+	    URLFILE=${URLFILE:6}
+	    cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
+	  else
+	    $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc $URLFILE
+	  fi
+	  if [ $? -eq 0 ];then
+	    if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO) -ne 1 ];then
+	      echo
+	      echo "                        !!! F A T A L !!!"
+	      echo "    Repository '$PREPO' FAILS to check CHECKSUMS.md5 signature"
+	      echo "    The file may be corrupted or the gpg key may be not valid."
+	      echo "    Remember to import keys launching 'slackpkg update gpg'."
+	      echo
+	      sleep 5
+	      echo > ${TMPDIR}/CHECKSUMS.md5
+	    fi
+	  else
 	    echo
-	    echo "                        !!! F A T A L !!!"
-	    echo "    Repository '$PREPO' FAILS to check CHECKSUMS.md5 signature"
-	    echo "    The file may be corrupted or the gpg key may be not valid."
-	    echo "    Remember to import keys launching 'slackpkg update gpg'."
+	    echo "                   !!! W A R N I N G !!!"
+	    echo "    Repository '$PREPO' does NOT supports signature checking"
+	    echo "    You SHOULD to disable GPG check by setting 'CHECKGPG=off'"
+	    echo "    in /etc/slackpkg/slackpkg.conf"
 	    echo
 	    sleep 5
-	    echo > ${TMPDIR}/CHECKSUMS.md5
 	  fi
-	else
-	  echo
-	  echo "                   !!! W A R N I N G !!!"
-	  echo "    Repository '$PREPO' does NOT supports signature checking"
-	  echo "    You SHOULD to disable GPG check by setting 'CHECKGPG=off'"
-	  echo "    in /etc/slackpkg/slackpkg.conf"
-	  echo
-	  sleep 5
-	fi
-      done
+	done
+      else
+	checkgpg ${TMPDIR}/CHECKSUMS.md5 >/dev/null
+      fi
     fi
     if [ $(basename $1) = "ChangeLog.txt" ];then
       for PREPO in $REPOPLUS;do
@@ -246,7 +250,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   if [ "$CMD" == "install-new" ] ; then 
     ls -1 /var/log/packages/*compat32 2>/dev/null | rev | cut -f1 -d/ | cut -f4- -d- | rev | sort > $TMPDIR/installed-compat32-packages.lst
     
-    grep "[[:digit:]]\+compat32[ ]" $WORKDIR/pkglist | cut -f2 -d" " | sort > $TMPDIR/available-compat32-packages.lst
+    grep "[[:digit:]]\+compat32[ ]" $WORKDIR/pkglist | cut -f2 -d" " | sort -u > $TMPDIR/available-compat32-packages.lst
 
     NEWCOMPAT32PKGS=$(comm -3 $TMPDIR/installed-compat32-packages.lst  $TMPDIR/available-compat32-packages.lst)
     
@@ -257,6 +261,137 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	LIST="$LIST $(grep " ${pkg} " $WORKDIR/pkglist | cut -f6,8 -d" " --output-delimiter=".")"
       done
     fi
+  fi
+  
+  function searchPackages() {
+	local i
+
+	INPUTLIST=$@
+
+	grep -vE "(^#|^[[:blank:]]*$)" ${CONF}/blacklist > ${TMPDIR}/blacklist
+	if echo $CMD | grep -q install ; then
+		ls -1 /var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
+	else
+		ls -1 /var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk | applyblacklist > ${TMPDIR}/tmplist
+	fi
+	cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
+
+	touch ${TMPDIR}/waiting
+	
+	if [ "$CMD" == "search" ] ; then
+		# -- PKGLIST:
+		#      temporary file used to store data about packages. It use
+		#      the following format:
+		#        repository:<repository_name>:basename:<package_basename>:
+		#
+		PKGLIST=$(tempfile --directory=$TMPDIR)
+		PKGINFOS=$(tempfile --directory=$TMPDIR)
+
+		for i in ${PRIORITY[@]}; do
+			DIR="$i"
+			if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
+				DIR=$(echo "$i" | cut -f2- -d":")
+			fi
+			
+			grep "^${DIR}.*${PATTERN}" "${TMPDIR}/pkglist" > $PKGINFOS
+						
+			while read PKG ; do
+				PKGDIR=$(echo "$PKG" | cut -f1 -d" ")
+				PKGBASENAME=$(echo "$PKG" | cut -f2 -d" ")
+				PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
+				
+				if echo "$PKGDIR" | grep -q "slackpkgplus_" ; then
+					grep -q "^repository:${PKGDIR}:basename:${PKGBASENAME}:" $PKGLIST && continue
+				else
+					grep -q ":basename:${PKGBASENAME}:" $PKGLIST  && continue
+				fi
+				LIST="$LIST ${PKGDIR}:${PKGFULLNAME}"
+				echo "repository:${PKGDIR}:basename:${PKGBASENAME}:" >> $PKGLIST				
+			done < $PKGINFOS
+		done
+		
+		rm -f $PKGLIST $PKGINFOS		
+	fi
+
+	LIST=$(echo -e $LIST | tr \  "\n" | uniq )
+
+	rm ${TMPDIR}/waiting
+
+	echo -e "DONE\n"	
+  }
+  
+ 
+function searchlistEX() {
+	local i
+	local BASENAME
+	local RAWNAME
+	local STATUS
+	local INSTPKG
+	local REPO
+	local PNAME
+
+	printf "[ %-16s ] [ %-24s ] [ %-40s ]\n" "Status" "Repository" "Package"
+	for i in $1; do
+		REPO=$(echo "$i" | cut -f1 -d":")
+		PNAME=$(echo "$i" | cut -f2- -d":")
+		
+		if echo "$REPO" | grep -q "slackpkgplus_" ; then
+			REPO=$(echo "$REPO" | cut -f2- -d"_")
+		else
+			REPO=""
+		fi
+		
+	    if [ -z "$REPO" ] && [ "$BASENAME" = "$(cutpkg ${PNAME})" ]; then
+			continue
+	    fi
+
+	    # BASENAME is base package name 
+	    BASENAME="$(cutpkg ${PNAME})"
+
+	    # RAWNAME is Latest available version  
+	    RAWNAME="${PNAME/%.t[blxg]z/}"
+
+	    # Default is uninstalled
+	    STATUS="uninstalled"
+		
+	    # First is the package already installed?
+	    # Amazing what a little sleep will do
+	    # exclusion is so much nicer :)
+	    INSTPKG=$(ls -1 /var/log/packages | \
+		grep -e "^${BASENAME}-[^-]\+-\(${ARCH}\|fw\|noarch\)-[^-]\+")
+
+		# INSTPKG is local version
+		if [ ! "${INSTPKG}" = "" ]; then
+
+			# If installed is it uptodate?
+			if [ "${INSTPKG}" = "${RAWNAME}" ]; then
+				STATUS=" installed "
+				printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$INSTPKG"
+			else
+				STATUS="upgrade"
+				printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$INSTPKG --> ${RAWNAME}"
+			fi
+		else
+			printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "${RAWNAME}"
+		fi
+	done
+}
+  
+  if [ "$CMD" == "search" ] ; then
+	PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g')
+	searchPackages $PATTERN
+
+	if [ "$LIST" = "" ]; then
+		echo -e "No package name matches the pattern."
+	else
+		echo -e "The list below shows all packages with name matching \"$PATTERN\".\n"
+		searchlistEX "$LIST"
+		
+			# PENDING: file-search must be implemented first.
+			#
+		#echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"	
+    fi
+    cleanup
   fi
   
 fi
