@@ -11,6 +11,25 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   REPOPLUS=$(echo "${REPOPLUS[*]} ${PKGS_PRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}')
   PRIORITY=( ${PRIORITY[*]} slackpkgplus_$(echo $REPOPLUS|sed 's/ / slackpkgplus_/g') )
   
+  # Test repositories
+  for pp in ${REPOPLUS[*]};do
+    echo "${MIRRORPLUS[$pp]}"|grep -q -e ^http:// -e ^https:// -e ^ftp:// -e ^file://
+    if [ $? -ne 0 ];then
+      echo "Repository '$pp' not configured." >> $TMPDIR/error.log
+      echo "Add:" >> $TMPDIR/error.log
+      echo "MIRRORPLUS['$pp']=http://repoaddres/..." >> $TMPDIR/error.log
+      echo "See documentation in /usr/doc/slackpkg+-* for details" >> $TMPDIR/error.log
+      cleanup
+    fi
+  done
+
+  if [ /etc/slackpkgplus.conf -nt /var/lib/slackpkg/pkglist -a "$CMD" != "update" ];then
+    echo
+    echo "NOTICE: remember to re-run 'slackpkg update' after modifing slackpkgplus.conf"
+    echo
+    sleep 5
+  fi
+
 
     # -- merge priorities from PKGS_PRIORITY with PRIORITY, as needed ...
   
@@ -47,10 +66,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       done
     fi
   }
+  if [ -z "$DOWNLOADER" ];then
+    DOWNLOADER="wget --passive-ftp -O"
+  fi
+
   function getfile(){
     local URLFILE
     URLFILE=$1
 
+    if [ ${URLFILE:0:1} = "/" ];then
+      URLFILE="file:/$URLFILE"
+    fi
     if echo $URLFILE|grep -q /slackpkgplus_;then
       PREPO=$(echo $URLFILE|sed -r 's#^.*/slackpkgplus_([^/]+)/.*$#\1#')
       URLFILE=$(echo $URLFILE|sed "s#^.*/slackpkgplus_$PREPO/#${MIRRORPLUS[$PREPO]}#")
@@ -82,7 +108,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     if [ $(basename $1) = "CHECKSUMS.md5.asc" ];then
-      if [ "CHECKGPG" = "on" ];then
+      if [ "$CHECKGPG" = "on" ];then
 	for PREPO in $REPOPLUS;do
 	  URLFILE=${MIRRORPLUS[${PREPO/slackpkgplus_}]}CHECKSUMS.md5.asc
 	  if echo $URLFILE | grep -q "^file://" ; then

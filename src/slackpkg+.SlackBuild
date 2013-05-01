@@ -1,6 +1,8 @@
 #!/bin/bash
 
-VERSION=0.9rc2
+set -e 
+
+VERSION=0.9rc3
 BUILD=1mt
 
 CWD=`pwd`
@@ -16,7 +18,6 @@ mkdir -p usr/doc/slackpkg+-$VERSION/
 mkdir -p install/
 
 cp $CWD/slackpkgplus.sh usr/libexec/slackpkg/functions.d/
-cp $CWD/slackpkgplus.conf etc/slackpkg/slackpkgplus.conf.new
 cp $CWD/README usr/doc/slackpkg+-$VERSION/
 cp $CWD/repositories.txt usr/doc/slackpkg+-$VERSION/
 cp $CWD/slackpkg+.SlackBuild usr/doc/slackpkg+-$VERSION/

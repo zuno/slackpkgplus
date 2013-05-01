@@ -1,3 +1,8 @@
+Version 0.9rc3 - 01/May/2013
+  - added more config file checks
+  - fixed a bug that does not allow to use the gpg check
+  - fixed a bug that deny to use local slackware mirror
+
 Version 0.9rc2 - 30/Apr/2013
   - added config file checks
   - fixed a bug that try to check gpg even if CHECKGPG is set to off

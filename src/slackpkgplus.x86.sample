@@ -39,7 +39,7 @@ MIRRORPLUS['ponce']=http://ponce.cc/slackware/slackware-14.0/packages/
 # alienbob:   http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0}/{x86,x86_64}/
 # restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0}/{x86,x86_64}/
 # slacky:     http://repository.slacky.eu/slackware{,64}-{13.37,14.0}/
-# ponce:      http://ponce.cc/slackware/slackware{,64}-{13.37,14.0,current}/packages/
+# ponce:      http://ponce.cc/slackware/slackware{,64}-{14.0,current}/packages/
 #
 # Does NOT supports GPG
 # salixos:    http://download.salixos.org/{i486,x86_64}/{13.37,14.0}/
