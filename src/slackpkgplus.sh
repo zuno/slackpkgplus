@@ -9,7 +9,7 @@ fi
 if [ "$SLACKPKGPLUS" = "on" ];then
 
   REPOPLUS=$(echo "${REPOPLUS[*]} ${PKGS_PRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}')
-  PRIORITY=( ${PRIORITY[*]} slackpkgplus_$(echo $REPOPLUS|sed 's/ / slackpkgplus_/g') )
+  PRIORITY=( ${PRIORITY[*]} SLACKPKGPLUS_$(echo $REPOPLUS|sed 's/ / SLACKPKGPLUS_/g') )
   
   # Test repositories
   for pp in ${REPOPLUS[*]};do
@@ -42,9 +42,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     
       if [ ! -z "$repository" ] && [ ! -z "$package" ] ; then
 	if [ -z "$PREFIX" ] ; then
-	  PREFIX=( slackpkgplus_${repository}:$package )
+	  PREFIX=( SLACKPKGPLUS_${repository}:$package )
 	else
-	  PREFIX=( ${PREFIX[*]} slackpkgplus_${repository}:$package )
+	  PREFIX=( ${PREFIX[*]} SLACKPKGPLUS_${repository}:$package )
 	fi
       fi
     done
@@ -59,9 +59,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       X86_64=$(ls /var/log/packages/aaa_base*x86_64*|head -1 2>/dev/null)
       for PREPO in $REPOPLUS;do
 	if [ ! -z "$X86_64" ];then
-	  egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -- "-(x86_64|noarch)-" |sed -r "s# \./# ./slackpkgplus_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+	  egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -- "-(x86_64|noarch)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
 	else
-	  egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(x86_64|arm)-" |sed -r "s# \./# ./slackpkgplus_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+	  egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(x86_64|arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
 	fi
       done
     fi
@@ -77,9 +77,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ ${URLFILE:0:1} = "/" ];then
       URLFILE="file:/$URLFILE"
     fi
-    if echo $URLFILE|grep -q /slackpkgplus_;then
-      PREPO=$(echo $URLFILE|sed -r 's#^.*/slackpkgplus_([^/]+)/.*$#\1#')
-      URLFILE=$(echo $URLFILE|sed "s#^.*/slackpkgplus_$PREPO/#${MIRRORPLUS[$PREPO]}#")
+    if echo $URLFILE|grep -q /SLACKPKGPLUS_;then
+      PREPO=$(echo $URLFILE|sed -r 's#^.*/SLACKPKGPLUS_([^/]+)/.*$#\1#')
+      URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
     fi
     
     if echo $URLFILE | grep -q "^file://" ; then
@@ -101,7 +101,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     if [ $(basename $1) = "CHECKSUMS.md5" ];then
       for PREPO in $REPOPLUS;do
-	URLFILE=${MIRRORPLUS[${PREPO/slackpkgplus_}]}CHECKSUMS.md5
+	URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
 	if echo $URLFILE | grep -q "^file://" ; then
 	  URLFILE=${URLFILE:6}
 	  cp -v $URLFILE $2-$PREPO
@@ -114,7 +114,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ $(basename $1) = "CHECKSUMS.md5.asc" ];then
       if [ "$CHECKGPG" = "on" ];then
 	for PREPO in $REPOPLUS;do
-	  URLFILE=${MIRRORPLUS[${PREPO/slackpkgplus_}]}CHECKSUMS.md5.asc
+	  URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5.asc
 	  if echo $URLFILE | grep -q "^file://" ; then
 	    URLFILE=${URLFILE:6}
 	    cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
@@ -149,12 +149,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ $(basename $1) = "ChangeLog.txt" ];then
       for PREPO in $REPOPLUS;do
         # Not all repositories have the ChangeLog.txt, so I use md5 of PACKAGES.TXT instead
-	URLFILE=${MIRRORPLUS[${PREPO/slackpkgplus_}]}PACKAGES.TXT
+	URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}PACKAGES.TXT
 	if echo $URLFILE | grep -q "^file://" ; then
 	  URLFILE=${URLFILE:6}
 	  cp -v $URLFILE $2-tmp
 	else
-	  $DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/slackpkgplus_}]}PACKAGES.TXT
+	  $DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}PACKAGES.TXT
 	fi
 	echo $PREPO $(md5sum $2-tmp|awk '{print $1}') >>$2
 	rm $2-tmp
@@ -162,12 +162,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     if [ $(basename $1) = "GPG-KEY" ];then
       for PREPO in $REPOPLUS;do
-	URLFILE=${MIRRORPLUS[${PREPO/slackpkgplus_}]}GPG-KEY
+	URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
 	if echo $URLFILE | grep -q "^file://" ; then
 	  URLFILE=${URLFILE:6}
 	  cp -v $URLFILE $2-tmp
 	else
-	  $DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/slackpkgplus_}]}GPG-KEY
+	  $DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
         fi
 	if [ $? -eq 0 ];then
 	  gpg --import $2-tmp
@@ -265,7 +265,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 			  repository=$(echo "$pref" | cut -f1 -d":")
 			  package=$(echo "$pref" | cut -f2- -d":")
 
-			  PRIORITY=( slackpkgplus_${repository}:$package ${PRIORITY[*]} )
+			  PRIORITY=( SLACKPKGPLUS_${repository}:$package ${PRIORITY[*]} )
 		  else
 			  package=$pref
 		  fi
@@ -330,7 +330,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 				PKGBASENAME=$(echo "$PKG" | cut -f2 -d" ")
 				PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
 				
-				if echo "$PKGDIR" | grep -q "slackpkgplus_" ; then
+				if echo "$PKGDIR" | grep -q "SLACKPKGPLUS_" ; then
 					grep -q "^repository:${PKGDIR}:basename:${PKGBASENAME}:" $PKGLIST && continue
 				else
 					grep -q ":basename:${PKGBASENAME}:" $PKGLIST  && continue
@@ -365,7 +365,7 @@ function searchlistEX() {
 		REPO=$(echo "$i" | cut -f1 -d":")
 		PNAME=$(echo "$i" | cut -f2- -d":")
 		
-		if echo "$REPO" | grep -q "slackpkgplus_" ; then
+		if echo "$REPO" | grep -q "SLACKPKGPLUS_" ; then
 			REPO=$(echo "$REPO" | cut -f2- -d"_")
 		else
 			REPO=""
