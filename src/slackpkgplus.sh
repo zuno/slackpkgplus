@@ -84,7 +84,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     
     if echo $URLFILE | grep -q "^file://" ; then
       URLFILE=${URLFILE:6}
-      cp -v $URLFILE $2
+      if [ -f $URLFILE ];then
+       	cp -v $URLFILE $2
+      else
+	return 1
+      fi
     else
       $DOWNLOADER $2 $URLFILE
     fi
