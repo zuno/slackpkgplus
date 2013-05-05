@@ -308,40 +308,60 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 	touch ${TMPDIR}/waiting
 	
-	if [ "$CMD" == "search" ] ; then
 		# -- PKGLIST:
 		#      temporary file used to store data about packages. It use
 		#      the following format:
 		#        repository:<repository_name>:basename:<package_basename>:
 		#
-		PKGLIST=$(tempfile --directory=$TMPDIR)
-		PKGINFOS=$(tempfile --directory=$TMPDIR)
+	PKGLIST=$(tempfile --directory=$TMPDIR)
+	PKGINFOS=$(tempfile --directory=$TMPDIR)
+	
+	for i in ${PRIORITY[@]}; do
+		DIR="$i"
+		if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
+			DIR=$(echo "$i" | cut -f2- -d":")
+		fi
 
-		for i in ${PRIORITY[@]}; do
-			DIR="$i"
-			if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
-				DIR=$(echo "$i" | cut -f2- -d":")
-			fi
-			
+		if [ "$CMD" == "file-search" ] ; then
+			[ ! -e "${WORKDIR}/${DIR}-filelist.gz" ] && continue
+
+				# NOTE: 
+				#  The awk below produces an output formatted like
+				#  in file TMPDIR/pkglist, but without true values
+				#  for the fields: version(3) arch(4) build(5), path(7),
+				#  extension(8)
+				#
+			zegrep -w "${INPUTLIST}" ${WORKDIR}/${DIR}-filelist.gz | \
+				cut -d" " -f 1 | rev | cut -f2- -d"." | cut -f1 -d"/" | rev |\
+				awk '{
+					l_pname=$0
+					l_count=split($0,l_parts,"-");
+					l_basename=l_parts[1];
+					for (i=2;i<=l_count-3;i++) {
+						l_basename=l_basename"-"l_parts[i];
+					}
+					print l_dir" "l_basename" ------- ---- ----- "l_pname" ---- ---------"
+				}' l_dir=${DIR} > $PKGINFOS
+
+		else # -- CMD==search
 			grep "^${DIR}.*${PATTERN}" "${TMPDIR}/pkglist" > $PKGINFOS
-						
-			while read PKG ; do
-				PKGDIR=$(echo "$PKG" | cut -f1 -d" ")
-				PKGBASENAME=$(echo "$PKG" | cut -f2 -d" ")
-				PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
-				
-				if echo "$PKGDIR" | grep -q "SLACKPKGPLUS_" ; then
-					grep -q "^repository:${PKGDIR}:basename:${PKGBASENAME}:" $PKGLIST && continue
-				else
-					grep -q ":basename:${PKGBASENAME}:" $PKGLIST  && continue
-				fi
-				LIST="$LIST ${PKGDIR}:${PKGFULLNAME}"
-				echo "repository:${PKGDIR}:basename:${PKGBASENAME}:" >> $PKGLIST				
-			done < $PKGINFOS
-		done
-		
-		rm -f $PKGLIST $PKGINFOS		
-	fi
+		fi
+					
+		while read PKG ; do
+			PKGDIR=$(echo "$PKG" | cut -f1 -d" ")
+			PKGBASENAME=$(echo "$PKG" | cut -f2 -d" ")
+			PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
+			
+			if echo "$PKGDIR" | grep -q "SLACKPKGPLUS_" ; then
+				grep -q "^repository:${PKGDIR}:basename:${PKGBASENAME}:" $PKGLIST && continue
+			else
+				grep -q ":basename:${PKGBASENAME}:" $PKGLIST  && continue
+			fi
+			LIST="$LIST ${PKGDIR}:${PKGFULLNAME}"
+			echo "repository:${PKGDIR}:basename:${PKGBASENAME}:" >> $PKGLIST				
+		done < $PKGINFOS
+	done
+	rm -f $PKGLIST $PKGINFOS				
 
 	LIST=$(echo -e $LIST | tr \  "\n" | uniq )
 
@@ -349,7 +369,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 	echo -e "DONE\n"	
   }
-  
  
 function searchlistEX() {
 	local i
@@ -407,20 +426,32 @@ function searchlistEX() {
 	done
 }
   
-  if [ "$CMD" == "search" ] ; then
+  if [ "$CMD" == "search" ] || [ "$CMD" == "file-search" ] ; then
 	PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g')
 	searchPackages $PATTERN
-
-	if [ "$LIST" = "" ]; then
-		echo -e "No package name matches the pattern."
-	else
-		echo -e "The list below shows all packages with name matching \"$PATTERN\".\n"
-		searchlistEX "$LIST"
+	
+	case $CMD in
+		search) 
+			if [ "$LIST" = "" ]; then
+				echo -e "No package name matches the pattern."
+			else
+				echo -e "The list below shows all packages with name matching \"$PATTERN\".\n"
+				searchlistEX "$LIST"		
+				echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"	
+			fi
+		;;
 		
-			# PENDING: file-search must be implemented first.
-			#
-		#echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"	
-    fi
+		file-search)
+			if [ "$LIST" = "" ]; then
+				echo -e "No packages contains \"$PATTERN\" file."
+			else
+				echo -e "The list below shows the packages that contains \"$PATTERN\" file.\n"
+				searchlistEX "$LIST"		
+				echo -e "\nYou can search specific packages using \"slackpkg search package\".\n"	
+			fi
+		;;
+	esac
+
     cleanup
   fi
   

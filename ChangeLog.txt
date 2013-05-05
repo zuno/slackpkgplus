@@ -2,6 +2,7 @@ Current
   - fixed an error when a folder is missing in the slackware mirror (as
     /testing).
   - fixed a conflict searching the package 'slackpkg'
+  - added file-search function
 
 Version 0.9rc3 - 01/May/2013
   - added more config file checks
