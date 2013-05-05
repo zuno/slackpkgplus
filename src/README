@@ -19,7 +19,8 @@ slackpkg update gpg
 slackpkg update
 
 
-This is a beta version.
+To keep slackpkg+ updated, uncomment the 'slackpkgplus' repository.
+then 'slackpkg upgrade-all' will upgrade it.
 
 
 
@@ -61,6 +62,7 @@ next:
 
 Supported repository are (for now):
 
+slackpkgplus:	  http://slakfinder.org/slackpkg+/
 multilib:         http://taper.alienbase.nl/mirrors/people/alien/multilib/
 alienbob:         http://taper.alienbase.nl/mirrors/people/alien/sbrepos/
 alien restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/
@@ -77,8 +79,7 @@ but you can add other yourself.
 See repositories.txt for details.
 
 
-Currently only the alien repositories (multilib, alienbob and restricted) and the slacky repositories does supports GPG.
-If configure the other repositories, you may need to set "CHECKGPG=off" in slackpkg.conf
+If you configure repositories that does not supports gpg, you may need to set "CHECKGPG=off" in slackpkg.conf
 
 
 
@@ -87,3 +88,6 @@ For questions, suggests or contributes, you can email me to zerouno@slacky.it or
 http://www.linuxquestions.org/questions/showthread.php?p=4940074
 
 
+You can found slackpkg+
+- the develop version (source): https://github.com/zuno/slackpkgplus.git
+- the released version (source and package): http://www.slakfinder.org/slackpkg+/

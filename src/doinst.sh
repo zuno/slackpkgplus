@@ -30,7 +30,7 @@ copy_config_file() {
       SRCMIRROR=slackpkgplus.x86.sample
     ;;
   esac
-  cp usr/doc/slackpkg+-0.9rc3/$SRCMIRROR etc/slackpkg/slackpkgplus.conf.new
+  cp usr/doc/slackpkg+-SLPVERSION/$SRCMIRROR etc/slackpkg/slackpkgplus.conf.new
 }
 
 copy_config_file

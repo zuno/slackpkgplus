@@ -1,18 +1,20 @@
 Supported Repositories:
 
 Supports GPG
+slackpkgplus: http://slakfinder.org/slackpkg+/
 multilib:   http://taper.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,current}/
 alienbob:   http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0}/{x86,x86_64}/
 restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0}/{x86,x86_64}/
 slacky:     http://repository.slacky.eu/slackware{,64}-{13.37,14.0}/
 ponce:      http://ponce.cc/slackware/slackware{,64}-{13.37,14.0,current}/packages/
+zerouno:    http://www.z01.eu/repo-slack/slackware64-current/
+
 Does NOT supports GPG
 salixos:    http://download.salixos.org/{i486,x86_64}/{13.37,14.0}/
 salixext:   http://people.salixos.org/ralvex/packages/{i486,x86_64}/{13.37,14.0}/
 rlworkman:  http://rlworkman.net/pkgs/{13.37,14.0}/
 slackel:    http://www.slackel.gr/repo/{i486,x86_64}/current/
 slackers:   http://www.slackers.it/repository/
-zerouno:    http://www.z01.eu/repo-slack/slackware64-current/
 
 
 
@@ -22,6 +24,7 @@ Details:
 
 name         |13.37 | 14.0 | current | i386 | x86_64 | GPG |url
 -------------|------+------+---------+------+--------+-----+----------------------------------------------------------
+slackpkgplus |  X   |  X   |    X    |      |        |  X  | http://slakfinder.org/slackpkg+/
 multilib     |  X   |      |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/multilib/13.37/
 multilib     |      |  X   |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/multilib/14.0/
 multilib     |      |      |    X    |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/multilib/current/
@@ -41,6 +44,7 @@ ponce        |  X   |      |         |      |    X   |  X  | http://ponce.cc/sla
 ponce        |      |  X   |         |  X   |        |  X  | http://ponce.cc/slackware/slackware-current/packages/
 ponce        |      |      |    X    |  X   |        |  X  | http://ponce.cc/slackware/slackware64-14.0/packages/
 ponce        |      |      |    X    |      |    X   |  X  | http://ponce.cc/slackware/slackware64-current/packages/
+zerouno      |      |      |    X    |      |    X   |  X  | http://www.z01.eu/repo-slack/slackware64-current/
 salixos      |  X   |      |         |  X   |        |     | http://download.salixos.org/i486/13.37/
 salixos      |  X   |      |         |      |    X   |     | http://download.salixos.org/x86_64/13.37/
 salixos      |      |  X   |         |  X   |        |     | http://download.salixos.org/i486/14.0/
@@ -54,7 +58,6 @@ rlworkman    |      |  X   |         |  X   |    X   |     | http://rlworkman.ne
 slackel      |      |      |    X    |  X   |        |     | http://www.slackel.gr/repo/i486/current/
 slackel      |      |      |    X    |      |    X   |     | http://www.slackel.gr/repo/x86_64/current/
 slackers     |      |      |    X    |  X   |    X   |     | http://www.slackers.it/repository/
-zerouno      |      |      |    X    |      |    X   |     | http://www.z01.eu/repo-slack/slackware64-current/
 
 
 You can found a larger list at http://slakfinder.org
