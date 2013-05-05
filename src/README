@@ -67,7 +67,6 @@ multilib:         http://taper.alienbase.nl/mirrors/people/alien/multilib/
 alienbob:         http://taper.alienbase.nl/mirrors/people/alien/sbrepos/
 alien restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/
 slacky:           http://repository.slacky.eu/
-ponce:            http://ponce.cc/slackware/
 salixos:          http://download.salixos.org/
 salixext:         http://people.salixos.org/ralvex/packages/
 rlworkman:        http://rlworkman.net/pkgs/

@@ -18,7 +18,7 @@ REPOPLUS=( slackpkgplus alienbob restricted slacky )
 
 
 # Define mirrors (uncomment one or more mirror; remember to add it to REPOPLUS)
-# Note: only multilib,alienbob,restricted,slacky,ponce repositories does supports GPG. If you add other
+# Note: only multilib,alienbob,restricted,slacky repositories does supports GPG. If you add other
 #       you may need to disable gpg check in slackpkg.conf
 
 # Slackware 14.0 - i386
@@ -30,7 +30,6 @@ MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware-14.0/
 MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 
 # Slackware current - i386
-#MIRRORPLUS['ponce']=http://ponce.cc/slackware/slackware-current/packages/
 
 
 

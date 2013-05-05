@@ -6,7 +6,6 @@ multilib:   http://taper.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,
 alienbob:   http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0}/{x86,x86_64}/
 restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0}/{x86,x86_64}/
 slacky:     http://repository.slacky.eu/slackware{,64}-{13.37,14.0}/
-ponce:      http://ponce.cc/slackware/slackware{,64}-{13.37,14.0,current}/packages/
 zerouno:    http://www.z01.eu/repo-slack/slackware64-current/
 
 Does NOT supports GPG
@@ -40,10 +39,6 @@ slacky       |  X   |      |         |  X   |        |  X  | http://repository.s
 slacky       |  X   |      |         |      |    X   |  X  | http://repository.slacky.eu/slackware64-13.37/
 slacky       |      |  X   |         |  X   |        |  X  | http://repository.slacky.eu/slackware-14.0/
 slacky       |      |  X   |         |      |    X   |  X  | http://repository.slacky.eu/slackware64-14.0/
-ponce        |  X   |      |         |      |    X   |  X  | http://ponce.cc/slackware/slackware-14.0/packages/
-ponce        |      |  X   |         |  X   |        |  X  | http://ponce.cc/slackware/slackware-current/packages/
-ponce        |      |      |    X    |  X   |        |  X  | http://ponce.cc/slackware/slackware64-14.0/packages/
-ponce        |      |      |    X    |      |    X   |  X  | http://ponce.cc/slackware/slackware64-current/packages/
 zerouno      |      |      |    X    |      |    X   |  X  | http://www.z01.eu/repo-slack/slackware64-current/
 salixos      |  X   |      |         |  X   |        |     | http://download.salixos.org/i486/13.37/
 salixos      |  X   |      |         |      |    X   |     | http://download.salixos.org/x86_64/13.37/
