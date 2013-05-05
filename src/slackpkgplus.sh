@@ -8,68 +8,9 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
-  REPOPLUS=$(echo "${REPOPLUS[*]} ${PKGS_PRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}')
-  PRIORITY=( ${PRIORITY[*]} SLACKPKGPLUS_$(echo $REPOPLUS|sed 's/ / SLACKPKGPLUS_/g') )
-  
-  # Test repositories
-  for pp in ${REPOPLUS[*]};do
-    echo "${MIRRORPLUS[$pp]}"|grep -q -e ^http:// -e ^https:// -e ^ftp:// -e ^file://
-    if [ $? -ne 0 ];then
-      echo "Repository '$pp' not configured." >> $TMPDIR/error.log
-      echo "Add:" >> $TMPDIR/error.log
-      echo "MIRRORPLUS['$pp']=http://repoaddres/..." >> $TMPDIR/error.log
-      echo "See documentation in /usr/doc/slackpkg+-* for details" >> $TMPDIR/error.log
-      cleanup
-    fi
-  done
-
-  if [ /etc/slackpkgplus.conf -nt /var/lib/slackpkg/pkglist -a "$CMD" != "update" ];then
-    echo
-    echo "NOTICE: remember to re-run 'slackpkg update' after modifing slackpkgplus.conf"
-    echo
-    sleep 5
-  fi
-
-
-    # -- merge priorities from PKGS_PRIORITY with PRIORITY, as needed ...
-  
-  if [ ! -z "$PKGS_PRIORITY" -a "$CMD" != "update" ] ; then
-    PREFIX=""
-    
-    for pp in ${PKGS_PRIORITY[*]} ; do
-      repository=$(echo "$pp" | cut -f1 -d":")
-      package=$(echo "$pp" | cut -f2- -d":")
-    
-      if [ ! -z "$repository" ] && [ ! -z "$package" ] ; then
-	if [ -z "$PREFIX" ] ; then
-	  PREFIX=( SLACKPKGPLUS_${repository}:$package )
-	else
-	  PREFIX=( ${PREFIX[*]} SLACKPKGPLUS_${repository}:$package )
-	fi
-      fi
-    done
-    
-    [ ! -z "$PREFIX" ] && PRIORITY=( ${PREFIX[*]} ${PRIORITY[*]} )
-  fi
-
-  
-  function checkgpg() {
-    gpg --verify ${1}.asc ${1} 2>/dev/null && echo "1" || echo "0"
-    if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
-      X86_64=$(ls /var/log/packages/aaa_base*x86_64*|head -1 2>/dev/null)
-      for PREPO in $REPOPLUS;do
-	if [ ! -z "$X86_64" ];then
-	  egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -- "-(x86_64|noarch)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
-	else
-	  egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(x86_64|arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
-	fi
-      done
-    fi
-  }
-  if [ -z "$DOWNLOADER" ];then
-    DOWNLOADER="wget --passive-ftp -O"
-  fi
-
+  # Override the slackpkg getfile().
+  # The new getfile() download all file needed from all defined repositories
+  # then merge all in a format slackpkg-compatible
   function getfile(){
     local URLFILE
     URLFILE=$1
@@ -183,98 +124,291 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	rm $2-tmp
       done
     fi
-
-
   }
 
-    # Global variable required by givepriority() 
-    # 
-  PRIORITYIDX=1
-  
-    # Found packages in repository. 
-    # This function selects the package from the higher priority
-    # repository directories.
-    #
-    # This Modified version supports enhanced priority rule (priority 
-    # given to package(s) from a given repository). This kind of priority 
-    # uses the following syntax :
-    #
-    #   repository_name:pattern
-    # 
-    #
+  # override slackpkg checkgpg()
+  # new checkgpg() is used to check gpg and to merge the CHECKSUMS.md5 files
+  function checkgpg() {
+    gpg --verify ${1}.asc ${1} 2>/dev/null && echo "1" || echo "0"
+    if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
+      X86_64=$(ls /var/log/packages/aaa_base*x86_64*|head -1 2>/dev/null)
+      for PREPO in $REPOPLUS;do
+	if [ ! -z "$X86_64" ];then
+	  egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -- "-(x86_64|noarch)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+	else
+	  egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(x86_64|arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+	fi
+      done
+    fi
+  }
+
+  # Found packages in repository. 
+  # This function selects the package from the higher priority
+  # repository directories.
+  #
+  # This Modified version supports enhanced priority rule (priority 
+  # given to package(s) from a given repository). This kind of priority 
+  # uses the following syntax :
+  #
+  #   repository_name:pattern
+  # 
   function givepriority {
-	  local DIR
-	  local ARGUMENT=$1
-	  local PKGDATA
-	  local CPRIORITY
-	  local DIR
-	  local PKG
+    local DIR
+    local ARGUMENT=$1
+    local PKGDATA
+    local CPRIORITY
+    local DIR
+    local PKG
 
-	  unset NAME
-	  unset FULLNAME
-	  unset PKGDATA
+    unset NAME
+    unset FULLNAME
+    unset PKGDATA
+    
+    for CPRIORITY in ${PRIORITY[@]} ; do
+      [ "$PKGDATA" ] && break
+      
+      if echo "$CPRIORITY " | grep -q "[a-zA-Z0-9]\+[:]" ; then
+	DIR=$(echo "$CPRIORITY" | cut -f1 -d":")
+	PAT=$(echo "$CPRIORITY" | cut -f2- -d":")
+	
+	# ARGUMENT is always a basename. But PAT can be: 
+	#   1. a regular expression (ie .*)
+	#   2. a basename (openjdk)
+	#   3. a partial (or complete) package name (vlc-2.0.6, ).
+	#
+	# The current "enhanced priority rule" is applied :
+	#   + In case (1) and (2) when ARGUMENT contains the pattern PAT
+	#   + In the case (3) when ARGUMENT starts the pattern PAT.
+	# 
+	if echo "$ARGUMENT" | grep -q "$PAT" || echo "$PAT" | grep "^$ARGUMENT" ; then
+	  PKGDATA=""
+	  PKGINFOS=$(grep -n -m 1 "^${DIR} ${ARGUMENT} " ${TMPDIR}/pkglist)
 	  
-	  for CPRIORITY in ${PRIORITY[@]} ; do
-		  [ "$PKGDATA" ] && break
-		  
-		  if echo "$CPRIORITY " | grep -q "[a-zA-Z0-9]\+[:]" ; then
-		    DIR=$(echo "$CPRIORITY" | cut -f1 -d":")
-		    PAT=$(echo "$CPRIORITY" | cut -f2- -d":")
-		    
-				# ARGUMENT is always a basename. But PAT can be: 
-				#   1. a regular expression (ie .*)
-				#   2. a basename (openjdk)
-				#   3. a partial (or complete) package name (vlc-2.0.6, ).
-				#
-				# The current "enhanced priority rule" is applied :
-				#   + In case (1) and (2) when ARGUMENT contains the pattern PAT
-				#   + In the case (3) when ARGUMENT starts the pattern PAT.
-				# 
-		    if echo "$ARGUMENT" | grep -q "$PAT" || echo "$PAT" | grep "^$ARGUMENT" ; then
-			  PKGDATA=""
-			  PKGINFOS=$(grep -n -m 1 "^${DIR} ${ARGUMENT} " ${TMPDIR}/pkglist)
-			  
-			  if [ ! -z "$PKGINFOS" ] ; then
-			    LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
-				PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
-				
-					# -- move the line at #LINEIDX to #PRIORITYIDX and
-					#    increment PRIORITYIDX
-					#
-				sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
-				(( PRIORITYIDX++ ))
-			  fi
-		    fi
-		  else	
-		    PKGDATA=( $(grep "^${CPRIORITY} ${ARGUMENT} " ${TMPDIR}/pkglist) )
-		  fi
-		    
-		  if [ "$PKGDATA" ]; then
-		    NAME=${PKGDATA[1]}
-		    FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
-		  fi
-	  done
+	  if [ ! -z "$PKGINFOS" ] ; then
+	    LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
+	      PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
+		
+	      # -- move the line at #LINEIDX to #PRIORITYIDX and
+	      #    increment PRIORITYIDX
+	      #
+	      sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
+	      (( PRIORITYIDX++ ))
+	  fi
+	fi
+      else	
+	PKGDATA=( $(grep "^${CPRIORITY} ${ARGUMENT} " ${TMPDIR}/pkglist) )
+      fi
+	
+      if [ "$PKGDATA" ]; then
+	NAME=${PKGDATA[1]}
+	FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
+      fi
+    done
   }
+
+  function searchPackages() {
+    local i
+
+    INPUTLIST=$@
+
+    grep -vE "(^#|^[[:blank:]]*$)" ${CONF}/blacklist > ${TMPDIR}/blacklist
+    if echo $CMD | grep -q install ; then
+	    ls -1 /var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
+    else
+	    ls -1 /var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk | applyblacklist > ${TMPDIR}/tmplist
+    fi
+    cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
+
+    touch ${TMPDIR}/waiting
+    
+	    # -- PKGLIST:
+	    #      temporary file used to store data about packages. It use
+	    #      the following format:
+	    #        repository:<repository_name>:basename:<package_basename>:
+	    #
+    PKGLIST=$(tempfile --directory=$TMPDIR)
+    PKGINFOS=$(tempfile --directory=$TMPDIR)
+    
+    for i in ${PRIORITY[@]}; do
+      DIR="$i"
+      if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
+	      DIR=$(echo "$i" | cut -f2- -d":")
+      fi
+
+      if [ "$CMD" == "file-search" ] ; then
+	[ ! -e "${WORKDIR}/${DIR}-filelist.gz" ] && continue
+
+	# NOTE: 
+	#  The awk below produces an output formatted like
+	#  in file TMPDIR/pkglist, but without true values
+	#  for the fields: version(3) arch(4) build(5), path(7),
+	#  extension(8)
+	#
+	zegrep -w "${INPUTLIST}" ${WORKDIR}/${DIR}-filelist.gz | \
+	  cut -d" " -f 1 | rev | cut -f2- -d"." | cut -f1 -d"/" | rev |\
+	  awk '{
+		  l_pname=$0
+		  l_count=split($0,l_parts,"-");
+		  l_basename=l_parts[1];
+		  for (i=2;i<=l_count-3;i++) {
+			  l_basename=l_basename"-"l_parts[i];
+		  }
+		  print l_dir" "l_basename" ------- ---- ----- "l_pname" ---- ---------"
+	  }' l_dir=${DIR} > $PKGINFOS
+
+      else # -- CMD==search
+	      grep "^${DIR}.*${PATTERN}" "${TMPDIR}/pkglist" > $PKGINFOS
+      fi
+			      
+      while read PKG ; do
+	PKGDIR=$(echo "$PKG" | cut -f1 -d" ")
+	PKGBASENAME=$(echo "$PKG" | cut -f2 -d" ")
+	PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
+	
+	if echo "$PKGDIR" | grep -q "SLACKPKGPLUS_" ; then
+		grep -q "^repository:${PKGDIR}:basename:${PKGBASENAME}:" $PKGLIST && continue
+	else
+		grep -q ":basename:${PKGBASENAME}:" $PKGLIST  && continue
+	fi
+	LIST="$LIST ${PKGDIR}:${PKGFULLNAME}"
+	echo "repository:${PKGDIR}:basename:${PKGBASENAME}:" >> $PKGLIST				
+      done < $PKGINFOS
+    done
+    rm -f $PKGLIST $PKGINFOS				
+
+    LIST=$(echo -e $LIST | tr \  "\n" | uniq )
+
+    rm ${TMPDIR}/waiting
+
+    echo -e "DONE\n"	
+  }
+ 
+  function searchlistEX() {
+    local i
+    local BASENAME
+    local RAWNAME
+    local STATUS
+    local INSTPKG
+    local REPO
+    local PNAME
+
+    printf "[ %-16s ] [ %-24s ] [ %-40s ]\n" "Status" "Repository" "Package"
+    for i in $1; do
+      REPO=$(echo "$i" | cut -f1 -d":")
+      PNAME=$(echo "$i" | cut -f2- -d":")
+	
+      if echo "$REPO" | grep -q "SLACKPKGPLUS_" ; then
+	REPO=$(echo "$REPO" | cut -f2- -d"_")
+      else
+	REPO=""
+      fi
+	    
+      if [ -z "$REPO" ] && [ "$BASENAME" = "$(cutpkg ${PNAME})" ]; then
+	continue
+      fi
+
+      # BASENAME is base package name 
+      BASENAME="$(cutpkg ${PNAME})"
+
+      # RAWNAME is Latest available version  
+      RAWNAME="${PNAME/%.t[blxg]z/}"
+
+      # Default is uninstalled
+      STATUS="uninstalled"
+	    
+      # First is the package already installed?
+      # Amazing what a little sleep will do
+      # exclusion is so much nicer :)
+      INSTPKG=$(ls -1 /var/log/packages | grep -e "^${BASENAME}-[^-]\+-\(${ARCH}\|fw\|noarch\)-[^-]\+")
+
+      # INSTPKG is local version
+      if [ ! "${INSTPKG}" = "" ]; then
+
+	# If installed is it uptodate?
+	if [ "${INSTPKG}" = "${RAWNAME}" ]; then
+	  STATUS=" installed "
+	  printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$INSTPKG"
+	else
+	  STATUS="upgrade"
+	  printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$INSTPKG --> ${RAWNAME}"
+	fi
+      else
+	printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "${RAWNAME}"
+      fi
+    done
+  }
+
+  REPOPLUS=$(echo "${REPOPLUS[*]} ${PKGS_PRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}')
+  PRIORITY=( ${PRIORITY[*]} SLACKPKGPLUS_$(echo $REPOPLUS|sed 's/ / SLACKPKGPLUS_/g') )
+  
+  # Test repositories
+  for pp in ${REPOPLUS[*]};do
+    echo "${MIRRORPLUS[$pp]}"|grep -q -e ^http:// -e ^https:// -e ^ftp:// -e ^file://
+    if [ $? -ne 0 ];then
+      echo "Repository '$pp' not configured." >> $TMPDIR/error.log
+      echo "Add:" >> $TMPDIR/error.log
+      echo "MIRRORPLUS['$pp']=http://repoaddres/..." >> $TMPDIR/error.log
+      echo "See documentation in /usr/doc/slackpkg+-* for details" >> $TMPDIR/error.log
+      cleanup
+    fi
+  done
+
+  if [ /etc/slackpkgplus.conf -nt /var/lib/slackpkg/pkglist -a "$CMD" != "update" ];then
+    echo
+    echo "NOTICE: remember to re-run 'slackpkg update' after modifing slackpkgplus.conf"
+    echo
+    sleep 5
+  fi
+
+  # -- merge priorities from PKGS_PRIORITY with PRIORITY, as needed ...
+  
+  if [ ! -z "$PKGS_PRIORITY" -a "$CMD" != "update" ] ; then
+    PREFIX=""
+    
+    for pp in ${PKGS_PRIORITY[*]} ; do
+      repository=$(echo "$pp" | cut -f1 -d":")
+      package=$(echo "$pp" | cut -f2- -d":")
+    
+      if [ ! -z "$repository" ] && [ ! -z "$package" ] ; then
+	if [ -z "$PREFIX" ] ; then
+	  PREFIX=( SLACKPKGPLUS_${repository}:$package )
+	else
+	  PREFIX=( ${PREFIX[*]} SLACKPKGPLUS_${repository}:$package )
+	fi
+      fi
+    done
+    
+    [ ! -z "$PREFIX" ] && PRIORITY=( ${PREFIX[*]} ${PRIORITY[*]} )
+  fi
+
+  if [ -z "$DOWNLOADER" ];then
+    DOWNLOADER="wget --passive-ftp -O"
+  fi
+
+  # Global variable required by givepriority() 
+  # 
+  PRIORITYIDX=1
+
+  
 
   if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] ; then
 
-	  NEWINPUTLIST=""
+    NEWINPUTLIST=""
 
-	  for pref in $INPUTLIST ; do
-		  if echo "$pref" | grep -q "[a-zA-Z0-9]\+[:][a-zA-Z0-9]\+" ; then
-			  repository=$(echo "$pref" | cut -f1 -d":")
-			  package=$(echo "$pref" | cut -f2- -d":")
+    for pref in $INPUTLIST ; do
+      if echo "$pref" | grep -q "[a-zA-Z0-9]\+[:][a-zA-Z0-9]\+" ; then
+	repository=$(echo "$pref" | cut -f1 -d":")
+	package=$(echo "$pref" | cut -f2- -d":")
 
-			  PRIORITY=( SLACKPKGPLUS_${repository}:$package ${PRIORITY[*]} )
-		  else
-			  package=$pref
-		  fi
-		  
-		  NEWINPUTLIST="$NEWINPUTLIST $package"
-	  done
+	PRIORITY=( SLACKPKGPLUS_${repository}:$package ${PRIORITY[*]} )
+      else
+	package=$pref
+      fi
+	NEWINPUTLIST="$NEWINPUTLIST $package"
+    done
 
-	  INPUTLIST=$NEWINPUTLIST
-	  
+    INPUTLIST=$NEWINPUTLIST
+    
   fi
 
   if [ "$CMD" == "install-new" ] ; then 
@@ -293,164 +427,32 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
   fi
   
-  function searchPackages() {
-	local i
-
-	INPUTLIST=$@
-
-	grep -vE "(^#|^[[:blank:]]*$)" ${CONF}/blacklist > ${TMPDIR}/blacklist
-	if echo $CMD | grep -q install ; then
-		ls -1 /var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
-	else
-		ls -1 /var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk | applyblacklist > ${TMPDIR}/tmplist
-	fi
-	cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
-
-	touch ${TMPDIR}/waiting
-	
-		# -- PKGLIST:
-		#      temporary file used to store data about packages. It use
-		#      the following format:
-		#        repository:<repository_name>:basename:<package_basename>:
-		#
-	PKGLIST=$(tempfile --directory=$TMPDIR)
-	PKGINFOS=$(tempfile --directory=$TMPDIR)
-	
-	for i in ${PRIORITY[@]}; do
-		DIR="$i"
-		if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
-			DIR=$(echo "$i" | cut -f2- -d":")
-		fi
-
-		if [ "$CMD" == "file-search" ] ; then
-			[ ! -e "${WORKDIR}/${DIR}-filelist.gz" ] && continue
-
-				# NOTE: 
-				#  The awk below produces an output formatted like
-				#  in file TMPDIR/pkglist, but without true values
-				#  for the fields: version(3) arch(4) build(5), path(7),
-				#  extension(8)
-				#
-			zegrep -w "${INPUTLIST}" ${WORKDIR}/${DIR}-filelist.gz | \
-				cut -d" " -f 1 | rev | cut -f2- -d"." | cut -f1 -d"/" | rev |\
-				awk '{
-					l_pname=$0
-					l_count=split($0,l_parts,"-");
-					l_basename=l_parts[1];
-					for (i=2;i<=l_count-3;i++) {
-						l_basename=l_basename"-"l_parts[i];
-					}
-					print l_dir" "l_basename" ------- ---- ----- "l_pname" ---- ---------"
-				}' l_dir=${DIR} > $PKGINFOS
-
-		else # -- CMD==search
-			grep "^${DIR}.*${PATTERN}" "${TMPDIR}/pkglist" > $PKGINFOS
-		fi
-					
-		while read PKG ; do
-			PKGDIR=$(echo "$PKG" | cut -f1 -d" ")
-			PKGBASENAME=$(echo "$PKG" | cut -f2 -d" ")
-			PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
-			
-			if echo "$PKGDIR" | grep -q "SLACKPKGPLUS_" ; then
-				grep -q "^repository:${PKGDIR}:basename:${PKGBASENAME}:" $PKGLIST && continue
-			else
-				grep -q ":basename:${PKGBASENAME}:" $PKGLIST  && continue
-			fi
-			LIST="$LIST ${PKGDIR}:${PKGFULLNAME}"
-			echo "repository:${PKGDIR}:basename:${PKGBASENAME}:" >> $PKGLIST				
-		done < $PKGINFOS
-	done
-	rm -f $PKGLIST $PKGINFOS				
-
-	LIST=$(echo -e $LIST | tr \  "\n" | uniq )
-
-	rm ${TMPDIR}/waiting
-
-	echo -e "DONE\n"	
-  }
- 
-function searchlistEX() {
-	local i
-	local BASENAME
-	local RAWNAME
-	local STATUS
-	local INSTPKG
-	local REPO
-	local PNAME
-
-	printf "[ %-16s ] [ %-24s ] [ %-40s ]\n" "Status" "Repository" "Package"
-	for i in $1; do
-		REPO=$(echo "$i" | cut -f1 -d":")
-		PNAME=$(echo "$i" | cut -f2- -d":")
-		
-		if echo "$REPO" | grep -q "SLACKPKGPLUS_" ; then
-			REPO=$(echo "$REPO" | cut -f2- -d"_")
-		else
-			REPO=""
-		fi
-		
-	    if [ -z "$REPO" ] && [ "$BASENAME" = "$(cutpkg ${PNAME})" ]; then
-			continue
-	    fi
-
-	    # BASENAME is base package name 
-	    BASENAME="$(cutpkg ${PNAME})"
-
-	    # RAWNAME is Latest available version  
-	    RAWNAME="${PNAME/%.t[blxg]z/}"
-
-	    # Default is uninstalled
-	    STATUS="uninstalled"
-		
-	    # First is the package already installed?
-	    # Amazing what a little sleep will do
-	    # exclusion is so much nicer :)
-	    INSTPKG=$(ls -1 /var/log/packages | \
-		grep -e "^${BASENAME}-[^-]\+-\(${ARCH}\|fw\|noarch\)-[^-]\+")
-
-		# INSTPKG is local version
-		if [ ! "${INSTPKG}" = "" ]; then
-
-			# If installed is it uptodate?
-			if [ "${INSTPKG}" = "${RAWNAME}" ]; then
-				STATUS=" installed "
-				printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$INSTPKG"
-			else
-				STATUS="upgrade"
-				printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$INSTPKG --> ${RAWNAME}"
-			fi
-		else
-			printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "${RAWNAME}"
-		fi
-	done
-}
   
   if [ "$CMD" == "search" ] || [ "$CMD" == "file-search" ] ; then
-	PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g')
-	searchPackages $PATTERN
-	
-	case $CMD in
-		search) 
-			if [ "$LIST" = "" ]; then
-				echo -e "No package name matches the pattern."
-			else
-				echo -e "The list below shows all packages with name matching \"$PATTERN\".\n"
-				searchlistEX "$LIST"		
-				echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"	
-			fi
-		;;
-		
-		file-search)
-			if [ "$LIST" = "" ]; then
-				echo -e "No packages contains \"$PATTERN\" file."
-			else
-				echo -e "The list below shows the packages that contains \"$PATTERN\" file.\n"
-				searchlistEX "$LIST"		
-				echo -e "\nYou can search specific packages using \"slackpkg search package\".\n"	
-			fi
-		;;
-	esac
+    PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g')
+    searchPackages $PATTERN
+    
+    case $CMD in
+      search) 
+	if [ "$LIST" = "" ]; then
+	  echo -e "No package name matches the pattern."
+	else
+	  echo -e "The list below shows all packages with name matching \"$PATTERN\".\n"
+	  searchlistEX "$LIST"		
+	  echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"	
+	fi
+      ;;
+      
+      file-search)
+	if [ "$LIST" = "" ]; then
+	  echo -e "No packages contains \"$PATTERN\" file."
+	else
+	  echo -e "The list below shows the packages that contains \"$PATTERN\" file.\n"
+	  searchlistEX "$LIST"		
+	  echo -e "\nYou can search specific packages using \"slackpkg search package\".\n"	
+	fi
+      ;;
+    esac
 
     cleanup
   fi
