@@ -2,6 +2,12 @@
 # Enable (on) / Disable (off) slackpkg+
 SLACKPKGPLUS=on
 
+# set to '0' to never show the download progress bar
+# set to '1' to show the bar only in download packages (default)
+# set to '2' to show always show the download bar
+VERBOSE=1
+
+
 # If two or more repositories contains some same packages, you can specify
 # from which repository you prefer to search it.
 # The syntax is "<repository_name>:<package_name>"

@@ -40,18 +40,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
     fi
 
-    if [ $(basename $1) = "CHECKSUMS.md5" ];then
-      for PREPO in $REPOPLUS;do
-	URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
-	if echo $URLFILE | grep -q "^file://" ; then
-	  URLFILE=${URLFILE:6}
-	  cp -v $URLFILE $2-$PREPO
-	else
-	  $DOWNLOADER $2-$PREPO $URLFILE
-	fi
-      done
-    fi
-
     if [ $(basename $1) = "CHECKSUMS.md5.asc" ];then
       if [ "$CHECKGPG" = "on" ];then
 	for PREPO in $REPOPLUS;do
@@ -89,16 +77,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     if [ $(basename $1) = "ChangeLog.txt" ];then
       for PREPO in $REPOPLUS;do
-        # Not all repositories have the ChangeLog.txt, so I use md5 of PACKAGES.TXT instead
-	URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}PACKAGES.TXT
+        # Not all repositories have the ChangeLog.txt, so I use md5 of CHECKSUMS.md5 instead
+	URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
 	if echo $URLFILE | grep -q "^file://" ; then
 	  URLFILE=${URLFILE:6}
-	  cp -v $URLFILE $2-tmp
+	  cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO
 	else
-	  $DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}PACKAGES.TXT
+	  $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
 	fi
-	echo $PREPO $(md5sum $2-tmp|awk '{print $1}') >>$2
-	rm $2-tmp
+	echo $PREPO $(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}') >>$2
       done
     fi
     if [ $(basename $1) = "GPG-KEY" ];then
@@ -221,11 +208,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     touch ${TMPDIR}/waiting
     
-	    # -- PKGLIST:
-	    #      temporary file used to store data about packages. It use
-	    #      the following format:
-	    #        repository:<repository_name>:basename:<package_basename>:
-	    #
+    # -- PKGLIST:
+    #      temporary file used to store data about packages. It use
+    #      the following format:
+    #        repository:<repository_name>:basename:<package_basename>:
+    #
     PKGLIST=$(tempfile --directory=$TMPDIR)
     PKGINFOS=$(tempfile --directory=$TMPDIR)
     
@@ -383,6 +370,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   if [ -z "$DOWNLOADER" ];then
     DOWNLOADER="wget --passive-ftp -O"
+  fi
+  if [ "$VERBOSE" = "0" ];then
+    DOWNLOADER="wget -nv --passive-ftp -O"
+  elif [ "$VERBOSE" = "2" ];then
+    DOWNLOADER="wget --passive-ftp -O"
+  elif [ "$CMD" = "update" ];then
+    DOWNLOADER="wget -nv --passive-ftp -O"
   fi
 
   # Global variable required by givepriority() 

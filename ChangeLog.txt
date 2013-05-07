@@ -1,3 +1,7 @@
+Current
+  - speed up the update process
+  - allow to disable the download status bar
+
 Version 0.9.1 - 05/May/2013
   - fixed an error when a folder is missing in the slackware mirror (as
     /testing).
