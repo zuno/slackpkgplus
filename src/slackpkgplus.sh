@@ -306,7 +306,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       # First is the package already installed?
       # Amazing what a little sleep will do
       # exclusion is so much nicer :)
-      INSTPKG=$(ls -1 /var/log/packages | grep -e "^${BASENAME}-[^-]\+-\(${ARCH}\|fw\|noarch\)-[^-]\+")
+      INSTPKG=$(ls -1 /var/log/packages | grep -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+")
+      #INSTPKG=$(ls -1 /var/log/packages | grep -e "^${BASENAME}-[^-]\+-\(${ARCH}\|fw\|noarch\)-[^-]\+")
 
       # INSTPKG is local version
       if [ ! "${INSTPKG}" = "" ]; then
