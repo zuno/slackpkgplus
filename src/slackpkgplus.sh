@@ -64,8 +64,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	  else
 	    echo
 	    echo "                   !!! W A R N I N G !!!"
-	    echo "    Repository '$PREPO' does NOT supports signature checking"
-	    echo "    You SHOULD to disable GPG check by setting 'CHECKGPG=off'"
+	    echo "    Repository '$PREPO' does NOT support signature checking"
+	    echo "    You SHOULD disable GPG check by setting 'CHECKGPG=off'"
 	    echo "    in /etc/slackpkg/slackpkg.conf"
 	    echo
 	    sleep 5
@@ -102,8 +102,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	else
 	  echo 
 	  echo "                   !!! W A R N I N G !!!"
-	  echo "    Repository '$PREPO' does NOT contains the GPG-KEY"
-	  echo "    You SHOULD to disable GPG check by setting 'CHECKGPG=off'"
+	  echo "    Repository '$PREPO' does NOT contain the GPG-KEY"
+	  echo "    You SHOULD disable GPG check by setting 'CHECKGPG=off'"
 	  echo "    in /etc/slackpkg/slackpkg.conf"
 	  echo
 	  sleep 5
@@ -128,6 +128,26 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       done
     fi
   }
+
+# override slackpkg checkmd5()
+# Verify if the package was corrupted by checking md5sum
+function checkmd5() {
+  local MD5ORIGINAL
+  local MD5DOWNLOAD
+  local PREPO
+
+  PREPO=$(echo $1 | rev | cut -f3 -d/ | rev)
+
+  MD5ORIGINAL=$(  grep -v "/source/" ${CHECKSUMSFILE} |\
+    grep -w $PREPO |\
+    grep -m1 "/$(basename $1)$" | cut -f1 -d \ )
+  MD5DOWNLOAD=$(md5sum ${1} | cut -f1 -d \ )
+  if [ "$MD5ORIGINAL" = "$MD5DOWNLOAD" ]; then
+    echo 1
+  else
+    echo 0
+  fi
+}
 
   # Found packages in repository. 
   # This function selects the package from the higher priority

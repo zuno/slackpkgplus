@@ -3,8 +3,8 @@ Supported Repositories:
 Supports GPG
 slackpkgplus: http://slakfinder.org/slackpkg+/
 multilib:   http://taper.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,current}/
-alienbob:   http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0}/{x86,x86_64}/
-restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0}/{x86,x86_64}/
+alienbob:   http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,current}/{x86,x86_64}/
+restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,current}/{x86,x86_64}/
 slacky:     http://repository.slacky.eu/slackware{,64}-{13.37,14.0}/
 zerouno:    http://www.z01.eu/repo-slack/slackware64-current/
 mled:       http://www.microlinux.fr/slackware/MLED-14.0-{32,64}bit/
@@ -34,10 +34,14 @@ alienbob     |  X   |      |         |   X  |        |  X  | http://taper.alienb
 alienbob     |  X   |      |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/sbrepos/13.37/x86_64/
 alienbob     |      |  X   |         |   X  |        |  X  | http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86
 alienbob     |      |  X   |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86_64/
+alienbob     |      |      |    X    |   X  |        |  X  | http://taper.alienbase.nl/mirrors/people/alien/sbrepos/current/x86
+alienbob     |      |      |    X    |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/sbrepos/current/x86_64/
 restricted   |  X   |      |         |  X   |        |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/13.37/x86/
 restricted   |  X   |      |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/13.37/x86_64/
 restricted   |      |  X   |         |  X   |        |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86/
 restricted   |      |  X   |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86_64/
+restricted   |      |      |    X    |  X   |        |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86/
+restricted   |      |      |    X    |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86_64/
 slacky       |  X   |      |         |  X   |        |  X  | http://repository.slacky.eu/slackware-13.37/
 slacky       |  X   |      |         |      |    X   |  X  | http://repository.slacky.eu/slackware64-13.37/
 slacky       |      |  X   |         |  X   |        |  X  | http://repository.slacky.eu/slackware-14.0/
