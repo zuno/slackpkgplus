@@ -2,7 +2,7 @@
 
 set -e 
 
-VERSION=0.9.3
+VERSION=$(head -1 ChangeLog.txt|awk '{print $2}')
 BUILD=1mt
 
 CWD=`pwd`

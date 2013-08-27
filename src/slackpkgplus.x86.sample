@@ -30,7 +30,7 @@ REPOPLUS=( slackpkgplus alienbob restricted slacky )
 # Slackware 14.0 - i386
 MIRRORPLUS['alienbob']=http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86/
 MIRRORPLUS['restricted']=http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86/
-#MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware-14.0/
+MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware-14.0/
 
 # use this to keep updated the slackpkg+ package
 MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
@@ -50,6 +50,7 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 # zerouno:    http://www.z01.eu/repo-slack/slackware64-current/
 # mled:       http://www.microlinux.fr/slackware/MLED-14.0-{32,64}bit/
 # mles:       http://www.microlinux.fr/slackware/MLES-14.0-{32,64}bit/
+# mlws:       http://www.microlinux.fr/slackware/MLWS-14.0-{32,64}bit/
 # msb:        http://slackware.org.uk/msb/
 #
 # Does NOT supports GPG

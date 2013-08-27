@@ -322,7 +322,7 @@ function checkmd5() {
 
       # Default is uninstalled
       STATUS="uninstalled"
-	    
+	    	    
       # First is the package already installed?
       # Amazing what a little sleep will do
       # exclusion is so much nicer :)
@@ -332,14 +332,24 @@ function checkmd5() {
       # INSTPKG is local version
       if [ ! "${INSTPKG}" = "" ]; then
 
-	# If installed is it uptodate?
-	if [ "${INSTPKG}" = "${RAWNAME}" ]; then
-	  STATUS=" installed "
-	  printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$INSTPKG"
-	else
-	  STATUS="upgrade"
-	  printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$INSTPKG --> ${RAWNAME}"
-	fi
+		# INSTPKG can contains more than one package. But only those 
+		# that match the basename ${BASENAME} must be handled
+		
+		for CINSTPKG in ${INSTPKG} ; do
+			CBASENAME=$(echo "${CINSTPKG}" | rev | cut -f4- -d- | rev)
+			
+			if [ "${CBASENAME}" == "${BASENAME}" ] ; then
+			
+				# If installed is it uptodate?
+				if [ "${CINSTPKG}" = "${RAWNAME}" ]; then
+				  STATUS=" installed "
+				  printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$CINSTPKG"
+				else
+				  STATUS="upgrade"
+				  printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$CINSTPKG --> ${RAWNAME}"
+				fi
+			fi
+		done
       else
 	printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "${RAWNAME}"
       fi
@@ -388,6 +398,27 @@ function checkmd5() {
     
     [ ! -z "$PREFIX" ] && PRIORITY=( ${PREFIX[*]} ${PRIORITY[*]} )
   fi
+  
+    # -- Ensures the internal blacklist is empty
+    #
+  echo -n "" > ${TMPDIR}/blacklist.slackpkgplus
+  
+    # Adds the pattern given by $(1) into the internal blacklist
+    # ${TMPDIR}/blacklist.slackpkgplus
+    #
+    # ($1) The pattern to add.
+    #
+  function internal_blacklist() {
+	echo "$1" >> ${TMPDIR}/blacklist.slackpkgplus
+  }
+  
+    # Override original applyblackist() so that internal blacklist will
+    # be applied too.
+    #
+  function applyblacklist() {
+	grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus
+  }
+  
 
   if [ -z "$DOWNLOADER" ];then
     DOWNLOADER="wget --passive-ftp -O"
@@ -404,26 +435,61 @@ function checkmd5() {
   # 
   PRIORITYIDX=1
 
-  
 
-  if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] ; then
+  if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] || [ "$CMD" == "remove" ] ; then
 
     NEWINPUTLIST=""
+    PRIORITYLIST=""
 
     for pref in $INPUTLIST ; do
       if echo "$pref" | grep -q "[a-zA-Z0-9]\+[:][a-zA-Z0-9]\+" ; then
-	repository=$(echo "$pref" | cut -f1 -d":")
-	package=$(echo "$pref" | cut -f2- -d":")
+      
+		if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] ; then
+			repository=$(echo "$pref" | cut -f1 -d":")
+			package=$(echo "$pref" | cut -f2- -d":")
 
-	PRIORITY=( SLACKPKGPLUS_${repository}:$package ${PRIORITY[*]} )
+			PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
+		fi
+	  elif grep -q "^SLACKPKGPLUS_${pref}[ ]" ${WORKDIR}/pkglist ; then
+	  
+		if [ "$CMD" == "remove" ] && echo "$pref" | grep -qi "multilib"  ; then
+			internal_blacklist "glibc"
+			internal_blacklist "gcc"
+		fi
+	  
+		package="SLACKPKGPLUS_${pref}"
+		PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${pref}:.* )
       else
-	package=$pref
+		package=$pref
       fi
-	NEWINPUTLIST="$NEWINPUTLIST $package"
+
+			# -- only insert "package" if not in NEWINPUTLIST
+		echo "$NEWINPUTLIST" | grep -qw "${package}" || NEWINPUTLIST="$NEWINPUTLIST $package"
     done
 
     INPUTLIST=$NEWINPUTLIST
     
+    if [ ! -z "$PRIORITYLIST" ] ; then
+		NEWPRIORITY=( ${PRIORITYLIST[*]} ${PRIORITY[*]} )
+		unset PRIORITY
+		
+			# -- This is to avoid duplicated priority rules in the variable
+			#    PRIORITY
+			#    
+		for np in ${NEWPRIORITY[*]} ; do
+			ADD_PRIORITY=true
+			for cp in ${PRIORITY[*]} ; do
+				if [ "$np" == "$cp" ] ; then
+					ADD_PRIORITY=false
+					break
+				fi
+			done
+			
+			if $ADD_PRIORITY ; then
+				PRIORITY=( ${PRIORITY[*]} $np )
+			fi
+		done
+	fi    
   fi
 
   if [ "$CMD" == "install-new" ] ; then 

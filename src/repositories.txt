@@ -9,6 +9,7 @@ slacky:     http://repository.slacky.eu/slackware{,64}-{13.37,14.0}/
 zerouno:    http://www.z01.eu/repo-slack/slackware64-current/
 mled:       http://www.microlinux.fr/slackware/MLED-14.0-{32,64}bit/
 mles:       http://www.microlinux.fr/slackware/MLES-14.0-{32,64}bit/
+mles:       http://www.microlinux.fr/slackware/MLWS-14.0-{32,64}bit/
 msb:        http://slackware.org.uk/msb/
 
 Does NOT supports GPG
@@ -51,6 +52,8 @@ mled         |      |  X   |         |  X   |        |  X  | http://www.microlin
 mled         |      |  X   |         |      |    X   |  X  | http://www.microlinux.fr/slackware/MLED-14.0-64bit/
 mles         |      |  X   |         |  X   |        |  X  | http://www.microlinux.fr/slackware/MLES-14.0-32bit/
 mles         |      |  X   |         |      |    X   |  X  | http://www.microlinux.fr/slackware/MLES-14.0-64bit/
+mlws         |      |  X   |         |  X   |        |  X  | http://www.microlinux.fr/slackware/MLWS-14.0-32bit/
+mlws         |      |  X   |         |      |    X   |  X  | http://www.microlinux.fr/slackware/MLWS-14.0-64bit/
 msb          |      |  X   |         |  X   |    X   |  X  | http://slackware.org.uk/msb/
 salixos      |  X   |      |         |  X   |        |     | http://download.salixos.org/i486/13.37/
 salixos      |  X   |      |         |      |    X   |     | http://download.salixos.org/x86_64/13.37/

@@ -1,3 +1,10 @@
+Version 0.9.4 - 27/Aug/2013
+  - fixed a issue when a pattern is used multiple times in argument
+  - fixed a bug in install/upgrade regarding the enhanced priority
+  - fixed a bug in search which leads to wrong information about upgrade
+  - allow to to install/upgrade/reinstall/remove all the packages from
+    a given repository (thanks to phenixia2003 for big patch)
+
 Version 0.9.3 - 25/Aug/2013
   - fixed md5 check (thanks to AlienBob)
   
