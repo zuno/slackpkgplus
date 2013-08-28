@@ -8,6 +8,10 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
+  if [ ! -e /var/lib/slackpkg ];then
+    mkdir -p /var/lib/slackpkg
+  fi
+
   # Override the slackpkg getfile().
   # The new getfile() download all file needed from all defined repositories
   # then merge all in a format slackpkg-compatible
