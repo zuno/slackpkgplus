@@ -1,3 +1,7 @@
+Version 0.9.5 - 28/Aug/2013
+  - fixed a problem with some compat32 packages
+  - fixed a issue about packages selection with the official slackware repository
+
 Version 0.9.4 - 27/Aug/2013
   - fixed a issue when a pattern is used multiple times in argument
   - fixed a bug in install/upgrade regarding the enhanced priority

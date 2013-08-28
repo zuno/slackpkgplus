@@ -399,6 +399,16 @@ function checkmd5() {
     [ ! -z "$PREFIX" ] && PRIORITY=( ${PREFIX[*]} ${PRIORITY[*]} )
   fi
   
+	# -- This flag is set when running slackpkg to manage the multilib :
+	#
+	#      slackpkg install|upgrade|reinstall|remove <multilib_repository_name>
+	#
+	#    This is used by applyblacklist() to prevent silent exclusion of 
+	#    multilib package aaa_elflibs-compat32 when /etc/slackpkg/blacklist
+	#    contains the pattern aaa_elflibs.
+	#
+  MLREPO_SELELECTED=false
+  
     # -- Ensures the internal blacklist is empty
     #
   echo -n "" > ${TMPDIR}/blacklist.slackpkgplus
@@ -415,8 +425,16 @@ function checkmd5() {
     # Override original applyblackist() so that internal blacklist will
     # be applied too.
     #
-  function applyblacklist() {
-	grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus
+  function applyblacklist() {  
+		# -- This is to prevent silent exclusion of multilib package 
+		#    aaa_elflibs-compat32 when /etc/slackpkg/blacklist contains the
+		#    pattern aaa_elflibs.
+	if $MLREPO_SELELECTED && grep -q "^aaa_elflibs$" ${TMPDIR}/blacklist && ! grep -q "^aaa_elflibs-compat32$" ${TMPDIR}/blacklist ; then
+		sed -i --expression "s/^aaa_elflibs/#aaa_elflibs/" ${TMPDIR}/blacklist
+		grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus | grep -v "[ ]aaa_elflibs[ ]"
+	else
+		grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus
+	fi
   }
   
 
@@ -452,14 +470,31 @@ function checkmd5() {
 		fi
 	  elif grep -q "^SLACKPKGPLUS_${pref}[ ]" ${WORKDIR}/pkglist ; then
 	  
-		if [ "$CMD" == "remove" ] && echo "$pref" | grep -qi "multilib"  ; then
+		echo "$pref" | grep -qi "multilib" && MLREPO_SELELECTED=true
+	  
+		if $MLREPO_SELELECTED && [ "$CMD" == "remove" ] ; then
 			internal_blacklist "glibc"
 			internal_blacklist "gcc"
 		fi
 	  
 		package="SLACKPKGPLUS_${pref}"
 		PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${pref}:.* )
-      else
+	  elif grep -q "^${pref}[ ]" ${WORKDIR}/pkglist ; then
+	  
+			# -- ${pref} relates to one of the standard directories (ie
+			#    slackware,slackware64,testing,extra,...). In this case,
+			#    packages is set to "^${pref}" to avoid packages outside
+			#    the given "directories" to be selected. For instance,
+			#    without this, if slackpkg+ is configured with the 
+			#    repositories "multilib" and "microlinux", running 
+			#    "slackpkg install slackware64" leads to install packages
+			#    from slackware64 directory, but also packages from 
+			#    "multilib" and "microlinux" repositories, because packages 
+			#    from these repositories are stored in directories whose
+			#    names include the word "slackware64".
+			#
+		package="^${pref}"
+	  else
 		package=$pref
       fi
 
@@ -490,22 +525,6 @@ function checkmd5() {
 			fi
 		done
 	fi    
-  fi
-
-  if [ "$CMD" == "install-new" ] ; then 
-    ls -1 /var/log/packages/*compat32 2>/dev/null | rev | cut -f1 -d/ | cut -f4- -d- | rev | sort > $TMPDIR/installed-compat32-packages.lst
-    
-    grep "[[:digit:]]\+compat32[ ]" $WORKDIR/pkglist | cut -f2 -d" " | sort -u > $TMPDIR/available-compat32-packages.lst
-
-    NEWCOMPAT32PKGS=$(comm -3 $TMPDIR/installed-compat32-packages.lst  $TMPDIR/available-compat32-packages.lst)
-    
-    if [ ! -z "$NEWCOMPAT32PKGS" ] ; then
-      LIST=""
-      
-      for pkg in $NEWCOMPAT32PKGS ; do
-	LIST="$LIST $(grep " ${pkg} " $WORKDIR/pkglist | cut -f6,8 -d" " --output-delimiter=".")"
-      done
-    fi
   fi
   
   
