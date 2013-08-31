@@ -1,5 +1,5 @@
 Current - 29/Aug/2013
-  - fixed a slackpkg bug that does not recreate /var/lib/slackpkg if it does not exists.
+  - fixed a slackpkg bug that does not recreate $WORKDIR if it does not exists.
 
 Version 0.9.5 - 28/Aug/2013
   - fixed a problem with some compat32 packages

@@ -4,6 +4,7 @@ Supports GPG
 slackpkgplus: http://slakfinder.org/slackpkg+/
 multilib:   http://taper.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,current}/
 alienbob:   http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,current}/{x86,x86_64}/
+ktown:      http://taper.alienbase.nl/mirrors/alien-kde/{13.37,14.0,current}/latest/{x86,x86_64}/
 restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,current}/{x86,x86_64}/
 slacky:     http://repository.slacky.eu/slackware{,64}-{13.37,14.0}/
 zerouno:    http://www.z01.eu/repo-slack/slackware64-current/
@@ -19,55 +20,6 @@ salixext:   http://people.salixos.org/ralvex/packages/{i486,x86_64}/{13.37,14.0}
 rlworkman:  http://rlworkman.net/pkgs/{13.37,14.0}/
 slackel:    http://www.slackel.gr/repo/{i486,x86_64}/current/
 
-
-
-
-Details:
-
-
-name         |13.37 | 14.0 | current | i386 | x86_64 | GPG |url
--------------|------+------+---------+------+--------+-----+----------------------------------------------------------
-slackpkgplus |  X   |  X   |    X    |      |        |  X  | http://slakfinder.org/slackpkg+/
-multilib     |  X   |      |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/multilib/13.37/
-multilib     |      |  X   |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/multilib/14.0/
-multilib     |      |      |    X    |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/multilib/current/
-alienbob     |  X   |      |         |   X  |        |  X  | http://taper.alienbase.nl/mirrors/people/alien/sbrepos/13.37/x86/
-alienbob     |  X   |      |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/sbrepos/13.37/x86_64/
-alienbob     |      |  X   |         |   X  |        |  X  | http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86
-alienbob     |      |  X   |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86_64/
-alienbob     |      |      |    X    |   X  |        |  X  | http://taper.alienbase.nl/mirrors/people/alien/sbrepos/current/x86
-alienbob     |      |      |    X    |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/sbrepos/current/x86_64/
-restricted   |  X   |      |         |  X   |        |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/13.37/x86/
-restricted   |  X   |      |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/13.37/x86_64/
-restricted   |      |  X   |         |  X   |        |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86/
-restricted   |      |  X   |         |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86_64/
-restricted   |      |      |    X    |  X   |        |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86/
-restricted   |      |      |    X    |      |    X   |  X  | http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86_64/
-slacky       |  X   |      |         |  X   |        |  X  | http://repository.slacky.eu/slackware-13.37/
-slacky       |  X   |      |         |      |    X   |  X  | http://repository.slacky.eu/slackware64-13.37/
-slacky       |      |  X   |         |  X   |        |  X  | http://repository.slacky.eu/slackware-14.0/
-slacky       |      |  X   |         |      |    X   |  X  | http://repository.slacky.eu/slackware64-14.0/
-zerouno      |      |      |    X    |      |    X   |  X  | http://www.z01.eu/repo-slack/slackware64-current/
-mled         |      |  X   |         |  X   |        |  X  | http://www.microlinux.fr/slackware/MLED-14.0-32bit/
-mled         |      |  X   |         |      |    X   |  X  | http://www.microlinux.fr/slackware/MLED-14.0-64bit/
-mles         |      |  X   |         |  X   |        |  X  | http://www.microlinux.fr/slackware/MLES-14.0-32bit/
-mles         |      |  X   |         |      |    X   |  X  | http://www.microlinux.fr/slackware/MLES-14.0-64bit/
-mlws         |      |  X   |         |  X   |        |  X  | http://www.microlinux.fr/slackware/MLWS-14.0-32bit/
-mlws         |      |  X   |         |      |    X   |  X  | http://www.microlinux.fr/slackware/MLWS-14.0-64bit/
-msb          |      |  X   |         |  X   |    X   |  X  | http://slackware.org.uk/msb/
-slackers     |      |      |    X    |  X   |    X   |  X  | http://www.slackers.it/repository/
-salixos      |  X   |      |         |  X   |        |     | http://download.salixos.org/i486/13.37/
-salixos      |  X   |      |         |      |    X   |     | http://download.salixos.org/x86_64/13.37/
-salixos      |      |  X   |         |  X   |        |     | http://download.salixos.org/i486/14.0/
-salixos      |      |  X   |         |      |    X   |     | http://download.salixos.org/x86_64/14.0/
-salixext     |  X   |      |         |  X   |        |     | http://people.salixos.org/ralvex/packages/i486/13.37/
-salixext     |  X   |      |         |      |    X   |     | http://people.salixos.org/ralvex/packages/x86_64/13.37/
-salixext     |      |  X   |         |  X   |        |     | http://people.salixos.org/ralvex/packages/i486/14.0/
-salixext     |      |  X   |         |      |    X   |     | http://people.salixos.org/ralvex/packages/x86_64/14.0/
-rlworkman    |  X   |      |         |  X   |    X   |     | http://rlworkman.net/pkgs/13.37/
-rlworkman    |      |  X   |         |  X   |    X   |     | http://rlworkman.net/pkgs/14.0/
-slackel      |      |      |    X    |  X   |        |     | http://www.slackel.gr/repo/i486/current/
-slackel      |      |      |    X    |      |    X   |     | http://www.slackel.gr/repo/x86_64/current/
 
 
 You can found a larger list at http://slakfinder.org
