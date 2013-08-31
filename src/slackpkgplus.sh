@@ -8,8 +8,8 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
-  if [ ! -e /var/lib/slackpkg ];then
-    mkdir -p /var/lib/slackpkg
+  if [ ! -e "$WORKDIR" ];then
+    mkdir -p "$WORKDIR"
   fi
 
   # Override the slackpkg getfile().
@@ -373,7 +373,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
   done
 
-  if [ /etc/slackpkgplus.conf -nt /var/lib/slackpkg/pkglist -a "$CMD" != "update" ];then
+  if [ /etc/slackpkgplus.conf -nt $WORKDIR/pkglist -a "$CMD" != "update" ];then
     echo
     echo "NOTICE: remember to re-run 'slackpkg update' after modifing slackpkgplus.conf"
     echo
