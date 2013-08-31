@@ -56,10 +56,10 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 # mles:       http://www.microlinux.fr/slackware/MLES-14.0-{32,64}bit/
 # mlws:       http://www.microlinux.fr/slackware/MLWS-14.0-{32,64}bit/
 # msb:        http://slackware.org.uk/msb/
+# slackers:   http://www.slackers.it/repository/
 #
 # Does NOT supports GPG
 # salixos:    http://download.salixos.org/{i486,x86_64}/{13.37,14.0}/
 # salixext:   http://people.salixos.org/ralvex/packages/{i486,x86_64}/{13.37,14.0}/
 # rlworkman:  http://rlworkman.net/pkgs/{13.37,14.0}/
 # slackel:    http://www.slackel.gr/repo/{i486,x86_64}/current/
-# slackers:   http://www.slackers.it/repository/

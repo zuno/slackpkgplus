@@ -71,6 +71,10 @@ salixos:          http://download.salixos.org/
 salixext:         http://people.salixos.org/ralvex/packages/
 rlworkman:        http://rlworkman.net/pkgs/
 slackel:          http://www.slackel.gr/repo/
+mled:             http://www.microlinux.fr/slackware/MLED-14.0-{32,64}bit/
+mles:             http://www.microlinux.fr/slackware/MLES-14.0-{32,64}bit/
+mles:             http://www.microlinux.fr/slackware/MLWS-14.0-{32,64}bit/
+msb:              http://slackware.org.uk/msb/
 zerouno:          http://www.z01.eu/repo-slack/
 slackers:         http://www.slackers.it/repository/
 
@@ -80,7 +84,8 @@ See repositories.txt for details.
 
 If you configure repositories that does not supports gpg, you may need to set "CHECKGPG=off" in slackpkg.conf
 
-
+The AlienBob article about slackpkg+:
+http://alien.slackbook.org/blog/introducing-slackpkg-an-extension-to-slackpkg-for-3rd-party-repositories/
 
 
 For questions, suggests or contributes, you can email me to zerouno@slacky.it or use the linuxquestions forum:
