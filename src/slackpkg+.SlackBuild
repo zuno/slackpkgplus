@@ -21,6 +21,7 @@ mkdir -p usr/doc/slackpkg+-$VERSION/
 mkdir -p install/
 
 cp $CWD/slackpkgplus.sh usr/libexec/slackpkg/functions.d/
+cp $CWD/zdialogplus.sh usr/libexec/slackpkg/functions.d/
 cp $CWD/README usr/doc/slackpkg+-$VERSION/
 cp $CWD/ChangeLog.txt usr/doc/slackpkg+-$VERSION/
 cp $CWD/repositories.txt usr/doc/slackpkg+-$VERSION/
@@ -30,6 +31,7 @@ cp $CWD/slack-desc install/
 cat $CWD/doinst.sh|sed "s/SLPVERSION/$VERSION/" > install/doinst.sh
 
 chmod +x usr/libexec/slackpkg/functions.d/slackpkgplus.sh
+chmod +x usr/libexec/slackpkg/functions.d/zdialogplus.sh
 
 
 makepkg -l y -c y $OUTPUT/slackpkg+-$VERSION-noarch-$BUILD.txz
