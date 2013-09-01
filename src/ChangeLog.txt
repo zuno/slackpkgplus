@@ -1,4 +1,4 @@
-Version 20130901 - 01/Sep/2013
+Version 0.9.6 - 01/Sep/2013
   - fixed a slackpkg bug that does not recreate $WORKDIR if it does not exists.
   - added repository name in dialog
 

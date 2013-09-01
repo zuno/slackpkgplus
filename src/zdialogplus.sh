@@ -33,7 +33,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 			HINT="--item-help"
 		else
 			for i in $1; do
-				echo "$i \"\" $ONOFF" >>$TMPDIR/dialog.tmp
+                                REPOPOS=$(grep " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
+				echo "$i \"$REPOPOS\" $ONOFF" >>$TMPDIR/dialog.tmp
 			done
 			HINT=""
 		fi
