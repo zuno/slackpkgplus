@@ -490,6 +490,22 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
 	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
 	package=$(cutpkg $package)
+      elif echo "$pref" | egrep -q -e "file:.*/$" -e "file:\.$"; then
+        localpath=$(echo "$pref" | cut -f2- -d":")
+	if [ ! -d "$localpath" ];then
+	  continue
+	fi
+        repository=file$(cat ${TMPDIR}/pkglist-pre|wc -l)
+        if [ ${localpath:0:1} != "/" ];then
+          localpath=$(pwd)/$localpath
+        fi
+	( cd $localpath
+	  ls -ld *.t[blxg]z|tac|grep ^-|awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+	)
+        MIRRORPLUS[$repository]="file:/$localpath"
+	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
+	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
+        package=SLACKPKGPLUS_$repository
 
       elif echo "$pref" | grep -q "[a-zA-Z0-9]\+[:][a-zA-Z0-9]\+" ; then
 

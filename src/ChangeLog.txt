@@ -1,5 +1,7 @@
-Version 20130902.1 - 02/Sep/2013
-  - Added install from file: slackpkg {install|upgrade} file:test-1.0-noarch-1
+Version 20130902.2 - 02/Sep/2013
+  - Added install from file or directoy:
+    slackpkg {install|upgrade} file:test-1.0-noarch-1
+    slackpkg {install|upgrade} file:./
     You can optionally specify relative path or absolute path for file.
 
 Version 0.9.6.1 - 02/Sep/2013
