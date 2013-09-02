@@ -3,7 +3,7 @@
 set -e 
 
 VERSION=$(head -1 ChangeLog.txt|awk '{print $2}')
-BUILD=1mt
+BUILD=${BUILD:-1mt}
 
 CWD=`pwd`
 TMP=${TMP:-/tmp}

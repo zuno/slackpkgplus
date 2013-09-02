@@ -502,7 +502,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	( cd $localpath
 	  ls -ld *.t[blxg]z|tac|grep ^-|awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
 	)
-        MIRRORPLUS[$repository]="file:/$localpath"
+        MIRRORPLUS[$repository]="file:/$localpath/"
 	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
 	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
         package=SLACKPKGPLUS_$repository
