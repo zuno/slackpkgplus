@@ -26,14 +26,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 			for i in $1; do
 				BASENAME=$(cutpkg $i)
 				PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-\(noarch\|fw\|${ARCH}\)" $TMPDIR/tmplist)
-                                REPOPOS=$(grep " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
+                                REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
 
 				echo "$i \"$REPOPOS\" $ONOFF \"currently installed: $PKGFOUND\"" >>$TMPDIR/dialog.tmp
 			done
 			HINT="--item-help"
 		else
 			for i in $1; do
-                                REPOPOS=$(grep " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
+                                REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
 				echo "$i \"$REPOPOS\" $ONOFF" >>$TMPDIR/dialog.tmp
 			done
 			HINT=""
