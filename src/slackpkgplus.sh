@@ -19,6 +19,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local URLFILE
     URLFILE=$1
 
+    if echo $1|egrep -q '/SLACKPKGPLUS_file[0-9].*\.asc$';then
+      return 0
+    fi
+
     if [ ${URLFILE:0:1} = "/" ];then
       URLFILE="file:/$URLFILE"
     fi
@@ -120,6 +124,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # override slackpkg checkgpg()
   # new checkgpg() is used to check gpg and to merge the CHECKSUMS.md5 files
   function checkgpg() {
+    if echo $1|grep -q /SLACKPKGPLUS_file[0-9];then
+      echo 1
+      return
+    fi
     gpg --verify ${1}.asc ${1} 2>/dev/null && echo "1" || echo "0"
     if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
       X86_64=$(ls /var/log/packages/aaa_base*x86_64*|head -1 2>/dev/null)
@@ -140,6 +148,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local MD5DOWNLOAD
     local PREPO
 
+    if echo $1|grep -q /SLACKPKGPLUS_file[0-9];then
+      echo 1
+      return
+    fi
     PREPO=$(echo $1 | rev | cut -f3 -d/ | rev)
 
     MD5ORIGINAL=$(grep -v "/source/" ${CHECKSUMSFILE} | grep -w $PREPO | grep -m1 "/$(basename $1)$" | cut -f1 -d \ )
@@ -437,6 +449,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     else
       grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus
     fi
+    cat ${TMPDIR}/pkglist-pre
+
   }
 
 
@@ -460,9 +474,24 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     NEWINPUTLIST=""
     PRIORITYLIST=""
+    touch ${TMPDIR}/pkglist-pre
 
     for pref in $INPUTLIST ; do
-      if echo "$pref" | grep -q "[a-zA-Z0-9]\+[:][a-zA-Z0-9]\+" ; then
+      if echo "$pref" | egrep -q "file:.*\.t.z$" ; then
+        package=$(echo "$pref" | cut -f2- -d":")
+        localpath=$(dirname $package)
+        package=$(basename $package)
+        if [ ${localpath:0:1} != "/" ];then
+          localpath=$(pwd)/$localpath
+        fi
+        repository=file$(cat ${TMPDIR}/pkglist-pre|wc -l)
+        echo "./SLACKPKGPLUS_$repository/$package"|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+        MIRRORPLUS[$repository]="file:/$localpath/"
+	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
+	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
+	package=$(cutpkg $package)
+
+      elif echo "$pref" | grep -q "[a-zA-Z0-9]\+[:][a-zA-Z0-9]\+" ; then
 
         if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] ; then
           repository=$(echo "$pref" | cut -f1 -d":")
