@@ -445,11 +445,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     #    pattern aaa_elflibs.
     if $MLREPO_SELELECTED && grep -q "^aaa_elflibs$" ${TMPDIR}/blacklist && ! grep -q "^aaa_elflibs-compat32$" ${TMPDIR}/blacklist ; then
       sed -i --expression "s/^aaa_elflibs/#aaa_elflibs/" ${TMPDIR}/blacklist
-      grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus | grep -v "[ ]aaa_elflibs[ ]"
+      grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus | grep -v "[ ]aaa_elflibs[ ]" >${TMPDIR}/blacklist.tmp
     else
-      grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus
+      grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus >${TMPDIR}/blacklist.tmp
     fi
-    cat ${TMPDIR}/pkglist-pre
+    cat ${TMPDIR}/blacklist.tmp
+    if [ "$(head -1 ${TMPDIR}/blacklist.tmp|awk '{print $1}')" != "local" ];then
+      cat ${TMPDIR}/pkglist-pre
+    fi
 
   }
 
@@ -469,12 +472,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   #
   PRIORITYIDX=1
 
+  touch ${TMPDIR}/pkglist-pre
 
   if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] || [ "$CMD" == "remove" ] ; then
 
     NEWINPUTLIST=""
     PRIORITYLIST=""
-    touch ${TMPDIR}/pkglist-pre
 
     for pref in $INPUTLIST ; do
       if echo "$pref" | egrep -q "file:.*\.t.z$" ; then
