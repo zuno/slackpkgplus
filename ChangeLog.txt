@@ -1,8 +1,6 @@
-Version 20130903.1 - 03/Sep/2013
-  - Added install from file or directoy:
-    slackpkg {install|upgrade} file:test-1.0-noarch-1.txz
-    slackpkg {install|upgrade} file:./
-    You can optionally specify relative path or absolute path for file.
+Version 20130904.1 - 04/Sep/2013
+  - Added install/upgrade from disk (file:package.txz or file:path/)
+    please, read the README file
 
 Version 0.9.6.1 - 02/Sep/2013
   - fixed a bug in new dialog function (thanks to phenixia2003)

@@ -6,13 +6,26 @@ Slackpkg+ is a plugin for slackpkg
    It add support for third-party repositories.
    You can add multiple repository to your list
 
-Thanks to alienbob and phenixia2003 for contributing.
+Thanks to alienbob and phenixia2003 for contributing and all other submitted suggestions and/or patches.
 
+********************* DISCLAIMER **********************
+This is NOT an official tool. Use at your own risk.
+The thirdy party repositories are NOT official.
+The authors of that repositories are not responsible
+for any damage caused to your computer.
+*******************************************************
 
+-----
 
 edit slackpkgplus.conf
 uncomment one or more mirrors and add it in REPOPLUS list
 optionally set PKGS_PRIORITY to give priority order for packages presents in multiple repositories
+
+For supported repository see repositories.txt.
+but you can add other yourself.
+
+If you configure repositories that does not supports gpg, you may need to set "CHECKGPG=off" in slackpkg.conf
+
 
 then launch 
 slackpkg update gpg
@@ -22,67 +35,130 @@ slackpkg update
 To keep slackpkg+ updated, uncomment the 'slackpkgplus' repository.
 then 'slackpkg upgrade-all' will upgrade it.
 
+-----
 
 
 Usage:
 
 see 'man slackpkg' :D
 
+use 'slackpkg upgrade-all' to keep your system up-to-dated.
+This command search for upgraded packages spanning all configured repositories.
+
+use 'slackpkg install-new' (if you use current) to check for new packages.
+This command search new packages ONLY in official slackware repository.
+
+the command
+slackpkg {install,upgrade,remove,reinstall}
+accept:
+1) package-name (span all repositories)
+2) part of package-name (span all repositories)
+3) path of package in repository, for example slackpkg install xap - span all repositories
+4a) repository-name, for example slackpkg upgrade alienbob - upgrade packages from specified repository
+4b) repository-name, for example slackpkg install ktown - install all packages in ktown repository
+5) repository-name:package-name, for example slackpkg install slacky:openjdk - install slacky openjdk even if that repository is not the first in order
+6) file:local-file-name (txz/tgz), for example slackpkg install file:mypackage-1.0-noarch-1my.txz - install mypackage even if not defined in slackpkgplus.con; you can optionally specify relative or absolute path
+7) file:directory/, for example slackpkg {install|upgrade} file:/root/myrepo/ (do not forget the final '/') - install or upgrade all packages in path (note: 'slackpkg install .' is an alias of 'slackpkg install file:./', but 'slackpkg install ./' is NOT the same alias; search FILE in man slackpkg)
+
+-----
+
+priority configuration:
 
 When a package is present in more than a repository the package will found in that order:
 
 1) as listed in PKGS_PRIORITY
 2) as listed in Official Slackware Repository (as configured in slackpkg.conf)
 3) as listed in REPOPLUS
-
+4) all other defined in MIRRORPLUS
 
 PKGS_PRIORITY Syntax:
 
 <repository name>:<package name>
 
-example
+example:
 alienbob:openjdk
 
 <package name> accepts regular expression, so
-multilib:.* mean 'all packages in repository multilib'
+restricted:.* mean 'all packages in repository restricted'
 
+-----
+
+MULTILIB:
 
 If you want a multilib system, add the repository 'multilib', add "PKGS_PRIORITY=( multilib:.* )" then launch:
 
 the first time:
 # slackpkg update gpg
 # slackpkg update
-# slackpkg install-new
+# slackpkg install multilib
 # slackpkg upgrade-all
 
 next:
 # slackpkg update
 # slackpkg upgrade-all
+re-run 'slackpkg install multilib' if you found that 'slackpkg install-new' found some new package.
+
+to remove the multilib, you must remove 'multilib:.*' from PKGS_PRIORITY and from REPOPLUS (but not delete related MIRRORPLUS line), then launch:
+# slackpkg update
+# slackpkg remove multilib
+Note: that does NOT remove the core multilib packages becouse they affect the 64bit system, so you must remove these by launch:
+# slackpkg reinstall gcc glibc
+then delete or comment the related MIRRORPLUS line and launch:
+# slackpkg update
+
+-----
+
+NEWEST KDE:
+
+If you want to install the latest kde packaged from alienbob (at time 4.11.1), add "PKGS_PRIORITY=( ktown:.* )" then launch:
+
+the first time:
+# slackpkg update gpg
+# slackpkg update
+# slackpkg install ktown
+# slackpkg upgrade-all
+does not forget to read some special instruction from http://taper.alienbase.nl/mirrors/alien-kde/current/latest/ becouse you may need to remove some kde-slackware package. At time:
+# slackpkg remove kdeadmin kdenetwork kdesdk kdetoys
+
+next:
+# slackpkg update
+# slackpkg upgrade-all
+to upgrade to 4.11.2 or more.
+
+to restore slackware kde:
+remove 'ktown:.*' from PKGS_PRIORITY and from REPOPLUS (but not delete related MIRRORPLUS line)
+# slackpkg update
+# slackpkg upgrade-all
+# slackpkg install kde
+# slackpkg remove ktown
+then delete or comment the related MIRRORPLUS line and then launch:
+# slackpkg update
+
+-----
+
+PERSONAL PACKAGES:
+If you build yourself some package, you can install these without installpkg, by using slackpkg. That operation help you to track the installation/upgrade and reduce the error margin. You do NOT need to create a your personal repository, generating a gpg-key and all needed metadata any time you build a package; also yo do NOT need to modify you config file and launch slackpkg update.
+
+You can:
+1) install/upgrade/reinstall a single package by passing the full file name (optionally add absolute or relative path):
+# slackpkg install file:package-1.0-noarch-1my.txz
+or
+# slackpkg upgrade file:../repo/package-2.0-noarch-1my.txz
+2) install/upgrade/reinstall all file packages in a single directory (does not allow subtree) by passing the directory name following the "/" simbol (optionally absolute or relative path):
+# slackpkg install file:/myrepo/
+# slackpkg upgrade file:./test/packages/
+# slackpkg reinstall .
+'.' is an alias of 'file:./', but only that alias exists. slackpkg install ./ or /myrepo/ or ./package.txz generate an error becouse in standard slackpkg you can specify a FILE as input, so in 'slackpkg install ./list.txt' list.txt must to be a plain file containing a list of packages to install (see man slackpkg)
+
+Tip: if you want to use file:/myrepo/ to track your installations and you have lost the original txz/tgz file, you can simply create an empty file; this fools slackpkg+ that only search for file name and not for contents (unless you do not run slackpkg reinstall on these packages ;))
+
+by doing
+# touch mypkg1-1.0-noarch-1my.tgz
+# touch mysecondpkg-1.1-noarch-2my.txz
+where mypkg1 and mysecondpkg are already installed packages, 'slackpkg install .' (or upgrade) does not show you that packages. 'slackpkg reinstall .' DOES show it (so do not continue the installation)
 
 
-Supported repository are (for now):
-
-slackpkgplus:	  http://slakfinder.org/slackpkg+/
-multilib:         http://taper.alienbase.nl/mirrors/people/alien/multilib/
-alienbob:         http://taper.alienbase.nl/mirrors/people/alien/sbrepos/
-alien restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/
-slacky:           http://repository.slacky.eu/
-salixos:          http://download.salixos.org/
-salixext:         http://people.salixos.org/ralvex/packages/
-rlworkman:        http://rlworkman.net/pkgs/
-slackel:          http://www.slackel.gr/repo/
-mled:             http://www.microlinux.fr/slackware/MLED-14.0-{32,64}bit/
-mles:             http://www.microlinux.fr/slackware/MLES-14.0-{32,64}bit/
-mles:             http://www.microlinux.fr/slackware/MLWS-14.0-{32,64}bit/
-msb:              http://slackware.org.uk/msb/
-zerouno:          http://www.z01.eu/repo-slack/
-slackers:         http://www.slackers.it/repository/
-
-but you can add other yourself.
-See repositories.txt for details.
-
-
-If you configure repositories that does not supports gpg, you may need to set "CHECKGPG=off" in slackpkg.conf
+------
 
 The AlienBob article about slackpkg+:
 http://alien.slackbook.org/blog/introducing-slackpkg-an-extension-to-slackpkg-for-3rd-party-repositories/
@@ -92,6 +168,6 @@ For questions, suggests or contributes, you can email me to zerouno@slacky.it or
 http://www.linuxquestions.org/questions/showthread.php?p=4940074
 
 
-You can found slackpkg+
-- the develop version (source): https://github.com/zuno/slackpkgplus.git
-- the released version (source and package): http://www.slakfinder.org/slackpkg+/
+You can found slackpkg+ on sourceforge: https://sourceforge.net/projects/slackpkgplus
+
+

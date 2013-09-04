@@ -480,6 +480,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     PRIORITYLIST=""
 
     for pref in $INPUTLIST ; do
+      if [ "$pref" == "." ];then
+	pref="file:./"
+      fi
       if echo "$pref" | egrep -q "file:.*\.t.z$" ; then
         package=$(echo "$pref" | cut -f2- -d":")
         localpath=$(dirname $package)
@@ -493,7 +496,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
 	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
 	package=$(cutpkg $package)
-      elif echo "$pref" | egrep -q -e "file:.*/$" -e "file:\.$"; then
+      elif echo "$pref" | egrep -q "file:.*/$"; then
         localpath=$(echo "$pref" | cut -f2- -d":")
 	if [ ! -d "$localpath" ];then
 	  continue
