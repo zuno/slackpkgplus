@@ -148,7 +148,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local MD5DOWNLOAD
     local PREPO
 
-    if echo $1|grep -q /SLACKPKGPLUS_file[0-9];then
+    if echo $1|grep -q -e /SLACKPKGPLUS_file[0-9] -e /SLACKPKGPLUS_dir[0-9];then
       echo 1
       return
     fi
@@ -481,7 +481,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     for pref in $INPUTLIST ; do
       if [ "$pref" == "." ];then
-	pref="file:./"
+	pref="dir:./"
       fi
       if echo "$pref" | egrep -q "file:.*\.t.z$" ; then
         package=$(echo "$pref" | cut -f2- -d":")
@@ -490,18 +490,18 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         if [ ${localpath:0:1} != "/" ];then
           localpath=$(pwd)/$localpath
         fi
-        repository=file$(cat ${TMPDIR}/pkglist-pre|wc -l)
+        repository=file$(grep ^SLACKPKGPLUS_file ${TMPDIR}/pkglist-pre|wc -l)
         echo "./SLACKPKGPLUS_$repository/$package"|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
         MIRRORPLUS[$repository]="file:/$localpath/"
 	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
 	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
 	package=$(cutpkg $package)
-      elif echo "$pref" | egrep -q "file:.*/$"; then
-        localpath=$(echo "$pref" | cut -f2- -d":")
+      elif [ "${pref:0:4}" = "dir:" ]; then
+        localpath=$(echo "$pref" | cut -f2- -d":"|sed 's_/$__')
 	if [ ! -d "$localpath" ];then
 	  continue
 	fi
-        repository=file$(cat ${TMPDIR}/pkglist-pre|wc -l)
+        repository=dir$(grep ^SLACKPKGPLUS_dir ${TMPDIR}/pkglist-pre|wc -l)
         if [ ${localpath:0:1} != "/" ];then
           localpath=$(pwd)/$localpath
         fi
