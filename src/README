@@ -144,11 +144,13 @@ You can:
 # slackpkg install file:package-1.0-noarch-1my.txz
 or
 # slackpkg upgrade file:../repo/package-2.0-noarch-1my.txz
-2) install/upgrade/reinstall all file packages in a single directory (does not allow subtree) by passing the directory name following the "/" simbol (optionally absolute or relative path):
+2) install/upgrade/reinstall all file packages in a single directory (does not allow subtree) by passing a directory name (optionally absolute or relative path):
 # slackpkg install dir:/myrep
 # slackpkg upgrade dir:./test/package/
 # slackpkg reinstall .
 '.' is an alias of 'dir:./', but only that alias exists. slackpkg install ./ or /myrepo/ or ./package.txz generate an error becouse in standard slackpkg you can specify a FILE as input, so in 'slackpkg install ./list.txt' list.txt must to be a plain file containing a list of packages to install (see man slackpkg)
+If a directory contains the same package with two different version, slackpkg show the 'alfabetically' highest, so pkg-9.1 will be listed instead of pkg-8, ut pkg-9 will be also listed instead pkg-10. Sorry.. is a slackpkg limit!
+
 
 Tip: if you want to use dir:/myrepo to track your installations and you have lost the original txz/tgz file, you can simply create an empty file; this fools slackpkg+ that only search for file name and not for contents (unless you do not run slackpkg reinstall on these packages ;))
 
@@ -166,10 +168,17 @@ Some user shares packages on his personal site but without create metadata files
 To install one of these packages you should download it and install manually.
 Now you can specify a direct url for the package with slackpkg+ that automatically will download and install/upgrade the package.
 
+You can:
+1) install/upgrade/reinstall a single package by passing the full url:
 # slackpkg install http://site/path/package-1.0-noarch-1my.txz
-
 You may use that function to install a snapshot of slackpkg+ (that is not available with slackpkg upgrade slackpkg becouse is a beta)
-# slackpg upgrade http://www.slakfinder.org/slackpkg+/pkg/slackpkg+-20130905.2-noarch-1mt.txz
+# slackpkg upgrade http://www.slakfinder.org/slackpkg+/pkg/slackpkg+-20130905.2-noarch-1mt.txz
+2) install/upgrade/reinstall all file packages in a single remote directory (does not allow subtree):
+At the same of 'slackpkg install dir:..' syntax, you can specify a url-path:
+# slackpkg install http://site/path/
+even if the site owner does not create metadata.
+That function require lftp and may fail if the server does not supports Directory Listing or if there is a index.html in path.
+
 
 NOTE: slackpkg+ will skip the gpg and md5 check!!
 

@@ -495,7 +495,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         if [ ${localpath:0:1} != "/" ];then
           localpath=$(pwd)/$localpath
         fi
-        repository=file$(grep ^SLACKPKGPLUS_file ${TMPDIR}/pkglist-pre|wc -l)
+        repository=file$(grep ^SLACKPKGPLUS_file ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
         echo "./SLACKPKGPLUS_$repository/$package"|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
         MIRRORPLUS[$repository]="file:/$localpath/"
 	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
@@ -508,7 +508,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	if [ ! -d "$localpath" ];then
 	  continue
 	fi
-        repository=dir$(grep ^SLACKPKGPLUS_dir ${TMPDIR}/pkglist-pre|wc -l)
+        repository=dir$(grep ^SLACKPKGPLUS_dir ${TMPDIR}/pkglist-pre||awk '{print $1}'|uniqwc -l)
         if [ ${localpath:0:1} != "/" ];then
           localpath=$(pwd)/$localpath
         fi
@@ -524,7 +524,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       # without manual download. You can use http,https,ftp repositories
       elif echo "$pref" | egrep -q "^(https?|ftp)://.*/.*-[^-]+-[^-]+-[^\.]+\.t.z$" ;then
 	repository=$(echo "$pref" | cut -f1 -d":")
-	repository=$repository$(grep ^SLACKPKGPLUS_$repository[0-9] ${TMPDIR}/pkglist-pre|wc -l)
+	repository=$repository$(grep ^SLACKPKGPLUS_$repository[0-9] ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
 	MIRRORPLUS[$repository]=$(dirname $pref)"/"
 	package=$(basename $pref)
 	echo "./SLACKPKGPLUS_$repository/$package"|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
@@ -532,6 +532,16 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
 	package=$(cutpkg $package)
 
+      # You can specify 'slackpkg install http://mysite.org/myrepo' to list remote directory
+      elif echo "$pref" | egrep -q "^(https?|ftp)://.*/.*" ;then
+	repository=$(echo "$pref" | cut -f1 -d":")
+	repository=$repository$(grep ^SLACKPKGPLUS_$repository[0-9] ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
+	lftp $pref -e "ls;quit" 2>/dev/null|awk '{print $NF}'|egrep '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|tac| \
+	  awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+	MIRRORPLUS[$repository]=$(echo "$pref" |sed 's_/$__')"/"
+	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
+	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
+	package=SLACKPKGPLUS_$repository
 
       # You can specify 'slackpkg install reponame:packagename'
       elif echo "$pref" | grep -q "[a-zA-Z0-9]\+[:][a-zA-Z0-9]\+" ; then

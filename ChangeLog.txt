@@ -1,7 +1,8 @@
-Version 20130905.3 - 05/Sep/2013
+Version 0.9.7 - 05/Sep/2013
   - Added install/upgrade/reinstall from disk with file:package.txz or dir:path,
-    and remote with {http,ftp,htts}://site/path/package.txz, unrepositorized
+    and remote with {http,ftp,htts}://site/path/[package.txz], unrepositorized
     packages. Please, read the README file.
+  - Disallow to choice the download manager; slackpkg+ require wget AND lftp
 
 Version 0.9.6.1 - 02/Sep/2013
   - fixed a bug in new dialog function (thanks to phenixia2003)
