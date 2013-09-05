@@ -157,6 +157,21 @@ by doing
 # touch mysecondpkg-1.1-noarch-2my.txz
 where mypkg1 and mysecondpkg are already installed packages, 'slackpkg install .' (or upgrade) does not show you that packages. 'slackpkg reinstall .' DOES show it (so do not continue the installation)
 
+NOTE: slackpkg+ will skip the gpg and md5 check!!
+
+-----
+
+REMOTE PACKAGES WITHOUT METADATA:
+Some user shares packages on his personal site but without create metadata files (specially if he share few packages).
+To install one of these packages you should download it and install manually.
+Now you can specify a direct url for the package with slackpkg+ that automatically will download and install/upgrade the package.
+
+# slackpkg install http://site/path/package-1.0-noarch-1my.txz
+
+You may use that function to install a snapshot of slackpkg+ (that is not available with slackpkg upgrade slackpkg becouse is a beta)
+# slackpg upgrade http://www.slakfinder.org/slackpkg+/pkg/slackpkg+-20130905.2-noarch-1mt.txz
+
+NOTE: slackpkg+ will skip the gpg and md5 check!!
 
 ------
 

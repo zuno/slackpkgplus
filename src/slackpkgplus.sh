@@ -19,7 +19,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local URLFILE
     URLFILE=$1
 
-    if echo $1|egrep -q '/SLACKPKGPLUS_file[0-9].*\.asc$';then
+    if echo $1|egrep -q '/SLACKPKGPLUS_(file|dir|http|https|ftp)[0-9].*\.asc$';then
       return 0
     fi
 
@@ -74,7 +74,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             echo "                   !!! W A R N I N G !!!"
             echo "    Repository '$PREPO' does NOT support signature checking"
             echo "    You SHOULD disable GPG check by setting 'CHECKGPG=off'"
-            echo "    in /etc/slackpkg/slackpkg.conf"
+            echo "    in /etc/slackpkg/slackpkg.conf or use slackpkg with"
+            echo "    '-checkgpg=off' : 'slackpkg -checkgpg=off install packge'"
             echo
             sleep 5
           fi
@@ -112,7 +113,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           echo "                   !!! W A R N I N G !!!"
           echo "    Repository '$PREPO' does NOT contain the GPG-KEY"
           echo "    You SHOULD disable GPG check by setting 'CHECKGPG=off'"
-          echo "    in /etc/slackpkg/slackpkg.conf"
+          echo "    in /etc/slackpkg/slackpkg.conf or use slackpkg with"
+          echo "    '-checkgpg=off' : 'slackpkg -checkgpg=off install packge'"
           echo
           sleep 5
         fi
@@ -124,7 +126,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # override slackpkg checkgpg()
   # new checkgpg() is used to check gpg and to merge the CHECKSUMS.md5 files
   function checkgpg() {
-    if echo $1|grep -q /SLACKPKGPLUS_file[0-9];then
+    if echo $1|egrep -q "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]";then
       echo 1
       return
     fi
@@ -148,13 +150,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local MD5DOWNLOAD
     local PREPO
 
-    if echo $1|grep -q -e /SLACKPKGPLUS_file[0-9] -e /SLACKPKGPLUS_dir[0-9];then
+    if echo $1|egrep -q "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]";then
       echo 1
       return
     fi
     PREPO=$(echo $1 | rev | cut -f3 -d/ | rev)
 
-    MD5ORIGINAL=$(grep -v "/source/" ${CHECKSUMSFILE} | grep -w $PREPO | grep -m1 "/$(basename $1)$" | cut -f1 -d \ )
+    MD5ORIGINAL=$(egrep -v " \.(/extra)?/source/" ${CHECKSUMSFILE} | grep -w $PREPO | grep -m1 "/$(basename $1)$" | cut -f1 -d \ )
     MD5DOWNLOAD=$(md5sum ${1} | cut -f1 -d \ )
     if [ "$MD5ORIGINAL" = "$MD5DOWNLOAD" ]; then
       echo 1
@@ -457,15 +459,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   }
 
 
-  if [ -z "$DOWNLOADER" ];then
-    DOWNLOADER="wget --passive-ftp -O"
-  fi
+  DOWNLOADER="wget --no-check-certificate --passive-ftp -O"
   if [ "$VERBOSE" = "0" ];then
-    DOWNLOADER="wget -nv --passive-ftp -O"
+    DOWNLOADER="wget --no-check-certificate -nv --passive-ftp -O"
   elif [ "$VERBOSE" = "2" ];then
-    DOWNLOADER="wget --passive-ftp -O"
+    DOWNLOADER="wget --no-check-certificate --passive-ftp -O"
   elif [ "$CMD" = "update" ];then
-    DOWNLOADER="wget -nv --passive-ftp -O"
+    DOWNLOADER="wget --no-check-certificate -nv --passive-ftp -O"
   fi
 
   # Global variable required by givepriority()
@@ -480,9 +480,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     PRIORITYLIST=""
 
     for pref in $INPUTLIST ; do
+
+      # You can specify 'slackpkg install .' that is an alias of 'slackpkg install dir:./'
       if [ "$pref" == "." ];then
 	pref="dir:./"
       fi
+
+      # You can specify 'slackpkg install file:package-1.0-noarch-1my.txz' on local disk;
+      # optionally you can add absolute or relative path.
       if echo "$pref" | egrep -q "file:.*\.t.z$" ; then
         package=$(echo "$pref" | cut -f2- -d":")
         localpath=$(dirname $package)
@@ -496,6 +501,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
 	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
 	package=$(cutpkg $package)
+
+      # You can specify 'slackpkg install dir:directory' on local disk, where 'directory' have a relative or absolute path
       elif [ "${pref:0:4}" = "dir:" ]; then
         localpath=$(echo "$pref" | cut -f2- -d":"|sed 's_/$__')
 	if [ ! -d "$localpath" ];then
@@ -513,6 +520,20 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
         package=SLACKPKGPLUS_$repository
 
+      # You can specify 'slackpkg install http://mysite.org/myrepo/package-1.0-noarch-1my.txz' to install a package from remote path
+      # without manual download. You can use http,https,ftp repositories
+      elif echo "$pref" | egrep -q "^(https?|ftp)://.*/.*-[^-]+-[^-]+-[^\.]+\.t.z$" ;then
+	repository=$(echo "$pref" | cut -f1 -d":")
+	repository=$repository$(grep ^SLACKPKGPLUS_$repository[0-9] ${TMPDIR}/pkglist-pre|wc -l)
+	MIRRORPLUS[$repository]=$(dirname $pref)"/"
+	package=$(basename $pref)
+	echo "./SLACKPKGPLUS_$repository/$package"|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
+	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
+	package=$(cutpkg $package)
+
+
+      # You can specify 'slackpkg install reponame:packagename'
       elif echo "$pref" | grep -q "[a-zA-Z0-9]\+[:][a-zA-Z0-9]\+" ; then
 
         if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] ; then
@@ -521,6 +542,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
           PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
         fi
+
+      # You can specify 'slackpkg install reponame' where reponame is a thirdy part repository
       elif grep -q "^SLACKPKGPLUS_${pref}[ ]" ${WORKDIR}/pkglist ; then
 
         echo "$pref" | grep -qi "multilib" && MLREPO_SELELECTED=true
@@ -532,6 +555,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
         package="SLACKPKGPLUS_${pref}"
         PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${pref}:.* )
+
+      # You can specify 'slackpkg install reponame' where reponame is an official repository (slackware,slackware64,extra...)
       elif grep -q "^${pref}[ ]" ${WORKDIR}/pkglist ; then
 
         # -- ${pref} relates to one of the standard directories (ie
@@ -547,8 +572,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         #    names include the word "slackware64".
         #
         package="^${pref}"
+
+      # You can specify 'slackpkg install argument' where argument is a package name, part of package name, directory name in repository
       else
         package=$pref
+      fi
+
+      if [ "$CMD" == "remove" ];then
+	package=$(echo $package|sed 's/\.t[blxg]z$//')
       fi
 
       # -- only insert "package" if not in NEWINPUTLIST
