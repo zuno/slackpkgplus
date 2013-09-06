@@ -508,7 +508,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	if [ ! -d "$localpath" ];then
 	  continue
 	fi
-        repository=dir$(grep ^SLACKPKGPLUS_dir ${TMPDIR}/pkglist-pre||awk '{print $1}'|uniqwc -l)
+        repository=dir$(grep ^SLACKPKGPLUS_dir ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
         if [ ${localpath:0:1} != "/" ];then
           localpath=$(pwd)/$localpath
         fi

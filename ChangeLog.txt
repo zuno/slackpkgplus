@@ -1,3 +1,6 @@
+Version 0.9.7.1 - 06/Sep/2013
+  - fixed a bug on 'slackpkg upgrade file:..'
+
 Version 0.9.7 - 05/Sep/2013
   - Added install/upgrade/reinstall from disk with file:package.txz or dir:path,
     and remote with {http,ftp,htts}://site/path/[package.txz], unrepositorized
