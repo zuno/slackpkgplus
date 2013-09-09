@@ -3,28 +3,28 @@ slackpkg+ plugin for third-party repositories
 Slackpkg is a package manager for Slackware. 
  
 Slackpkg+ is a plugin for slackpkg
-   It add support for third-party repositories.
-   You can add multiple repository to your list
+   It adds support for third-party repositories.
+   You can add multiple repositories to your list
 
 Thanks to alienbob and phenixia2003 for contributing and all other submitted suggestions and/or patches.
 
 ********************* DISCLAIMER **********************
-This is NOT an official tool. Use at your own risk.
-The thirdy party repositories are NOT official.
-The authors of that repositories are not responsible
-for any damage caused to your computer.
+This is NOT an official tool. Use it at your own risk.
+The third party repositories are NOT official.
+The authors of those repositories are not responsible
+for any damage that may be caused to your computer.
 *******************************************************
 
 -----
-
+*Configuration: 
 edit slackpkgplus.conf
-uncomment one or more mirrors and add it in REPOPLUS list
-optionally set PKGS_PRIORITY to give priority order for packages presents in multiple repositories
+uncomment one or more mirrors and add it in the REPOPLUS list.
+Optionally set PKGS_PRIORITY to give priority order for packages present in multiple repositories
 
 For supported repository see repositories.txt.
 but you can add other yourself.
 
-If you configure repositories that does not supports gpg, you may need to set "CHECKGPG=off" in slackpkg.conf
+If you configure repositories that do not support gpg, you may need to set "CHECKGPG=off" in slackpkg.conf
 
 
 then launch 
@@ -42,11 +42,11 @@ Usage:
 
 see 'man slackpkg' :D
 
-use 'slackpkg upgrade-all' to keep your system up-to-dated.
-This command search for upgraded packages spanning all configured repositories.
+use 'slackpkg upgrade-all' to keep your system up-to-date.
+This command searches for upgraded packages spanning all configured repositories.
 
 use 'slackpkg install-new' (if you use current) to check for new packages.
-This command search new packages ONLY in official slackware repository.
+This command searches new packages ONLY in official slackware repository.
 
 the command
 slackpkg {install,upgrade,remove,reinstall}
@@ -56,7 +56,7 @@ accept:
 3) path of package in repository, for example slackpkg install xap - span all repositories
 4a) repository-name, for example slackpkg upgrade alienbob - upgrade packages from specified repository
 4b) repository-name, for example slackpkg install ktown - install all packages in ktown repository
-5) repository-name:package-name, for example slackpkg install slacky:openjdk - install slacky openjdk even if that repository is not the first in order
+5) repository-name:package-name, for example slackpkg install slacky:openjdk - install slacky openjdk even if that repository is not the first one in order
 6) file:local-file-name (txz/tgz), for example slackpkg install file:mypackage-1.0-noarch-1my.txz - install mypackage even if not defined in slackpkgplus.con; you can optionally specify relative or absolute path
 7) dir:directory, for example slackpkg {install|upgrade} dir:/root/myrepo (do not strictly require the final '/') - install or upgrade all packages in path (note: 'slackpkg install .' is an alias of 'slackpkg install dir:./', but 'slackpkg install ./' is NOT the same alias; search FILE in man slackpkg)
 
@@ -64,7 +64,7 @@ accept:
 
 priority configuration:
 
-When a package is present in more than a repository the package will found in that order:
+When a package is present in more than one repository the package will be searched found in the following order:
 
 1) as listed in PKGS_PRIORITY
 2) as listed in Official Slackware Repository (as configured in slackpkg.conf)
@@ -85,7 +85,7 @@ restricted:.* mean 'all packages in repository restricted'
 
 MULTILIB:
 
-If you want a multilib system, add the repository 'multilib', add "PKGS_PRIORITY=( multilib:.* )" then launch:
+If you want to use a multilib system, add the repository 'multilib', add "PKGS_PRIORITY=( multilib:.* )" then launch:
 
 the first time:
 # slackpkg update gpg
@@ -96,7 +96,7 @@ the first time:
 next:
 # slackpkg update
 # slackpkg upgrade-all
-re-run 'slackpkg install multilib' if you found that 'slackpkg install-new' found some new package.
+re-run 'slackpkg install multilib' if you found that 'slackpkg install-new' has found some new package.
 
 to remove the multilib, you must remove 'multilib:.*' from PKGS_PRIORITY and from REPOPLUS (but not delete related MIRRORPLUS line), then launch:
 # slackpkg update
@@ -110,14 +110,14 @@ then delete or comment the related MIRRORPLUS line and launch:
 
 NEWEST KDE:
 
-If you want to install the latest kde packaged from alienbob (at time 4.11.1), add "PKGS_PRIORITY=( ktown:.* )" then launch:
+If you want to install the latest kde package from alienbob (presently 4.11.1), add "PKGS_PRIORITY=( ktown:.* )" then launch:
 
 the first time:
 # slackpkg update gpg
 # slackpkg update
 # slackpkg install ktown
 # slackpkg upgrade-all
-does not forget to read some special instruction from http://taper.alienbase.nl/mirrors/alien-kde/current/latest/ becouse you may need to remove some kde-slackware package. At time:
+do not forget to read the special instruction from http://taper.alienbase.nl/mirrors/alien-kde/current/latest/ becouse you may need to remove some kde-slackware package. At the time of writing:
 # slackpkg remove kdeadmin kdenetwork kdesdk kdetoys
 
 next:
@@ -137,7 +137,7 @@ then delete or comment the related MIRRORPLUS line and then launch:
 -----
 
 PERSONAL PACKAGES:
-If you build yourself some package, you can install these without installpkg, by using slackpkg. That operation help you to track the installation/upgrade and reduce the error margin. You do NOT need to create a your personal repository, generating a gpg-key and all needed metadata any time you build a package; also yo do NOT need to modify you config file and launch slackpkg update.
+If you build yourself some packages, you can install these without installpkg, by using slackpkg. This operation helps you to track the installation/upgrade and reduce the error margin. You do NOT need to create a your personal repository, generating a gpg-key and all needed metadata any time you build a package; also yo do NOT need to modify your config file and launch slackpkg update.
 
 You can:
 1) install/upgrade/reinstall a single package by passing the full file name (optionally add absolute or relative path):
@@ -148,11 +148,11 @@ or
 # slackpkg install dir:/myrep
 # slackpkg upgrade dir:./test/package/
 # slackpkg reinstall .
-'.' is an alias of 'dir:./', but only that alias exists. slackpkg install ./ or /myrepo/ or ./package.txz generate an error becouse in standard slackpkg you can specify a FILE as input, so in 'slackpkg install ./list.txt' list.txt must to be a plain file containing a list of packages to install (see man slackpkg)
+'.' is an alias of 'dir:./', but only that alias exists. slackpkg install ./ or /myrepo/ or ./package.txz generates an error becouse in standard slackpkg you can specify a FILE as input, so in 'slackpkg install ./list.txt' list.txt must to be a plain file containing a list of packages to install (see man slackpkg)
 If a directory contains the same package with two different version, slackpkg show the 'alfabetically' highest, so pkg-9.1 will be listed instead of pkg-8, ut pkg-9 will be also listed instead pkg-10. Sorry.. is a slackpkg limit!
 
 
-Tip: if you want to use dir:/myrepo to track your installations and you have lost the original txz/tgz file, you can simply create an empty file; this fools slackpkg+ that only search for file name and not for contents (unless you do not run slackpkg reinstall on these packages ;))
+Tip: if you want to use dir:/myrepo to track your installations and you have lost the original txz/tgz file, you can simply create an empty file; this fools slackpkg+ that only searches for file name and not for contents (unless you do not run slackpkg reinstall on these packages ;))
 
 by doing
 # touch mypkg1-1.0-noarch-1my.tgz
@@ -164,20 +164,20 @@ NOTE: slackpkg+ will skip the gpg and md5 check!!
 -----
 
 REMOTE PACKAGES WITHOUT METADATA:
-Some user shares packages on his personal site but without create metadata files (specially if he share few packages).
-To install one of these packages you should download it and install manually.
-Now you can specify a direct url for the package with slackpkg+ that automatically will download and install/upgrade the package.
+Some users share packages on his personal site but without creating metadata files (specially if they share few packages).
+To install one of these packages you should download it and install it manually.
+Now you can specify a direct url for the package with slackpkg+ that will automatically download and install/upgrade the package.
 
 You can:
-1) install/upgrade/reinstall a single package by passing the full url:
+1) install/upgrade/reinstall a single package by specifying the complete url:
 # slackpkg install http://site/path/package-1.0-noarch-1my.txz
-You may use that function to install a snapshot of slackpkg+ (that is not available with slackpkg upgrade slackpkg becouse is a beta)
+You may use that function to install a snapshot of slackpkg+ (that is not available with slackpkg upgrade slackpkg becouse is a beta version)
 # slackpkg upgrade http://www.slakfinder.org/slackpkg+/pkg/slackpkg+-20130905.2-noarch-1mt.txz
 2) install/upgrade/reinstall all file packages in a single remote directory (does not allow subtree):
-At the same of 'slackpkg install dir:..' syntax, you can specify a url-path:
+With the same syntax 'slackpkg install dir:..' you can specify a url-path:
 # slackpkg install http://site/path/
 even if the site owner does not create metadata.
-That function require lftp and may fail if the server does not supports Directory Listing or if there is a index.html in path.
+That function requires lftp and may fail if the server does not support Directory Listing or if there is a index.html in the path.
 
 
 NOTE: slackpkg+ will skip the gpg and md5 check!!
@@ -188,10 +188,9 @@ The AlienBob article about slackpkg+:
 http://alien.slackbook.org/blog/introducing-slackpkg-an-extension-to-slackpkg-for-3rd-party-repositories/
 
 
-For questions, suggests or contributes, you can email me to zerouno@slacky.it or use the linuxquestions forum:
+For questions, suggestions or contributes, you can email me to zerouno@slacky.it or use the linuxquestions forum:
 http://www.linuxquestions.org/questions/showthread.php?p=4940074
 
 
-You can found slackpkg+ on sourceforge: https://sourceforge.net/projects/slackpkgplus
-
+You can find slackpkg+ on sourceforge: https://sourceforge.net/projects/slackpkgplus
 
