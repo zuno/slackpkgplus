@@ -14,6 +14,7 @@ VERBOSE=1
 
 # Examples:
 #PKGS_PRIORITY=( restricted:vlc )
+#PKGS_PRIORITY=( myrepo:.* )
 #
 # If you want a multilib system, uncomment the multilib repository and set:
 #PKGS_PRIORITY=( multilib:.* )
@@ -41,6 +42,11 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 #MIRRORPLUS['multilib']=http://taper.alienbase.nl/mirrors/people/alien/multilib/current/
 #MIRRORPLUS['zerouno']=http://www.z01.eu/repo-slack/slackware64-current/
 
+# Local repository:
+#MIRRORPLUS['alienbob']=file://repositories/alien/sbrepos/14.0/x86/
+#
+# Local packages (you do not need metadata nor 'slackpkg update' command):
+#MIRRORPLUS['myrepo']=dir://repositories/mypackages/
 
 
 # Supported Repositories (see /usr/doc/slackpkg+-* for details):

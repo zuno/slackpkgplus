@@ -1,3 +1,7 @@
+Version 0.9.7.2 - 09/Sep/2013
+  - Added support for unrepositorized local directory in config file
+  - Added USEBL to temporary skip blacklist check (USEBL=0 slackpkg install..)
+
 Version 0.9.7.1 - 06/Sep/2013
   - fixed a bug on 'slackpkg upgrade file:..'
 

@@ -15,6 +15,7 @@ VERBOSE=1
 
 # Examples:
 #PKGS_PRIORITY=( restricted:vlc )
+#PKGS_PRIORITY=( myrepo:.* )
 #
 
 # List repository you want to use (defined below).
@@ -38,6 +39,11 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 # Slackware current - i386
 
 
+# Local repository:
+#MIRRORPLUS['alienbob']=file://repositories/alien/sbrepos/14.0/x86/
+#
+# Local packages (you do not need metadata nor 'slackpkg update' command):
+#MIRRORPLUS['myrepo']=dir://repositories/mypackages/
 
 # Supported Repositories (see /usr/doc/slackpkg+-* for details):
 #

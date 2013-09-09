@@ -37,6 +37,25 @@ then 'slackpkg upgrade-all' will upgrade it.
 
 -----
 
+the MIRRORPLUS array define all mirrors. It accepts a lot of protocols:
+
+1) http/ftp/https:
+   MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware64/
+   the mirror must contains all metadata files (CHECKSUMS.md5 ...)
+   you must run 'slackpkg update' after add/remove a repository
+2) local mirror:
+   MIRRORPLUS['alienlocal']=file://mirrors/alienbob/x86/14.0/
+   the directory must contains all metadata files (CHECKSUMS.md5 ...)
+   you must run 'slackpkg update' after add/remove a repository
+3) local packages directory:
+   MIRRORPLUS['mypackages']=dir://mypackages/
+   all packages must to be in a single directory (subdirectory not allowed)
+   'slackpkg update' ignore these repository. Every time you run slackpkg
+   it read the directory contents.
+
+
+-----
+
 
 Usage:
 

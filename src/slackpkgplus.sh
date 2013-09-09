@@ -3,7 +3,14 @@
 
 declare -A MIRRORPLUS
 if [ -e /etc/slackpkg/slackpkgplus.conf ];then
+  USEBLACKLIST=true
+  if [ "$USEBL" == "0" ];then
+    USEBLACKLIST=false
+  fi
   . /etc/slackpkg/slackpkgplus.conf
+  if [ "$USEBL" == "0" ];then
+    USEBLACKLIST=false
+  fi
 fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
@@ -31,6 +38,19 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
     fi
 
+    echo $URLFILE
+
+    if echo $URLFILE | grep "^dir:/"|grep -q "/PACKAGES.TXT$";then
+      touch $2
+      return 0
+    fi
+    if echo $URLFILE | grep "^dir:/"|grep -q "/MANIFEST.bz2$";then
+      echo -n|bzip2 -c >$2
+      return 0
+    fi
+
+    URLFILE=$(echo $URLFILE|sed -e 's_^dir:/_file://_')
+
     if echo $URLFILE | grep -q "^file://" ; then
       URLFILE=${URLFILE:6}
       if [ -f $URLFILE ];then
@@ -52,6 +72,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ "$CHECKGPG" = "on" ];then
         for PREPO in $REPOPLUS;do
           URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5.asc
+          if echo $URLFILE | grep -q "^dir:/" ; then
+            continue
+          fi
           if echo $URLFILE | grep -q "^file://" ; then
             URLFILE=${URLFILE:6}
             cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
@@ -91,6 +114,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
           cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO
+        elif echo $URLFILE | grep -q "^dir:/" ; then
+          continue
         else
           $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         fi
@@ -99,6 +124,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     if [ $(basename $1) = "GPG-KEY" ];then
       for PREPO in $REPOPLUS;do
+        if [ "${PREPO:0:4}" = "dir:" ];then
+          continue
+        fi
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
@@ -130,7 +158,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo 1
       return
     fi
-    gpg --verify ${1}.asc ${1} 2>/dev/null && echo "1" || echo "0"
+    if [ -e "${1}.asc" ];then
+      gpg --verify ${1}.asc ${1} 2>/dev/null && echo "1" || echo "0"
+    else
+      echo 1
+    fi
     if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
       X86_64=$(ls /var/log/packages/aaa_base*x86_64*|head -1 2>/dev/null)
       for PREPO in $REPOPLUS;do
@@ -149,14 +181,20 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local MD5ORIGINAL
     local MD5DOWNLOAD
     local PREPO
+    local ARG
 
     if echo $1|egrep -q "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]";then
       echo 1
       return
     fi
-    PREPO=$(echo $1 | rev | cut -f3 -d/ | rev)
+    ARG=$(echo $1|sed "s|^$TEMP/||")
+    PREPO=$(echo $ARG | cut -f2 -d/|sed 's/SLACKPKGPLUS_//' )
+    if echo ${MIRRORPLUS[$PREPO]}|grep -q ^dir:/;then
+      echo 1
+      return
+    fi
 
-    MD5ORIGINAL=$(egrep -v " \.(/extra)?/source/" ${CHECKSUMSFILE} | grep -w $PREPO | grep -m1 "/$(basename $1)$" | cut -f1 -d \ )
+    MD5ORIGINAL=$( grep -m1 "$ARG$" ${CHECKSUMSFILE} | cut -f1 -d \ )
     MD5DOWNLOAD=$(md5sum ${1} | cut -f1 -d \ )
     if [ "$MD5ORIGINAL" = "$MD5DOWNLOAD" ]; then
       echo 1
@@ -377,7 +415,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   # Test repositories
   for pp in ${REPOPLUS[*]};do
-    echo "${MIRRORPLUS[$pp]}"|grep -q -e ^http:// -e ^https:// -e ^ftp:// -e ^file://
+    echo "${MIRRORPLUS[$pp]}"|grep -q -e ^http:// -e ^https:// -e ^ftp:// -e ^file:// -e ^dir:/
     if [ $? -ne 0 ];then
       echo "Repository '$pp' not configured." >> $TMPDIR/error.log
       echo "Add:" >> $TMPDIR/error.log
@@ -445,6 +483,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # -- This is to prevent silent exclusion of multilib package
     #    aaa_elflibs-compat32 when /etc/slackpkg/blacklist contains the
     #    pattern aaa_elflibs.
+    if ! $USEBLACKLIST ;then
+      >${TMPDIR}/blacklist
+    fi
     if $MLREPO_SELELECTED && grep -q "^aaa_elflibs$" ${TMPDIR}/blacklist && ! grep -q "^aaa_elflibs-compat32$" ${TMPDIR}/blacklist ; then
       sed -i --expression "s/^aaa_elflibs/#aaa_elflibs/" ${TMPDIR}/blacklist
       grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus | grep -v "[ ]aaa_elflibs[ ]" >${TMPDIR}/blacklist.tmp
@@ -473,6 +514,19 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   PRIORITYIDX=1
 
   touch ${TMPDIR}/pkglist-pre
+  for PREPO in $REPOPLUS;do
+    pref=${MIRRORPLUS[$PREPO]}
+    if [ "${pref:0:5}" = "dir:/" ];then
+      localpath=$(echo "$pref" | cut -f2- -d":"|sed -e 's_/$__' -e 's_//_/_')
+      MIRRORPLUS[$PREPO]="dir:$localpath/"
+      if [ ! -d "$localpath" ];then
+	continue
+      fi
+      ( cd $localpath
+	ls -ld *.t[blxg]z|tac|grep ^-|awk '{print "./SLACKPKGPLUS_'$PREPO'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+      )
+    fi
+  done
 
   if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] || [ "$CMD" == "remove" ] ; then
 
@@ -554,7 +608,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         fi
 
       # You can specify 'slackpkg install reponame' where reponame is a thirdy part repository
-      elif grep -q "^SLACKPKGPLUS_${pref}[ ]" ${WORKDIR}/pkglist ; then
+      elif grep -q "^SLACKPKGPLUS_${pref}[ ]" ${WORKDIR}/pkglist ${TMPDIR}/pkglist-pre ; then
 
         echo "$pref" | grep -qi "multilib" && MLREPO_SELELECTED=true
 
