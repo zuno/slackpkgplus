@@ -38,8 +38,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
     fi
 
-    echo $URLFILE
-
     if echo $URLFILE | grep "^dir:/"|grep -q "/PACKAGES.TXT$";then
       touch $2
       return 0
@@ -115,6 +113,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           URLFILE=${URLFILE:6}
           cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO
         elif echo $URLFILE | grep -q "^dir:/" ; then
+	  touch ${TMPDIR}/CHECKSUMS.md5-$PREPO
           continue
         else
           $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
@@ -131,6 +130,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
           cp -v $URLFILE $2-tmp
+        elif echo $URLFILE |grep -q "^dir:/";then
+          continue
         else
           $DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
         fi
