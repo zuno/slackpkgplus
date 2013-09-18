@@ -1,4 +1,4 @@
-Version 20130910.1 - 10/Sep/2013
+Version 0.9.7.3 - 10/Sep/2013
   - Fix an issue with dir:// repositories and gpg check
 
 Version 0.9.7.2 - 09/Sep/2013
