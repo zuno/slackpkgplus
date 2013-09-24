@@ -1,3 +1,9 @@
+Version 0.9.7.4 - 24/Sep/2013
+  - Try a better way to detect the newest version of the same package in local
+    or remote directory (does not guarantees 100% success)
+  - Try to download CHECKSUMS.md5.gz.asc if CHECKSUMS.md5.asc does not exists
+    (as salixos repository)
+
 Version 0.9.7.3 - 10/Sep/2013
   - Fix an issue with dir:// repositories and gpg check
 

@@ -11,15 +11,20 @@ zerouno:    http://www.z01.eu/repo-slack/slackware64-current/
 mled:       http://www.microlinux.fr/slackware/MLED-14.0-{32,64}bit/
 mles:       http://www.microlinux.fr/slackware/MLES-14.0-{32,64}bit/
 mles:       http://www.microlinux.fr/slackware/MLWS-14.0-{32,64}bit/
-msb:        http://slackware.org.uk/msb/
+msb:        http://slackware.org.uk/msb/14.0/1.6/{x86,x86_64}/
 slackers:   http://www.slackers.it/repository/
 
 Does NOT supports GPG
-salixos:    http://download.salixos.org/{i486,x86_64}/{13.37,14.0}/
+salixos(*): http://download.salixos.org/{i486,x86_64}/{13.37,14.0}/
 salixext:   http://people.salixos.org/ralvex/packages/{i486,x86_64}/{13.37,14.0}/
 rlworkman:  http://rlworkman.net/pkgs/{13.37,14.0}/
 slackel:    http://www.slackel.gr/repo/{i486,x86_64}/current/
 
+(*) salixos partially supports GPG. This repository contains the .asc file for CHECKSUMS.md5, 
+    so the 'update' process works with CHECKGPG=on and repository authenticity is guaranteed.
+    Unfortunatly the single packages does not contains the relative .asc file, so you must
+    install the packages with 'slackpkg -checkgpg=off install <packagename>', but the
+    authenticity is guaranteed by the md5 authenticity.
 
 
 You can found a larger list at http://slakfinder.org

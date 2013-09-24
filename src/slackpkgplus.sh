@@ -78,6 +78,25 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
           else
             $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc $URLFILE
+	    if [ $? -ne 0 ];then
+	      $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc `echo $URLFILE|sed 's/\.asc$/.gz.asc/'`
+	      if [ $? -eq 0 ];then
+		$DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz $URLFILE.gz
+		if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz) -eq 0 ];then
+		  echo
+		  echo "                   !!! N O T I C E !!!"
+		  echo "    Repository '$PREPO' does support signature checking for"
+		  echo "    CHECKSUMS.md5 file so the repository authenticity is guaranteed"
+		  echo "    but you MAY need to temporary disable gpg check when you"
+		  echo "    install the packages using:"
+		  echo "    'slackpkg -checkgpg=off install packge'"
+		  echo "    The package authenticity remains guaranteed."
+		  echo
+		  sleep 5
+		  continue
+		fi
+	      fi
+	    fi
           fi
           if [ $? -eq 0 ];then
             if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO) -ne 1 ];then
@@ -524,7 +543,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	continue
       fi
       ( cd $localpath
-	ls -ld *.t[blxg]z|tac|grep ^-|awk '{print "./SLACKPKGPLUS_'$PREPO'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+	ls -ld *.t[blxg]z|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$PREPO'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
       )
     fi
   done
@@ -568,7 +587,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           localpath=$(pwd)/$localpath
         fi
 	( cd $localpath
-	  ls -ld *.t[blxg]z|tac|grep ^-|awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+	  ls -ld *.t[blxg]z|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
 	)
         MIRRORPLUS[$repository]="file:/$localpath/"
 	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
@@ -591,7 +610,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       elif echo "$pref" | egrep -q "^(https?|ftp)://.*/.*" ;then
 	repository=$(echo "$pref" | cut -f1 -d":")
 	repository=$repository$(grep ^SLACKPKGPLUS_$repository[0-9] ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
-	lftp $pref -e "ls;quit" 2>/dev/null|awk '{print $NF}'|egrep '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|tac| \
+	lftp $pref -e "ls;quit" 2>/dev/null|awk '{print $NF}'|egrep '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|sort -rn| \
 	  awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
 	MIRRORPLUS[$repository]=$(echo "$pref" |sed 's_/$__')"/"
 	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
