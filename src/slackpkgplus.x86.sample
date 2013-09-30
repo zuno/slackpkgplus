@@ -47,21 +47,21 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 
 # Supported Repositories (see /usr/doc/slackpkg+-* for details):
 #
-# Supports GPG
-# slackpkgplus: http://slakfinder.org/slackpkg+/
-# multilib:   http://taper.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,current}/
-# alienbob:   http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0}/{x86,x86_64}/
-# restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0}/{x86,x86_64}/
-# slacky:     http://repository.slacky.eu/slackware{,64}-{13.37,14.0}/
-# zerouno:    http://www.z01.eu/repo-slack/slackware64-current/
-# mled:       http://www.microlinux.fr/slackware/MLED-14.0-{32,64}bit/
-# mles:       http://www.microlinux.fr/slackware/MLES-14.0-{32,64}bit/
-# mlws:       http://www.microlinux.fr/slackware/MLWS-14.0-{32,64}bit/
-# msb:        http://slackware.org.uk/msb/
-# slackers:   http://www.slackers.it/repository/
+#Supports GPG
+#slackpkgplus: http://slakfinder.org/slackpkg+/
+#alienbob:   http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,current}/{x86,x86_64}/
+#ktown:      http://taper.alienbase.nl/mirrors/alien-kde/{13.37,14.0,current}/latest/{x86,x86_64}/
+#restricted: http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,current}/{x86,x86_64}/
+#slacky:     http://repository.slacky.eu/slackware{,64}-{13.37,14.0}/
+#zerouno:    http://www.z01.eu/repo-slack/slackware64-current/
+#mled:       http://www.microlinux.fr/slackware/MLED-14.0-{32,64}bit/
+#mles:       http://www.microlinux.fr/slackware/MLES-14.0-{32,64}bit/
+#mles:       http://www.microlinux.fr/slackware/MLWS-14.0-{32,64}bit/
+#msb:        http://slackware.org.uk/msb/14.0/1.6/{x86,x86_64}/
+#slackers:   http://www.slackers.it/repository/
 #
-# Does NOT supports GPG
-# salixos:    http://download.salixos.org/{i486,x86_64}/{13.37,14.0}/
-# salixext:   http://people.salixos.org/ralvex/packages/{i486,x86_64}/{13.37,14.0}/
-# rlworkman:  http://rlworkman.net/pkgs/{13.37,14.0}/
-# slackel:    http://www.slackel.gr/repo/{i486,x86_64}/current/
+#Does NOT supports GPG
+#salixos:    http://download.salixos.org/{i486,x86_64}/{13.37,14.0}/
+#salixext:   http://people.salixos.org/ralvex/packages/{i486,x86_64}/{13.37,14.0}/
+#rlworkman:  http://rlworkman.net/pkgs/{13.37,14.0}/
+#slackel:    http://www.slackel.gr/repo/{i486,x86_64}/current/
