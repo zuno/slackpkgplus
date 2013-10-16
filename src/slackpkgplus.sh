@@ -1,13 +1,21 @@
 # Thanks to AlienBob and phenixia2003 (on LQ) for contributing
+# A secial thanks to all packagers that make slackpkg+ useful
 
 
 declare -A MIRRORPLUS
 if [ -e /etc/slackpkg/slackpkgplus.conf ];then
-  USEBLACKLIST=true
-  if [ "$USEBL" == "0" ];then
-    USEBLACKLIST=false
-  fi
+  # You can ovverride SLACKPKGPLUS VERBOSE USEBL from command-line
+  EXTSLACKPKGPLUS=$SLACKPKGPLUS
+  EXTVERBOSE=$VERBOSE
+  EXTUSEBL=$USEBL
+
   . /etc/slackpkg/slackpkgplus.conf
+
+  SLACKPKGPLUS=${EXTSLACKPKGPLUS:-$SLACKPKGPLUS}
+  VERBOSE=${EXTVERBOSE:-$VERBOSE}
+  USEBL=${EXTUSEBL:-$USEBL}
+
+  USEBLACKLIST=true
   if [ "$USEBL" == "0" ];then
     USEBLACKLIST=false
   fi
@@ -58,6 +66,23 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
     else
       $DOWNLOADER $2 $URLFILE
+    fi
+    if [ $? -ne 0 ];then
+      if [ "`basename $URLFILE`" != "MANIFEST.bz2" ];then
+	echo -e "`basename $URLFILE`:\tdownload error" >> $TMPDIR/error.log
+	if echo $2|grep -q .asc$;then
+	  echo "  Retry using 'slackpkg -checkgpg=off $CMD ...'" >> $TMPDIR/error.log
+	fi
+      else
+	echo
+	echo "                   !!! N O T I C E !!!"
+	echo "    Repository '$PREPO' does not contains MANIFEST.bz2"
+	echo "    Don't worry.. it will works fine, but the commands"
+	echo "    'slackpkg file-search' will not works on that"
+	echo "    repository"
+	echo
+	sleep 3
+      fi
     fi
 
     if [ $(basename $1) = "MANIFEST.bz2" ];then

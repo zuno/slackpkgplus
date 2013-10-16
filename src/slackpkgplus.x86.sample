@@ -7,6 +7,10 @@ SLACKPKGPLUS=on
 # set to '2' to show always show the download bar
 VERBOSE=1
 
+# Enable (1) / Disable (0) the official slackpkg blacklist. May be useful to temporary skip
+# the slackware blacklist. You can also ovverride it from command line:
+# 'USEBL=0 slackpkg upgrade-all'
+USEBL=1
 
 # If two or more repositories contains some same packages, you can specify
 # from which repository you prefer to search it.
@@ -62,6 +66,5 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 #
 #Does NOT supports GPG
 #salixos:    http://download.salixos.org/{i486,x86_64}/{13.37,14.0}/
-#salixext:   http://people.salixos.org/ralvex/packages/{i486,x86_64}/{13.37,14.0}/
 #rlworkman:  http://rlworkman.net/pkgs/{13.37,14.0}/
 #slackel:    http://www.slackel.gr/repo/{i486,x86_64}/current/

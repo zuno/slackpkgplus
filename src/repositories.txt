@@ -16,7 +16,7 @@ slackers:   http://www.slackers.it/repository/
 
 Does NOT supports GPG
 salixos(*): http://download.salixos.org/{i486,x86_64}/{13.37,14.0}/
-salixext:   http://people.salixos.org/ralvex/packages/{i486,x86_64}/{13.37,14.0}/
+salixext:   http://people.salixos.org/ralvex/repository/x86_64/14.0/
 rlworkman:  http://rlworkman.net/pkgs/{13.37,14.0}/
 slackel:    http://www.slackel.gr/repo/{i486,x86_64}/current/
 

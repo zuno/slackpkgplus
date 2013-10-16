@@ -1,3 +1,10 @@
+Version 1.0rc1 - 16/Oct/2013
+  - Slackware 14.1 is coming up. I think that also slackpkg+ is ready so as
+    Slackware I mark it as rc1 :). slackpkg 2.82.0-11 added the 14.1 repositories.
+    Unfortuatly I don't know which third-party repository will contains 14.1 
+    packages, so I can't add 14.1 to repositories.txt
+  - You can now ovverride SLACKPKGPLUS VERBOSE from command-line (as USEBL)
+
 Version 0.9.7.4 - 24/Sep/2013
   - Try a better way to detect the newest version of the same package in local
     or remote directory (does not guarantees 100% success)
