@@ -31,6 +31,7 @@ copy_config_file() {
     ;;
   esac
   cp usr/doc/slackpkg+-SLPVERSION/$SRCMIRROR etc/slackpkg/slackpkgplus.conf.new
+  cat usr/doc/slackpkg+-SLPVERSION/repositories.txt |grep '^> ' |sed 's/^> /#/' >> etc/slackpkg/slackpkgplus.conf.new
 }
 
 copy_config_file

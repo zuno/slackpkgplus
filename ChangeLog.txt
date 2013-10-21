@@ -1,3 +1,8 @@
+Version 1.0rc2 - 21/Oct/2013
+  - Looks like we get a slackpkg+ 1.0 release candidate 2...  but things are
+    pretty much nailed down at this point.  Please test and report any last :D
+  - Updated some repository to 14.1
+
 Version 1.0rc1 - 16/Oct/2013
   - Slackware 14.1 is coming up. I think that also slackpkg+ is ready so as
     Slackware I mark it as rc1 :). slackpkg 2.82.0-11 added the 14.1 repositories.
