@@ -7,15 +7,15 @@ SLACKPKGPLUS=on
 # set to '2' to show always show the download bar
 VERBOSE=1
 
-# Enable (1) / Disable (0) the official slackpkg blacklist. May be useful to temporary skip
-# the slackware blacklist. You can also ovverride it from command line:
+# Enable (1) / Disable (0) the official slackpkg blacklist. May be useful to temporarily skip
+# the slackware blacklist. You can also override it from command line:
 # 'USEBL=0 slackpkg upgrade-all'
 USEBL=1
 
 # If two or more repositories contains some same packages, you can specify
 # from which repository you prefer to search it.
 # The syntax is "<repository_name>:<package_name>"
-# Accepts regular expressions. To give order to an entire repository use "<repository_name>:.*"
+# Accepts regular expressions. To give priority to an entire repository use "<repository_name>:.*"
 
 # Examples:
 #PKGS_PRIORITY=( restricted:vlc )
@@ -25,13 +25,13 @@ USEBL=1
 #PKGS_PRIORITY=( multilib:.* )
 #
 
-# List repository you want to use (defined below)
+# List repositories you want to use (defined below)
 # remember to launch 'slackpkg update' if you modify that row.
 REPOPLUS=( slackpkgplus restricted alienbob slacky )
 
 
 # Define mirrors (uncomment one or more mirror; remember to add it to REPOPLUS)
-# Note: only multilib,alienbob,restricted,slacky repositories does supports GPG. If you add other
+# Note: only multilib,alienbob,restricted,slacky repositories support GPG. If you add others
 #       you may need to disable gpg check in slackpkg.conf
 
 # Slackware 14.1 - x86_64
@@ -40,7 +40,7 @@ MIRRORPLUS['alienbob']=http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14
 MIRRORPLUS['restricted']=http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.1/x86_64/
 MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware64-14.1/
 
-# use this to keep updated the slackpkg+ package
+# use this to keep the slackpkg+ package updated
 MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 
 # Slackware current - x86_64
