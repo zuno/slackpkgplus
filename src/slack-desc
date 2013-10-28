@@ -5,15 +5,15 @@
 # make exactly 11 lines for the formatting to be correct.  It's also
 # customary to leave one space after the ':'.
 
-           |-handy-ruler------------------------------------------------------|
+         |-handy-ruler------------------------------------------------------|
 slackpkg+: slackpkg+ plugin for third-party repositories
 slackpkg+:
 slackpkg+: Slackpkg is a package manager for Slackware. 
-slackpkg+: 
-slackpkg+: Slackpkg+ is a plugin for slackpkg
-slackpkg+:   It add support for third-party repositories.
-slackpkg+:   You can add multiple repository to your list
-slackpkg+: 
-slackpkg+: 
+slackpkg+:
+slackpkg+: Slackpkg+ is a plugin for slackpkg.
+slackpkg+:   It adds support for third-party repositories.
+slackpkg+:   You can install, upgrade and search from multiple repositories.
+slackpkg+:
+slackpkg+:
 slackpkg+:
 slackpkg+:

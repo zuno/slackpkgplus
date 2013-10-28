@@ -40,8 +40,8 @@ remove var/lib/slackpkg/ChangeLog.txt
 remove var/lib/slackpkg/pkglist
 echo
 echo
-echo "Please, read the README file before use it"
+echo "Please, read the README file before using slackpkg+"
 echo
-echo "Now you must to rerun 'slackpkg update'"
+echo "Now you must rerun 'slackpkg update'"
 echo
 
