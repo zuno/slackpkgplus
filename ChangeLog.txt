@@ -1,3 +1,8 @@
+Version 1.0rc3 - 28/Oct/2013
+  - slackpkg+ 1.0 release candidate 3.  Last call.  :)
+  - Added setupmultilib.sh in /usr/doc/slackpk+-*, an helper for configure
+    multilibs in slackpkgplus.conf
+
 Version 1.0rc2 - 21/Oct/2013
   - Looks like we get a slackpkg+ 1.0 release candidate 2...  but things are
     pretty much nailed down at this point.  Please test and report any last :D

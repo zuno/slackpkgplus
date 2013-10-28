@@ -104,13 +104,17 @@ restricted:.* mean 'all packages in repository restricted'
 
 MULTILIB:
 
-If you want to use a multilib system, add the repository 'multilib', add "PKGS_PRIORITY=( multilib:.* )" then launch:
+If you want to use a multilib system you must configure the multilib repository in slackpkgplus.conf
+You can do that simply by running:
+# /usr/doc/slackpkg+-1.0/setupmultilib.sh
 
-the first time:
+Otherwise you can configure it manually:
+Add the repository 'multilib', add "PKGS_PRIORITY=( multilib:.* )" then launch:
+
 # slackpkg update gpg
 # slackpkg update
-# slackpkg install multilib
 # slackpkg upgrade-all
+# slackpkg install multilib
 
 next:
 # slackpkg update
@@ -121,7 +125,7 @@ to remove the multilib, you must remove 'multilib:.*' from PKGS_PRIORITY and fro
 # slackpkg update
 # slackpkg remove multilib
 Note: that does NOT remove the core multilib packages becouse they affect the 64bit system, so you must remove these by launch:
-# slackpkg reinstall gcc glibc
+# slackpkg upgrade-all
 then delete or comment the related MIRRORPLUS line and launch:
 # slackpkg update
 
