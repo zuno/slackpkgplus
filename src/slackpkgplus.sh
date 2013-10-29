@@ -1,10 +1,10 @@
 # Thanks to AlienBob and phenixia2003 (on LQ) for contributing
-# A secial thanks to all packagers that make slackpkg+ useful
+# A special thanks to all packagers that make slackpkg+ useful
 
 
 declare -A MIRRORPLUS
 if [ -e /etc/slackpkg/slackpkgplus.conf ];then
-  # You can ovverride SLACKPKGPLUS VERBOSE USEBL from command-line
+  # You can override SLACKPKGPLUS VERBOSE USEBL from command-line
   EXTSLACKPKGPLUS=$SLACKPKGPLUS
   EXTVERBOSE=$VERBOSE
   EXTUSEBL=$USEBL
@@ -77,8 +77,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	echo
 	echo "                   !!! N O T I C E !!!"
 	echo "    Repository '$PREPO' does not contains MANIFEST.bz2"
-	echo "    Don't worry.. it will works fine, but the commands"
-	echo "    'slackpkg file-search' will not works on that"
+	echo "    Don't worry... it will work fine, but the command"
+	echo "    'slackpkg file-search' will not work on that"
 	echo "    repository"
 	echo
 	sleep 3
@@ -111,8 +111,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		  echo
 		  echo "                   !!! N O T I C E !!!"
 		  echo "    Repository '$PREPO' does support signature checking for"
-		  echo "    CHECKSUMS.md5 file so the repository authenticity is guaranteed"
-		  echo "    but you MAY need to temporary disable gpg check when you"
+		  echo "    CHECKSUMS.md5 file, so the repository authenticity is guaranteed,"
+		  echo "    but you MAY need to temporarily disable gpg check when you"
 		  echo "    install the packages using:"
 		  echo "    'slackpkg -checkgpg=off install packge'"
 		  echo "    The package authenticity remains guaranteed."
@@ -127,9 +127,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO) -ne 1 ];then
               echo
               echo "                        !!! F A T A L !!!"
-              echo "    Repository '$PREPO' FAILS to check CHECKSUMS.md5 signature"
+              echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5 signature check"
               echo "    The file may be corrupted or the gpg key may be not valid."
-              echo "    Remember to import keys launching 'slackpkg update gpg'."
+              echo "    Remember to import keys by launching 'slackpkg update gpg'."
               echo
               sleep 5
               echo > ${TMPDIR}/CHECKSUMS.md5
@@ -328,7 +328,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     touch ${TMPDIR}/waiting
 
     # -- PKGLIST:
-    #      temporary file used to store data about packages. It use
+    #      temporary file used to store data about packages. It uses
     #      the following format:
     #        repository:<repository_name>:basename:<package_basename>:
     #
