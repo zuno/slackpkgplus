@@ -81,7 +81,7 @@ if [ "$ANS" == "y" -o "$ANS" == "Y" ];then
     echo "# slackpkg update gpg"
     echo "# slackpkg update"
     echo "# slackpkg upgrade gcc glibc"
-    echo "# slackpkg remove multilib"
+    echo "# slackpkg install multilib"
   fi
   echo "To keep multilib updated, simply type:"
   echo "# slackpkg upgrade-all"

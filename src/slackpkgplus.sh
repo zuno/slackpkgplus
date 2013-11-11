@@ -3,6 +3,8 @@
 
 
 declare -A MIRRORPLUS
+declare -A NOTIFYMSG
+
 if [ -e /etc/slackpkg/slackpkgplus.conf ];then
   # You can override SLACKPKGPLUS VERBOSE USEBL from command-line
   EXTSLACKPKGPLUS=$SLACKPKGPLUS
@@ -23,6 +25,10 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
+  SPKGPLUS_VERSION="1.0"
+  VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
+  
+  
   if [ ! -e "$WORKDIR" ];then
     mkdir -p "$WORKDIR"
   fi
@@ -543,6 +549,113 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
   }
+  
+    # -- handle the event $1 that occured on packages $SHOWLIST
+    #
+    # $1 the event that occurs, which can be install, upgrade, remove
+    #
+  function handle_event() {
+	local EVENT="$1"
+	local SELKEYS=""
+	local KEY
+	local PATLIST
+	local EXPR
+	local MSG
+	local MSGLIST=""
+	local USERKEY
+
+	find /var/log/packages/ -type f -printf "%f\n" | sort > ${TMPDIR}/installed.tmp
+	
+		# -- Get the basename of packages which have been effectively
+		#    installed, upgraded, or removed
+		
+	if [ "$EVENT" == "remove" ] ; then
+		echo "$SHOWLIST" | tr " " "\n"  | sort > ${TMPDIR}/showlist.tmp
+		
+		comm -1 ${TMPDIR}/installed.tmp ${TMPDIR}/showlist.tmp | rev | cut -f4- -d"-" | rev > ${TMPDIR}/basenames.tmp
+	else
+		echo "$SHOWLIST" | tr " " "\n" | rev | cut -f2- -d"." | rev | sort > ${TMPDIR}/showlist.tmp
+
+		comm -1 -2 ${TMPDIR}/installed.tmp ${TMPDIR}/showlist.tmp | rev | cut -f4- -d"-" | rev > ${TMPDIR}/basenames.tmp
+	fi
+	
+	SELKEYS=$(echo "${!NOTIFYMSG[@]}" | tr " " "\n" | grep "^on_${EVENT}@" | tr "\n" " ")
+	
+	for KEY in $SELKEYS ; do
+		PATLIST="${KEY#*@}"
+		EXPR=$(echo -en "$PATLIST" | \
+				tr --squeeze-repeats "," | \
+				sed -e "s/,$//" -e "s/^/(&/" -e "s/,/)|(/g" -e "s/$/&)/")
+
+		NV_MATCHPKGS=$(grep -E "$EXPR" ${TMPDIR}/basenames.tmp | tr "\n" "," | sed -e "s/,$//")
+		
+		if [ ! -z "$NV_MATCHPKGS" ] ; then
+			MSG=$(eval "echo \"${NOTIFYMSG[$KEY]}\"")
+			[ -z "MSGLIST" ] && MSGLIST="$MSG\n" || MSGLIST="$MSGLIST\n$MSG"
+		fi	
+	done
+
+	if [ ! -z "$MSGLIST" ] ; then
+
+		if [ "$DIALOG" = "on" ] || [ "$DIALOG" = "ON" ] ; then
+			dialog --title "post-$EVENT notifications" --backtitle "slackpkg $VERSION" --msgbox "$MSGLIST" 12 70
+		else
+			MSGLIST="====[ POST-${EVENT} NOTIFICATIONS ]===================================== \n${MSGLIST}\n======================================================================="
+			echo -e "\n$MSGLIST" | more
+			echo -en "Hit a key to continue or wait 10 seconds\r"
+			read -t 10 USERKEY
+			echo "                                        "
+		fi
+	fi
+  }
+  
+    # Overrides original remove_pkg(). Required by the notification mechanism.
+  function remove_pkg() {
+	local i
+
+	for i in $SHOWLIST; do
+		echo -e "\nPackage: $i"
+		echo -e "\tRemoving... "
+		removepkg $i
+	done
+	handle_event "remove"
+  }
+
+    # Overrides original remove_pkg(). Required by the notification mechanism.
+  function upgrade_pkg() {
+	local i
+
+	if [ "$DOWNLOAD_ALL" = "on" ]; then
+		OLDDEL="$DELALL"
+		DELALL="off"
+		for i in $SHOWLIST; do
+			getpkg $i true
+		done
+		DELALL="$OLDDEL"
+	fi
+	for i in $SHOWLIST; do
+		getpkg $i upgradepkg Upgrading
+	done
+	handle_event "upgrade"
+  }
+
+    # Overrides original remove_pkg(). Required by the notification mechanism.
+  function install_pkg() {
+	local i
+
+	if [ "$DOWNLOAD_ALL" = "on" ]; then
+		OLDDEL="$DELALL"
+		DELALL="off"
+		for i in $SHOWLIST; do
+			getpkg $i true
+		done
+		DELALL="$OLDDEL"
+	fi
+	for i in $SHOWLIST; do
+		getpkg $i installpkg Installing
+	done
+	handle_event "install"
+  }  
 
 
   DOWNLOADER="wget --no-check-certificate --passive-ftp -O"
