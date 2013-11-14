@@ -74,20 +74,22 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       $DOWNLOADER $2 $URLFILE
     fi
     if [ $? -ne 0 ];then
-      if [ "`basename $URLFILE`" != "MANIFEST.bz2" ];then
-	echo -e "`basename $URLFILE`:\tdownload error" >> $TMPDIR/error.log
-	if echo $2|grep -q .asc$;then
-	  echo "  Retry using 'slackpkg -checkgpg=off $CMD ...'" >> $TMPDIR/error.log
+      if echo $2|grep -q ^SLACKPKGPLUS;then
+	if [ "`basename $URLFILE`" != "MANIFEST.bz2" ];then
+	  echo -e "$URLFILE:\tdownload error" >> $TMPDIR/error.log
+	  if echo $2|grep -q .asc$;then
+	    echo "  Retry using 'slackpkg -checkgpg=off $CMD ...'" >> $TMPDIR/error.log
+	  fi
+	else
+	  echo
+	  echo "                   !!! N O T I C E !!!"
+	  echo "    Repository '$PREPO' does not contains MANIFEST.bz2"
+	  echo "    Don't worry... it will work fine, but the command"
+	  echo "    'slackpkg file-search' will not work on that"
+	  echo "    repository"
+	  echo
+	  sleep 3
 	fi
-      else
-	echo
-	echo "                   !!! N O T I C E !!!"
-	echo "    Repository '$PREPO' does not contains MANIFEST.bz2"
-	echo "    Don't worry... it will work fine, but the command"
-	echo "    'slackpkg file-search' will not work on that"
-	echo "    repository"
-	echo
-	sleep 3
       fi
     fi
 
@@ -168,6 +170,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         else
           $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         fi
+	if [ ! -s ${TMPDIR}/CHECKSUMS.md5-$PREPO ];then
+              echo
+              echo "                        !!! F A T A L !!!"
+              echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5 download"
+              echo "    The repository may be invald."
+              echo
+              sleep 5
+	      echo -e "$PREPO: Invalid repository (fails to download CHECKSUMS.md5)" >> $TMPDIR/error.log
+	fi
         echo $PREPO $(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}') >>$2
       done
     fi
