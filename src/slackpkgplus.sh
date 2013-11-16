@@ -472,6 +472,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     done
   }
 
+  touch $TMPDIR/greylist.tmp
+  if [ -e /etc/slackpkg/greylist ];then
+    cat /etc/slackpkg/greylist|sed -e 's/#.*//'|grep -v -e '^#' -e '^$'|awk '{print $1}'|sort -u >$TMPDIR/greylist.tmp
+  fi
+
   REPOPLUS=$(echo "${REPOPLUS[*]} ${PKGS_PRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}')
   PRIORITY=( ${PRIORITY[*]} SLACKPKGPLUS_$(echo $REPOPLUS|sed 's/ / SLACKPKGPLUS_/g') )
 
@@ -873,5 +878,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     cleanup
   fi
+
+  cat $TMPDIR/greylist*|sort -u >$TMPDIR/unchecklist
 
 fi

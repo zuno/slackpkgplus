@@ -1,3 +1,6 @@
+Version 20131116.1 - 16/Nov/2013
+  - Missed real greylist code :)
+
 Version 20131114.2 - 14/Nov/2013
   - Added /etc/slackpkg/greylist . All packages in that list will be showned
     unchecked by default
