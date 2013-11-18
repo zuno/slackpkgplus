@@ -22,7 +22,7 @@ WORKDIR=/var/lib/slackpkg
 	  else                    { print $1" "$2" upgraded:    "$4$5"  []  (was "p[$3]")"; p[$3]=$4 }
      }'
 
-  cat $WORKDIR/install.log|grep -v '\[\]'
+  cat $WORKDIR/install.log 2>/dev/null|grep -v '\[\]'
 
 )|sort -r|awk '{if(!a[$1$2$3$4]++)print}'|tac >$WORKDIR/install.log.new
 
