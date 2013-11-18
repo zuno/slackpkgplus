@@ -26,9 +26,5 @@ WORKDIR=/var/lib/slackpkg
 
 )|sort -r|awk '{if(!a[$1$2$3$4]++)print}'|tac >$WORKDIR/install.log.new
 
-if [ ! -e $WORKDIR/install.log ];then
-  mv $WORKDIR/install.log.new $WORKDIR/install.log
-  echo "An install log was created in $WORKDIR/install.log"
-else
-  echo "An install log was created in $WORKDIR/install.log.new"
-fi
+mv $WORKDIR/install.log.new $WORKDIR/install.log
+echo "An install log was created in $WORKDIR/install.log"

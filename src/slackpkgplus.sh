@@ -33,6 +33,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     mkdir -p "$WORKDIR"
   fi
 
+  if [ "$CMD" == "update" ];then
+    if [ "$VERBOSE" == "2" ];then
+      echo "Updating $WORKDIR/install.log"
+    fi
+    /usr/libexec/slackpkg/makeinstlog.sh >/dev/null
+  fi
+
   # Override the slackpkg getfile().
   # The new getfile() download all file needed from all defined repositories
   # then merge all in a format slackpkg-compatible
