@@ -26,6 +26,7 @@ cp $CWD/README usr/doc/slackpkg+-$VERSION/
 cp $CWD/ChangeLog.txt usr/doc/slackpkg+-$VERSION/
 cp $CWD/repositories.txt usr/doc/slackpkg+-$VERSION/
 cp $CWD/setupmultilib.sh usr/doc/slackpkg+-$VERSION/
+cp $CWD/makeinstlog.sh usr/doc/slackpkg+-$VERSION/
 cp $CWD/slackpkg+.SlackBuild usr/doc/slackpkg+-$VERSION/
 cp $CWD/slackpkgplus.*.sample usr/doc/slackpkg+-$VERSION/
 cp $CWD/greylist etc/slackpkg/greylist.new
@@ -35,6 +36,7 @@ cat $CWD/doinst.sh|sed "s/SLPVERSION/$VERSION/" > install/doinst.sh
 chmod +x usr/libexec/slackpkg/functions.d/slackpkgplus.sh
 chmod +x usr/libexec/slackpkg/functions.d/zdialogplus.sh
 chmod +x usr/doc/slackpkg+-$VERSION/setupmultilib.sh
+chmod +x usr/doc/slackpkg+-$VERSION/makeinstlog.sh
 
 
 makepkg -l y -c y $OUTPUT/slackpkg+-$VERSION-noarch-$BUILD.txz

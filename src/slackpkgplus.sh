@@ -633,11 +633,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		echo -e "\nPackage: $i"
 		echo -e "\tRemoving... "
 		removepkg $i
+		if [ ! -e /var/log/packages/$i ];then
+		  FDATE=$(ls -ltr --full-time /var/log/removed_packages/$i|tail -1 |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+		  echo "$FDATE removed:     $i" >> $WORKDIR/install.log
+		fi
 	done
 	handle_event "remove"
   }
 
-    # Overrides original remove_pkg(). Required by the notification mechanism.
+    # Overrides original upgrade_pkg(). Required by the notification mechanism.
   function upgrade_pkg() {
 	local i
 
@@ -649,13 +653,22 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		done
 		DELALL="$OLDDEL"
 	fi
+	ls -1 /var/log/packages > $TMPDIR/tmplist
+
 	for i in $SHOWLIST; do
+		PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-\(noarch\|fw\|${ARCH}\)" $TMPDIR/tmplist)
+		REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
 		getpkg $i upgradepkg Upgrading
+		if [ -e "/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+		  FDATE=$(ls -l --full-time /var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+		  echo "$FDATE upgraded:    $i  [$REPOPOS]  (was $PKGFOUND)" >> $WORKDIR/install.log
+		fi
+
 	done
 	handle_event "upgrade"
   }
 
-    # Overrides original remove_pkg(). Required by the notification mechanism.
+    # Overrides original install_pkg(). Required by the notification mechanism.
   function install_pkg() {
 	local i
 
@@ -668,7 +681,16 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		DELALL="$OLDDEL"
 	fi
 	for i in $SHOWLIST; do
+		INSTALL_T='installed:  '
+		if [ -e /var/log/packages/$(echo $i|sed 's/\.t.z//') ];then
+		  INSTALL_T='reinstalled:'
+		fi
+		REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
 		getpkg $i installpkg Installing
+		if [ -e "/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+		  FDATE=$(ls -l --full-time /var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+		  echo "$FDATE $INSTALL_T $i  [$REPOPOS]" >> $WORKDIR/install.log
+		fi
 	done
 	handle_event "install"
   }  

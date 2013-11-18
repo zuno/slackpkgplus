@@ -1,3 +1,7 @@
+Version 20131118.1 - 18/Nov/2013
+  - Added an install log in /var/lib/slackpkg/install.log
+  - Added makeinstlog.sh in /usr/doc/slackpkg+-* to create a starting install.log
+
 Version 20131116.1 - 16/Nov/2013
   - Missed real greylist code :)
 
