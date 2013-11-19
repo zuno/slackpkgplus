@@ -26,5 +26,22 @@ WORKDIR=/var/lib/slackpkg
 
 )|sort -r|awk '{if(!a[$1$2$3$4]++)print}'|tac >$WORKDIR/install.log.new
 
-mv $WORKDIR/install.log.new $WORKDIR/install.log
-echo "An install log was created in $WORKDIR/install.log"
+if [ "$1" == "-t" ];then
+  if [ ! -e $WORKDIR/pkglist ];then
+    echo "pkglist does not exists; unable to try repository detect"
+    echo "An install log was created in $WORKDIR/install.log.new ; review it and rename in install.log"
+  else
+    cat $WORKDIR/install.log.new |while read a;do 
+      P=$(echo $a|awk '{print $4}')
+      R=$(egrep \
+	    "$(echo $P|awk -f /usr/libexec/slackpkg/pkglist.awk | awk '{print " "$1" .* "$3" "$4"$"}'| sed -r 's/ [0-9]+([^\$]*)\$/ [0-9]+\1 /')" \
+	    /var/lib/slackpkg/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//'
+	 )
+      echo $a|sed "s/\[\]/[$R]/"
+    done > $WORKDIR/install.log.tmp
+    echo "An install log was created in $WORKDIR/install.log.tmp ; review it and rename in install.log"
+  fi
+else
+  mv $WORKDIR/install.log.new $WORKDIR/install.log
+  echo "An install log was created in $WORKDIR/install.log"
+fi
