@@ -742,6 +742,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
   done
 
+  if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]] && [ "$ALLOW32BIT" == "on" ] ; then
+	ARCH="\($ARCH\)\|\([i]*[3456x]86[^_]*\)"
+  fi
+
   if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] || [ "$CMD" == "remove" ] ; then
 
     NEWINPUTLIST=""
