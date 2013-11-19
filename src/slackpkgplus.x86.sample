@@ -7,6 +7,9 @@ SLACKPKGPLUS=on
 # set to '2' to show always show the download bar
 VERBOSE=1
 
+# Add custom option to 'wget'
+#WGETOPTS="--timeout=5 --tries=1"
+
 # Enable (1) / Disable (0) the official slackpkg blacklist. May be useful to temporarily skip
 # the slackware blacklist. You can also override it from command line:
 # 'USEBL=0 slackpkg upgrade-all'

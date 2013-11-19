@@ -6,16 +6,18 @@ declare -A MIRRORPLUS
 declare -A NOTIFYMSG
 
 if [ -e /etc/slackpkg/slackpkgplus.conf ];then
-  # You can override SLACKPKGPLUS VERBOSE USEBL from command-line
+  # You can override WGETOPTS SLACKPKGPLUS VERBOSE USEBL from command-line
   EXTSLACKPKGPLUS=$SLACKPKGPLUS
   EXTVERBOSE=$VERBOSE
   EXTUSEBL=$USEBL
+  EXTWGETOPTS=$WGETOPTS
 
   . /etc/slackpkg/slackpkgplus.conf
 
   SLACKPKGPLUS=${EXTSLACKPKGPLUS:-$SLACKPKGPLUS}
   VERBOSE=${EXTVERBOSE:-$VERBOSE}
   USEBL=${EXTUSEBL:-$USEBL}
+  WGETOPTS=${EXTWGETOPTS:-$WGETOPTS}
 
   USEBLACKLIST=true
   if [ "$USEBL" == "0" ];then
@@ -703,13 +705,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   }  
 
 
-  DOWNLOADER="wget --no-check-certificate --passive-ftp -O"
+  DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
   if [ "$VERBOSE" = "0" ];then
-    DOWNLOADER="wget --no-check-certificate -nv --passive-ftp -O"
+    DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
   elif [ "$VERBOSE" = "2" ];then
-    DOWNLOADER="wget --no-check-certificate --passive-ftp -O"
+    DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
   elif [ "$CMD" = "update" ];then
-    DOWNLOADER="wget --no-check-certificate -nv --passive-ftp -O"
+    DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
   fi
 
   # Global variable required by givepriority()
