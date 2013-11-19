@@ -1,3 +1,7 @@
+Version 20131119.3 - 20/Nov/2013
+  - Fixed various issues
+  - Now ALLOW32BIT also auto-greylist the 32bit packages
+
 Version 20131119.2 - 19/Nov/2013
   - Added ALLOW32BIT flag to allow to install 32bit packages on a 64bit system
 

@@ -744,6 +744,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]] && [ "$ALLOW32BIT" == "on" ] ; then
 	ARCH="\($ARCH\)\|\([i]*[3456x]86[^_]*\)"
+	echo -e "i[3456]86\nx86" > $TMPDIR/greylist.32bit
   fi
 
   if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] || [ "$CMD" == "remove" ] ; then
