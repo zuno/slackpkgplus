@@ -1,3 +1,6 @@
+Version 20131119.2 - 19/Nov/2013
+  - Added ALLOW32BIT flag to allow to install 32bit packages on a 64bit system
+
 Version 20131119.1 - 19/Nov/2013
   - 'slackpkg update' also update the install.log
   - 'makeinstlog.sh -t' TRY to detect the repository from which the package

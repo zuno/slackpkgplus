@@ -6,7 +6,8 @@ declare -A MIRRORPLUS
 declare -A NOTIFYMSG
 
 if [ -e /etc/slackpkg/slackpkgplus.conf ];then
-  # You can override WGETOPTS SLACKPKGPLUS VERBOSE USEBL from command-line
+  # You can override ALLOW32BIT WGETOPTS SLACKPKGPLUS VERBOSE USEBL from command-line
+  EXTALLOW32BIT=$ALLOW32BIT
   EXTSLACKPKGPLUS=$SLACKPKGPLUS
   EXTVERBOSE=$VERBOSE
   EXTUSEBL=$USEBL
@@ -14,6 +15,7 @@ if [ -e /etc/slackpkg/slackpkgplus.conf ];then
 
   . /etc/slackpkg/slackpkgplus.conf
 
+  ALLOW32BIT=${EXTALLOW32BIT:-$ALLOW32BIT}
   SLACKPKGPLUS=${EXTSLACKPKGPLUS:-$SLACKPKGPLUS}
   VERBOSE=${EXTVERBOSE:-$VERBOSE}
   USEBL=${EXTUSEBL:-$USEBL}
@@ -238,7 +240,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       X86_64=$(ls /var/log/packages/aaa_base*x86_64*|head -1 2>/dev/null)
       for PREPO in $REPOPLUS;do
         if [ ! -z "$X86_64" ];then
-          egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -- "-(x86_64|noarch)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+	  if [ "$ALLOW32BIT" == "on" ];then
+	    egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+	  else
+	    egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(i[3456]86|arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+	  fi
         else
           egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(x86_64|arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
         fi
