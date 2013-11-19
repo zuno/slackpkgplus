@@ -27,7 +27,7 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
-  SPKGPLUS_VERSION="1.0"
+  SPKGPLUS_VERSION="1.0.1-dev"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   
@@ -481,9 +481,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     done
   }
 
-  touch $TMPDIR/greylist.tmp
+  touch $TMPDIR/greylist.1
   if [ -e /etc/slackpkg/greylist ];then
-    cat /etc/slackpkg/greylist|sed -e 's/#.*//'|grep -v -e '^#' -e '^$'|awk '{print $1}'|sort -u >$TMPDIR/greylist.tmp
+    cat /etc/slackpkg/greylist|sed -e 's/#.*//'|grep -v -e '^#' -e '^$'|awk '{print $1}'|sort -u >$TMPDIR/greylist.1
+    cat $TMPDIR/greylist.1|sed 's/^/SLACKPKGPLUS_/' >$TMPDIR/greylist.2
   fi
 
   REPOPLUS=$(echo "${REPOPLUS[*]} ${PKGS_PRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}')
@@ -572,6 +573,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ "$(head -1 ${TMPDIR}/blacklist.tmp|awk '{print $1}')" != "local" ];then
       cat ${TMPDIR}/pkglist-pre
     fi
+    cat $TMPDIR/greylist.* >$TMPDIR/greylist
+    grep -qvEw -f $TMPDIR/greylist $TMPDIR/pkglist-pre >$TMPDIR/unchecklist
 
   }
   
@@ -910,6 +913,5 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  cat $TMPDIR/greylist*|sort -u >$TMPDIR/unchecklist
 
 fi

@@ -1,3 +1,8 @@
 # All packages in that list will be showned but
 # unchecked by default
-# You must enter exact package name
+#
+# You can greylist using regular expressions.
+#
+# Don't use *full* regex here, because all of the following
+# will be checked for the regex: series, name, version, arch,
+# build, fullname and repository name.

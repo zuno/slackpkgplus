@@ -19,6 +19,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		if [ "$ONOFF" != "off" ]; then
 			ONOFF=on
 		fi
+		cat $TMPDIR/greylist.* >$TMPDIR/greylist
+		grep -Ew -f $TMPDIR/greylist $TMPDIR/pkglist|awk '{print $2}' >$TMPDIR/unchecklist
+
 		rm -f $TMPDIR/dialog.tmp
 		
 		if [ "$2" = "upgrade" ]; then
