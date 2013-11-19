@@ -33,11 +33,11 @@ if [ "$1" == "-t" ];then
   else
     cat $WORKDIR/install.log.new |while read a;do 
       P=$(echo $a|awk '{print $4}')
-      R=$(egrep \
-	    "$(echo $P|awk -f /usr/libexec/slackpkg/pkglist.awk | awk '{print " "$1" .* "$3" "$4"$"}'| sed -r 's/ [0-9]+([^\$]*)\$/ [0-9]+\1 /')" \
+      R=$(grep -m1 \
+	    "$(echo $P|awk -f /usr/libexec/slackpkg/pkglist.awk | awk '{print " "$1" .* "$3" "$4"$"}'| sed -r 's/ [0-9]+([^\$]*)\$/ [0-9]\\+\1 /')" \
 	    /var/lib/slackpkg/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//'
 	 )
-      echo $a|sed "s/\[\]/[$R]/"
+      echo "$a"|sed "s/\[\]/[$R]/"
     done > $WORKDIR/install.log.tmp
     echo "An install log was created in $WORKDIR/install.log.tmp ; review it and rename in install.log"
   fi

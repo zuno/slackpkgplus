@@ -674,7 +674,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	ls -1 /var/log/packages > $TMPDIR/tmplist
 
 	for i in $SHOWLIST; do
-		PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-\(noarch\|fw\|${ARCH}\)" $TMPDIR/tmplist)
+		PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
 		REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
 		getpkg $i upgradepkg Upgrading
 		if [ -e "/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
