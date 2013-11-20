@@ -25,11 +25,14 @@ if [ -e /etc/slackpkg/slackpkgplus.conf ];then
   if [ "$USEBL" == "0" ];then
     USEBLACKLIST=false
   fi
+  if [ "$ENABLENOTIFY" = "on" -a -e /etc/slackpkg/notifymsg.conf ];then
+    . /etc/slackpkg/notifymsg.conf
+  fi
 fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
-  SPKGPLUS_VERSION="1.0.1-dev"
+  SPKGPLUS_VERSION="20131120.1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   
@@ -508,7 +511,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
   done
 
-  if [ /etc/slackpkgplus.conf -nt $WORKDIR/pkglist -a "$CMD" != "update" ];then
+  if [ /etc/slackpkg/slackpkgplus.conf -nt $WORKDIR/pkglist -a "$CMD" != "update" ];then
     echo
     echo "NOTICE: remember to re-run 'slackpkg update' after modifing slackpkgplus.conf"
     echo
@@ -597,6 +600,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	local MSG
 	local MSGLIST=""
 	local USERKEY
+
 
 	find /var/log/packages/ -type f -printf "%f\n" | sort > ${TMPDIR}/installed.tmp
 	

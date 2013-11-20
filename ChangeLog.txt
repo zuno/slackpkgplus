@@ -1,4 +1,8 @@
-Version 20131119.3 - 20/Nov/2013
+Version 20131120.1 - 20/Nov/2013
+  - Moved notify messages in a dedicated configuration file and added
+    ENABLENOTIFY to enable/disable it
+
+Version 20131119.3 - 19/Nov/2013
   - Fixed various issues
   - Now ALLOW32BIT also auto-greylist the 32bit packages
 
