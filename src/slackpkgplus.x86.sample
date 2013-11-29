@@ -12,6 +12,11 @@ VERBOSE=1
 # 'USEBL=0 slackpkg upgrade-all'
 USEBL=1
 
+# Add custom option to 'wget'.
+# You can solve the repository indisponibility issue by set a timeout here
+#WGETOPTS="--timeout=5 --tries=1"
+
+
 # If two or more repositories contains some same packages, you can specify
 # from which repository you prefer to search it.
 # The syntax is "<repository_name>:<package_name>"
@@ -22,10 +27,9 @@ USEBL=1
 #PKGS_PRIORITY=( myrepo:.* )
 #
 
-# List repositories you want to use (defined below).
+# List repositories you want to use (defined below)
 # remember to launch 'slackpkg update' if you modify that row.
 REPOPLUS=( slackpkgplus restricted alienbob slacky )
-
 
 
 # Define mirrors (uncomment one or more mirror; remember to add it to REPOPLUS)
@@ -45,7 +49,6 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 #
 # Local packages (you do not need metadata nor 'slackpkg update' command):
 #MIRRORPLUS['myrepo']=dir://repositories/mypackages/
-
 
 
 # -- Each entry in the hash table NOTIFYMSG allows to associate a message
