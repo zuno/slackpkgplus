@@ -23,6 +23,9 @@ if [ -e /etc/slackpkg/slackpkgplus.conf ];then
   if [ "$USEBL" == "0" ];then
     USEBLACKLIST=false
   fi
+  if [ "$ENABLENOTIFY" = "on" -a -e /etc/slackpkg/notifymsg.conf ];then
+    . /etc/slackpkg/notifymsg.conf
+  fi
 fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then

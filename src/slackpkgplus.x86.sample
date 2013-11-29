@@ -16,6 +16,9 @@ USEBL=1
 # You can solve the repository indisponibility issue by set a timeout here
 #WGETOPTS="--timeout=5 --tries=1"
 
+# Enable (on) / Disable (off) notification events (see notifymsg.conf)
+#ENABLENOTIFY=off
+
 
 # If two or more repositories contains some same packages, you can specify
 # from which repository you prefer to search it.
@@ -49,39 +52,6 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 #
 # Local packages (you do not need metadata nor 'slackpkg update' command):
 #MIRRORPLUS['myrepo']=dir://repositories/mypackages/
-
-
-# -- Each entry in the hash table NOTIFYMSG allows to associate a message
-#    to an event. At runtime, when an event E is triggered the associated 
-#    message NOTIFYMSG[E], if any, is printed, in a dialog when DIALOG=on, 
-#    on the standard output otherwise.
-#
-#    The syntax of the variable NOTIFYMSG is as below :
-#
-#     NOTIFYMSG[<EVENT>]="<MESSAGE>"
-# 
-#     EVENT       ::= <EVENTID>@<PATTERNLIST>
-#     EVENTID     ::= on_install|on_upgrade|on_remove
-#     PATTERNLIST ::= <PATTERN>[,PATTERNLIST]
-#     MESSAGE     ::= string
-#
-# Each PATTERN can be the basename of a package (i.e mesa), or a regular
-# expression (mozilla-.*)
-# 
-# When an event occurs, the basenames of packages that match a given 
-# PATTERNLIST is available at runtime through the variable NV_MATCHPKGS.
-# Attention, this variable must be escaped (i.e \${NV_MATCHPKGS}) when
-# referenced inside the MESSAGE associated to an EVENT.
-#
-NOTIFYMSG[on_install@mesa.*,xorg-server]="Package(s) \$NV_MATCHPKGS has(have) been (re)installed.\n\
-\n\
-In order to use graphical softwares, you should reinstall any proprietary\ 
-driver in use (nVidia, aTi)."
-
-NOTIFYMSG[on_upgrade@mesa.*,xorg-server]="Package(s) \$NV_MATCHPKGS has(have) been updated.\n\
-\n\
-In order to use graphical softwares, you should reinstall any proprietary\ 
-driver in use (nVidia, aTi)."
 
 
 #
