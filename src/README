@@ -325,6 +325,20 @@ configuration file.
 As workaround you can add the options WGETOPTS="--timeout=5 --tries=1"
 in slackpkgplus.conf
 
+-----
+
+
+ALLOW32BIT
+
+By default slackpkg+ deny to install 32bit packages on a 64bit system.
+
+Set ALLOW32BIT=on to allow slackpkg+ to install 32bit packages on a 64bit slackware 
+installation (possibly unsafe). Please, do not install both 32 and 64bit of the same 
+package to avoid problems, and NEVER upgrade exitant 64bit packages with relative 32bit
+package.
+
+Do not forget to install the multilibs.
+
 
 -----
 
