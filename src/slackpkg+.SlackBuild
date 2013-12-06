@@ -28,6 +28,7 @@ cp $CWD/repositories.txt usr/doc/slackpkg+-$VERSION/
 cp $CWD/setupmultilib.sh usr/doc/slackpkg+-$VERSION/
 cp $CWD/slackpkg+.SlackBuild usr/doc/slackpkg+-$VERSION/
 cp $CWD/slackpkgplus.*.sample usr/doc/slackpkg+-$VERSION/
+cp $CWD/greylist etc/slackpkg/greylist.new
 cp $CWD/slack-desc install/
 cat $CWD/doinst.sh|sed "s/SLPVERSION/$VERSION/" > install/doinst.sh
 cat $CWD/notifymsg.conf > etc/slackpkg/notifymsg.conf.new

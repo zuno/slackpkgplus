@@ -7,6 +7,13 @@ SLACKPKGPLUS=on
 # set to '2' to show always show the download bar
 VERBOSE=1
 
+# By default slackpkg+ deny to install 32bit packages.
+# Set this flag to 'on' allow slackpkg+ to install 32bit packages on a 64bit slackware 
+# installation (possibly unsafe). Please, do not install both 32 and 64bit of the same 
+# package to avoid problems, and NEVER upgrade exitant 64bit packages with relative 32bit package.
+# Do not forget to install the multilibs.
+ALLOW32BIT=off
+
 # Enable (1) / Disable (0) the official slackpkg blacklist. May be useful to temporarily skip
 # the slackware blacklist. You can also override it from command line:
 # 'USEBL=0 slackpkg upgrade-all'
@@ -19,6 +26,8 @@ WGETOPTS="--timeout=5 --tries=1"
 # Enable (on) / Disable (off) notification events (see notifymsg.conf)
 #ENABLENOTIFY=off
 
+# Enable (on) / Disable (off) the greylist feature. See /etc/slackpkg/greylist
+GREYLIST=on
 
 # If two or more repositories contains some same packages, you can specify
 # from which repository you prefer to search it.

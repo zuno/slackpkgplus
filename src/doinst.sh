@@ -36,6 +36,7 @@ copy_config_file() {
 
 copy_config_file
 config etc/slackpkg/slackpkgplus.conf.new
+config etc/slackpkg/greylist.new
 config etc/slackpkg/notifymsg.conf.new
 remove var/lib/slackpkg/ChangeLog.txt
 remove var/lib/slackpkg/pkglist

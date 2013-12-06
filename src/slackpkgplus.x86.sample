@@ -12,13 +12,6 @@ VERBOSE=1
 # 'USEBL=0 slackpkg upgrade-all'
 USEBL=1
 
-# By default slackpkg+ deny to install 32bit packages.
-# Set this flag to 'on' allow slackpkg+ to install 32bit packages on a 64bit slackware 
-# installation (possibly unsafe). Please, do not install both 32 and 64bit of the same 
-# package to avoid problems, and NEVER upgrade exitant 64bit packages with relative 32bit package.
-# Do not forget to install the multilibs.
-#ALLOW32BIT=off
-
 # Add custom option to 'wget'.
 # You can solve the repository indisponibility issue by set a timeout here
 WGETOPTS="--timeout=5 --tries=1"
@@ -26,6 +19,8 @@ WGETOPTS="--timeout=5 --tries=1"
 # Enable (on) / Disable (off) notification events (see notifymsg.conf)
 #ENABLENOTIFY=off
 
+# Enable (on) / Disable (off) the greylist feature. See /etc/slackpkg/greylist
+GREYLIST=on
 
 # If two or more repositories contains some same packages, you can specify
 # from which repository you prefer to search it.

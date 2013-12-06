@@ -19,22 +19,31 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		if [ "$ONOFF" != "off" ]; then
 			ONOFF=on
 		fi
+		cat $TMPDIR/greylist.* >$TMPDIR/greylist
+		if [ "$GREYLIST" == "off" ];then
+		  >$TMPDIR/greylist
+		fi
+		grep -Ew -f $TMPDIR/greylist $TMPDIR/pkglist|awk '{print $2}' >$TMPDIR/unchecklist
 		rm -f $TMPDIR/dialog.tmp
 		
 		if [ "$2" = "upgrade" ]; then
 			ls -1 /var/log/packages > $TMPDIR/tmplist
 			for i in $1; do
+			  	TMPONOFF=$ONOFF
 				BASENAME=$(cutpkg $i)
 				PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-\(noarch\|fw\|${ARCH}\)" $TMPDIR/tmplist)
                                 REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
 
-				echo "$i \"$REPOPOS\" $ONOFF \"currently installed: $PKGFOUND\"" >>$TMPDIR/dialog.tmp
+				grep -q "^$(echo $i|rev|cut -f4- -d-|rev)$" $TMPDIR/unchecklist && TMPONOFF="off"
+				echo "$i \"$REPOPOS\" $TMPONOFF \"currently installed: $PKGFOUND\"" >>$TMPDIR/dialog.tmp
 			done
 			HINT="--item-help"
 		else
 			for i in $1; do
+			  	TMPONOFF=$ONOFF
                                 REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-				echo "$i \"$REPOPOS\" $ONOFF" >>$TMPDIR/dialog.tmp
+				grep -q "^$(echo $i|rev|cut -f4- -d-|rev)$" $TMPDIR/unchecklist && TMPONOFF="off"
+				echo "$i \"$REPOPOS\" $TMPONOFF" >>$TMPDIR/dialog.tmp
 			done
 			HINT=""
 		fi

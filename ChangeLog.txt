@@ -1,3 +1,8 @@
+Version 1.1.0 - 6/Dec/2013
+  - Added ALLOW32BIT flag to allow to install 32bit packages on a 64bit system
+  - setupmultilib.sh install only adaptative multilib by default
+  - Small fixes
+
 Version 1.0.2 - 6/Dec/2013
   - Added WGETOPTS
   - Moved notifications on a dedicated configuration file (notifymsg.conf)
