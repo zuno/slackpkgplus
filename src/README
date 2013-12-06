@@ -298,6 +298,36 @@ metadata!!
 ------
 
 
+NOTIFICATIONS
+
+Some package require special post-installation activity as upgrading a related
+package or rebuilt kernel modules or change a custom configuration. A user may
+forgot to do this, especially in large updates. The notification functionality
+help the user to remember it. In /etc/slackpkg/notifymsg.conf you can define
+some custom event. See documentation in that file. Events may be VERY custom
+(on kde upgrde remember me to call my friends ;), or the more useful 
+"on kernel upgrade remember to recompile all driver modules"
+
+You may enable this function by setting "ENABLENOTIFY=on" in slackpkgplus.conf
+
+
+-----
+
+WGET Options
+
+slackpkg+ uses wget to download packages and metadata.
+
+You can use the WGETOPTS setting to pass options to wget.
+
+By default when an url is unreachable wget - after a long timeout - retry to
+download so if a repository is unreacheble you should remove it from your
+configuration file.
+As workaround you can add the options WGETOPTS="--timeout=5 --tries=1"
+in slackpkgplus.conf
+
+
+-----
+
 FURTHER INFORMATION
 
 The AlienBOB article about slackpkg+:
