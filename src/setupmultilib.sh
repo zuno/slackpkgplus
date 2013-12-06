@@ -74,7 +74,13 @@ if [ "$ANS" == "y" -o "$ANS" == "Y" ];then
     slackpkg update gpg
     slackpkg update
     slackpkg upgrade multilib
-    slackpkg install multilib
+    COMPATPKGS=$(
+      cd /var/log/packages
+      ls | rev |cut -f4- -d-|rev|sed -e 's/^/^slackware64 /' -e 's/$/ /' > /tmp/installed_packages1
+      grep -f /tmp/installed_packages1 /var/lib/slackpkg/pkglist|awk '{print "SLACKPKGPLUS_multilib "$2"-compat32 "}' > /tmp/installed_packages2
+      grep -f /tmp/installed_packages2 /var/lib/slackpkg/pkglist|awk '{print "multilib:"$2}'
+    )
+    slackpkg install $COMPATPKGS
     echo "Multilib installed"
   else
     echo "To install multilib type:"
