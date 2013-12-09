@@ -41,6 +41,7 @@ GREYLIST=on
 # If you want a multilib system, uncomment the multilib repository and set:
 #PKGS_PRIORITY=( multilib:.* )
 #
+# (Use /usr/doc/slackpkg+-*/setupmultilib.sh to setup a multilib configuration)
 
 # List repositories you want to use (defined below)
 # remember to launch 'slackpkg update' if you modify that row.

@@ -6,7 +6,8 @@ declare -A MIRRORPLUS
 declare -A NOTIFYMSG
 
 if [ -e /etc/slackpkg/slackpkgplus.conf ];then
-  # You can override WGETOPTS SLACKPKGPLUS VERBOSE USEBL ALLOW32BIT from command-line
+  # You can override GREYLIST WGETOPTS SLACKPKGPLUS VERBOSE USEBL ALLOW32BIT from command-line
+  EXTGREYLIST=$GREYLIST
   EXTALLOW32BIT=$ALLOW32BIT
   EXTSLACKPKGPLUS=$SLACKPKGPLUS
   EXTVERBOSE=$VERBOSE
@@ -15,6 +16,7 @@ if [ -e /etc/slackpkg/slackpkgplus.conf ];then
 
   . /etc/slackpkg/slackpkgplus.conf
 
+  GREYLIST=${EXTGREYLIST:-$GREYLIST}
   ALLOW32BIT=${EXTALLOW32BIT:-$ALLOW32BIT}
   SLACKPKGPLUS=${EXTSLACKPKGPLUS:-$SLACKPKGPLUS}
   VERBOSE=${EXTVERBOSE:-$VERBOSE}
@@ -32,12 +34,19 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
-  SPKGPLUS_VERSION="1.1.0"
+  SPKGPLUS_VERSION="1.2.0"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   
   if [ ! -e "$WORKDIR" ];then
     mkdir -p "$WORKDIR"
+  fi
+
+  if [ "$CMD" == "update" ];then
+    if [ "$VERBOSE" == "2" ];then
+      echo "Updating $WORKDIR/install.log"
+    fi
+    /usr/libexec/slackpkg/makeinstlog.sh >/dev/null
   fi
 
   # Override the slackpkg getfile().
@@ -647,11 +656,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		echo -e "\nPackage: $i"
 		echo -e "\tRemoving... "
 		removepkg $i
+		if [ ! -e /var/log/packages/$i ];then
+		  FDATE=$(ls -ltr --full-time /var/log/removed_packages/$i|tail -1 |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+		  echo "$FDATE removed:     $i" >> $WORKDIR/install.log
+		fi
 	done
 	handle_event "remove"
   }
 
-    # Overrides original remove_pkg(). Required by the notification mechanism.
+    # Overrides original upgrade_pkg(). Required by the notification mechanism.
   function upgrade_pkg() {
 	local i
 
@@ -663,13 +676,22 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		done
 		DELALL="$OLDDEL"
 	fi
+	ls -1 /var/log/packages > $TMPDIR/tmplist
+
 	for i in $SHOWLIST; do
+	        PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
+		REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
 		getpkg $i upgradepkg Upgrading
+		if [ -e "/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+		  FDATE=$(ls -l --full-time /var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+		  echo "$FDATE upgraded:    $i  [$REPOPOS]  (was $PKGFOUND)" >> $WORKDIR/install.log
+		fi
+
 	done
 	handle_event "upgrade"
   }
 
-    # Overrides original remove_pkg(). Required by the notification mechanism.
+    # Overrides original install_pkg(). Required by the notification mechanism.
   function install_pkg() {
 	local i
 
@@ -682,7 +704,16 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		DELALL="$OLDDEL"
 	fi
 	for i in $SHOWLIST; do
+	        INSTALL_T='installed:  '
+		if [ -e /var/log/packages/$(echo $i|sed 's/\.t.z//') ];then
+		  INSTALL_T='reinstalled:'
+		fi
+		REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
 		getpkg $i installpkg Installing
+		if [ -e "/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+		  FDATE=$(ls -l --full-time /var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+		  echo "$FDATE $INSTALL_T $i  [$REPOPOS]" >> $WORKDIR/install.log
+		fi
 	done
 	handle_event "install"
   }  
@@ -718,6 +749,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]] && [ "$ALLOW32BIT" == "on" ] ; then
        ARCH="\($ARCH\)\|\([i]*[3456x]86[^_]*\)"
+       echo -e "i[3456]86\nx86" > $TMPDIR/greylist.32bit
   fi
 
   if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] || [ "$CMD" == "remove" ] ; then
@@ -897,6 +929,5 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  cat $TMPDIR/greylist*|sort -u >$TMPDIR/unchecklist
 
 fi

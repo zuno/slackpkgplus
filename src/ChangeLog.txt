@@ -1,3 +1,9 @@
+Version 1.2.0 - 9/Dec/2013
+  - Now ALLOW32BIT also auto-greylist the 32bit packages
+  - Added an install log in /var/lib/slackpkg/install.log; use
+    '/usr/libexec/slackpkg/makeinstlog.sh -t' to create a starting
+    install.log (it TRY to detect the repository)
+
 Version 1.1.0 - 6/Dec/2013
   - Added ALLOW32BIT flag to allow to install 32bit packages on a 64bit system
   - setupmultilib.sh install only adaptative multilib by default

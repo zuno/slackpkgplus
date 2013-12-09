@@ -40,6 +40,9 @@ config etc/slackpkg/greylist.new
 config etc/slackpkg/notifymsg.conf.new
 remove var/lib/slackpkg/ChangeLog.txt
 remove var/lib/slackpkg/pkglist
+
+( . usr/libexec/slackpkg/makeinstlog.sh >/dev/null )
+
 echo
 echo
 echo "Please, read the README file before using slackpkg+"
