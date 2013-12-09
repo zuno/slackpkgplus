@@ -1,3 +1,6 @@
+Version 20131209.1 - 9/Dec/2013
+  - Forked from 1.2.0
+
 Version 1.2.0 - 9/Dec/2013
   - Now ALLOW32BIT also auto-greylist the 32bit packages
   - Added an install log in /var/lib/slackpkg/install.log; use

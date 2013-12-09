@@ -47,7 +47,7 @@ MIRRORPLUS['restricted']=http://taper.alienbase.nl/mirrors/people/alien/restrict
 MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware-14.1/
 
 # use this to keep the slackpkg+ package updated
-MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
+MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+dev/
 
 # Local repository:
 #MIRRORPLUS['alienbob']=file://repositories/alien/sbrepos/14.1/x86/
