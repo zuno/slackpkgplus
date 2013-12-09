@@ -7,16 +7,20 @@ SLACKPKGPLUS=on
 # set to '2' to show always show the download bar
 VERBOSE=1
 
-# Add custom option to 'wget'
-#WGETOPTS="--timeout=5 --tries=1"
-
-# Enable (on) / Disable (off) notification events (see notifymsg.conf)
-#ENABLENOTIFY=off
-
 # Enable (1) / Disable (0) the official slackpkg blacklist. May be useful to temporarily skip
 # the slackware blacklist. You can also override it from command line:
 # 'USEBL=0 slackpkg upgrade-all'
 USEBL=1
+
+# Add custom option to 'wget'.
+# You can solve the repository indisponibility issue by set a timeout here
+WGETOPTS="--timeout=5 --tries=1"
+
+# Enable (on) / Disable (off) notification events (see notifymsg.conf)
+#ENABLENOTIFY=off
+
+# Enable (on) / Disable (off) the greylist feature. See /etc/slackpkg/greylist
+GREYLIST=on
 
 # If two or more repositories contains some same packages, you can specify
 # from which repository you prefer to search it.
@@ -28,10 +32,9 @@ USEBL=1
 #PKGS_PRIORITY=( myrepo:.* )
 #
 
-# List repositories you want to use (defined below).
+# List repositories you want to use (defined below)
 # remember to launch 'slackpkg update' if you modify that row.
-REPOPLUS=( slackpkgplusdev restricted alienbob slacky )
-
+REPOPLUS=( slackpkgplus restricted alienbob slacky )
 
 
 # Define mirrors (uncomment one or more mirror; remember to add it to REPOPLUS)
@@ -44,7 +47,7 @@ MIRRORPLUS['restricted']=http://taper.alienbase.nl/mirrors/people/alien/restrict
 MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware-14.1/
 
 # use this to keep the slackpkg+ package updated
-MIRRORPLUS['slackpkgplusdev']=http://slakfinder.org/slackpkg+dev/
+MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 
 # Local repository:
 #MIRRORPLUS['alienbob']=file://repositories/alien/sbrepos/14.1/x86/

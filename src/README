@@ -21,10 +21,17 @@ for any damage that may be caused to your computer.
 
 CONFIGURATION
 
+For the basic configuration:
+
 * Edit /etc/slackpkg/slackpkgplus.conf
 * Uncomment one or more mirrors and add them to the REPOPLUS list
-* Optionally, set PKGS_PRIORITY to give priority order for packages present in
-  multiple repositories
+
+Note that packages in these repository will not listed if they are present in
+the official repositories (see below).
+
+* Optionally, set PKGS_PRIORITY to give priority order for single packages 
+  present in multiple repositories or to allow repositories to override
+  official slackware packages
 
 For a list of supported repositories see repositories.txt, but you can also
 add others yourself.
@@ -131,10 +138,10 @@ PRIORITY CONFIGURATION
 When a package is present in more than one repository, the package will be
 searched for in the following order:
 
-1) as listed in PKGS_PRIORITY
+1) as listed in PKGS_PRIORITY (allow to override official packages)
 2) as listed in an official Slackware repository
    (configured in /etc/slackpkg/mirrors)
-3) as listed in REPOPLUS
+3) as listed in REPOPLUS (deny to override official packages)
 4) all others defined in MIRRORPLUS
 
 PKGS_PRIORITY syntax:
@@ -154,7 +161,7 @@ MULTILIB
 
 If you want to use a multilib system, you can automatically configure the
 multilib repository in slackpkgplus.conf and install multilib simply by running:
-# /usr/doc/slackpkg+-1.0/setupmultilib.sh
+# /usr/doc/slackpkg+-1.2.0/setupmultilib.sh
 
 To configure multilib manually (e.g. if you have installed multilib already),
 uncomment the correct "MIRRORPLUS['multilib']=...",
@@ -297,6 +304,85 @@ metadata!!
 
 ------
 
+
+NOTIFICATIONS
+
+Some package require special post-installation activity as upgrading a related
+package or rebuilt kernel modules or change a custom configuration. A user may
+forgot to do this, especially in large updates. The notification functionality
+help the user to remember it. In /etc/slackpkg/notifymsg.conf you can define
+some custom event. See documentation in that file. Events may be VERY custom
+(on kde upgrde remember me to call my friends ;), or the more useful 
+"on kernel upgrade remember to recompile all driver modules"
+
+You may enable this function by setting "ENABLENOTIFY=on" in slackpkgplus.conf
+
+
+-----
+
+WGET Options
+
+slackpkg+ uses wget to download packages and metadata.
+
+You can use the WGETOPTS setting to pass options to wget.
+
+By default when an url is unreachable wget - after a long timeout - retry to
+download so if a repository is unreacheble you should remove it from your
+configuration file.
+As workaround you can add the options WGETOPTS="--timeout=5 --tries=1"
+in slackpkgplus.conf
+
+-----
+
+
+ALLOW32BIT
+
+By default slackpkg+ deny to install 32bit packages on a 64bit system.
+
+Set ALLOW32BIT=on to allow slackpkg+ to install 32bit packages on a 64bit slackware 
+installation (possibly unsafe). Please, do not install both 32 and 64bit of the same 
+package to avoid problems, and NEVER upgrade exitant 64bit packages with relative 32bit
+package.
+
+Do not forget to install the multilibs.
+
+
+-----
+
+GREYLIST
+
+Sometime you may want that slackpkg+ does not install some package in the upgrade-all
+process. To do that you must uncheck the package everytime or add it in the
+'blacklist' file. The first method may be onerous when you use upgrade-all frequently.
+The second method does not allow you to know which package version is available.
+A thirdy method is to put it in the 'graylist' file.
+All packages listed in graylist will be available to install and listed in slackpkg
+dialog, but they will be unchecked by default so you are sure to not install it
+wrongly.
+You may decide also to greylist one entire repository. A good idea is to greylist
+all thirdy party repository so an upgrade-all automatically upgrade official
+slackware packages but force you to review all other packages so to be sure on what
+you install.
+
+-----
+
+INSTALL LOG
+
+Slackpkg+ now create a log of all installed packages in /var/lib/slackpkg/install.log
+and try to add in this log from which repository you have downloaded the file.
+This help you to track your slackware installation.
+
+You are encouraged to run '/usr/lib/slackpkg/makeinstlog.sh -t' (this may take a few)
+to initialize the log (it will create /var/lib/slackpkg/install.log.tmp). The '-t' 
+param add the repository name from which the packages was downloaded, but it may fails,
+so you are encouraged to review the file before rename it in install.log.
+Note that you can edit manually to modify or add informations.
+
+At every slackpkg install/upgrade/remove invocation, a new log will be added.
+At every slackpkg update invocation, a fast list rebuild will be done.
+
+
+-----
 
 FURTHER INFORMATION
 

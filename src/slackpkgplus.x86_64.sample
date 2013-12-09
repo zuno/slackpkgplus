@@ -12,18 +12,22 @@ VERBOSE=1
 # installation (possibly unsafe). Please, do not install both 32 and 64bit of the same 
 # package to avoid problems, and NEVER upgrade exitant 64bit packages with relative 32bit package.
 # Do not forget to install the multilibs.
-#ALLOW32BIT=off
-
-# Add custom option to 'wget'
-#WGETOPTS="--timeout=5 --tries=1"
-
-# Enable (on) / Disable (off) notification events (see notifymsg.conf)
-#ENABLENOTIFY=off
+ALLOW32BIT=off
 
 # Enable (1) / Disable (0) the official slackpkg blacklist. May be useful to temporarily skip
 # the slackware blacklist. You can also override it from command line:
 # 'USEBL=0 slackpkg upgrade-all'
 USEBL=1
+
+# Add custom option to 'wget'.
+# You can solve the repository indisponibility issue by set a timeout here
+WGETOPTS="--timeout=5 --tries=1"
+
+# Enable (on) / Disable (off) notification events (see notifymsg.conf)
+#ENABLENOTIFY=off
+
+# Enable (on) / Disable (off) the greylist feature. See /etc/slackpkg/greylist
+GREYLIST=on
 
 # If two or more repositories contains some same packages, you can specify
 # from which repository you prefer to search it.
@@ -37,10 +41,11 @@ USEBL=1
 # If you want a multilib system, uncomment the multilib repository and set:
 #PKGS_PRIORITY=( multilib:.* )
 #
+# (Use /usr/doc/slackpkg+-*/setupmultilib.sh to setup a multilib configuration)
 
 # List repositories you want to use (defined below)
 # remember to launch 'slackpkg update' if you modify that row.
-REPOPLUS=( slackpkgplusdev restricted alienbob slacky )
+REPOPLUS=( slackpkgplus restricted alienbob slacky )
 
 
 # Define mirrors (uncomment one or more mirror; remember to add it to REPOPLUS)
@@ -54,7 +59,7 @@ MIRRORPLUS['restricted']=http://taper.alienbase.nl/mirrors/people/alien/restrict
 MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware64-14.1/
 
 # use this to keep the slackpkg+ package updated
-MIRRORPLUS['slackpkgplusdev']=http://slakfinder.org/slackpkg+dev/
+MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 
 # Slackware current - x86_64
 #MIRRORPLUS['multilib']=http://taper.alienbase.nl/mirrors/people/alien/multilib/current/
@@ -67,6 +72,7 @@ MIRRORPLUS['slackpkgplusdev']=http://slakfinder.org/slackpkg+dev/
 #MIRRORPLUS['myrepo']=dir://repositories/mypackages/
 
 
+#
 # Supported Repositories (see /usr/doc/slackpkg+-* for details):
 #
 

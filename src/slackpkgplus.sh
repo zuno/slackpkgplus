@@ -6,7 +6,8 @@ declare -A MIRRORPLUS
 declare -A NOTIFYMSG
 
 if [ -e /etc/slackpkg/slackpkgplus.conf ];then
-  # You can override ALLOW32BIT WGETOPTS SLACKPKGPLUS VERBOSE USEBL from command-line
+  # You can override GREYLIST WGETOPTS SLACKPKGPLUS VERBOSE USEBL ALLOW32BIT from command-line
+  EXTGREYLIST=$GREYLIST
   EXTALLOW32BIT=$ALLOW32BIT
   EXTSLACKPKGPLUS=$SLACKPKGPLUS
   EXTVERBOSE=$VERBOSE
@@ -15,6 +16,7 @@ if [ -e /etc/slackpkg/slackpkgplus.conf ];then
 
   . /etc/slackpkg/slackpkgplus.conf
 
+  GREYLIST=${EXTGREYLIST:-$GREYLIST}
   ALLOW32BIT=${EXTALLOW32BIT:-$ALLOW32BIT}
   SLACKPKGPLUS=${EXTSLACKPKGPLUS:-$SLACKPKGPLUS}
   VERBOSE=${EXTVERBOSE:-$VERBOSE}
@@ -32,7 +34,7 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
-  SPKGPLUS_VERSION="20131120.1"
+  SPKGPLUS_VERSION="1.2.0"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   
@@ -243,11 +245,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       X86_64=$(ls /var/log/packages/aaa_base*x86_64*|head -1 2>/dev/null)
       for PREPO in $REPOPLUS;do
         if [ ! -z "$X86_64" ];then
-	  if [ "$ALLOW32BIT" == "on" ];then
-	    egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
-	  else
-	    egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(i[3456]86|arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
-	  fi
+         if [ "$ALLOW32BIT" == "on" ];then
+           egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+         else
+           egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(i[3456]86|arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+         fi
         else
           egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(x86_64|arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
         fi
@@ -601,7 +603,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	local MSGLIST=""
 	local USERKEY
 
-
 	find /var/log/packages/ -type f -printf "%f\n" | sort > ${TMPDIR}/installed.tmp
 	
 		# -- Get the basename of packages which have been effectively
@@ -678,7 +679,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	ls -1 /var/log/packages > $TMPDIR/tmplist
 
 	for i in $SHOWLIST; do
-		PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
+	        PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
 		REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
 		getpkg $i upgradepkg Upgrading
 		if [ -e "/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
@@ -703,7 +704,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		DELALL="$OLDDEL"
 	fi
 	for i in $SHOWLIST; do
-		INSTALL_T='installed:  '
+	        INSTALL_T='installed:  '
 		if [ -e /var/log/packages/$(echo $i|sed 's/\.t.z//') ];then
 		  INSTALL_T='reinstalled:'
 		fi
@@ -747,8 +748,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   done
 
   if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]] && [ "$ALLOW32BIT" == "on" ] ; then
-	ARCH="\($ARCH\)\|\([i]*[3456x]86[^_]*\)"
-	echo -e "i[3456]86\nx86" > $TMPDIR/greylist.32bit
+       ARCH="\($ARCH\)\|\([i]*[3456x]86[^_]*\)"
+       echo -e "i[3456]86\nx86" > $TMPDIR/greylist.32bit
   fi
 
   if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] || [ "$CMD" == "remove" ] ; then

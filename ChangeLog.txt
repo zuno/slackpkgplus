@@ -1,3 +1,6 @@
+Version 20131209.1 - 09/Nov/2013
+  - Current -devel is the same of -1.2.0
+
 Version 20131120.1 - 20/Nov/2013
   - Moved notify messages in a dedicated configuration file and added
     ENABLENOTIFY to enable/disable it
