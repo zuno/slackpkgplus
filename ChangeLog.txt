@@ -1,41 +1,17 @@
-Version 20131209.1 - 09/Nov/2013
-  - Current -devel is the same of -1.2.0
-
-Version 20131120.1 - 20/Nov/2013
-  - Moved notify messages in a dedicated configuration file and added
-    ENABLENOTIFY to enable/disable it
-
-Version 20131119.3 - 19/Nov/2013
-  - Fixed various issues
+Version 1.2.0 - 9/Dec/2013
   - Now ALLOW32BIT also auto-greylist the 32bit packages
+  - Added an install log in /var/lib/slackpkg/install.log; use
+    '/usr/libexec/slackpkg/makeinstlog.sh -t' to create a starting
+    install.log (it TRY to detect the repository)
 
-Version 20131119.2 - 19/Nov/2013
+Version 1.1.0 - 6/Dec/2013
   - Added ALLOW32BIT flag to allow to install 32bit packages on a 64bit system
-
-Version 20131119.1 - 19/Nov/2013
-  - 'slackpkg update' also update the install.log
-  - 'makeinstlog.sh -t' TRY to detect the repository from which the package
-    was installed.
-  - improved greylist. Now accept regex and repository name.
-  - Added WGETOPTS
-
-Version 20131118.2 - 18/Nov/2013
-  - Moved makeinstlog.sh in libexec path. Now slackpkg update also update
-  install.log
-
-Version 20131118.1 - 18/Nov/2013
-  - Added an install log in /var/lib/slackpkg/install.log
-  - Added makeinstlog.sh in /usr/doc/slackpkg+-* to create a starting install.log
-
-Version 20131116.1 - 16/Nov/2013
-  - Missed real greylist code :)
-
-Version 20131114.2 - 14/Nov/2013
-  - Added /etc/slackpkg/greylist . All packages in that list will be showned
-    unchecked by default
-
-Version 20131114.1 - 14/Nov/2013
   - setupmultilib.sh install only adaptative multilib by default
+  - Small fixes
+
+Version 1.0.2 - 6/Dec/2013
+  - Added WGETOPTS
+  - Moved notifications on a dedicated configuration file (notifymsg.conf)
 
 Version 1.0.1 - 14/Nov/2013
   - Fixed fatal on 'pasture' repository and on invalid repository
