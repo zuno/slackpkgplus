@@ -90,9 +90,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       $DOWNLOADER $2 $URLFILE
     fi
     if [ $? -ne 0 ];then
-      if echo $2|grep -q ^SLACKPKGPLUS;then
+      if echo $2|grep -q SLACKPKGPLUS;then
 	if [ "`basename $URLFILE`" != "MANIFEST.bz2" ];then
-	  echo -e "$URLFILE:\tdownload error" >> $TMPDIR/error.log
+	  echo -e "\n$URLFILE:\tdownload error" >> $TMPDIR/error.log
 	  if echo $2|grep -q .asc$;then
 	    echo "  Retry using 'slackpkg -checkgpg=off $CMD ...'" >> $TMPDIR/error.log
 	  fi
@@ -718,12 +718,51 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	handle_event "install"
   }  
 
+  function wgetdebug(){
+    local SRCURL
+    local DSTFILE
+    SRCURL=$2
+    DSTFILE=$(echo $SRCURL|sed 's|/|,|g')
+    if [ ${SRCURL:0:5} == "https" ];then
+      WGETOPTSL="--no-check-certificate"
+    fi
+    if [ ${SRCURL:0:3} == "ftp" ];then
+      WGETOPTSL="--passive-ftp"
+    fi
+
+    DOWNTIME=$(date +%s)
+
+    wget $WGETOPTS $WGETOPTSL -O $TMPDIR/$DSTFILE $SRCURL 2>&1|tee $TMPDIR/$DSTFILE.log
+    WGETERR=${PIPESTATUS[0]}
+    cp $TMPDIR/$DSTFILE $1
+    echo "exit code: $WGETERR" >>$TMPDIR/$DSTFILE.log
+    DOWNTIME=$[$(date +%s)-$DOWNTIME]
+    if [ $WGETERR -ne 0 ];then
+      echo >> $TMPDIR/error.log
+      echo "$SRCURL --> BAD" >> $TMPDIR/error.log
+      echo "wget $WGETOPTS $WGETOPTSL -O $DSTFILE $SRCURL" >> $TMPDIR/error.log
+      echo "exit code: $WGETERR" >> $TMPDIR/error.log
+      echo "download time: $DOWNTIME secs" >> $TMPDIR/error.log
+      echo "details:" >> $TMPDIR/error.log
+      cat $TMPDIR/$DSTFILE.log >> $TMPDIR/error.log
+      ls -l $DSTFILE >> $TMPDIR/error.log 2>&1
+      md5sum $DSTFILE >> $TMPDIR/error.log 2>&1
+      echo >> $TMPDIR/error.log
+    else
+      echo "$SRCURL --> OK" >> $TMPDIR/error.log
+    fi
+    return $WGETERR
+
+
+  }
 
   DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
   if [ "$VERBOSE" = "0" ];then
     DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
   elif [ "$VERBOSE" = "2" ];then
     DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
+  elif [ "$VERBOSE" = "3" ];then
+    DOWNLOADER="wgetdebug"
   elif [ "$CMD" = "update" ];then
     DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
   fi

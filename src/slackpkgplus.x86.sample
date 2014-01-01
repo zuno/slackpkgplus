@@ -4,7 +4,8 @@ SLACKPKGPLUS=on
 
 # set to '0' to never show the download progress bar
 # set to '1' to show the bar only in download packages (default)
-# set to '2' to show always show the download bar
+# set to '2' to always show the download bar
+# set to '3' for a debug mode
 VERBOSE=1
 
 # Enable (1) / Disable (0) the official slackpkg blacklist. May be useful to temporarily skip

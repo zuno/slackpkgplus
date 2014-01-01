@@ -1,3 +1,7 @@
+Version 1.3.0 - 1/Jan/2014
+  - Added a debug-mode download verbosity
+  - On upgrade, the status bar show available packages from every repository
+
 Version 1.2.0 - 9/Dec/2013
   - Now ALLOW32BIT also auto-greylist the 32bit packages
   - Added an install log in /var/lib/slackpkg/install.log; use
