@@ -1,7 +1,6 @@
 # Thanks to AlienBob and phenixia2003 (on LQ) for contributing
 # A special thanks to all packagers that make slackpkg+ useful
 
-
 declare -A MIRRORPLUS
 declare -A NOTIFYMSG
 
@@ -34,20 +33,67 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
-  SPKGPLUS_VERSION="20131209.1"
+  SPKGPLUS_VERSION="20140415.1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
-  
+
   if [ ! -e "$WORKDIR" ];then
     mkdir -p "$WORKDIR"
   fi
 
   if [ "$CMD" == "update" ];then
-    if [ "$VERBOSE" == "2" ];then
-      echo "Updating $WORKDIR/install.log"
+    touch $TMPDIR/info.log
+    if [ $VERBOSE -gt 1 ];then
+      /usr/libexec/slackpkg/makeinstlog.sh -t >> $TMPDIR/info.log &
+    else
+      /usr/libexec/slackpkg/makeinstlog.sh >/dev/null &
     fi
-    /usr/libexec/slackpkg/makeinstlog.sh >/dev/null
+    PIDINSTLOG=$!
   fi
+
+
+  function cleanup(){	
+    [ "$SPINNING" = "off" ] || tput cnorm
+    if [ "$CMD" == "update" ];then
+      if [ $VERBOSE -gt 2 ];then
+	echo "Updating $WORKDIR/install.log..."
+      else
+	echo "Updating install.log"
+      fi
+      echo
+    fi
+    if [ "$DELALL" = "on" ] && [ "$NAMEPKG" != "" ]; then
+      rm $CACHEPATH/$NAMEPKG &>/dev/null
+    fi
+    wait 
+    if [ $VERBOSE -gt 2 ];then
+      echo "The temp directory $TMPDIR will NOT be removed!" >>$TMPDIR/info.log
+      echo
+    fi
+    if [ -s $TMPDIR/error.log -o -s $TMPDIR/info.log ];then
+      echo -e "\n\n=============================================================================="
+    fi
+    if [ -e $TMPDIR/error.log ]; then
+      echo "  WARNING! One or more errors occurred while slackpkg was running"
+      echo "------------------------------------------------------------------------------"
+      cat $TMPDIR/error.log
+      if [ -s $TMPDIR/info.log ];then
+	echo "------------------------------------------------------------------------------"
+      fi
+    fi
+    if [ -s $TMPDIR/info.log ]; then
+      echo "  INFO! Debug informations"
+      echo "------------------------------------------------------------------------------"
+      cat $TMPDIR/info.log
+      echo "=============================================================================="
+    fi
+    echo
+    rm -f /var/lock/slackpkg.$$ 
+    if [ $VERBOSE -lt 3 ];then
+      rm -rf $TMPDIR 
+    fi
+    exit
+  }
 
   # Override the slackpkg getfile().
   # The new getfile() download all file needed from all defined repositories
@@ -90,9 +136,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       $DOWNLOADER $2 $URLFILE
     fi
     if [ $? -ne 0 ];then
-      if echo $2|grep -q ^SLACKPKGPLUS;then
+      if echo $2|grep -q SLACKPKGPLUS;then
 	if [ "`basename $URLFILE`" != "MANIFEST.bz2" ];then
-	  echo -e "$URLFILE:\tdownload error" >> $TMPDIR/error.log
+	  echo -e "\n$URLFILE:\tdownload error" >> $TMPDIR/error.log
 	  if echo $2|grep -q .asc$;then
 	    echo "  Retry using 'slackpkg -checkgpg=off $CMD ...'" >> $TMPDIR/error.log
 	  fi
@@ -195,7 +241,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               sleep 5
 	      echo -e "$PREPO: Invalid repository (fails to download CHECKSUMS.md5)" >> $TMPDIR/error.log
 	fi
-        echo $PREPO $(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}') >>$2
+
+        echo "SLACKPKGPLUS_$PREPO[MD5]" $(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}') >>$2
+
       done
     fi
     if [ $(basename $1) = "GPG-KEY" ];then
@@ -242,7 +290,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo 1
     fi
     if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
-      X86_64=$(ls /var/log/packages/aaa_base*x86_64*|head -1 2>/dev/null)
+      X86_64=$(ls /var/log/packages/aaa_base*x86_64* 2>/dev/null|head -1)
       for PREPO in $REPOPLUS;do
         if [ ! -z "$X86_64" ];then
          if [ "$ALLOW32BIT" == "on" ];then
@@ -718,12 +766,51 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	handle_event "install"
   }  
 
+  function wgetdebug(){
+    local SRCURL
+    local DSTFILE
+    SRCURL=$2
+    DSTFILE=$(echo $SRCURL|sed 's|/|,|g')
+    if [ ${SRCURL:0:5} == "https" ];then
+      WGETOPTSL="--no-check-certificate"
+    fi
+    if [ ${SRCURL:0:3} == "ftp" ];then
+      WGETOPTSL="--passive-ftp"
+    fi
+
+    DOWNTIME=$(date +%s)
+
+    wget $WGETOPTS $WGETOPTSL -O $TMPDIR/$DSTFILE $SRCURL 2>&1|tee $TMPDIR/$DSTFILE.log
+    WGETERR=${PIPESTATUS[0]}
+    cp $TMPDIR/$DSTFILE $1
+    echo "exit code: $WGETERR" >>$TMPDIR/$DSTFILE.log
+    DOWNTIME=$[$(date +%s)-$DOWNTIME]
+    if [ $WGETERR -ne 0 ];then
+      echo >> $TMPDIR/error.log
+      echo "$SRCURL --> BAD" >> $TMPDIR/error.log
+      echo "wget $WGETOPTS $WGETOPTSL -O $DSTFILE $SRCURL" >> $TMPDIR/error.log
+      echo "exit code: $WGETERR" >> $TMPDIR/error.log
+      echo "download time: $DOWNTIME secs" >> $TMPDIR/error.log
+      echo "details:" >> $TMPDIR/error.log
+      cat $TMPDIR/$DSTFILE.log >> $TMPDIR/error.log
+      ls -l $DSTFILE >> $TMPDIR/error.log 2>&1
+      md5sum $DSTFILE >> $TMPDIR/error.log 2>&1
+      echo >> $TMPDIR/error.log
+    else
+      echo "$SRCURL --> OK" >> $TMPDIR/info.log
+    fi
+    return $WGETERR
+
+
+  }
 
   DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
   if [ "$VERBOSE" = "0" ];then
     DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
   elif [ "$VERBOSE" = "2" ];then
     DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
+  elif [ "$VERBOSE" = "3" ];then
+    DOWNLOADER="wgetdebug"
   elif [ "$CMD" = "update" ];then
     DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
   fi
@@ -929,5 +1016,79 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
+  if [ "$CMD" == "check-updates" ] ; then
+
+	[ ! -e ~/.slackpkg ] && mkdir ~/.slackpkg
+	echo -n "" > ~/.slackpkg/updated-repos.txt
+
+	UPDATES=false
+
+	if ! checkchangelog 1>/dev/null 2>/dev/null; then
+	
+			# -- Note: 
+			#     checkchangelog() download the ChangeLog.txt and stores it
+			#     in ${TMPDIR} 
+		
+			# extract the slackpkgplus repositories md5 from the ChangeLog.txt
+			# files (in ${WORKDIR} and ${TMPDIR} to identify updates in Slackware
+			# repository.
+			#
+		grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt > ${TMPDIR}/ChangeLog.old
+		grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/ChangeLog.txt > ${TMPDIR}/ChangeLog.new
+		
+		if [ "$(md5sum ${TMPDIR}/ChangeLog.old | cut -f1 -d' ')" != "$(md5sum ${TMPDIR}/ChangeLog.new | cut -f1 -d' ')" ] ; then
+			echo "slackware" > ${TMPDIR}/updated-repos.txt
+		fi
+		
+		  # -- get the list of the repositories configured before this call to check-updates
+	   	  #
+		grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt | sed 's/^SLACKPKGPLUS_//; s/\[MD5\]//' | cut -f1 -d" "> ${TMPDIR}/selected.3pr
+
+		  # create pseudo changelogs for the selected 3rd party repositories
+		  #
+		grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt | sort  > "${TMPDIR}/3rp-ChangeLog.old"
+		grep "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/ChangeLog.txt | sort > "${TMPDIR}/3rp-ChangeLog.new"
+		
+		  # from the pseudo changelogs, find the updated 3rd party repositories and add them
+		  # to the updates report file
+		  #
+		comm -1 -3 	"${TMPDIR}/3rp-ChangeLog.old" \
+					"${TMPDIR}/3rp-ChangeLog.new" \
+			| sed -e "s/^SLACKPKGPLUS_//" -e "s/\[MD5\]//" \
+			| cut -f1 -d" " | grep -f ${TMPDIR}/selected.3pr >> "${TMPDIR}/updated-repos.txt"
+
+			# when TMPDIR/updated-repos.txt is not empty , it contains the 
+			# names of the updated repositories.
+			#
+			# NOTE: 
+			#  at this point, updated-repos.txt can be empty when user
+			#  has added a repository in REPOPLUS and run "slackpkg check-updates"
+			#  instead (or prior to) "slackpkg update" 
+			
+		[ -s "${TMPDIR}/updated-repos.txt" ] && UPDATES=true
+	fi
+	
+	if $UPDATES ; then
+		echo "News on ChangeLog.txt"
+		
+		printf "\n  [ %-24s ] [ %-20s ]\n" "Repository" "Status"
+			
+		for REPO in slackware $REPOPLUS; do
+			if grep -q "^${REPO}$"  ${TMPDIR}/updated-repos.txt ; then
+				printf "    %-24s     %-20s \n" "$REPO" "AVAILABLE UPDATES" 
+			else
+			    printf "    %-24s     %-20s \n" "$REPO" "   Up to date   "
+			fi
+		done
+
+			# save ${TMPDIR}/updates-repos.txt in ~/.slackpkg/updated-repos.txt
+			#
+		cat ${TMPDIR}/updated-repos.txt > ~/.slackpkg/updated-repos.txt
+	else
+		echo "No news is good news"
+	fi
+		
+	cleanup
+  fi
 
 fi

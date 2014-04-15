@@ -7,13 +7,12 @@ Supported Repositories:
 > ktown:         http://taper.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,current}/latest/{x86,x86_64}/
 > restricted:    http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
 > slacky:        http://repository.slacky.eu/slackware{,64}-{13.37,14.0,14.1}/
-> zerouno:       http://www.z01.eu/repo-slack/slackware64-current/
 > mled:          http://www.microlinux.fr/slackware/MLED-{14.0,14.1}-{32,64}bit/
 > mles:          http://www.microlinux.fr/slackware/MLES-{14.0,14.1}-{32,64}bit/
-> mlws:          http://www.microlinux.fr/slackware/MLWS-{14.0,14.1}-{32,64}bit/
 > msb:           http://slackware.org.uk/msb/{14.0,14.1}/1.6/{x86,x86_64}/
 > slackers:      http://www.slackers.it/repository/
 > slacke17:      http://ngc891.blogdns.net/pub/slacke17/slackware{,64,arm}-{14.0,14.1}/
+> studioware:    http://studioware.org/files/packages/slackware{,64}-{13.37,14.0,14.1}/
 > 
 > Does NOT support GPG
 > salixos(*):    http://download.salixos.org/{i486,x86_64}/{13.37,14.0,14.1}/

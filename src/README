@@ -381,6 +381,13 @@ Note that you can edit manually to modify or add informations.
 At every slackpkg install/upgrade/remove invocation, a new log will be added.
 At every slackpkg update invocation, a fast list rebuild will be done.
 
+-----
+
+CHECK-UPDATE IMPROVEMENT
+
+the command "slackpkg check-updates" reports the repositories which have been changed since
+the last update. For more details and some suggests how to use it in crontab see:
+http://www.linuxquestions.org/questions/showthread.php?p=5146591
 
 -----
 

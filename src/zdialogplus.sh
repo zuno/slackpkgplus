@@ -31,11 +31,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 			for i in $1; do
 			  	TMPONOFF=$ONOFF
 				BASENAME=$(cutpkg $i)
-				PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-\(noarch\|fw\|${ARCH}\)" $TMPDIR/tmplist)
+				PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
                                 REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
+				PKGVER=$(echo $i|rev|cut -f3 -d-|rev)
+				ALLFOUND=$(echo $(grep " ${BASENAME} " $TMPDIR/pkglist|sed -r -e 's/SLACKPKGPLUS_//' -e 's/^([^ ]*) [^ ]* ([^ ]*) [^ ]* ([^ ]*) .*/\2-\3(\1) ,/')|sed 's/,$//')
 
 				grep -q "^$(echo $i|rev|cut -f4- -d-|rev)$" $TMPDIR/unchecklist && TMPONOFF="off"
-				echo "$i \"$REPOPOS\" $TMPONOFF \"currently installed: $PKGFOUND\"" >>$TMPDIR/dialog.tmp
+				echo "$i \"$REPOPOS\" $TMPONOFF \"installed: $PKGFOUND  -->  available: $ALLFOUND\"" >>$TMPDIR/dialog.tmp
 			done
 			HINT="--item-help"
 		else
