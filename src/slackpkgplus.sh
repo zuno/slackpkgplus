@@ -33,6 +33,10 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
+  if [ -z "$VERBOSE" ];then
+    VERBOSE=1
+  fi
+
 
 
   SPKGPLUS_VERSION="1.3.1"
