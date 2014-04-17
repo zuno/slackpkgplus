@@ -208,7 +208,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               echo "    Remember to import keys by launching 'slackpkg update gpg'."
               echo
               sleep 5
-              echo > ${TMPDIR}/CHECKSUMS.md5
+              echo > ${TMPDIR}/CHECKSUMS.md5-$PREPO
             fi
           else
             echo
@@ -242,13 +242,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               echo
               echo "                        !!! F A T A L !!!"
               echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5 download"
-              echo "    The repository may be invald."
+              echo "    The repository may be invalid and will be SKIPPED."
               echo
               sleep 5
-	      echo -e "$PREPO: Invalid repository (fails to download CHECKSUMS.md5)" >> $TMPDIR/error.log
+	      echo -e "$PREPO: SKIPPING Invalid repository (fails to download CHECKSUMS.md5)" >> $TMPDIR/error.log
+	      PRIORITY=( $(echo ${PRIORITY[*]}" "|sed "s/SLACKPKGPLUS_$PREPO //") )
+	      REPOPLUS=( $(echo " "${REPOPLUS[*]}" "|sed "s/ $PREPO //") )
+	else
+	      echo "SLACKPKGPLUS_$PREPO[MD5]" $(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}') >>$2
 	fi
-
-        echo "SLACKPKGPLUS_$PREPO[MD5]" $(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}') >>$2
 
       done
     fi
