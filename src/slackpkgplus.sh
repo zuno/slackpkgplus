@@ -47,27 +47,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     mkdir -p "$WORKDIR"
   fi
 
-  if [ "$CMD" == "update" ];then
-    touch $TMPDIR/info.log
-    if [ $VERBOSE -gt 1 ];then
-      /usr/libexec/slackpkg/makeinstlog.sh -t >> $TMPDIR/info.log &
-    else
-      /usr/libexec/slackpkg/makeinstlog.sh >/dev/null &
-    fi
-    PIDINSTLOG=$!
+  if [ ! -e $WORKDIR/install.log ];then
+    touch $WORKDIR/install.log
   fi
-
 
   function cleanup(){	
     [ "$SPINNING" = "off" ] || tput cnorm
-    if [ "$CMD" == "update" ];then
-      if [ $VERBOSE -gt 2 ];then
-	echo "Updating $WORKDIR/install.log..."
-      else
-	echo "Updating install.log"
-      fi
-      echo
-    fi
     if [ "$DELALL" = "on" ] && [ "$NAMEPKG" != "" ]; then
       rm $CACHEPATH/$NAMEPKG &>/dev/null
     fi
