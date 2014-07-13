@@ -4,7 +4,9 @@
 declare -A MIRRORPLUS
 declare -A NOTIFYMSG
 
-if [ -e /etc/slackpkg/slackpkgplus.conf ];then
+CONF=${CONF:-/etc/slackpkg} # needed if you're running slackpkg 2.28.0-12
+
+if [ -e $CONF/slackpkgplus.conf ];then
   # You can override GREYLIST WGETOPTS SLACKPKGPLUS VERBOSE USEBL ALLOW32BIT from command-line
   EXTGREYLIST=$GREYLIST
   EXTALLOW32BIT=$ALLOW32BIT
@@ -13,7 +15,7 @@ if [ -e /etc/slackpkg/slackpkgplus.conf ];then
   EXTUSEBL=$USEBL
   EXTWGETOPTS=$WGETOPTS
 
-  . /etc/slackpkg/slackpkgplus.conf
+  . $CONF/slackpkgplus.conf
 
   GREYLIST=${EXTGREYLIST:-$GREYLIST}
   ALLOW32BIT=${EXTALLOW32BIT:-$ALLOW32BIT}
@@ -26,8 +28,8 @@ if [ -e /etc/slackpkg/slackpkgplus.conf ];then
   if [ "$USEBL" == "0" ];then
     USEBLACKLIST=false
   fi
-  if [ "$ENABLENOTIFY" = "on" -a -e /etc/slackpkg/notifymsg.conf ];then
-    . /etc/slackpkg/notifymsg.conf
+  if [ "$ENABLENOTIFY" = "on" -a -e $CONF/notifymsg.conf ];then
+    . $CONF/notifymsg.conf
   fi
 fi
 
@@ -39,7 +41,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
 
-  SPKGPLUS_VERSION="1.3.1"
+  SPKGPLUS_VERSION="1.3.2"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
@@ -283,7 +285,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo 1
     fi
     if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
-      X86_64=$(ls /var/log/packages/aaa_base*x86_64* 2>/dev/null|head -1)
+      X86_64=$(ls $ROOT/var/log/packages/aaa_base*x86_64* 2>/dev/null|head -1)
       for PREPO in $REPOPLUS;do
         if [ ! -z "$X86_64" ];then
          if [ "$ALLOW32BIT" == "on" ];then
@@ -397,9 +399,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     grep -vE "(^#|^[[:blank:]]*$)" ${CONF}/blacklist > ${TMPDIR}/blacklist
     if echo $CMD | grep -q install ; then
-      ls -1 /var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
+      ls -1 $ROOT/var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
     else
-      ls -1 /var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk | applyblacklist > ${TMPDIR}/tmplist
+      ls -1 $ROOT/var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk | applyblacklist > ${TMPDIR}/tmplist
     fi
     cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
 
@@ -503,8 +505,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       # First is the package already installed?
       # Amazing what a little sleep will do
       # exclusion is so much nicer :)
-      INSTPKG=$(ls -1 /var/log/packages | grep -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+")
-      #INSTPKG=$(ls -1 /var/log/packages | grep -e "^${BASENAME}-[^-]\+-\(${ARCH}\|fw\|noarch\)-[^-]\+")
+      INSTPKG=$(ls -1 $ROOT/var/log/packages | grep -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+")
+      #INSTPKG=$(ls -1 $ROOT/var/log/packages | grep -e "^${BASENAME}-[^-]\+-\(${ARCH}\|fw\|noarch\)-[^-]\+")
 
       # INSTPKG is local version
       if [ ! "${INSTPKG}" = "" ]; then
@@ -534,8 +536,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   }
 
   touch $TMPDIR/greylist.1
-  if [ -e /etc/slackpkg/greylist ];then
-    cat /etc/slackpkg/greylist|sed -e 's/#.*//'|grep -v -e '^#' -e '^$'|awk '{print $1}'|sort -u >$TMPDIR/greylist.1
+  if [ -e $CONF/greylist ];then
+    cat $CONF/greylist|sed -e 's/#.*//'|grep -v -e '^#' -e '^$'|awk '{print $1}'|sort -u >$TMPDIR/greylist.1
     cat $TMPDIR/greylist.1|sed 's/^/SLACKPKGPLUS_/' >$TMPDIR/greylist.2
   fi
 
@@ -554,7 +556,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
   done
 
-  if [ /etc/slackpkg/slackpkgplus.conf -nt $WORKDIR/pkglist -a "$CMD" != "update" ];then
+  if [ $CONF/slackpkgplus.conf -nt $WORKDIR/pkglist -a "$CMD" != "update" ];then
     echo
     echo "NOTICE: remember to re-run 'slackpkg update' after modifing slackpkgplus.conf"
     echo
@@ -644,7 +646,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	local MSGLIST=""
 	local USERKEY
 
-	find /var/log/packages/ -type f -printf "%f\n" | sort > ${TMPDIR}/installed.tmp
+	find $ROOT/var/log/packages/ -type f -printf "%f\n" | sort > ${TMPDIR}/installed.tmp
 	
 		# -- Get the basename of packages which have been effectively
 		#    installed, upgraded, or removed
@@ -697,8 +699,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		echo -e "\nPackage: $i"
 		echo -e "\tRemoving... "
 		removepkg $i
-		if [ ! -e /var/log/packages/$i ];then
-		  FDATE=$(ls -ltr --full-time /var/log/removed_packages/$i|tail -1 |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+		if [ ! -e $ROOT/var/log/packages/$i ];then
+		  FDATE=$(ls -ltr --full-time $ROOT/var/log/removed_packages/$i|tail -1 |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
 		  echo "$FDATE removed:     $i" >> $WORKDIR/install.log
 		fi
 	done
@@ -717,14 +719,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		done
 		DELALL="$OLDDEL"
 	fi
-	ls -1 /var/log/packages > $TMPDIR/tmplist
+	ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
 
 	for i in $SHOWLIST; do
 	        PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
 		REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
 		getpkg $i upgradepkg Upgrading
-		if [ -e "/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
-		  FDATE=$(ls -l --full-time /var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+		if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+		  FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
 		  echo "$FDATE upgraded:    $i  [$REPOPOS]  (was $PKGFOUND)" >> $WORKDIR/install.log
 		fi
 
@@ -746,13 +748,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	fi
 	for i in $SHOWLIST; do
 	        INSTALL_T='installed:  '
-		if [ -e /var/log/packages/$(echo $i|sed 's/\.t.z//') ];then
+		if [ -e $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') ];then
 		  INSTALL_T='reinstalled:'
 		fi
 		REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
 		getpkg $i installpkg Installing
-		if [ -e "/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
-		  FDATE=$(ls -l --full-time /var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+		if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+		  FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
 		  echo "$FDATE $INSTALL_T $i  [$REPOPOS]" >> $WORKDIR/install.log
 		fi
 	done

@@ -1,6 +1,8 @@
 #!/bin/bash
-WORKDIR=/var/lib/slackpkg
-. /etc/slackpkg/slackpkg.conf
+
+CONF=${CONF:-/etc/slackpkg} # needed if you're running slackpkg 2.28.0-12
+
+. $CONF/slackpkg.conf
 
 if [ -e $WORKDIR/pkglist ];then
   cp $WORKDIR/pkglist $WORKDIR/pkglist.tmp
@@ -8,12 +10,12 @@ fi
 (
 
   (
-    cd /var/log/removed_packages
+    cd $ROOT/var/log/removed_packages
     ( ls -l --full-time|tail +2|cut -c11-|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,'|awk '{print $8,$5,$6}'
       grep -m1 'PACKAGE LOCATION:' * 2>/dev/null|sed -r 's/:PACKAGE LOCATION:.*(\.t.z)/ \1/'
     )|sort|awk '{if(x=!x){printf("%s ", $2)}else{print $2,$3,$1}}'    \
      |sed -e 's/$/ removed/' -e 's/-upgraded-.*/ upgraded/'|awk '{print $2,$3,$4,$1,$5}'
-    cd /var/log/packages
+    cd $ROOT/var/log/packages
     ( ls -l --full-time|tail +2|cut -c11-|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,'|awk '{print $8,$5,$6}'
       grep -m1 'PACKAGE LOCATION:' * 2>/dev/null|sed -r 's/:PACKAGE LOCATION:.*(\.t.z)/ \1/'
     )|sort|awk '{if(x=!x){printf("%s ", $2)}else{print $2,$3,$1}}'    \
