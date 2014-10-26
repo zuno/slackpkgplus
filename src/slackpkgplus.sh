@@ -41,7 +41,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
 
-  SPKGPLUS_VERSION="1.3.2"
+  SPKGPLUS_VERSION="1.3.3"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
@@ -918,9 +918,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
         echo "$pref" | grep -qi "multilib" && MLREPO_SELELECTED=true
 
-        if $MLREPO_SELELECTED && [ "$CMD" == "remove" ] ; then
-          internal_blacklist "glibc"
-          internal_blacklist "gcc"
+        if $MLREPO_SELELECTED ; then
+          if [ "$CMD" == "install" ] ; then
+            internal_blacklist "glibc-debug"
+          elif [ "$CMD" == "remove" ] ; then
+            internal_blacklist "glibc"
+            internal_blacklist "gcc"
+          fi
         fi
 
         package="SLACKPKGPLUS_${pref}"
