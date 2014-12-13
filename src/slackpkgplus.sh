@@ -6,6 +6,10 @@ declare -A NOTIFYMSG
 
 CONF=${CONF:-/etc/slackpkg} # needed if you're running slackpkg 2.28.0-12
 
+  # regular expression used to distinguish the 3rd party repositories from the standard slackware directories.
+  #
+SLACKDIR_REGEXP="(slackware)|(slackware64)|(extra)|(pasture)|(patches)|(testing)"
+
 if [ -e $CONF/slackpkgplus.conf ];then
   # You can override GREYLIST WGETOPTS SLACKPKGPLUS VERBOSE USEBL ALLOW32BIT from command-line
   EXTGREYLIST=$GREYLIST
@@ -41,7 +45,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
 
-  SPKGPLUS_VERSION="1.3.3"
+  SPKGPLUS_VERSION="1.4.0"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
@@ -541,7 +545,23 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cat $TMPDIR/greylist.1|sed 's/^/SLACKPKGPLUS_/' >$TMPDIR/greylist.2
   fi
 
-  REPOPLUS=$(echo "${REPOPLUS[*]} ${PKGS_PRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}')
+  INDEX=0
+  PURE_PKGSPRIORITY=""
+  for pp in ${PKGS_PRIORITY[@]} ; do
+    repository=$(echo "$pp" | cut -f1 -d":")
+
+    if [ "$pp" == "$repository" ] && grep -q "^SLACKPKGPLUS_${repository}[ ]" $WORKDIR/pkglist 2>/dev/null ; then
+      pp="$repository:.*"
+      PKGS_PRIORITY[$INDEX]="$repository:.*"
+    fi
+
+    if ! echo "$repository" | grep -qwE "$SLACKDIR_REGEXP" ; then
+	PURE_PKGSPRIORITY=( ${PURE_PKGSPRIORITY[*]} $pp )
+    fi
+    ((INDEX++))
+  done
+
+  REPOPLUS=$(echo "${REPOPLUS[*]} ${PURE_PKGSPRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}')
   PRIORITY=( ${PRIORITY[*]} SLACKPKGPLUS_$(echo $REPOPLUS|sed 's/ / SLACKPKGPLUS_/g') )
 
   # Test repositories
@@ -573,10 +593,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       package=$(echo "$pp" | cut -f2- -d":")
 
       if [ ! -z "$repository" ] && [ ! -z "$package" ] ; then
+
+        if ! echo "$repository" | grep -qwE "$SLACKDIR_REGEXP" ; then
+	  repository="SLACKPKGPLUS_${repository}"
+	fi
+
         if [ -z "$PREFIX" ] ; then
-          PREFIX=( SLACKPKGPLUS_${repository}:$package )
+          PREFIX=( ${repository}:$package )
         else
-          PREFIX=( ${PREFIX[*]} SLACKPKGPLUS_${repository}:$package )
+          PREFIX=( ${PREFIX[*]} ${repository}:$package )
         fi
       fi
     done
@@ -910,7 +935,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           repository=$(echo "$pref" | cut -f1 -d":")
           package=$(echo "$pref" | cut -f2- -d":")
 
-          PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
+          if ! echo "$repository" | grep -qwE "$SLACKDIR_REGEXP" ; then
+	    repository="SLACKPKGPLUS_${repository}"
+	  fi
+
+          PRIORITYLIST=( ${PRIORITYLIST[*]} ${repository}:$package )
         fi
 
       # You can specify 'slackpkg install reponame' where reponame is a thirdy part repository

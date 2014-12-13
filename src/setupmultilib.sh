@@ -32,7 +32,7 @@ if grep -q -e '^PKGS_PRIORITY=.* multilib:\.\* .*$' -e '^MIRRORPLUS..multilib..=
   if [ "$ANS" == "y" -o "$ANS" == "Y" ];then
     cp $CONF/slackpkgplus.conf $CONF/slackpkgplus.conf.backup
     sed -i -r \
-      -e 's/^PKGS_PRIORITY=(.*) multilib:\.\* (.*)$/PKGS_PRIORITY=\1 \2/' \
+      -e 's/^PKGS_PRIORITY=(.*) multilib[^ ]* (.*)$/PKGS_PRIORITY=\1 \2/' \
       -e 's/^(PKGS_PRIORITY=\( +\).*)$/#\1/' \
       -e 's/^(MIRRORPLUS..multilib..=.*multilib.*)$/#\1/' \
       -e 's/^REPOPLUS=(.*) multilib (.*)/REPOPLUS=\1 \2/' \
@@ -67,9 +67,9 @@ if [ "$ANS" == "y" -o "$ANS" == "Y" ];then
   if grep -q ^PKGS_PRIORITY= $CONF/slackpkgplus.conf;then
     sed -i -r -e 's/^PKGS_PRIORITY=\( (.*) \)/PKGS_PRIORITY=( multilib:.* \1 )/' $CONF/slackpkgplus.conf
   else
-    sed -i -r -e 's/^(REPOPLUS=.*)$/PKGS_PRIORITY=( multilib:.* )\n\1/' $CONF/slackpkgplus.conf
+    sed -i -r -e '1,/^#PKGS_PRIORITY=.*$/s/^(#PKGS_PRIORITY=.*)$/\1\nPKGS_PRIORITY=( multilib: )\n/' $CONF/slackpkgplus.conf
   fi
-  sed -i -r -e 's|^(REPOPLUS=.*)$|\1\n'"$MULTILIBREPO|" $CONF/slackpkgplus.conf
+  sed -i -r -e 's|^(PKGS_PRIORITY=.*)$|\1\n'"$MULTILIBREPO|" $CONF/slackpkgplus.conf
   sed -i.backup -r -e 's/^(\[0-9\]\+compat32)$/\#\1/' $CONF/blacklist
   echo "slackpkg+ is now configured for multilib support."
   echo "Do you want to install the multilib now? (y/N)"
