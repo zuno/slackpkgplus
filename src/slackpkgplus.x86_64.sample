@@ -51,8 +51,9 @@ REPOPLUS=( slackpkgplus restricted alienbob slacky )
 
 
 # Define mirrors (uncomment one or more mirror; remember to add it to REPOPLUS)
-# Note: only multilib,alienbob,restricted,slacky repositories support GPG. If you add others
-#       you may need to disable gpg check in slackpkg.conf
+# GPG Note: after adding a repository, you must to run 'slackpkg update gpg'
+#           some repositories as salixos or slackel, have a partial GPG support;
+#           for that repositories you may need to run slackpkg with 'slackpkg -checkgpg=off ...'
 
 # Slackware 14.1 - x86_64
 #MIRRORPLUS['multilib']=http://taper.alienbase.nl/mirrors/people/alien/multilib/14.1/

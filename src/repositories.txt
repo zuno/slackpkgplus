@@ -7,7 +7,8 @@ Supported Repositories:
 > ktown:         http://taper.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,current}/{latest,testing}/{x86,x86_64}/
 > restricted:    http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
 > slacky:        http://repository.slacky.eu/slackware{,64}-{13.37,14.0,14.1}/
-> mled:          http://www.microlinux.fr/slackware/desktop-{base,extra,xfce,kde}-14.1-{32,64}bit/
+> mled-desktop:  http://www.microlinux.fr/slackware/desktop--14.1-{32,64}bit/
+> mled-extras:   http://www.microlinux.fr/slackware/extras-14.1-{32,64}bit/
 > mles:          http://www.microlinux.fr/slackware/server-{14.0,14.1}-{32,64}bit/
 > msb:           http://slackware.org.uk/msb/{14.0,14.1}/{1.6,1.8}/{x86,x86_64}/
 > slackers:      http://www.slackers.it/repository/
@@ -56,11 +57,5 @@ Some specific notes:
 	  if [ -x /usr/bin/sddm ]; then
 	    exec /usr/bin/sddm
 	  fi
-
-* mled: 
-    You should require to configure both 'desktop-base' and 'desktop-SOMEOTHER' repositories
-    See http://www.microlinux.fr/mled_installation.php
-
-
 
 Please read /usr/doc/slackpkg+-*/README for more details
