@@ -151,8 +151,19 @@ for example:
   PKGS_PRIORITY=( alienbob:openjdk )
 
 <package name> accepts a regular expression, so for example
-  PKGS_PRIORITY=( restricted:.* )
-means 'all packages in repository restricted'
+  PKGS_PRIORITY=( restricted:.*vlc.* )
+means 'all packages containing the "vlc" string'
+  PKGS_PRIORITY=( ktown:.* )
+means 'all packages in repository ktown'
+
+latest item maybe replaced simply with
+  PKGS_PRIORITY=( ktown )
+
+all packages matched from ktown ovverride all related slackware packages, unless
+you do not explicitly exclude it:
+  PKGS_PRIORITY=( patches:harfbuzz slackware64:harfbuzz ktown )
+that means 'all ktown packages except harfbuzz'
+
 
 -----
 
@@ -161,12 +172,16 @@ MULTILIB
 
 If you want to use a multilib system, you can automatically configure the
 multilib repository in slackpkgplus.conf and install multilib simply by running:
-# /usr/doc/slackpkg+-1.2.0/setupmultilib.sh
+# /usr/doc/slackpkg+-*/setupmultilib.sh
 
 To configure multilib manually (e.g. if you have installed multilib already),
 uncomment the correct "MIRRORPLUS['multilib']=...",
-and uncomment "PKGS_PRIORITY=( multilib:.* )",
-and add multilib to the REPOPLUS list.
+and uncomment "PKGS_PRIORITY=( multilib:.* )".
+If you do not plan to build yourself 32bit packages on your 64bit machine, you may
+avoid to install gcc:
+
+   PKGS_PRIORITY=( patches:gcc slackware64:gcc multilib )
+
 
 To install multilib manually, launch:
 # slackpkg update gpg
@@ -181,7 +196,7 @@ and re-running 'slackpkg install multilib' if 'slackpkg install-new' has found
 any new packages.
 
 To uninstall multilib, you must remove 'multilib:.*' from PKGS_PRIORITY and from
-REPOPLUS (but do not delete the related MIRRORPLUS line), then launch:
+REPOPLUS, but do NOT delete the related MIRRORPLUS line, then launch:
 # slackpkg update
 # slackpkg remove multilib
 Note: this does NOT remove the core multilib packages, because they affect the
@@ -190,35 +205,57 @@ Note: this does NOT remove the core multilib packages, because they affect the
 then delete or comment the related MIRRORPLUS line, and finally launch
 # slackpkg update
 
+or just re-run
+# /usr/doc/slackpkg+-*/setupmultilib.sh
+
+
 -----
 
 
 KTOWN (LATEST KDE)
 
 If you want to install the latest KDE packages from AlienBOB's ktown repository
-(presently 4.11.1), add "PKGS_PRIORITY=( ktown:.* )" then launch:
+(currently 4.14.3 and 5.0.2), add "PKGS_PRIORITY=( ktown )" then launch:
 # slackpkg update gpg
 # slackpkg update
 # slackpkg install ktown
 # slackpkg upgrade-all
 Do not forget to read the special instructions from
-  http://taper.alienbase.nl/mirrors/alien-kde/current/latest/
-because you may need to remove some Slackware KDE packages. At the time of
-writing, these packages are:
-# slackpkg remove kdeadmin kdenetwork kdesdk kdetoys
+  http://taper.alienbase.nl/mirrors/alien-kde/current/latest/  (kde 4)
+  http://taper.alienbase.nl/mirrors/alien-kde/current/testing/ (kde 5)
+because you may need to do some manual operation. At the time of writing, for kde4:
+# slackpkg remove kdeadmin kdenetwork kdesdk kdetoys kwallet kdnssd
+for kde5:
+add to /etc/rc.d/rc.4" right after the line 'echo "Starting up X11 session manager..."':
+
+      if [ -x /usr/bin/sddm ]; then
+	exec /usr/bin/sddm
+      fi
 
 After that, you can keep the ktown KDE up-to-date by launching:
 # slackpkg update
 # slackpkg upgrade-all
+Periodically you should re-run
+# slackpkg install ktown
 
-To restore the Slackware KDE, remove 'ktown:.*' from PKGS_PRIORITY and from
-REPOPLUS (but do not delete the related MIRRORPLUS line), then launch:
+To restore the Slackware KDE, remove 'ktown' from PKGS_PRIORITY and from
+REPOPLUS, but do NOT delete the related MIRRORPLUS line, then launch:
 # slackpkg update
 # slackpkg upgrade-all
 # slackpkg install kde
 # slackpkg remove ktown
 then delete or comment the related MIRRORPLUS line and launch:
 # slackpkg update
+
+
+note that ktown5 requires ktown4, so you must configure both repositories:
+PKGS_PRIORITY=( ktown5 ktown4 )
+MIRRORPLUS['ktown4']=....
+MIRRORPLUS['ktown5']=....
+
+and then run
+...
+# slackpkg install ktown5 ktown4
 
 -----
 
@@ -381,6 +418,13 @@ Note that you can edit manually to modify or add informations.
 At every slackpkg install/upgrade/remove invocation, a new log will be added.
 At every slackpkg update invocation, a fast list rebuild will be done.
 
+-----
+
+CHECK-UPDATE IMPROVEMENT
+
+the command "slackpkg check-updates" reports the repositories which have been changed since
+the last update. For more details and some suggests how to use it in crontab see:
+http://www.linuxquestions.org/questions/showthread.php?p=5146591
 
 -----
 

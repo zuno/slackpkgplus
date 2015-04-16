@@ -1,10 +1,12 @@
+# Configuration for slackpkg+. See /usr/doc/slackpkg+-*/README for more details
 
 # Enable (on) / Disable (off) slackpkg+
 SLACKPKGPLUS=on
 
 # set to '0' to never show the download progress bar
 # set to '1' to show the bar only in download packages (default)
-# set to '2' to show always show the download bar
+# set to '2' to always show the download bar
+# set to '3' for a debug mode
 VERBOSE=1
 
 # Enable (1) / Disable (0) the official slackpkg blacklist. May be useful to temporarily skip
@@ -14,7 +16,7 @@ USEBL=1
 
 # Add custom option to 'wget'.
 # You can solve the repository indisponibility issue by set a timeout here
-WGETOPTS="--timeout=5 --tries=1"
+WGETOPTS="--timeout=20 --tries=2"
 
 # Enable (on) / Disable (off) notification events (see notifymsg.conf)
 #ENABLENOTIFY=off
@@ -25,11 +27,11 @@ GREYLIST=on
 # If two or more repositories contains some same packages, you can specify
 # from which repository you prefer to search it.
 # The syntax is "<repository_name>:<package_name>"
-# Accepts regular expressions. To give priority to an entire repository use "<repository_name>:.*"
+# Accepts regular expressions. To give priority to an entire repository use "<repository_name>"
 
 # Examples:
 #PKGS_PRIORITY=( restricted:vlc )
-#PKGS_PRIORITY=( myrepo:.* )
+#PKGS_PRIORITY=( myrepo )
 #
 
 # List repositories you want to use (defined below)
@@ -38,8 +40,9 @@ REPOPLUS=( slackpkgplus restricted alienbob slacky )
 
 
 # Define mirrors (uncomment one or more mirror; remember to add it to REPOPLUS)
-# Note: only multilib,alienbob,restricted,slacky repositories support GPG. If you add others
-#       you may need to disable gpg check in slackpkg.conf
+# GPG Note: after adding a repository, you must to run 'slackpkg update gpg'
+#           some repositories as salixos or slackel, have a partial GPG support;
+#           for that repositories you may need to run slackpkg with 'slackpkg -checkgpg=off ...'
 
 # Slackware 14.1 - i386
 MIRRORPLUS['alienbob']=http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86/
@@ -57,6 +60,6 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 
 
 #
-# Supported Repositories (see /usr/doc/slackpkg+-* for details):
+# Supported Repositories (see /usr/doc/slackpkg+-* for details and notes):
 #
 

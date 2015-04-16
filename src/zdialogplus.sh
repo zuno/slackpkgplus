@@ -27,15 +27,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		rm -f $TMPDIR/dialog.tmp
 		
 		if [ "$2" = "upgrade" ]; then
-			ls -1 /var/log/packages > $TMPDIR/tmplist
+			ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
 			for i in $1; do
 			  	TMPONOFF=$ONOFF
 				BASENAME=$(cutpkg $i)
-				PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-\(noarch\|fw\|${ARCH}\)" $TMPDIR/tmplist)
+				PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
                                 REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
+				PKGVER=$(echo $i|rev|cut -f3 -d-|rev)
+				ALLFOUND=$(echo $(grep " ${BASENAME} " $TMPDIR/pkglist|sed -r -e 's/SLACKPKGPLUS_//' -e 's/^([^ ]*) [^ ]* ([^ ]*) [^ ]* ([^ ]*) .*/\2-\3(\1) ,/')|sed 's/,$//')
 
 				grep -q "^$(echo $i|rev|cut -f4- -d-|rev)$" $TMPDIR/unchecklist && TMPONOFF="off"
-				echo "$i \"$REPOPOS\" $TMPONOFF \"currently installed: $PKGFOUND\"" >>$TMPDIR/dialog.tmp
+				echo "$i \"$REPOPOS\" $TMPONOFF \"installed: $PKGFOUND  -->  available: $ALLFOUND\"" >>$TMPDIR/dialog.tmp
 			done
 			HINT="--item-help"
 		else
@@ -72,7 +74,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 				cat $TMPDIR/dialog.out >> $TMPDIR/error.log
 				echo -e "-------------
 If you want to continue using slackpkg, disable the DIALOG option in
-/etc/slackpkg/slackpkg.conf and try again.
+$CONF/slackpkg.conf and try again.
 
 Help us to make slackpkg a better tool - report bugs to the slackpkg
 developers" >> $TMPDIR/error.log

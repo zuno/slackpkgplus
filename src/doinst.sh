@@ -10,10 +10,10 @@ config() {
   # Otherwise, we leave the .new copy for the admin to consider...
 }
 
-remove() {
+renam() {
   FILE="$1"
   if [ -r $FILE ]; then
-    rm $FILE
+    mv $FILE $FILE.tmp
   fi
 }
 
@@ -38,10 +38,8 @@ copy_config_file
 config etc/slackpkg/slackpkgplus.conf.new
 config etc/slackpkg/greylist.new
 config etc/slackpkg/notifymsg.conf.new
-remove var/lib/slackpkg/ChangeLog.txt
-remove var/lib/slackpkg/pkglist
-
-( . usr/libexec/slackpkg/makeinstlog.sh >/dev/null )
+renam var/lib/slackpkg/ChangeLog.txt
+renam var/lib/slackpkg/pkglist
 
 echo
 echo

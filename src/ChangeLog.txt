@@ -1,3 +1,25 @@
+Version 1.4.0 - 13/Dec/2014
+  - Now the official repositories (slackware64, extra, patches...) are treated
+    as thirdy party repositories, so you can add it in PKGS_PRIORITY
+    (phenixia2003)
+  - To put an entire repository in PKGS_PRIORITY, you no more need to add
+    ':.*' after the name (phenixia2003)
+
+Version 1.3.3 - 26/Oct/2014
+  - Patched to avoid to install glibc-debug from alienbob multilib (thanks to
+    phenixia2003)
+
+Version 1.3.2 - 13/Jul/2014
+  - Patched to reflect changes on slackpkg 2.82.0-13
+
+Version 1.3.1 - 7/Mar/2014
+  - Improved check-updates function (thanks to phenixia2003)
+  - Improved debug-mode
+
+Version 1.3.0 - 1/Jan/2014
+  - Added a debug-mode download verbosity
+  - On upgrade, the status bar show available packages from every repository
+
 Version 1.2.0 - 9/Dec/2013
   - Now ALLOW32BIT also auto-greylist the 32bit packages
   - Added an install log in /var/lib/slackpkg/install.log; use
