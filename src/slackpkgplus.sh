@@ -45,7 +45,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
 
-  SPKGPLUS_VERSION="1.4.0"
+  SPKGPLUS_VERSION="1.4.1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
@@ -173,8 +173,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	    if [ $? -ne 0 ];then
 	      $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc `echo $URLFILE|sed 's/\.asc$/.gz.asc/'`
 	      if [ $? -eq 0 ];then
-		$DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz $URLFILE.gz
-		if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz) -eq 0 ];then
+		$DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz `echo $URLFILE|sed 's/\.asc$/.gz/'`
+		if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz) -eq 1 ];then
 		  echo
 		  echo "                   !!! N O T I C E !!!"
 		  echo "    Repository '$PREPO' does support signature checking for"
@@ -184,6 +184,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		  echo "    'slackpkg -checkgpg=off install packge'"
 		  echo "    The package authenticity remains guaranteed."
 		  echo
+		  zcat ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz > ${TMPDIR}/CHECKSUMS.md5-$PREPO
 		  sleep 5
 		  continue
 		fi

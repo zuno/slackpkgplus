@@ -1,3 +1,6 @@
+Version 1.4.1 - 16/Jun/2015
+  - Fix for repositories having CHECKSUMS.md5.gz.asc
+
 Version 1.4.0 - 13/Dec/2014
   - Now the official repositories (slackware64, extra, patches...) are treated
     as thirdy party repositories, so you can add it in PKGS_PRIORITY
