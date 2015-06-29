@@ -90,7 +90,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       rm -rf $TMPDIR 
     fi
     exit
-  }
+  } # END cleanup()
 
   # Override the slackpkg getfile().
   # The new getfile() download all file needed from all defined repositories
@@ -275,7 +275,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         rm $2-tmp
       done
     fi
-  }
+  } # END getfile()
 
   # override slackpkg checkgpg()
   # new checkgpg() is used to check gpg and to merge the CHECKSUMS.md5 files
@@ -303,7 +303,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         fi
       done
     fi
-  }
+  } # END checkgpg()
 
   # override slackpkg checkmd5()
   # Verify if the package was corrupted by checking md5sum
@@ -331,7 +331,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     else
       echo 0
     fi
-  }
+  } # END checkmd5()
 
   # Found packages in repository.
   # This function selects the package from the higher priority
@@ -343,7 +343,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   #
   #   repository_name:pattern
   #
-  function givepriority {
+  function givepriority() {
     local DIR
     local ARGUMENT=$1
     local PKGDATA
@@ -395,7 +395,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
       fi
     done
-  }
+  } # END givepriority()
 
   function searchPackages() {
     local i
@@ -472,7 +472,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     rm ${TMPDIR}/waiting
 
     echo -e "DONE\n"
-  }
+  } # END searchPackages()
 
   function searchlistEX() {
     local i
@@ -538,7 +538,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "${RAWNAME}"
       fi
     done
-  }
+  } # END searchlistEX()
 
   touch $TMPDIR/greylist.1
   if [ -e $CONF/greylist ];then
@@ -631,7 +631,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   #
   function internal_blacklist() {
     echo "$1" >> ${TMPDIR}/blacklist.slackpkgplus
-  }
+  } # END internal_blacklist()
 
   # Override original applyblackist() so that internal blacklist will
   # be applied too.
@@ -656,7 +656,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cat $TMPDIR/greylist.* >$TMPDIR/greylist
     grep -qvEw -f $TMPDIR/greylist $TMPDIR/pkglist-pre >$TMPDIR/unchecklist
 
-  }
+  } # END applyblacklist()
   
     # -- handle the event $1 that occured on packages $SHOWLIST
     #
@@ -715,7 +715,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 			echo "                                        "
 		fi
 	fi
-  }
+  } # END handle_event()
   
     # Overrides original remove_pkg(). Required by the notification mechanism.
   function remove_pkg() {
@@ -731,7 +731,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		fi
 	done
 	handle_event "remove"
-  }
+  } # END remove_pkg()
 
     # Overrides original upgrade_pkg(). Required by the notification mechanism.
   function upgrade_pkg() {
@@ -758,7 +758,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 	done
 	handle_event "upgrade"
-  }
+  } # END upgrade_pkg()
 
     # Overrides original install_pkg(). Required by the notification mechanism.
   function install_pkg() {
@@ -785,7 +785,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		fi
 	done
 	handle_event "install"
-  }  
+  } # END install_pkg()  
 
   function wgetdebug(){
     local SRCURL
@@ -823,7 +823,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     return $WGETERR
 
 
-  }
+  } # END wgetdebug()
 
   DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
   if [ "$VERBOSE" = "0" ];then
