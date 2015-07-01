@@ -18,6 +18,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTVERBOSE=$VERBOSE
   EXTUSEBL=$USEBL
   EXTWGETOPTS=$WGETOPTS
+  EXTTAG_PRIORITY=$TAG_PRIORITY
 
   . $CONF/slackpkgplus.conf
 
@@ -27,6 +28,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   VERBOSE=${EXTVERBOSE:-$VERBOSE}
   USEBL=${EXTUSEBL:-$USEBL}
   WGETOPTS=${EXTWGETOPTS:-$WGETOPTS}
+  TAG_PRIORITY=${EXTTAG_PRIORITY:-$TAG_PRIORITY}
 
   USEBLACKLIST=true
   if [ "$USEBL" == "0" ];then
@@ -45,7 +47,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
 
-  SPKGPLUS_VERSION="1.4.1"
+  SPKGPLUS_VERSION="1.4.99"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
@@ -290,6 +292,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo 1
     fi
     if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
+      mv ${TMPDIR}/CHECKSUMS.md5 ${TMPDIR}/CHECKSUMS.md5-old
+      for PREPO in ${PRIORITY[*]};do
+	grep " \./$PREPO/" ${TMPDIR}/CHECKSUMS.md5-old >> ${TMPDIR}/CHECKSUMS.md5
+      done
       X86_64=$(ls $ROOT/var/log/packages/aaa_base*x86_64* 2>/dev/null|head -1)
       for PREPO in $REPOPLUS;do
         if [ ! -z "$X86_64" ];then
@@ -354,6 +360,37 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     unset NAME
     unset FULLNAME
     unset PKGDATA
+
+    AUTOP=no
+    if [ ! -z "$AUTOPRIORITY" ];then
+      if echo "$ARGUMENT"|grep -wq $AUTOPRIORITY;then
+	AUTOP=$TAG_PRIORITY
+      fi
+    fi
+    if [ "$CMD" == "upgrade-all" ];then
+      AUTOP=$TAG_PRIORITY
+    fi
+    if [ "$AUTOP" == "on" ] ; then
+      PKGINFOS=$( 
+      		  cd /var/log/packages 
+		  ls $ARGUMENT-* 2>/dev/null |sed 's/$/.txz/' | awk -f /usr/libexec/slackpkg/pkglist.awk|
+		                              grep " $ARGUMENT "|awk '{print $1,$4}'|
+					      ( read X
+					        echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1 /' -e 's/^/ /'
+						echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1_slack[0-9]/' -e 's/^/ /'
+					      )| grep -f - -n -m 1 ${TMPDIR}/pkglist
+		)
+      if [ ! -z "$PKGINFOS" ] ; then
+	LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
+	PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
+	sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
+	(( PRIORITYIDX++ ))
+	if [ "$PKGDATA" ]; then
+	  NAME=${PKGDATA[1]}
+	  FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
+	fi
+      fi
+    fi
 
     for CPRIORITY in ${PRIORITY[@]} ; do
       [ "$PKGDATA" ] && break
@@ -980,6 +1017,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       # You can specify 'slackpkg install argument' where argument is a package name, part of package name, directory name in repository
       else
         package=$pref
+        AUTOPRIORITY=" $AUTOPRIORITY -e $package "
       fi
 
       if [ "$CMD" == "remove" ];then
