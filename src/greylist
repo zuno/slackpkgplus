@@ -15,3 +15,6 @@
 # You may want to greylist kde and/or kdei
 #kde
 #kdei
+#
+#do not upgrade packages installed with sbopkg; use it instead
+#_SBo

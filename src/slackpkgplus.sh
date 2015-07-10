@@ -47,7 +47,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
 
-  SPKGPLUS_VERSION="1.4.99"
+  SPKGPLUS_VERSION="1.5.0"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
@@ -292,10 +292,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo 1
     fi
     if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
-      mv ${TMPDIR}/CHECKSUMS.md5 ${TMPDIR}/CHECKSUMS.md5-old
-      for PREPO in ${PRIORITY[*]};do
-	grep " \./$PREPO/" ${TMPDIR}/CHECKSUMS.md5-old >> ${TMPDIR}/CHECKSUMS.md5
-      done
+      if [ "$TAG_PRIORITY" == "on" ];then
+        mv ${TMPDIR}/CHECKSUMS.md5 ${TMPDIR}/CHECKSUMS.md5-old
+        for PREPO in ${PRIORITY[*]};do
+  	  grep " \./$PREPO/" ${TMPDIR}/CHECKSUMS.md5-old >> ${TMPDIR}/CHECKSUMS.md5
+        done
+      fi
       X86_64=$(ls $ROOT/var/log/packages/aaa_base*x86_64* 2>/dev/null|head -1)
       for PREPO in $REPOPLUS;do
         if [ ! -z "$X86_64" ];then

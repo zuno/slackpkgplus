@@ -1,5 +1,9 @@
+Version 1.5.0 - 10/Jul/2015
+  - Fixed TAG_PRIORITY
+  - Fixed repositories list
+
 Version 1.4.99 - 01/Jul/2015
-  - Added priority by tag. Setting TAG_PRIORITY to 'yes' slackpkg+
+  - Added priority by tag. Setting TAG_PRIORITY to 'on' slackpkg+
     automatically upgrade packages from repository where the tag is the same
     of the already installed package.
 

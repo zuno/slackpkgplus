@@ -10,9 +10,10 @@ SLACKPKGPLUS=on
 VERBOSE=1
 
 # By default slackpkg+ deny to install 32bit packages.
+#
 # Set this flag to 'on' allow slackpkg+ to install 32bit packages on a 64bit slackware 
 # installation (possibly unsafe). Please, do not install both 32 and 64bit of the same 
-# package to avoid problems, and NEVER upgrade exitant 64bit packages with relative 32bit package.
+# package to avoid problems, and NEVER upgrade existant 64bit packages with relative 32bit package.
 # Do not forget to install the multilibs.
 ALLOW32BIT=off
 
@@ -38,12 +39,23 @@ GREYLIST=on
 
 # Examples:
 #PKGS_PRIORITY=( restricted:vlc )
+# OR
 #PKGS_PRIORITY=( myrepo )
+# 
+# if you have two reporitories to give priority you must set both in the same line
+#PKGS_PRIORITY=( myrepo restricted:vlc )
+#
+# if you want to install 'ktown' repository you must set it here
+#PKGS_PRIORITY=( ktown )
+# and read special instruction on /usr/doc/slackpkg+-*/repositories.txt
 #
 # If you want a multilib system, uncomment the multilib repository and set:
 #PKGS_PRIORITY=( multilib )
 #
 # (Use /usr/doc/slackpkg+-*/setupmultilib.sh to setup a multilib configuration)
+#
+# For both multilib and ktown set
+#PKGS_PRIORITY=( multilib ktown )
 
 # Otherwise you can try to upgrade a package from a repository that contains a package with the
 # same tag of the already installed package. Tipically that means to upgrade a package from the
