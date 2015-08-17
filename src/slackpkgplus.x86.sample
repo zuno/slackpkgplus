@@ -31,8 +31,23 @@ GREYLIST=on
 
 # Examples:
 #PKGS_PRIORITY=( restricted:vlc )
+# OR
 #PKGS_PRIORITY=( myrepo )
+# 
+# if you have two reporitories to give priority you must set both in the same line
+#PKGS_PRIORITY=( myrepo restricted:vlc )
 #
+# if you want to install 'ktown' repository you must set it here
+#PKGS_PRIORITY=( ktown )
+# and read special instruction on /usr/doc/slackpkg+-*/repositories.txt
+
+# Otherwise you can try to upgrade a package from a repository that contains a package with the 
+# same tag of the already installed package. Tipically that means to upgrade a package from the
+# same author of the already installed package.
+# Note that this method may not works properly where two repositories contains a package with the
+# same tag.
+# Set TAG_PRIORITY to 'on' to enable this function
+TAG_PRIORITY=off
 
 # List repositories you want to use (defined below)
 # remember to launch 'slackpkg update' if you modify that row.

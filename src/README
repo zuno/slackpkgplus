@@ -165,6 +165,13 @@ you do not explicitly exclude it:
 that means 'all ktown packages except harfbuzz'
 
 
+Also you can set TAG_PRIORITY=on to allow slackpkg+ to select repository
+from where the package was previously installed.
+This method is based from tag of the installed package.
+slackpkg+ search a package with the same tag in all repositories and use it.
+If two repositories contains the same tag, it will honour REPOPLUS.
+ 
+
 -----
 
 
