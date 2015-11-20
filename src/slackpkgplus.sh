@@ -18,7 +18,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTVERBOSE=$VERBOSE
   EXTUSEBL=$USEBL
   EXTWGETOPTS=$WGETOPTS
-  EXTDOWNLOADER=$DOWNLOADER
+  EXTDOWNLOADCMD=$DOWNLOADCMD
   EXTTAG_PRIORITY=$TAG_PRIORITY
 
   . $CONF/slackpkgplus.conf
@@ -29,7 +29,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   VERBOSE=${EXTVERBOSE:-$VERBOSE}
   USEBL=${EXTUSEBL:-$USEBL}
   WGETOPTS=${EXTWGETOPTS:-$WGETOPTS}
-  DOWNLOADER=${EXTDOWNLOADER:-$DOWNLOADER}
+  DOWNLOADCMD=${EXTDOWNLOADCMD:-$DOWNLOADCMD}
   TAG_PRIORITY=${EXTTAG_PRIORITY:-$TAG_PRIORITY}
 
   USEBLACKLIST=true
@@ -874,7 +874,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   } # END wgetdebug()
 
-  if [ -z "$DOWNLOADER" ];then
+  if [ ! -z "$DOWNLOADCMD" ];then
+    DOWNLOADER="$DOWNLOADCMD"
+  else
     DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
     if [ "$VERBOSE" = "0" ];then
       DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"

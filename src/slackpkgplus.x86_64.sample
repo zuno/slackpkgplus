@@ -26,9 +26,9 @@ USEBL=1
 # You can solve the repository indisponibility issue by set a timeout here
 WGETOPTS="--timeout=20 --tries=2"
 
-# If you want replace wget with another downloader search DOWNLOADER in documentation
+# If you want replace wget with another downloader search DOWNLOADCMD in documentation
 # at /usr/doc/slackpkg+-*/README
-#DOWNLOADER="wget -O"
+#DOWNLOADCMD="wget -O"
 
 # Enable (on) / Disable (off) notification events (see notifymsg.conf)
 #ENABLENOTIFY=off
