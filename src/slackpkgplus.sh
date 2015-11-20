@@ -618,7 +618,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   if [ $CONF/slackpkgplus.conf -nt $WORKDIR/pkglist -a "$CMD" != "update" ];then
     echo
-    echo "NOTICE: remember to re-run 'slackpkg update' after modifing slackpkgplus.conf"
+    echo "NOTICE: remember to re-run 'slackpkg update' after modifying slackpkgplus.conf"
     echo
     sleep 5
   fi
