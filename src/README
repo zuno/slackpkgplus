@@ -378,6 +378,31 @@ in slackpkgplus.conf
 
 -----
 
+DOWNLOADER Option
+
+You can choose to use an alternative to wget.
+
+Note that downloader will be called as
+$DOWNLOADER destinationfile url
+
+The base is
+DOWNLOADER="wget -O"
+by default slackpkgplus adds other useful options:
+DOWNLOADER="wget $WGETOPTS -nv --no-check-certificate --passive-ftp -O"
+
+If you like curl:
+DOWNLOADER="curl -o"
+you can add other options BEFORE the last '-o' switch:
+DOWNLOADER="curl -v -o"
+
+If you want use a multi-connection (parallel) download, you can install aria2
+(http://aria2.sourceforge.net/) and set
+DOWNLOADER="aria2c -x 16 -s 16 --auto-file-renaming=false --allow-overwrite=true -d / -o"
+if you have proxy add
+DOWNLOADER="aria2c --all-proxy=someproxy:8080 -x 16 -s 16 --auto-file-renaming=false --allow-overwrite=true -d / -o"
+
+
+-----
 
 ALLOW32BIT
 

@@ -18,6 +18,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTVERBOSE=$VERBOSE
   EXTUSEBL=$USEBL
   EXTWGETOPTS=$WGETOPTS
+  EXTDOWNLOADER=$DOWNLOADER
   EXTTAG_PRIORITY=$TAG_PRIORITY
 
   . $CONF/slackpkgplus.conf
@@ -28,6 +29,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   VERBOSE=${EXTVERBOSE:-$VERBOSE}
   USEBL=${EXTUSEBL:-$USEBL}
   WGETOPTS=${EXTWGETOPTS:-$WGETOPTS}
+  DOWNLOADER=${EXTDOWNLOADER:-$DOWNLOADER}
   TAG_PRIORITY=${EXTTAG_PRIORITY:-$TAG_PRIORITY}
 
   USEBLACKLIST=true
@@ -864,15 +866,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   } # END wgetdebug()
 
-  DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
-  if [ "$VERBOSE" = "0" ];then
-    DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
-  elif [ "$VERBOSE" = "2" ];then
+  if [ -z "$DOWNLOADER" ];then
     DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
-  elif [ "$VERBOSE" = "3" ];then
-    DOWNLOADER="wgetdebug"
-  elif [ "$CMD" = "update" ];then
-    DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
+    if [ "$VERBOSE" = "0" ];then
+      DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
+    elif [ "$VERBOSE" = "2" ];then
+      DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
+    elif [ "$VERBOSE" = "3" ];then
+      DOWNLOADER="wgetdebug"
+    elif [ "$CMD" = "update" ];then
+      DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
+    fi
   fi
 
   # Global variable required by givepriority()
