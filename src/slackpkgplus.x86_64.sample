@@ -51,7 +51,7 @@ GREYLIST=on
 #
 # if you want to install 'ktown' repository you must set it here
 #PKGS_PRIORITY=( ktown )
-# and read special instruction on /usr/doc/slackpkg+-*/repositories.txt
+# and DO NOT MISS to read special instruction on /usr/doc/slackpkg+-*/repositories.txt
 #
 # If you want a multilib system, uncomment the multilib repository and set:
 #PKGS_PRIORITY=( multilib )

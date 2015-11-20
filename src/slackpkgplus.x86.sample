@@ -43,7 +43,7 @@ GREYLIST=on
 #
 # if you want to install 'ktown' repository you must set it here
 #PKGS_PRIORITY=( ktown )
-# and read special instruction on /usr/doc/slackpkg+-*/repositories.txt
+# and DO NOT MISS to read special instruction on /usr/doc/slackpkg+-*/repositories.txt
 
 # Otherwise you can try to upgrade a package from a repository that contains a package with the 
 # same tag of the already installed package. Tipically that means to upgrade a package from the

@@ -35,7 +35,7 @@ You can find a larger list at http://slakfinder.org
 Some specific notes:
 
 * multilib:
-    Please, run /usr/doc/slackpkg+-*/setupmultilib.sh to setup it
+    Please, run /usr/doc/slackpkg+-*/setupmultilib.sh to setup it.
     Periodically you should run "slackpkg install multilib"
       after run "slackpkg upgrade-all"
 
@@ -45,17 +45,12 @@ Some specific notes:
       after run "slackpkg upgrade-all"
     at moment 'latest' is 'kde4', 'testing' is 'kde5'.
     after install you need to do some postinstall operation, see
-      http://taper.alienbase.nl/mirrors/alien-kde/current/latest/
-      http://taper.alienbase.nl/mirrors/alien-kde/current/testing/
+      http://alien.slackbook.org/ktown/14.1/latest/
+      http://alien.slackbook.org/ktown/current/5/
     kde4:
       slackpkg remove kdeadmin kdenetwork kdesdk kdetoys kwallet kdnssd
     kde5:
-      kde5 require kde4, so configure both repositories.
-      add the following lines to the Slackware file "/etc/rc.d/rc.4" right after
-      the line: echo "Starting up X11 session manager..."
-
-	  if [ -x /usr/bin/sddm ]; then
-	    exec /usr/bin/sddm
-	  fi
+      kde5 (available only in slackware-current)
+      slackpkg remove libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt plasma-nm polkit-kde-agent-1 polkit-kde-kcmodules-1 kdeconnect-kde
 
 Please read /usr/doc/slackpkg+-*/README for more details

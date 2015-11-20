@@ -151,7 +151,7 @@ for example:
   PKGS_PRIORITY=( alienbob:openjdk )
 
 <package name> accepts a regular expression, so for example
-  PKGS_PRIORITY=( restricted:.*vlc.* )
+  PKGS_PRIORITY=( restricted:.* vlc.* )
 means 'all packages containing the "vlc" string'
   PKGS_PRIORITY=( ktown:.* )
 means 'all packages in repository ktown'
@@ -222,22 +222,37 @@ or just re-run
 KTOWN (LATEST KDE)
 
 If you want to install the latest KDE packages from AlienBOB's ktown repository
-(currently 4.14.3 and 5.0.2), add "PKGS_PRIORITY=( ktown )" then launch:
+(currently kde 4.14.3 in slackware 14.1 and kde 5.15.7 in slackware current),
+add "PKGS_PRIORITY=( ktown )"
 # slackpkg update gpg
 # slackpkg update
-# slackpkg install ktown
-# slackpkg upgrade-all
-Do not forget to read the special instructions from
-  http://taper.alienbase.nl/mirrors/alien-kde/current/latest/  (kde 4)
-  http://taper.alienbase.nl/mirrors/alien-kde/current/testing/ (kde 5)
-because you may need to do some manual operation. At the time of writing, for kde4:
-# slackpkg remove kdeadmin kdenetwork kdesdk kdetoys kwallet kdnssd
-for kde5:
-add to /etc/rc.d/rc.4" right after the line 'echo "Starting up X11 session manager..."':
 
-      if [ -x /usr/bin/sddm ]; then
-	exec /usr/bin/sddm
-      fi
+To install ktown you need some attention, so please refeer to official
+documentation for details:
+http://alien.slackbook.org/ktown/14.1/latest/ (kde 4)
+http://alien.slackbook.org/ktown/current/5/   (kde 5)
+
+* ktown4 on slackware 14.1:
+
+slackpkg install ktown
+slackpkg upgrade-all
+slackpkg remove kdeadmin kdenetwork kdesdk kdetoys kwallet kdnssd
+slackpkg clean-system
+
+* ktown5 on slackware current:
+
+slackpkg remove libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt plasma-nm polkit-kde-agent-1 polkit-kde-kcmodules-1 kdeconnect-kde
+slackpkg install ktown
+slackpkg upgrade-all
+slackpkg clean-system
+
+if you are upgrading an already installed ktown5, you may also need
+slackpkg reinstall ktown
+BEFORE slackpkg install ktown
+
+
+Note - for both ktown4 and ktown5 - that the packages to remove may change in newer version of ktown (at moment are kde-4.14.3 and kde-5_15.11), so I encourage to read linked documents BEFORE install it.
+
 
 After that, you can keep the ktown KDE up-to-date by launching:
 # slackpkg update
@@ -245,24 +260,14 @@ After that, you can keep the ktown KDE up-to-date by launching:
 Periodically you should re-run
 # slackpkg install ktown
 
-To restore the Slackware KDE, remove 'ktown' from PKGS_PRIORITY and from
-REPOPLUS, but do NOT delete the related MIRRORPLUS line, then launch:
+To restore the Slackware KDE, remove all 'ktown' referall in config file, then launch:
 # slackpkg update
-# slackpkg upgrade-all
+# slackpkg reinstall kde
 # slackpkg install kde
-# slackpkg remove ktown
-then delete or comment the related MIRRORPLUS line and launch:
+# slackpkg upgrade-all
+# slackpkg clean-system ktown
 # slackpkg update
 
-
-note that ktown5 requires ktown4, so you must configure both repositories:
-PKGS_PRIORITY=( ktown5 ktown4 )
-MIRRORPLUS['ktown4']=....
-MIRRORPLUS['ktown5']=....
-
-and then run
-...
-# slackpkg install ktown5 ktown4
 
 -----
 
