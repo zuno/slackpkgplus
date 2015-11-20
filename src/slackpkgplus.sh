@@ -164,7 +164,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     if [ $(basename $1) = "CHECKSUMS.md5.asc" ];then
       if [ "$CHECKGPG" = "on" ];then
-        for PREPO in $REPOPLUS;do
+        for PREPO in ${REPOPLUS[*]};do
           URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5.asc
           if echo $URLFILE | grep -q "^dir:/" ; then
             continue
@@ -222,7 +222,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
     fi
     if [ $(basename $1) = "ChangeLog.txt" ];then
-      for PREPO in $REPOPLUS;do
+      for PREPO in ${REPOPLUS[*]};do
         # Not all repositories have the ChangeLog.txt, so I use md5 of CHECKSUMS.md5 instead
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         if echo $URLFILE | grep -q "^file://" ; then
@@ -251,7 +251,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       done
     fi
     if [ $(basename $1) = "GPG-KEY" ];then
-      for PREPO in $REPOPLUS;do
+      for PREPO in ${REPOPLUS[*]};do
         if [ "${PREPO:0:4}" = "dir:" ];then
           continue
         fi
@@ -301,7 +301,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         done
       fi
       X86_64=$(ls $ROOT/var/log/packages/aaa_base*x86_64* 2>/dev/null|head -1)
-      for PREPO in $REPOPLUS;do
+      for PREPO in ${REPOPLUS[*]};do
         if [ ! -z "$X86_64" ];then
          if [ "$ALLOW32BIT" == "on" ];then
            egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
@@ -606,7 +606,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   done
 
   REPOPLUS=$(echo "${REPOPLUS[*]} ${PURE_PKGSPRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}')
-  PRIORITY=( ${PRIORITY[*]} SLACKPKGPLUS_$(echo $REPOPLUS|sed 's/ / SLACKPKGPLUS_/g') )
+  PRIORITY=( ${PRIORITY[*]} SLACKPKGPLUS_$(echo ${REPOPLUS[*]}|sed 's/ / SLACKPKGPLUS_/g') )
 
   # Test repositories
   for pp in ${REPOPLUS[*]};do
@@ -886,7 +886,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   PRIORITYIDX=1
 
   touch ${TMPDIR}/pkglist-pre
-  for PREPO in $REPOPLUS;do
+  for PREPO in ${REPOPLUS[*]};do
     pref=${MIRRORPLUS[$PREPO]}
     if [ "${pref:0:5}" = "dir:/" ];then
       localpath=$(echo "$pref" | cut -f2- -d":"|sed -e 's_/$__' -e 's_//_/_')
@@ -1148,7 +1148,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		
 		printf "\n  [ %-24s ] [ %-20s ]\n" "Repository" "Status"
 			
-		for REPO in slackware $REPOPLUS; do
+		for REPO in slackware ${REPOPLUS[*]}; do
 			if grep -q "^${REPO}$"  ${TMPDIR}/updated-repos.txt ; then
 				printf "    %-24s     %-20s \n" "$REPO" "AVAILABLE UPDATES" 
 			else
