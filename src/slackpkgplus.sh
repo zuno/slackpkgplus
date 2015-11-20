@@ -583,6 +583,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     done
   } # END searchlistEX()
 
+    # Ensure each repository url has a trailing slash...
+    #
+  for PREPO in "${!MIRRORPLUS[@]}" ; do
+    MIRRORPLUS[$PREPO]="${MIRRORPLUS[$PREPO]%/}/"
+  done
+
   touch $TMPDIR/greylist.1
   if [ -e $CONF/greylist ];then
     cat $CONF/greylist|sed -e 's/#.*//'|grep -v -e '^#' -e '^$'|awk '{print $1}'|sort -u >$TMPDIR/greylist.1
