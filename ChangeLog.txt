@@ -1,3 +1,15 @@
+Version 1.5.1 - 20/Nov/2015
+  Note for Slackware 14.1 users: slackware-current introduce important bug fix
+  in slackpkg 2.82.0-14 (see Slackware ChangeLog) not backported in slackware
+  14.1; it is not mandatory but you are encouraged to upgrade it by download it
+  manually; be sure to graylist slackpkg to avoid an automatic downgrade.
+  - The trailing slash in MIRRORPLUS[] is now optional (thanks to phenixia2003
+    and Didier Spaier)
+  - Added DOWNLOADCMD option to add a custom downloader
+  - Fixed a bug that causes that ALL repositories fail if ONE repository fails
+    (thanks to FR on Alien Pasture for reporting)
+  - Fixed TAG_PRIORITY to avoid impact in slackpkg install
+
 Version 1.5.0 - 10/Jul/2015
   - Fixed TAG_PRIORITY
   - Fixed repositories list
