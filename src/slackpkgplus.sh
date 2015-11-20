@@ -366,13 +366,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     unset PKGDATA
 
     AUTOP=no
-    if [ ! -z "$AUTOPRIORITY" ];then
-      if echo "$ARGUMENT"|grep -wq $AUTOPRIORITY;then
+    if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]];then
+      if [ ! -z "$AUTOPRIORITY" ];then
+	if echo "$ARGUMENT"|grep -wq $AUTOPRIORITY;then
+	  AUTOP=$TAG_PRIORITY
+	fi
+      fi
+      if [ "$CMD" == "upgrade-all" ];then
 	AUTOP=$TAG_PRIORITY
       fi
-    fi
-    if [ "$CMD" == "upgrade-all" ];then
-      AUTOP=$TAG_PRIORITY
     fi
     if [ "$AUTOP" == "on" ] ; then
       PKGINFOS=$( 
