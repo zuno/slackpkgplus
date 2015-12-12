@@ -82,7 +82,6 @@ developers" >> $TMPDIR/error.log
 			;;
 		esac
 		SHOWLIST=$(cat $TMPDIR/dialog.out | tr -d \")
-		rm -f $TMPDIR/dialog.*
 		if [ -z "$SHOWLIST" ]; then
 			echo "No packages selected for $2, exiting."
 			cleanup
