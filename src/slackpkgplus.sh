@@ -33,7 +33,9 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
-  SPKGPLUS_VERSION="20140415.1"
+
+
+  SPKGPLUS_VERSION="1.3.1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
@@ -100,7 +102,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # then merge all in a format slackpkg-compatible
   function getfile(){
     local URLFILE
-    local REPO_MD5
     URLFILE=$1
 
     if echo $1|egrep -q '/SLACKPKGPLUS_(file|dir|http|https|ftp)[0-9].*\.asc$';then
@@ -233,8 +234,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         else
           $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         fi
-
-	REPO_MD5=""
 	if [ ! -s ${TMPDIR}/CHECKSUMS.md5-$PREPO ];then
               echo
               echo "                        !!! F A T A L !!!"
@@ -243,15 +242,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               echo
               sleep 5
 	      echo -e "$PREPO: Invalid repository (fails to download CHECKSUMS.md5)" >> $TMPDIR/error.log
-
-	      if [ -e "${WORKDIR}/ChangeLog.txt" ] ; then
-		PREPO_MD5=$(grep "SLACKPKGPLUS_$PREPO\[MD5\]" ${WORKDIR}/ChangeLog.txt | cut -f2 -d" ")
-	      fi
-	else
-	    PREPO_MD5=$(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}')	
 	fi
 
-        echo "SLACKPKGPLUS_$PREPO[MD5]" "$PREPO_MD5" >>$2
+        echo "SLACKPKGPLUS_$PREPO[MD5]" $(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}') >>$2
+
       done
     fi
     if [ $(basename $1) = "GPG-KEY" ];then
