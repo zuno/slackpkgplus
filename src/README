@@ -151,8 +151,26 @@ for example:
   PKGS_PRIORITY=( alienbob:openjdk )
 
 <package name> accepts a regular expression, so for example
-  PKGS_PRIORITY=( restricted:.* )
-means 'all packages in repository restricted'
+  PKGS_PRIORITY=( restricted:.* vlc.* )
+means 'all packages containing the "vlc" string'
+  PKGS_PRIORITY=( ktown:.* )
+means 'all packages in repository ktown'
+
+latest item maybe replaced simply with
+  PKGS_PRIORITY=( ktown )
+
+all packages matched from ktown ovverride all related slackware packages, unless
+you do not explicitly exclude it:
+  PKGS_PRIORITY=( patches:harfbuzz slackware64:harfbuzz ktown )
+that means 'all ktown packages except harfbuzz'
+
+
+Also you can set TAG_PRIORITY=on to allow slackpkg+ to select repository
+from where the package was previously installed.
+This method is based from tag of the installed package.
+slackpkg+ search a package with the same tag in all repositories and use it.
+If two repositories contains the same tag, it will honour REPOPLUS.
+ 
 
 -----
 
@@ -161,12 +179,16 @@ MULTILIB
 
 If you want to use a multilib system, you can automatically configure the
 multilib repository in slackpkgplus.conf and install multilib simply by running:
-# /usr/doc/slackpkg+-1.2.0/setupmultilib.sh
+# /usr/doc/slackpkg+-*/setupmultilib.sh
 
 To configure multilib manually (e.g. if you have installed multilib already),
 uncomment the correct "MIRRORPLUS['multilib']=...",
-and uncomment "PKGS_PRIORITY=( multilib:.* )",
-and add multilib to the REPOPLUS list.
+and uncomment "PKGS_PRIORITY=( multilib:.* )".
+If you do not plan to build yourself 32bit packages on your 64bit machine, you may
+avoid to install gcc:
+
+   PKGS_PRIORITY=( patches:gcc slackware64:gcc multilib )
+
 
 To install multilib manually, launch:
 # slackpkg update gpg
@@ -181,7 +203,7 @@ and re-running 'slackpkg install multilib' if 'slackpkg install-new' has found
 any new packages.
 
 To uninstall multilib, you must remove 'multilib:.*' from PKGS_PRIORITY and from
-REPOPLUS (but do not delete the related MIRRORPLUS line), then launch:
+REPOPLUS, but do NOT delete the related MIRRORPLUS line, then launch:
 # slackpkg update
 # slackpkg remove multilib
 Note: this does NOT remove the core multilib packages, because they affect the
@@ -190,35 +212,62 @@ Note: this does NOT remove the core multilib packages, because they affect the
 then delete or comment the related MIRRORPLUS line, and finally launch
 # slackpkg update
 
+or just re-run
+# /usr/doc/slackpkg+-*/setupmultilib.sh
+
+
 -----
 
 
 KTOWN (LATEST KDE)
 
 If you want to install the latest KDE packages from AlienBOB's ktown repository
-(presently 4.11.1), add "PKGS_PRIORITY=( ktown:.* )" then launch:
+(currently kde 4.14.3 in slackware 14.1 and kde 5.15.7 in slackware current),
+add "PKGS_PRIORITY=( ktown )"
 # slackpkg update gpg
 # slackpkg update
-# slackpkg install ktown
-# slackpkg upgrade-all
-Do not forget to read the special instructions from
-  http://taper.alienbase.nl/mirrors/alien-kde/current/latest/
-because you may need to remove some Slackware KDE packages. At the time of
-writing, these packages are:
-# slackpkg remove kdeadmin kdenetwork kdesdk kdetoys
+
+To install ktown you need some attention, so please refeer to official
+documentation for details:
+http://alien.slackbook.org/ktown/14.1/latest/ (kde 4)
+http://alien.slackbook.org/ktown/current/5/   (kde 5)
+
+* ktown4 on slackware 14.1:
+
+slackpkg install ktown
+slackpkg upgrade-all
+slackpkg remove kdeadmin kdenetwork kdesdk kdetoys kwallet kdnssd
+slackpkg clean-system
+
+* ktown5 on slackware current:
+
+slackpkg remove libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt plasma-nm polkit-kde-agent-1 polkit-kde-kcmodules-1 kdeconnect-kde
+slackpkg install ktown
+slackpkg upgrade-all
+slackpkg clean-system
+
+if you are upgrading an already installed ktown5, you may also need
+slackpkg reinstall ktown
+BEFORE slackpkg install ktown
+
+
+Note - for both ktown4 and ktown5 - that the packages to remove may change in newer version of ktown (at moment are kde-4.14.3 and kde-5_15.11), so I encourage to read linked documents BEFORE install it.
+
 
 After that, you can keep the ktown KDE up-to-date by launching:
 # slackpkg update
 # slackpkg upgrade-all
+Periodically you should re-run
+# slackpkg install ktown
 
-To restore the Slackware KDE, remove 'ktown:.*' from PKGS_PRIORITY and from
-REPOPLUS (but do not delete the related MIRRORPLUS line), then launch:
+To restore the Slackware KDE, remove all 'ktown' referall in config file, then launch:
 # slackpkg update
-# slackpkg upgrade-all
+# slackpkg reinstall kde
 # slackpkg install kde
-# slackpkg remove ktown
-then delete or comment the related MIRRORPLUS line and launch:
+# slackpkg upgrade-all
+# slackpkg clean-system ktown
 # slackpkg update
+
 
 -----
 
@@ -334,6 +383,31 @@ in slackpkgplus.conf
 
 -----
 
+DOWNLOADCMD Option
+
+You can choose to use an alternative to wget.
+
+Note that downloader will be called as
+$DOWNLOADCMD destinationfile url
+
+The base is
+DOWNLOADCMD="wget -O"
+by default slackpkgplus adds other useful options:
+DOWNLOADCMD="wget $WGETOPTS -nv --no-check-certificate --passive-ftp -O"
+
+If you like curl:
+DOWNLOADCMD="curl -o"
+you can add other options BEFORE the last '-o' switch:
+DOWNLOADCMD="curl -v -o"
+
+If you want use a multi-connection (parallel) download, you can install aria2
+(http://aria2.sourceforge.net/) and set
+DOWNLOADCMD="aria2c -x 16 -s 16 --auto-file-renaming=false --allow-overwrite=true -d / -o"
+if you have proxy add
+DOWNLOADCMD="aria2c --all-proxy=someproxy:8080 -x 16 -s 16 --auto-file-renaming=false --allow-overwrite=true -d / -o"
+
+
+-----
 
 ALLOW32BIT
 

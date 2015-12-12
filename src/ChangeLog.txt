@@ -1,3 +1,41 @@
+Version 1.5.1 - 20/Nov/2015
+  Note for Slackware 14.1 users: slackware-current introduce important bug fix
+  in slackpkg 2.82.0-14 (see Slackware ChangeLog) not backported in slackware
+  14.1; it is not mandatory but you are encouraged to upgrade it by download it
+  manually; be sure to graylist slackpkg to avoid an automatic downgrade.
+  - The trailing slash in MIRRORPLUS[] is now optional (thanks to phenixia2003
+    and Didier Spaier)
+  - Added DOWNLOADCMD option to add a custom downloader
+  - Fixed a bug that causes that ALL repositories fail if ONE repository fails
+    (thanks to FR on Alien Pasture for reporting)
+  - Fixed TAG_PRIORITY to avoid impact in slackpkg install
+
+Version 1.5.0 - 10/Jul/2015
+  - Fixed TAG_PRIORITY
+  - Fixed repositories list
+
+Version 1.4.99 - 01/Jul/2015
+  - Added priority by tag. Setting TAG_PRIORITY to 'on' slackpkg+
+    automatically upgrade packages from repository where the tag is the same
+    of the already installed package.
+
+Version 1.4.1 - 16/Jun/2015
+  - Fix for repositories having CHECKSUMS.md5.gz.asc
+
+Version 1.4.0 - 13/Dec/2014
+  - Now the official repositories (slackware64, extra, patches...) are treated
+    as thirdy party repositories, so you can add it in PKGS_PRIORITY
+    (phenixia2003)
+  - To put an entire repository in PKGS_PRIORITY, you no more need to add
+    ':.*' after the name (phenixia2003)
+
+Version 1.3.3 - 26/Oct/2014
+  - Patched to avoid to install glibc-debug from alienbob multilib (thanks to
+    phenixia2003)
+
+Version 1.3.2 - 13/Jul/2014
+  - Patched to reflect changes on slackpkg 2.82.0-13
+
 Version 1.3.1 - 7/Mar/2014
   - Improved check-updates function (thanks to phenixia2003)
   - Improved debug-mode

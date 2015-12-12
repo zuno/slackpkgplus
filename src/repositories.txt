@@ -4,23 +4,24 @@ Supported Repositories:
 > slackpkgplus:  http://slakfinder.org/slackpkg+/
 > multilib:      http://taper.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,14.1,current}/
 > alienbob:      http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
-> ktown:         http://taper.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,current}/latest/{x86,x86_64}/
+> ktown:         http://taper.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,current}/{latest,testing}/{x86,x86_64}/
 > restricted:    http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
 > slacky:        http://repository.slacky.eu/slackware{,64}-{13.37,14.0,14.1}/
-> mled:          http://www.microlinux.fr/slackware/MLED-{14.0,14.1}-{32,64}bit/
-> mles:          http://www.microlinux.fr/slackware/MLES-{14.0,14.1}-{32,64}bit/
-> msb:           http://slackware.org.uk/msb/{14.0,14.1}/1.6/{x86,x86_64}/
-> slackers:      http://www.slackers.it/repository/
-> slacke17:      http://ngc891.blogdns.net/pub/slacke17/slackware{,64,arm}-{14.0,14.1}/
+> mled-desktop:  http://www.microlinux.fr/microlinux/desktop-14.1-{32,64}bit/
+> mled-extras:   http://www.microlinux.fr/microlinux/extras-14.1-{32,64}bit/
+> mles:          http://www.microlinux.fr/microlinux/server-{14.0,14.1}-{32,64}bit/
+> msb:           http://slackware.org.uk/msb/{14.0,14.1}/{1.6,1.8,1.10}/{x86,x86_64}/
+> slackers:      http://ponce.cc/slackers/repository/
+> slacke18:      http://ngc891.blogdns.net/pub/slacke18/slackware{,64,arm}-14.1/
 > studioware:    http://studioware.org/files/packages/slackware{,64}-{13.37,14.0,14.1}/
+> slackonly:	 http://slackonly.com/pub/packages/{14.1,current}-{x86,x86_64}/
+> rlworkman:     http://rlworkman.net/pkgs/{13.37,14.0,14.1}/
 > 
 > Does NOT support GPG
 > salixos(*):    http://download.salixos.org/{i486,x86_64}/{13.37,14.0,14.1}/
-> salixext:      http://people.salixos.org/ralvex/repository/x86_64/{14.0,14.1}/
-> rlworkman(*):  http://rlworkman.net/pkgs/{13.37,14.0,14.1}/
-> slackel:       http://www.slackel.gr/repo/{i486,x86_64}/current/
+> slackel(*):    http://www.slackel.gr/repo/{i486,x86_64}/{current,kde5}/
 
-(*) salixos and rlworkman partially supports GPG. These repositories contains the .asc file
+(*) salixos and slackel partially supports GPG. These repositories contains the .asc file
     for CHECKSUMS.md5, so the 'update' process works with CHECKGPG=on and repository authenticity
     is guaranteed.
     Unfortunately the single packages do not include the related .asc file, so you must
@@ -30,3 +31,26 @@ Supported Repositories:
 
 You can find a larger list at http://slakfinder.org
 
+
+Some specific notes:
+
+* multilib:
+    Please, run /usr/doc/slackpkg+-*/setupmultilib.sh to setup it.
+    Periodically you should run "slackpkg install multilib"
+      after run "slackpkg upgrade-all"
+
+* ktown: 
+    You need to put 'ktown' in PKGS_PRIORITY
+    Periodically you should run "slackpkg install ktown"
+      after run "slackpkg upgrade-all"
+    at moment 'latest' is 'kde4', 'testing' is 'kde5'.
+    after install you need to do some postinstall operation, see
+      http://alien.slackbook.org/ktown/14.1/latest/
+      http://alien.slackbook.org/ktown/current/5/
+    kde4:
+      slackpkg remove kdeadmin kdenetwork kdesdk kdetoys kwallet kdnssd
+    kde5:
+      kde5 (available only in slackware-current)
+      slackpkg remove libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt plasma-nm polkit-kde-agent-1 polkit-kde-kcmodules-1 kdeconnect-kde
+
+Please read /usr/doc/slackpkg+-*/README for more details
