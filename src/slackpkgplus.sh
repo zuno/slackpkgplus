@@ -378,7 +378,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     if [ "$AUTOP" == "on" ] ; then
       PKGINFOS=$( 
-      		  cd /var/log/packages 
+      		  cd $ROOT/var/log/packages 
 		  ls $ARGUMENT-* 2>/dev/null |sed 's/$/.txz/' | awk -f /usr/libexec/slackpkg/pkglist.awk|
 		                              grep " $ARGUMENT "|awk '{print $1,$4}'|
 					      ( read X
