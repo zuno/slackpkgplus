@@ -7,19 +7,19 @@ Supported Repositories:
 > ktown:         http://taper.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,current}/{latest,testing}/{x86,x86_64}/
 > restricted:    http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
 > slacky:        http://repository.slacky.eu/slackware{,64}-{13.37,14.0,14.1}/
-> mled-desktop:  http://www.microlinux.fr/microlinux/desktop-14.1-{32,64}bit/
-> mled-extras:   http://www.microlinux.fr/microlinux/extras-14.1-{32,64}bit/
-> mles:          http://www.microlinux.fr/microlinux/server-{14.0,14.1}-{32,64}bit/
-> msb:           http://slackware.org.uk/msb/{14.0,14.1}/{1.6,1.8,1.10}/{x86,x86_64}/
+> mleddesktop:   http://www.microlinux.fr/microlinux/desktop-{14.1,14.2}-{32,64}bit/
+> mledextras:    http://www.microlinux.fr/microlinux/extras-{14.1,14.2}-{32,64}bit/
+> mles:          http://www.microlinux.fr/microlinux/server-{14.0,14.1,14.2}-{32,64}bit/
+> msb:           http://slackware.org.uk/msb/{14.0,14.1,testing}/{1.6,1.8,1.10,1.12}/{x86,x86_64}/
 > slackers:      http://ponce.cc/slackers/repository/
 > slacke18:      http://ngc891.blogdns.net/pub/slacke18/slackware{,64,arm}-14.1/
 > studioware:    http://studioware.org/files/packages/slackware{,64}-{13.37,14.0,14.1}/
-> slackonly:	 http://slackonly.com/pub/packages/{14.1,current}-{x86,x86_64}/
-> rlworkman:     http://rlworkman.net/pkgs/{13.37,14.0,14.1}/
+> slackonly:     http://packages.slackonly.com/pub/packages/{14.1,current}-{x86,x86_64}/
+> rlworkman:     http://rlworkman.net/pkgs/{13.37,14.0,14.1,current}/
+> slackel:       http://www.slackel.gr/repo/{i486,x86_64}/{current,kde5}/
 > 
 > Does NOT support GPG
 > salixos(*):    http://download.salixos.org/{i486,x86_64}/{13.37,14.0,14.1}/
-> slackel(*):    http://www.slackel.gr/repo/{i486,x86_64}/{current,kde5}/
 
 (*) salixos and slackel partially supports GPG. These repositories contains the .asc file
     for CHECKSUMS.md5, so the 'update' process works with CHECKGPG=on and repository authenticity
