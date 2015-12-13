@@ -626,12 +626,19 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
   done
 
+  if [ $[$(date +%s)-$(date -d "$(ls -l --full-time $WORKDIR/pkglist|awk '{print $6,$7,$8}')" +%s)] -gt 86400 -a "$CMD" != "update" ];then
+    echo
+    echo "NOTICE: pkglist is older than 24h; you are encouraged to re-run 'slackpkg update'"
+    echo
+    sleep 1
+  fi
   if [ $CONF/slackpkgplus.conf -nt $WORKDIR/pkglist -a "$CMD" != "update" ];then
     echo
     echo "NOTICE: remember to re-run 'slackpkg update' after modifying slackpkgplus.conf"
     echo
     sleep 5
   fi
+
 
   # -- merge priorities from PKGS_PRIORITY with PRIORITY, as needed ...
 
