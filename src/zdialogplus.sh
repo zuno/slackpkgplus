@@ -19,6 +19,19 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		if [ "$ONOFF" != "off" ]; then
 			ONOFF=on
 		fi
+# 1                     2         3     4      5   6                          7                                 8   9 10
+# SLACKPKGPLUS_slackers zulucrypt 4.7.8 x86_64 1cf zulucrypt-4.7.8-x86_64-1cf ./SLACKPKGPLUS_slackers/zulucrypt txz 1 cf
+		SHOWORDER=10
+		case "$SHOWORDER" in
+			"repository") SHOWORDER=1;;
+			"arch")       SHOWORDER=4;;
+			"package")    SHOWORDER=6;;
+			"path")       SHOWORDER=7;;
+			"tag")        SHOWORDER=10;;
+			*)            SHOWORDER=6;;
+		esac
+		cat $TMPDIR/pkglist|sed 's/SLACKPKGPLUS_//g'|awk '{if(!a[$2]++)print $0,gensub(/([0-9]+)([^0-9]*)/,"\\1 \\2_","g",$5),$6"."$8}'|awk '{print $10,$0}'|sort|awk '{print $NF}' >$TMPDIR/pkglist.sort
+
 		cat $TMPDIR/greylist.* >$TMPDIR/greylist
 		if [ "$GREYLIST" == "off" ];then
 		  >$TMPDIR/greylist
@@ -28,7 +41,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		
 		if [ "$2" = "upgrade" ]; then
 			ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
-			for i in $1; do
+			for i in $(for x in $1; do echo $x;done|grep -f - $TMPDIR/pkglist.sort); do
 			  	TMPONOFF=$ONOFF
 				BASENAME=$(cutpkg $i)
 				PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)

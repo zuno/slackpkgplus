@@ -440,6 +440,20 @@ you install.
 
 -----
 
+SHOWORDER
+
+By default slackpkg in dialogbox sort packages by name.
+For large upgrades from many reporitories, may be useful sorting by repository name.
+With this option you can sort packages by package name, repository, tag, path
+(in the repository), architecture:
+
+# Select the show order in dialogbox. Available "package" "repository" "tag" "path" "arch"
+SHOWORDER=repository
+
+Default is "package"
+
+-----
+
 INSTALL LOG
 
 Slackpkg+ now create a log of all installed packages in /var/lib/slackpkg/install.log
