@@ -1,3 +1,13 @@
+Version devel Wed Dec 16 19:48:09 CET 2015
+  - Fixed a missed $ROOT
+  - Added SHOWORDER option. It's a way to sort packages in dialog box to help
+    reviewing large upgrade from many repositories. The SHOWORDER option
+    accepts "package" "repository" "tag" "path" "arch".
+  - Fixed some repository url. There are already some 14.2 repositories!!!
+  - slackpkg+ advise you to update the pkglist before use it 
+  - Added a script in /usr/doc/slackpkg+-* to a fast check of repositories
+  - slackpkg -dialog=off now show repository name as with dialog
+
 Version 1.5.1 - 20/Nov/2015
   Note for Slackware 14.1 users: slackware-current introduce important bug fix
   in slackpkg 2.82.0-14 (see Slackware ChangeLog) not backported in slackware

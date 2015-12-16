@@ -583,6 +583,44 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     done
   } # END searchlistEX()
 
+  # Supersede original showlist() from core-functions.sh
+  #
+  # Show the lists and asks if the user want to proceed with that action
+  # Return accepted list in $SHOWLIST
+  #
+  # This version show the repository to which each package belongs.
+  #
+function showlist() {
+  local ANSWER
+  local i
+  local SHOWREPO=false
+  local REPONAME
+
+  if echo "$CMD" | grep -qE "install|reinstall|upgrade|upgrade-all" ; then
+	printf "[ %-24s ] [ %-40s ]\n" "Repository" "Package"
+	SHOWREPO=true
+  fi
+
+  for i in $1; do
+  	if $SHOWREPO ; then
+		REPONAME=$(grep -m 1 "${i%.*}" $TMPDIR/pkglist | cut -f1 -d" " | sed "s/SLACKPKGPLUS_//")
+		printf "  %-24s     %-40s  \n" "$REPONAME" "$i"
+	else
+		echo $i;
+	fi
+  done | $MORECMD
+  echo
+  countpkg "$1"
+  echo -e "Do you wish to $2 selected packages (Y/n)? \c"
+  answer
+  if [ "$ANSWER" = "N" -o "$ANSWER" = "n" ]; then
+	cleanup
+  else
+	SHOWLIST="$1"
+	continue
+  fi
+}
+
     # Ensure each repository url has a trailing slash...
     #
   for PREPO in "${!MIRRORPLUS[@]}" ; do
