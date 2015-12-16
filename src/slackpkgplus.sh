@@ -664,7 +664,7 @@ function showlist() {
     fi
   done
 
-  if [ $[$(date +%s)-$(date -d "$(ls -l --full-time $WORKDIR/pkglist|awk '{print $6,$7,$8}')" +%s)] -gt 86400 -a "$CMD" != "update" ];then
+  if [ $[$(date +%s)-$(date -d "$(ls -l --full-time $WORKDIR/pkglist 2>/dev/null|awk '{print $6,$7,$8}')" +%s)] -gt 86400 -a "$CMD" != "update" ];then
     echo
     echo "NOTICE: pkglist is older than 24h; you are encouraged to re-run 'slackpkg update'"
     echo
