@@ -401,41 +401,78 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     for CPRIORITY in ${PRIORITY[@]} ; do
       [ "$PKGDATA" ] && break
 
+      DIR=$(echo "$CPRIORITY" | cut -f1 -d":")
+      PAT=$(echo "$CPRIORITY" | cut -s -f2- -d":")
+      REPOSITORY=$(echo "${DIR}" | sed "s/SLACKPKGPLUS_//")
+
+	# pass to the next iteration when there are priority filters and the
+	# current repository is not accepted by the defined filter rules ...
+      if [ -s ${TMPDIR}/priority.filters ] \
+	&& ! grep -q -E "^([.][*]|${REPOSITORY}) " ${TMPDIR}/priority.filters ; then
+	continue
+      fi
+
       if echo "$CPRIORITY " | grep -q "[a-zA-Z0-9]\+[:]" ; then
-        DIR=$(echo "$CPRIORITY" | cut -f1 -d":")
-        PAT=$(echo "$CPRIORITY" | cut -f2- -d":")
 
-        # ARGUMENT is always a basename. But PAT can be:
-        #   1. a regular expression (ie .*)
-        #   2. a basename (openjdk)
-        #   3. a partial (or complete) package name (vlc-2.0.6, ).
-        #
-        # The current "enhanced priority rule" is applied :
-        #   + In case (1) and (2) when ARGUMENT contains the pattern PAT
-        #   + In the case (3) when ARGUMENT starts the pattern PAT.
-        #
-        if echo "$ARGUMENT" | grep -q "$PAT" || echo "$PAT" | grep "^$ARGUMENT" ; then
-          PKGDATA=""
-          PKGINFOS=$(grep -n -m 1 "^${DIR} ${ARGUMENT} " ${TMPDIR}/pkglist)
+	  # [Reminder] ARGUMENT is always a basename, but PAT can be :
+	  #    1. a basename (ie. gcc, glibc-solibs)
+	  #    2. a regular expression (ie. .*)
+	  #    3. a (in)complete package name (ie. vlc-2, vlc-2.0.6, 1.0.3)
+	  #
+	PKGDATA=""
+	LINEIDX=""
+	PKGINFOS=$(grep -n "^${DIR} " ${TMPDIR}/pkglist | grep -w "${PAT}" | grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT}")
 
-          if [ ! -z "$PKGINFOS" ] ; then
-            LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
-              PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
-
-              # -- move the line at #LINEIDX to #PRIORITYIDX and
-              #    increment PRIORITYIDX
-              #
-              sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
-              (( PRIORITYIDX++ ))
-          fi
+        if [ ! -z "$PKGINFOS" ] ; then
+	  LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
+	  PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
         fi
       else
-        PKGDATA=( $(grep "^${CPRIORITY} ${ARGUMENT} " ${TMPDIR}/pkglist) )
+	  # $CPRIORITY is of kind "repository" (ie. slackware, extra, patches,...)
+	REPOSITORY="${CPRIORITY}"
+        PKGDATA=( $(grep -n -m 1 "^${REPOSITORY} ${ARGUMENT} " ${TMPDIR}/pkglist) )
       fi
+
 
       if [ "$PKGDATA" ]; then
         NAME=${PKGDATA[1]}
         FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
+
+	if [ -s ${TMPDIR}/priority.filters ] ; then
+	    # there are priority filters set. Ensure the current selected
+	    # package is accepted by the defined filter rules. Otherwise,
+	    # reset PKGDATA and LINEIDX
+	    #
+
+	    # extract patterns from prioriy.filters whose 1st FIELD match ${REPOSITORY},
+	    # and, if there are filter of type .*:P, add their patterns too ...
+	  grep "^${REPOSITORY} " ${TMPDIR}/priority.filters | cut -f2 -d" " > ${TMPDIR}/filter.patterns
+	  grep "^[.][*] " ${TMPDIR}/priority.filters | cut -f2 -d" " >> ${TMPDIR}/filter.patterns
+
+	    # If no filter patterns were found, or if the selected package does not
+	    # match any of the filter patterns, the selected package is rejected...
+	  if [ ! -s ${TMPDIR}/filter.patterns ] || ! echo "${PKGDATA[5]}.${PKGDATA[7]}" | grep -q -f ${TMPDIR}/filter.patterns ;  then
+	    PKGDATA=""
+	    LINEIDX=""
+	    NAME=""
+	    FULLNAME=""
+	  fi
+	fi
+      fi
+
+      if [ ! -z "$LINEIDX" ] ; then
+	  # CPRIORITY is of kind reponame:pattern. The selected package is at line #LINEIDX. To
+	  # ensure that slackpkg (ie. core code) will install|upgrade this (exact) package, the
+	  # line which describes it (ie. in TMPDIR/pkglist) must be moved at line #PRIORITYIDX.
+          #
+	  # Without this move, slackpkg could install|upgrade the wrong package. For instance,
+	  # if there are 2 repositories R1 and R2 which have two differents version of the
+	  # same package (ie. built with different options) but which have the same name P, if 
+	  # R1:P is before R2:P in pkglist, and the user issue install|upgrade R2:P, slackpkg
+	  # will install R1:P instead.
+	  #
+	sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
+	(( PRIORITYIDX++ ))
       fi
     done
   } # END givepriority()
@@ -953,6 +990,8 @@ function showlist() {
     fi
   done
 
+  touch ${TMPDIR}/priority.filters
+
   if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]] && [ "$ALLOW32BIT" == "on" ] ; then
        ARCH="\($ARCH\)\|\([i]*[3456x]86[^_]*\)"
        echo -e "i[3456]86\nx86" > $TMPDIR/greylist.32bit
@@ -964,6 +1003,7 @@ function showlist() {
     PRIORITYLIST=""
 
     for pref in $INPUTLIST ; do
+      PRIORITY_FILTER_RULE=""
 
       # You can specify 'slackpkg install .' that is an alias of 'slackpkg install dir:./'
       if [ "$pref" == "." ];then
@@ -986,6 +1026,9 @@ function showlist() {
 	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
 	package=$(cutpkg $package)
 
+	  # require to add rule "$repository $package" in the priority filter
+	PRIORITY_FILTER_RULE="${repository} ${package}"
+
       # You can specify 'slackpkg install dir:directory' on local disk, where 'directory' have a relative or absolute path
       elif [ "${pref:0:4}" = "dir:" ]; then
         localpath=$(echo "$pref" | cut -f2- -d":"|sed 's_/$__')
@@ -1004,6 +1047,9 @@ function showlist() {
 	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
         package=SLACKPKGPLUS_$repository
 
+	  # require to add rule "$repository .*" in the priority filter
+	PRIORITY_FILTER_RULE="${repository} .*"
+
       # You can specify 'slackpkg install http://mysite.org/myrepo/package-1.0-noarch-1my.txz' to install a package from remote path
       # without manual download. You can use http,https,ftp repositories
       elif echo "$pref" | egrep -q "^(https?|ftp)://.*/.*-[^-]+-[^-]+-[^\.]+\.t.z$" ;then
@@ -1016,6 +1062,9 @@ function showlist() {
 	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
 	package=$(cutpkg $package)
 
+	  # require to add rule "${repository} ${package}" in the priority filter
+	PRIORITY_FILTER_RULE="${repository} ${package}"
+
       # You can specify 'slackpkg install http://mysite.org/myrepo' to list remote directory
       elif echo "$pref" | egrep -q "^(https?|ftp)://.*/.*" ;then
 	repository=$(echo "$pref" | cut -f1 -d":")
@@ -1027,12 +1076,18 @@ function showlist() {
 	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
 	package=SLACKPKGPLUS_$repository
 
+	  # require to add rule "${repository} .*" in the priority filter
+	PRIORITY_FILTER_RULE="${repository} .*"
+
       # You can specify 'slackpkg install reponame:packagename'
       elif echo "$pref" | grep -q "[a-zA-Z0-9]\+[:][a-zA-Z0-9]\+" ; then
 
         if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] ; then
           repository=$(echo "$pref" | cut -f1 -d":")
           package=$(echo "$pref" | cut -f2- -d":")
+
+	    # require to add rule "${repository} ${package}" in the priority filter
+	  PRIORITY_FILTER_RULE="${repository} ${package}"
 
           if ! echo "$repository" | grep -qwE "$SLACKDIR_REGEXP" ; then
 	    repository="SLACKPKGPLUS_${repository}"
@@ -1055,6 +1110,9 @@ function showlist() {
           fi
         fi
 
+	  # require to add rule "${pref} .*" in the priority filter
+	PRIORITY_FILTER_RULE="${pref} .*"
+
         package="SLACKPKGPLUS_${pref}"
         PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${pref}:.* )
 
@@ -1075,8 +1133,14 @@ function showlist() {
         #
         package="^${pref}"
 
+	  # require to add rule "${pref} .*" in the priority filter
+	PRIORITY_FILTER_RULE="${pref} .*"
+
       # You can specify 'slackpkg install argument' where argument is a package name, part of package name, directory name in repository
       else
+	  # require to add rule ".* ${pref}" in the priority filter
+	PRIORITY_FILTER_RULE=".* ${pref}"
+
         package=$pref
         AUTOPRIORITY=" $AUTOPRIORITY -e $package "
       fi
@@ -1084,6 +1148,8 @@ function showlist() {
       if [ "$CMD" == "remove" ];then
 	package=$(echo $package|sed 's/\.t[blxg]z$//')
       fi
+
+      [ ! -z "${PRIORITY_FILTER_RULE}" ] && echo "${PRIORITY_FILTER_RULE}" >> ${TMPDIR}/priority.filters
 
       # -- only insert "package" if not in NEWINPUTLIST
       echo "$NEWINPUTLIST" | grep -qw "${package}" || NEWINPUTLIST="$NEWINPUTLIST $package"
@@ -1113,7 +1179,6 @@ function showlist() {
       done
     fi
   fi
-
 
   if [ "$CMD" == "search" ] || [ "$CMD" == "file-search" ] ; then
     PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g')
