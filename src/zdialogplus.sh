@@ -21,7 +21,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		fi
 # 1                     2         3     4      5   6                          7                                 8   9 10
 # SLACKPKGPLUS_slackers zulucrypt 4.7.8 x86_64 1cf zulucrypt-4.7.8-x86_64-1cf ./SLACKPKGPLUS_slackers/zulucrypt txz 1 cf
-		SHOWORDER=10
 		case "$SHOWORDER" in
 			"repository") SHOWORDER=1;;
 			"arch")       SHOWORDER=4;;
