@@ -1,4 +1,4 @@
-Version devel Fri Dec 18 20:13:08 CET 2015
+Version 1.5.2 - 18/Dec/2015
   - Fixed a missed $ROOT
   - Added SHOWORDER option. It's a way to sort packages in dialog box to help
     reviewing large upgrade from many repositories. The SHOWORDER option

@@ -17,7 +17,7 @@ if [ repositories.txt -nt repositories.lst ];then
 	sleep 5
 fi
 
-INST=$(ls /var/log/packages/slackpkg+-$VERSION-noarch-* 2>/dev/null)
+INST=$(ls /var/log/packages/slackpkg+-$VERSION-noarch-* 2>/dev/null|true)
 if [ ! -z "$INST" ];then
 	BINST=$(echo $INST|sed 's/.*-//')
 	NBUILD=$(echo $BUILD|egrep -o [0-9])
