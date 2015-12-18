@@ -11,7 +11,7 @@ CONF=${CONF:-/etc/slackpkg} # needed if you're running slackpkg 2.28.0-12
 SLACKDIR_REGEXP="(slackware)|(slackware64)|(extra)|(pasture)|(patches)|(testing)"
 
 if [ -e $CONF/slackpkgplus.conf ];then
-  # You can override GREYLIST WGETOPTS SLACKPKGPLUS VERBOSE USEBL ALLOW32BIT from command-line
+  # You can override GREYLIST WGETOPTS SLACKPKGPLUS VERBOSE USEBL ALLOW32BIT SENSITIVE_SEARCH from command-line
   EXTGREYLIST=$GREYLIST
   EXTALLOW32BIT=$ALLOW32BIT
   EXTSLACKPKGPLUS=$SLACKPKGPLUS
@@ -20,6 +20,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTWGETOPTS=$WGETOPTS
   EXTDOWNLOADCMD=$DOWNLOADCMD
   EXTTAG_PRIORITY=$TAG_PRIORITY
+  EXTSENSITIVE_SEARCH=$SENSITIVE_SEARCH
 
   . $CONF/slackpkgplus.conf
 
@@ -31,6 +32,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   WGETOPTS=${EXTWGETOPTS:-$WGETOPTS}
   DOWNLOADCMD=${EXTDOWNLOADCMD:-$DOWNLOADCMD}
   TAG_PRIORITY=${EXTTAG_PRIORITY:-$TAG_PRIORITY}
+  SENSITIVE_SEARCH=${EXTSENSITIVE_SEARCH:-$SENSITIVE_SEARCH}
 
   USEBLACKLIST=true
   if [ "$USEBL" == "0" ];then
@@ -479,8 +481,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   function searchPackages() {
     local i
+    local GREPOPTS=""
 
-    INPUTLIST=$@
+    SEARCHSTR=$@
 
     grep -vE "(^#|^[[:blank:]]*$)" ${CONF}/blacklist > ${TMPDIR}/blacklist
     if echo $CMD | grep -q install ; then
@@ -491,6 +494,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
 
     touch ${TMPDIR}/waiting
+
+    [ "$SENSITIVE_SEARCH" = "off" ] && GREPOPTS="--ignore-case"
 
     # -- PKGLIST:
     #      temporary file used to store data about packages. It uses
@@ -515,7 +520,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         #  for the fields: version(3) arch(4) build(5), path(7),
         #  extension(8)
         #
-        zegrep -w "${INPUTLIST}" ${WORKDIR}/${DIR}-filelist.gz | \
+        zegrep ${GREPOPTS} -w "${SEARCHSTR}" ${WORKDIR}/${DIR}-filelist.gz | \
           cut -d" " -f 1 | rev | cut -f2- -d"." | cut -f1 -d"/" | rev |\
           awk '{
                   l_pname=$0
@@ -528,7 +533,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           }' l_dir=${DIR} > $PKGINFOS
 
       else # -- CMD==search
-        grep "^${DIR}.*${PATTERN}" "${TMPDIR}/pkglist" > $PKGINFOS
+        grep ${GREPOPTS} "^${DIR}.*${SEARCHSTR}" "${TMPDIR}/pkglist" > $PKGINFOS
       fi
 
       while read PKG ; do

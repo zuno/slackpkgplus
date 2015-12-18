@@ -1,4 +1,4 @@
-Version devel Thu Dec 17 22:26:41 CET 2015
+Version devel Fri Dec 18 20:13:08 CET 2015
   - Fixed a missed $ROOT
   - Added SHOWORDER option. It's a way to sort packages in dialog box to help
     reviewing large upgrade from many repositories. The SHOWORDER option
@@ -7,6 +7,8 @@ Version devel Thu Dec 17 22:26:41 CET 2015
   - slackpkg+ advise you to update the pkglist before use it 
   - Added a script in /usr/doc/slackpkg+-* to a fast check of repositories
   - slackpkg -dialog=off now show repository name as with dialog
+  - Added SENSITIVE_SEARCH option to search case-insensitive
+    (thanks to phenixia2003)
   - Important fixes in the priority manager. Many thanks to all people that
     reported the bugs and a Big thanks to phenixia2003 for the fix. Now we need
     your help to test it.

@@ -440,6 +440,23 @@ you install.
 
 -----
 
+SENSITIVE_SEARCH
+
+By default the 'slackpkg search' and 'slackpkg file-search' do case sensitive
+searches, so 'slackpkg search mplayer' does NOT find the slackware package 
+MPlayer-1.1_20130819-x86_64-2
+
+You can search case-insensitive by setting SENSITIVE_SEARCH to off in config file.
+You can also do temporary case-insensitive searches overriding that setting in cmdline
+
+SENSITIVE_SEARCH=off slackpkg search mplayer
+
+
+Note tha 'slackpkg install' still remains case sensitive, so you must use
+slackpkg install MPlayer
+
+-----
+
 SHOWORDER
 
 By default slackpkg in dialogbox sort packages by name.
