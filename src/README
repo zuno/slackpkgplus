@@ -406,6 +406,23 @@ DOWNLOADCMD="aria2c -x 16 -s 16 --auto-file-renaming=false --allow-overwrite=tru
 if you have proxy add
 DOWNLOADCMD="aria2c --all-proxy=someproxy:8080 -x 16 -s 16 --auto-file-renaming=false --allow-overwrite=true -d / -o"
 
+-----
+
+CACHEUPDATE Option
+
+By default 'slackpkg update' download all metadata files (CHECKSUMS.md5, PACKAGES.TXT,
+MANIFEST.bz2). When you use many and or large repositories, this may take a lot of
+time and in most cases there are no news or news just in only one repository.
+
+Enabling CACHEUPDATE slackpkg+ put a cache of metadatas in /var/lib/slackpkg/cache,
+so everytime it just must to verify if there is a new version, otherwise it can use
+the cached file.
+
+Note that it works only with http repositories and does not work with proxies.
+It uses 'curl' to download file headers to check if there is a new version of
+the file.
+
+Set CACHEUPDATE=on to enable it. Default is 'off'
 
 -----
 
@@ -454,6 +471,9 @@ SENSITIVE_SEARCH=off slackpkg search mplayer
 
 Note tha 'slackpkg install' still remains case sensitive, so you must use
 slackpkg install MPlayer
+
+WARNING: do NOT run 'slackpkg search slackpkg' with SENSITIVE_SEARCH=on. It
+may take a very lot of time!
 
 -----
 

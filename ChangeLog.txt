@@ -1,3 +1,7 @@
+Version 1.6.0 - 19/Dec/2015
+  - Added CACHEUPDATE. You can now speedup the slackpkg update by caching
+    metadata files.
+
 Version 1.5.2 - 18/Dec/2015
   - Fixed a missed $ROOT
   - Added SHOWORDER option. It's a way to sort packages in dialog box to help

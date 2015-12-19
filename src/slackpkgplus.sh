@@ -21,6 +21,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTDOWNLOADCMD=$DOWNLOADCMD
   EXTTAG_PRIORITY=$TAG_PRIORITY
   EXTSENSITIVE_SEARCH=$SENSITIVE_SEARCH
+  EXTCACHEUPDATE=$CACHEUPDATE
 
   . $CONF/slackpkgplus.conf
 
@@ -33,6 +34,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   DOWNLOADCMD=${EXTDOWNLOADCMD:-$DOWNLOADCMD}
   TAG_PRIORITY=${EXTTAG_PRIORITY:-$TAG_PRIORITY}
   SENSITIVE_SEARCH=${EXTSENSITIVE_SEARCH:-$SENSITIVE_SEARCH}
+  CACHEUPDATE=${EXTCACHEUPDATE:-$CACHEUPDATE}
 
   USEBLACKLIST=true
   if [ "$USEBL" == "0" ];then
@@ -51,7 +53,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
 
-  SPKGPLUS_VERSION="1.5.2"
+  SPKGPLUS_VERSION="1.6.0"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
@@ -63,7 +65,16 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     touch $WORKDIR/install.log
   fi
 
+  if [ "$CMD" == "update" ];then
+    ANSWER="Y"
+  fi
+
   function cleanup(){	
+    if [ "$CMD" == "update" ];then
+      if [ "$ANSWER" != "Y" ] && [ "$ANSWER" != "y" ]; then
+	touch $WORKDIR/pkglist
+      fi
+    fi
     [ "$SPINNING" = "off" ] || tput cnorm
     if [ "$DELALL" = "on" ] && [ "$NAMEPKG" != "" ]; then
       rm $CACHEPATH/$NAMEPKG &>/dev/null
@@ -960,6 +971,59 @@ function showlist() {
 
 
   } # END wgetdebug()
+  function cached_downloader(){
+    local SRCURL
+    local CACHEFILE
+    local SRCBASE
+    SRCURL=$2
+    SRCBASE=$(basename $SRCURL)
+    CACHEFILE=$(echo $SRCURL|md5sum|awk '{print $1}')
+
+    case $SRCBASE in
+      CHECKSUMS.md5) TOCACHE=1 ;;
+      MANIFEST.bz2) TOCACHE=1 ;;
+      PACKAGES.TXT) TOCACHE=1 ;;
+      *) TOCACHE=0 ;;
+    esac
+
+    if [ $TOCACHE -eq 1 ];then
+      echo
+      echo "=== check cache: $SRCURL ==="
+      echo -n "headers.. "
+      curl --location --head $SRCURL 2>/dev/null|grep -v ^Date:|sed 's///' > $TMPDIR/cache.head
+      echo "Url: $SRCURL" >> $TMPDIR/cache.head
+      grep -q "200 OK" $TMPDIR/cache.head || echo "Header or Url Invalid!!! (`date`)"
+      [ $VERBOSE -eq 3 ]&&cat $TMPDIR/cache.head|sed 's/^/  /'
+      if [ -e $CACHEDIR/$CACHEFILE -a -e $CACHEDIR/$CACHEFILE.head ];then
+	echo "Is cached.. "
+	[ $VERBOSE -eq 3 ]&&cat $CACHEDIR/$CACHEFILE.head|sed 's/^/  /'
+	if diff $CACHEDIR/$CACHEFILE.head $TMPDIR/cache.head >/dev/null;then
+	  echo "Cache valid!   If not please remove manually $CACHEDIR/$CACHEFILE !"
+	  cp $CACHEDIR/$CACHEFILE $1
+	  return $?
+	fi
+	echo -n "Invalid.. "
+	rm -f $CACHEDIR/$CACHEFILE $CACHEDIR/$CACHEFILE.head
+      fi
+      echo "Download file.. "
+      $CACHEDOWNLOADER $1 $SRCURL
+      ERR=$?
+      if [ "$(ls -l $1 2>/dev/null|awk '{print $5}')" == "$(grep Content-Length: $TMPDIR/cache.head|awk '{print $2}')" ];then
+	echo "Caching it!"
+	cp $1 $CACHEDIR/$CACHEFILE
+	cp $TMPDIR/cache.head $CACHEDIR/$CACHEFILE.head
+      else
+	echo "NOT cacheable!"
+      fi
+    else
+      echo
+      echo "=== no caching for $SRCURL ==="
+      $CACHEDOWNLOADER $1 $SRCURL
+      ERR=$?
+    fi
+    return $ERR
+
+  } # END cached_downloader()
 
   if [ ! -z "$DOWNLOADCMD" ];then
     DOWNLOADER="$DOWNLOADCMD"
@@ -975,6 +1039,15 @@ function showlist() {
       DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
     fi
   fi
+
+  if [ "$CMD" == "update" -a "$CACHEUPDATE" == "on" ];then
+    CACHEDOWNLOADER=$DOWNLOADER
+    CACHEDIR=$WORKDIR/cache
+    mkdir -p $CACHEDIR
+    find $CACHEDIR -mtime +30 -exec rm -f {} \;
+    DOWNLOADER="cached_downloader"
+  fi
+
 
   # Global variable required by givepriority()
   #
