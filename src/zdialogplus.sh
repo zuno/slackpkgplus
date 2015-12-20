@@ -75,7 +75,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 			awk '{ NF=3 ; print $0 }' $TMPDIR/dialog2.tmp > $TMPDIR/dialog.tmp
 			HINT=""
 		fi
-		cat $TMPDIR/dialog.tmp|xargs dialog --title $2 --backtitle "slackpkg $VERSION" $HINT --checklist "Choose packages to $2:" 19 70 13 2>$TMPDIR/dialog.out
+		DTITLE=$2
+		if [ "$DOWNLOADONLY" == "on" ];then
+		  DTITLE="$DTITLE (download only)"
+		fi
+		cat $TMPDIR/dialog.tmp|xargs dialog --title "$DTITLE" --backtitle "slackpkg $VERSION" $HINT --checklist "Choose packages to $2:" 19 70 13 2>$TMPDIR/dialog.out
 		case "$?" in
 			0|123)
 				dialog --clear

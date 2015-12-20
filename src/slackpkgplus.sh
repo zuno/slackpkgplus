@@ -22,6 +22,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTTAG_PRIORITY=$TAG_PRIORITY
   EXTSENSITIVE_SEARCH=$SENSITIVE_SEARCH
   EXTCACHEUPDATE=$CACHEUPDATE
+  EXTDOWNLOADONLY=$DOWNLOADONLY
 
   . $CONF/slackpkgplus.conf
 
@@ -35,6 +36,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   TAG_PRIORITY=${EXTTAG_PRIORITY:-$TAG_PRIORITY}
   SENSITIVE_SEARCH=${EXTSENSITIVE_SEARCH:-$SENSITIVE_SEARCH}
   CACHEUPDATE=${EXTCACHEUPDATE:-$CACHEUPDATE}
+  DOWNLOADONLY=${EXTDOWNLOADONLY:-$DOWNLOADONLY}
 
   USEBLACKLIST=true
   if [ "$USEBL" == "0" ];then
@@ -47,13 +49,18 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
+  if [ "$DOWNLOADONLY" == "on" ];then
+    DELALL=off
+    DOWNLOAD_ALL=on
+  fi
+
   if [ -z "$VERBOSE" ];then
     VERBOSE=1
   fi
 
 
 
-  SPKGPLUS_VERSION="1.6.0"
+  SPKGPLUS_VERSION="1.6.1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
@@ -892,6 +899,10 @@ function showlist() {
 		done
 		DELALL="$OLDDEL"
 	fi
+	if [ "$DOWNLOADONLY" == "on" ];then
+	        echo "Download only.. not upgraded!"
+	   	return
+	fi
 	ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
 
 	for i in $SHOWLIST; do
@@ -918,6 +929,10 @@ function showlist() {
 			getpkg $i true
 		done
 		DELALL="$OLDDEL"
+	fi
+	if [ "$DOWNLOADONLY" == "on" ];then
+	        echo "Download only.. not installed!"
+	   	return
 	fi
 	for i in $SHOWLIST; do
 	        INSTALL_T='installed:  '

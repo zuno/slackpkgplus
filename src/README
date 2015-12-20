@@ -424,6 +424,26 @@ the file.
 
 Set CACHEUPDATE=on to enable it. Default is 'off'
 
+
+-----
+
+DOWNLOADONLY Option
+
+Sometimes may be useful to just download only the packages, and in a second moment 
+install it. For example for large upgrades I can download all in the night while 
+I sleep and then install all in the morning.
+
+Also it is good when the 'install-new' give you a large list of packages to install.
+
+You can set DOWNLOANDONLY=on in slackpkgplus.conf to do that or use it in cmdline.
+
+For example, to upgrading from slackware 14.1 to slackware 14.2:
+# DOWNLOADONLY=on slackpkg install-new
+# DOWNLOADONLY=on slackpkg upgrade-all
+# slackpkg install-new
+# slackpkg upgrade-all
+# slackpkg clean-system
+
 -----
 
 ALLOW32BIT
@@ -446,8 +466,8 @@ Sometime you may want that slackpkg+ does not install some package in the upgrad
 process. To do that you must uncheck the package everytime or add it in the
 'blacklist' file. The first method may be onerous when you use upgrade-all frequently.
 The second method does not allow you to know which package version is available.
-A thirdy method is to put it in the 'graylist' file.
-All packages listed in graylist will be available to install and listed in slackpkg
+A thirdy method is to put it in the 'greylist' file.
+All packages listed in greylist will be available to install and listed in slackpkg
 dialog, but they will be unchecked by default so you are sure to not install it
 wrongly.
 You may decide also to greylist one entire repository. A good idea is to greylist

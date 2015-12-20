@@ -34,6 +34,10 @@ WGETOPTS="--timeout=20 --tries=2"
 # process by downloading just new files (see README). Disabled by default (off)
 CACHEUPDATE=off
 
+# You can download-only by setting DOWNLOADONLY to 'on'. You may (you should) also use it in commandline
+# for example: "DOWNLOADONLY=on slackpkg upgrade-all". Useful for large upgrades.
+#DOWNLOADONLY=off
+
 # Enable (on) / Disable (off) notification events (see notifymsg.conf)
 #ENABLENOTIFY=off
 
