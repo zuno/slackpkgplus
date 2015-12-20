@@ -441,7 +441,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	  #
 	PKGDATA=""
 	LINEIDX=""
-	PKGINFOS=$(grep -n "^${DIR} " ${TMPDIR}/pkglist | grep -w "${PAT}" | grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT}")
+	PKGINFOS=$(grep -n "^${DIR} " ${TMPDIR}/pkglist | grep -w "${PAT}" | grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT} ")
 
         if [ ! -z "$PKGINFOS" ] ; then
 	  LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
@@ -613,7 +613,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       # First is the package already installed?
       # Amazing what a little sleep will do
       # exclusion is so much nicer :)
-      INSTPKG=$(ls -1 $ROOT/var/log/packages | grep -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+")
+      INSTPKG=$(ls -1 $ROOT/var/log/packages | grep -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$")
       #INSTPKG=$(ls -1 $ROOT/var/log/packages | grep -e "^${BASENAME}-[^-]\+-\(${ARCH}\|fw\|noarch\)-[^-]\+")
 
       # INSTPKG is local version
