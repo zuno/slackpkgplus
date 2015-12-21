@@ -40,7 +40,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		
 		if [ "$2" = "upgrade" ]; then
 			ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
-			for i in $(for x in $1; do echo $x;done|grep -f - $TMPDIR/pkglist.sort); do
+			#for i in $(for x in $1; do echo $x;done|grep -f - $TMPDIR/pkglist.sort); do
+			for i in $1; do
 			  	TMPONOFF=$ONOFF
 				BASENAME=$(cutpkg $i)
 				PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)

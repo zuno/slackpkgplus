@@ -384,6 +384,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     unset NAME
     unset FULLNAME
     unset PKGDATA
+    unset LINEIDX
 
     AUTOP=no
     if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]];then
