@@ -19,17 +19,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		if [ "$ONOFF" != "off" ]; then
 			ONOFF=on
 		fi
-# 1                     2         3     4      5   6                          7                                 8   9 10
-# SLACKPKGPLUS_slackers zulucrypt 4.7.8 x86_64 1cf zulucrypt-4.7.8-x86_64-1cf ./SLACKPKGPLUS_slackers/zulucrypt txz 1 cf
-		case "$SHOWORDER" in
-			"repository") SHOWORDER=1;;
-			"arch")       SHOWORDER=4;;
-			"package")    SHOWORDER=6;;
-			"path")       SHOWORDER=7;;
-			"tag")        SHOWORDER=10;;
-			*)            SHOWORDER=6;;
-		esac
-		cat $TMPDIR/pkglist|sed 's/SLACKPKGPLUS_//g'|awk '{if(!a[$2]++)print $0,gensub(/([0-9]+)([^0-9]*)/,"\\1 \\2_","g",$5),$6"."$8}'|awk '{print $10,$0}'|sort|awk '{print $NF}' >$TMPDIR/pkglist.sort
 
 		cat $TMPDIR/greylist.* >$TMPDIR/greylist
 		if [ "$GREYLIST" == "off" ];then
@@ -40,18 +29,30 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 		
 		if [ "$2" = "upgrade" ]; then
 			ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
-			#for i in $(for x in $1; do echo $x;done|grep -f - $TMPDIR/pkglist.sort); do
 			for i in $1; do
 			  	TMPONOFF=$ONOFF
 				BASENAME=$(cutpkg $i)
 				PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
                                 REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
+				REPOPOSFULL=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|sed 's/SLACKPKGPLUS_//'|awk '{print $0,gensub(/([0-9]+)([^0-9]*)/,"\\1 \\2_","g",$5),$6}')
 				PKGVER=$(echo $i|rev|cut -f3 -d-|rev)
 				ALLFOUND=$(echo $(grep " ${BASENAME} " $TMPDIR/pkglist|sed -r -e 's/SLACKPKGPLUS_//' -e 's/^([^ ]*) [^ ]* ([^ ]*) [^ ]* ([^ ]*) .*/\2-\3(\1) ,/')|sed 's/,$//')
 
 				grep -q "^$(echo $i|rev|cut -f4- -d-|rev)$" $TMPDIR/unchecklist && TMPONOFF="off"
-				echo "$i \"$REPOPOS\" $TMPONOFF \"installed: $PKGFOUND  -->  available: $ALLFOUND\"" >>$TMPDIR/dialog.tmp
+				echo "$REPOPOSFULL $i \"$REPOPOS\" $TMPONOFF \"installed: $PKGFOUND  -->  available: $ALLFOUND\"" >>$TMPDIR/dialog.tmp.1
 			done
+# 1         2                  3      4    5 6                                7             8   9 1011                               12-
+# slackware xf86-video-nouveau 1.0.12 i586 1 xf86-video-nouveau-1.0.12-i586-1 ./slackware/x txz 1 _ xf86-video-nouveau-1.0.12-i586-1 xf86-video-nouveau-1.0.12-i586-1.txz "slackware" on "installed: xf86-video-nouveau-git_20151119_6e6d8ac-i586-1  -->  available: blacklist-1(extra) , 1.0.12-1(slackware) "
+
+			case "$SHOWORDER" in
+				"repository") SHOWORDER=1;;
+				"arch")       SHOWORDER=4;;
+				"package")    SHOWORDER=6;;
+				"path")       SHOWORDER=7;;
+				"tag")        SHOWORDER=10;;
+				*)            SHOWORDER=6;;
+			esac
+			cat $TMPDIR/dialog.tmp.1 | awk '{print $'$SHOWORDER',$0}'|sort|cut -f13- -d" " >$TMPDIR/dialog.tmp
 			HINT="--item-help"
 		else
 			for i in $1; do
@@ -62,7 +63,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 			done
 			HINT=""
 		fi
-		
 		# This is needed because dialog have a limit of arguments.
 		# This limit is around 20k characters in slackware 10.x
 		# Empiric tests on slackware 13.0 got a limit around 139k.
