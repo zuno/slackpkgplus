@@ -34,7 +34,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 				BASENAME=$(cutpkg $i)
 				PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
                                 REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-				REPOPOSFULL=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|sed 's/SLACKPKGPLUS_//'|awk '{print $0,gensub(/([0-9]+)([^0-9]*)/,"\\1 \\2_","g",$5),$6}')
+				REPOPOSFULL=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|sed 's/SLACKPKGPLUS_//'|awk '{print $0,gensub(/([0-9]+)([^0-9]*)/,"\\1 \\2_","1",$5),$6}')
 				PKGVER=$(echo $i|rev|cut -f3 -d-|rev)
 				ALLFOUND=$(echo $(grep " ${BASENAME} " $TMPDIR/pkglist|sed -r -e 's/SLACKPKGPLUS_//' -e 's/^([^ ]*) [^ ]* ([^ ]*) [^ ]* ([^ ]*) .*/\2-\3(\1) ,/')|sed 's/,$//')
 
