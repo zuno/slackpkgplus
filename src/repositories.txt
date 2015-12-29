@@ -4,7 +4,7 @@ Supported Repositories:
 > slackpkgplus:  http://slakfinder.org/slackpkg+/
 > multilib:      http://taper.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,14.1,current}/
 > alienbob:      http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
-> ktown:         http://taper.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,current}/{latest,testing}/{x86,x86_64}/
+> ktown:         http://taper.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,current}/{latest,5}/{x86,x86_64}/
 > restricted:    http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
 > slacky:        http://repository.slacky.eu/slackware{,64}-{13.37,14.0,14.1}/
 > mleddesktop:   http://www.microlinux.fr/microlinux/desktop-{14.1,14.2}-{32,64}bit/
@@ -16,17 +16,18 @@ Supported Repositories:
 > studioware:    http://studioware.org/files/packages/slackware{,64}-{13.37,14.0,14.1}/
 > slackonly:     http://packages.slackonly.com/pub/packages/{14.1,current}-{x86,x86_64}/
 > rlworkman:     http://rlworkman.net/pkgs/{13.37,14.0,14.1,current}/
-> slackel:       http://www.slackel.gr/repo/{i486,x86_64}/{current,kde5}/
+> slackel:       http://www.slackel.gr/repo/{i486,x86_64}/current/
+> connochaetos:  http://connochaetos.org/slack-n-free/slack-n-free{,64}-14.1/
 > 
-> Does NOT support GPG
+> Partial GPG support
 > salixos(*):    http://download.salixos.org/{i486,x86_64}/{13.37,14.0,14.1}/
 
-(*) salixos and slackel partially supports GPG. These repositories contains the .asc file
+(*) salixos partially supports GPG. These repositories contains the .asc file
     for CHECKSUMS.md5, so the 'update' process works with CHECKGPG=on and repository authenticity
     is guaranteed.
     Unfortunately the single packages do not include the related .asc file, so you must
     install the packages with 'slackpkg -checkgpg=off install <packagename>', but the
-    authenticity is guaranteed by the md5 authenticity.
+    integrity is guaranteed by the md5 authenticity.
 
 
 You can find a larger list at http://slakfinder.org

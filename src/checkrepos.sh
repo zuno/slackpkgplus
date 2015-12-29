@@ -21,6 +21,7 @@ Or:
  urls and check if it is a repository.
 
    -q  print non-verbose progress
+   -v  print more verbose info
 
  The repository url can use the syntax '{ ... }' to specify
  multiple repository in one row. The script expand it and
@@ -50,6 +51,10 @@ if [ "$1" == "-q" ];then
 	V=""
 	shift
 fi
+if [ "$1" == "-v" ];then
+  V=2
+  shift
+fi
 
 if [ -f "$1" ];then
 	REPOS=$(cat $1|egrep -o 'http://[^ ]*')
@@ -59,8 +64,8 @@ fi
 
 REPOS=$(eval echo $REPOS|sed -e 's/{//g' -e 's/}//g')
 
-[ $V ]&&echo "Expanded repositories"
-[ $V ]&&echo $REPOS|sed 's/ /\n/g'
+[ $V ]&&echo "Expanded repositories" >&2
+[ $V ]&&echo $REPOS|sed 's/ /\n/g' >&2
 
 TMP=$(mktemp -d)
 cd $TMP
@@ -156,13 +161,19 @@ for R in $REPOS;do
 			[ $V ]&&echo "invalid"|grep --color .
 			GPG=bad
 		else
-			ID=$(echo $(cat GPG-KEY|grep -m1 ^uid|cut -c4-))
+			ID=$(gpg --list-packets GPG-KEY|grep ":user ID packet:"|head -1|cut -f2 -d'"')
 			if [ -z "$ID" ];then
 				[ $V ]&&echo "Unable to get UID"|grep --color .
+        GPG=yes
 			else
 				[ $V ]&&echo $ID
+        GPG=$ID
 			fi
-			GPG=yes
+      if [ "$V" == "2" ];then
+        ( gpg --list-packets GPG-KEY
+          cat GPG-KEY
+        )|sed 's/^/    /'
+      fi
 		fi
 	elif grep -q "404 Not Found" wget.log;then
 		[ $V ]&&echo "not present"|grep --color .
@@ -182,7 +193,7 @@ for R in $REPOS;do
     	echo "Done"
     fi
 
-    echo -e "$REPO\t$MD5\t$GPG\t$PACK" >> repositories.txt
+    echo -e "$REPO#$MD5#$PACK#$GPG" >> repositories.tmp
 
 
 done
@@ -190,9 +201,11 @@ echo
 echo "========================================================"
 ) >&2
 
-echo -e "url\tmd5\tgpg\tpack" 
+(
+echo -e "url#md5#pack#gpg" 
 echo
-cat repositories.txt|sort
+cat repositories.tmp|sort
+)|LANG=C.utf8 column -t -s '#'
 
 cd
 #rm -rf $TMP
