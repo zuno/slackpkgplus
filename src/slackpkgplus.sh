@@ -1,3 +1,5 @@
+# vim: set tabstop=2 shiftwidth=2 expandtab 
+
 # Thanks to AlienBob and phenixia2003 (on LQ) for contributing
 # A special thanks to all packagers that make slackpkg+ useful
 
@@ -49,44 +51,79 @@ fi
 
 if [ "$SLACKPKGPLUS" = "on" ];then
 
-  if [ "$DOWNLOADONLY" == "on" ];then
-    DELALL=off
-    DOWNLOAD_ALL=on
-  fi
 
-  if [ -z "$VERBOSE" ];then
-    VERBOSE=1
-  fi
+  # function internal_blacklist()
+  # function applyblacklist()
+  # function cleanup()
+  # function handle_event()
+  # function remove_pkg()
+  # function upgrade_pkg()
+  # function install_pkg()
+  # function wgetdebug()
+  # function cached_downloader()
+  # function getfile()
+  # function checkgpg()
+  # function checkmd5()
+  # function givepriority()
+  # function searchPackages()
+  # function searchlistEX()
+  # function showlist() // dialog=on
+  # function showlist() // dialog=off
 
 
+  ##### ===== BLACKLIST FUNCTIONS === #####
 
-  SPKGPLUS_VERSION="1.6.1"
-  VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
-  
+    # Adds the pattern given by $(1) into the internal blacklist
+    # ${TMPDIR}/blacklist.slackpkgplus
+    #
+    # ($1) The pattern to add.
+    #
+  function internal_blacklist() {
+    echo "$1" >> ${TMPDIR}/blacklist.slackpkgplus
+  } # END function internal_blacklist()
 
-  if [ ! -e "$WORKDIR" ];then
-    mkdir -p "$WORKDIR"
-  fi
+    # Override original applyblackist() so that internal blacklist will
+    # be applied too.
+    #
+  function applyblacklist() {
+    # -- This is to prevent silent exclusion of multilib package
+    #    aaa_elflibs-compat32 when /etc/slackpkg/blacklist contains the
+    #    pattern aaa_elflibs.
+    if ! $USEBLACKLIST ;then
+      >${TMPDIR}/blacklist
+    fi
+    if $MLREPO_SELELECTED && grep -q "^aaa_elflibs$" ${TMPDIR}/blacklist && ! grep -q "^aaa_elflibs-compat32$" ${TMPDIR}/blacklist ; then
+      sed -i --expression "s/^aaa_elflibs/#aaa_elflibs/" ${TMPDIR}/blacklist
+      grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus | grep -v "[ ]aaa_elflibs[ ]" >${TMPDIR}/blacklist.tmp
+    else
+      grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus >${TMPDIR}/blacklist.tmp
+    fi
+    cat ${TMPDIR}/blacklist.tmp
+    if [ "$(head -1 ${TMPDIR}/blacklist.tmp|awk '{print $1}')" != "local" ];then
+      cat ${TMPDIR}/pkglist-pre
+    fi
+    cat $TMPDIR/greylist.* >$TMPDIR/greylist
+    grep -qvEw -f $TMPDIR/greylist $TMPDIR/pkglist-pre >$TMPDIR/unchecklist
 
-  if [ ! -e $WORKDIR/install.log ];then
-    touch $WORKDIR/install.log
-  fi
+  } # END function applyblacklist()
 
-  if [ "$CMD" == "update" ];then
-    ANSWER="Y"
-  fi
+  ##### ====== END BLACKLIST FUNCTIONS === #####
 
-  function cleanup(){	
+  ##### ====== INSTALL/POSTINSTALL FUNCTIONS ====== #####
+
+    # Override cleanup() to improve log messages and debug functions
+    #
+  function cleanup(){
     if [ "$CMD" == "update" ];then
       if [ "$ANSWER" != "Y" ] && [ "$ANSWER" != "y" ]; then
-	touch $WORKDIR/pkglist
+        touch $WORKDIR/pkglist
       fi
     fi
     [ "$SPINNING" = "off" ] || tput cnorm
     if [ "$DELALL" = "on" ] && [ "$NAMEPKG" != "" ]; then
       rm $CACHEPATH/$NAMEPKG &>/dev/null
     fi
-    wait 
+    wait
     if [ $VERBOSE -gt 2 ];then
       echo "The temp directory $TMPDIR will NOT be removed!" >>$TMPDIR/info.log
       echo
@@ -99,7 +136,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo "------------------------------------------------------------------------------"
       cat $TMPDIR/error.log
       if [ -s $TMPDIR/info.log ];then
-	echo "------------------------------------------------------------------------------"
+        echo "------------------------------------------------------------------------------"
       fi
     fi
     if [ -s $TMPDIR/info.log ]; then
@@ -109,16 +146,259 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo "=============================================================================="
     fi
     echo
-    rm -f /var/lock/slackpkg.$$ 
+    rm -f /var/lock/slackpkg.$$
     if [ $VERBOSE -lt 3 ];then
-      rm -rf $TMPDIR 
+      rm -rf $TMPDIR
     fi
     exit
-  } # END cleanup()
+  } # END function cleanup()
 
-  # Override the slackpkg getfile().
-  # The new getfile() download all file needed from all defined repositories
-  # then merge all in a format slackpkg-compatible
+    # -- handle the event $1 that occured on packages $SHOWLIST
+    #
+    # $1 the event that occurs, which can be install, upgrade, remove
+    #
+  function handle_event() {
+    local EVENT="$1"
+    local SELKEYS=""
+    local KEY
+    local PATLIST
+    local EXPR
+    local MSG
+    local MSGLIST=""
+    local USERKEY
+
+    find $ROOT/var/log/packages/ -type f -printf "%f\n" | sort > ${TMPDIR}/installed.tmp
+
+      # -- Get the basename of packages which have been effectively
+      #    installed, upgraded, or removed
+
+    if [ "$EVENT" == "remove" ] ; then
+      echo "$SHOWLIST" | tr " " "\n"  | sort > ${TMPDIR}/showlist.tmp
+      
+      comm -1 ${TMPDIR}/installed.tmp ${TMPDIR}/showlist.tmp | rev | cut -f4- -d"-" | rev > ${TMPDIR}/basenames.tmp
+    else
+      echo "$SHOWLIST" | tr " " "\n" | rev | cut -f2- -d"." | rev | sort > ${TMPDIR}/showlist.tmp
+
+      comm -1 -2 ${TMPDIR}/installed.tmp ${TMPDIR}/showlist.tmp | rev | cut -f4- -d"-" | rev > ${TMPDIR}/basenames.tmp
+    fi
+
+    SELKEYS=$(echo "${!NOTIFYMSG[@]}" | tr " " "\n" | grep "^on_${EVENT}@" | tr "\n" " ")
+
+    for KEY in $SELKEYS ; do
+      PATLIST="${KEY#*@}"
+      EXPR=$(echo -en "$PATLIST" | \
+                      tr --squeeze-repeats "," | \
+                      sed -e "s/,$//" -e "s/^/(&/" -e "s/,/)|(/g" -e "s/$/&)/")
+
+      NV_MATCHPKGS=$(grep -E "$EXPR" ${TMPDIR}/basenames.tmp | tr "\n" "," | sed -e "s/,$//")
+      
+      if [ ! -z "$NV_MATCHPKGS" ] ; then
+        MSG=$(eval "echo \"${NOTIFYMSG[$KEY]}\"")
+        [ -z "MSGLIST" ] && MSGLIST="$MSG\n" || MSGLIST="$MSGLIST\n$MSG"
+      fi
+    done
+
+    if [ ! -z "$MSGLIST" ] ; then
+
+      if [ "$DIALOG" = "on" ] || [ "$DIALOG" = "ON" ] ; then
+        dialog --title "post-$EVENT notifications" --backtitle "slackpkg $VERSION" --msgbox "$MSGLIST" 12 70
+      else
+        MSGLIST="====[ POST-${EVENT} NOTIFICATIONS ]===================================== \n${MSGLIST}\n======================================================================="
+        echo -e "\n$MSGLIST" | more
+        echo -en "Hit a key to continue or wait 10 seconds\r"
+        read -t 10 USERKEY
+        echo "                                        "
+      fi
+    fi
+  } # END functino handle_event()
+
+    # Overrides original remove_pkg(). Required by the notification mechanism.
+  function remove_pkg() {
+    local i
+
+    for i in $SHOWLIST; do
+      echo -e "\nPackage: $i"
+      echo -e "\tRemoving... "
+      removepkg $i
+      if [ ! -e $ROOT/var/log/packages/$i ];then
+        FDATE=$(ls -ltr --full-time $ROOT/var/log/removed_packages/$i|tail -1 |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+        echo "$FDATE removed:     $i" >> $WORKDIR/install.log
+      fi
+    done
+    handle_event "remove"
+  } # END function remove_pkg()
+
+    # Overrides original upgrade_pkg(). Required by the notification mechanism.
+  function upgrade_pkg() {
+    local i
+
+    if [ "$DOWNLOAD_ALL" = "on" ]; then
+      OLDDEL="$DELALL"
+      DELALL="off"
+      for i in $SHOWLIST; do
+        getpkg $i true
+      done
+      DELALL="$OLDDEL"
+    fi
+    if [ "$DOWNLOADONLY" == "on" ];then
+      echo "Download only.. not upgraded!"
+      return
+    fi
+    ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
+
+    for i in $SHOWLIST; do
+      PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
+      REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
+      getpkg $i upgradepkg Upgrading
+      if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+        FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+        echo "$FDATE upgraded:    $i  [$REPOPOS]  (was $PKGFOUND)" >> $WORKDIR/install.log
+      fi
+    done
+    handle_event "upgrade"
+  } # END function upgrade_pkg()
+
+    # Overrides original install_pkg(). Required by the notification mechanism.
+  function install_pkg() {
+    local i
+
+    if [ "$DOWNLOAD_ALL" = "on" ]; then
+      OLDDEL="$DELALL"
+      DELALL="off"
+      for i in $SHOWLIST; do
+        getpkg $i true
+      done
+      DELALL="$OLDDEL"
+    fi
+    if [ "$DOWNLOADONLY" == "on" ];then
+      echo "Download only.. not installed!"
+      return
+    fi
+    for i in $SHOWLIST; do
+      INSTALL_T='installed:  '
+      if [ -e $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') ];then
+        INSTALL_T='reinstalled:'
+      fi
+      REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
+      getpkg $i installpkg Installing
+      if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+        FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+        echo "$FDATE $INSTALL_T $i  [$REPOPOS]" >> $WORKDIR/install.log
+      fi
+    done
+    handle_event "install"
+  } # END function install_pkg()
+
+  ##### ====== END INSTALL/POSTINSTALL FUNCTIONS ====== #####
+
+
+  ##### ====== DOWNLOADERS ====== ######
+
+    # Implements an improved wget version for a verbose output
+    #
+  function wgetdebug(){
+    local SRCURL
+    local DSTFILE
+    SRCURL=$2
+    DSTFILE=$(echo $SRCURL|sed 's|/|,|g')
+    if [ ${SRCURL:0:5} == "https" ];then
+      WGETOPTSL="--no-check-certificate"
+    fi
+    if [ ${SRCURL:0:3} == "ftp" ];then
+      WGETOPTSL="--passive-ftp"
+    fi
+
+    DOWNTIME=$(date +%s)
+
+    wget $WGETOPTS $WGETOPTSL -O $TMPDIR/$DSTFILE $SRCURL 2>&1|tee $TMPDIR/$DSTFILE.log
+    WGETERR=${PIPESTATUS[0]}
+    cp $TMPDIR/$DSTFILE $1
+    echo "exit code: $WGETERR" >>$TMPDIR/$DSTFILE.log
+    DOWNTIME=$[$(date +%s)-$DOWNTIME]
+    if [ $WGETERR -ne 0 ];then
+      echo >> $TMPDIR/error.log
+      echo "$SRCURL --> BAD" >> $TMPDIR/error.log
+      echo "wget $WGETOPTS $WGETOPTSL -O $DSTFILE $SRCURL" >> $TMPDIR/error.log
+      echo "exit code: $WGETERR" >> $TMPDIR/error.log
+      echo "download time: $DOWNTIME secs" >> $TMPDIR/error.log
+      echo "details:" >> $TMPDIR/error.log
+      cat $TMPDIR/$DSTFILE.log >> $TMPDIR/error.log
+      ls -l $DSTFILE >> $TMPDIR/error.log 2>&1
+      md5sum $DSTFILE >> $TMPDIR/error.log 2>&1
+      echo >> $TMPDIR/error.log
+    else
+      echo "$SRCURL --> OK" >> $TMPDIR/info.log
+    fi
+    return $WGETERR
+
+
+  } # END function wgetdebug()
+
+
+    # Implements CACHEUPDATE=on
+    #
+  function cached_downloader(){
+    local SRCURL
+    local CACHEFILE
+    local SRCBASE
+    SRCURL=$2
+    SRCBASE=$(basename $SRCURL)
+    CACHEFILE=$(echo $SRCURL|md5sum|awk '{print $1}')
+
+    case $SRCBASE in
+      CHECKSUMS.md5) TOCACHE=1 ;;
+      MANIFEST.bz2) TOCACHE=1 ;;
+      PACKAGES.TXT) TOCACHE=1 ;;
+      *) TOCACHE=0 ;;
+    esac
+
+    if [ $TOCACHE -eq 1 ];then
+      echo
+      echo "=== check cache: $SRCURL ==="
+      echo -n "headers.. "
+      curl --location --head $SRCURL 2>/dev/null|grep -v ^Date:|sed 's///' > $TMPDIR/cache.head
+      echo "Url: $SRCURL" >> $TMPDIR/cache.head
+      grep -q "200 OK" $TMPDIR/cache.head || echo "Header or Url Invalid!!! (`date`)"
+      [ $VERBOSE -eq 3 ]&&cat $TMPDIR/cache.head|sed 's/^/  /'
+      if [ -e $CACHEDIR/$CACHEFILE -a -e $CACHEDIR/$CACHEFILE.head ];then
+        echo "Is cached.. "
+        [ $VERBOSE -eq 3 ]&&cat $CACHEDIR/$CACHEFILE.head|sed 's/^/  /'
+        if diff $CACHEDIR/$CACHEFILE.head $TMPDIR/cache.head >/dev/null;then
+          echo "Cache valid!   If not please remove manually $CACHEDIR/$CACHEFILE !"
+          cp $CACHEDIR/$CACHEFILE $1
+          return $?
+        fi
+        echo -n "Invalid.. "
+        rm -f $CACHEDIR/$CACHEFILE $CACHEDIR/$CACHEFILE.head
+      fi
+      echo "Download file.. "
+      $CACHEDOWNLOADER $1 $SRCURL
+      ERR=$?
+      if [ "$(ls -l $1 2>/dev/null|awk '{print $5}')" == "$(grep Content-Length: $TMPDIR/cache.head|awk '{print $2}')" ];then
+        echo "Caching it!"
+        cp $1 $CACHEDIR/$CACHEFILE
+        cp $TMPDIR/cache.head $CACHEDIR/$CACHEFILE.head
+      else
+        echo "NOT cacheable!"
+      fi
+    else
+      echo
+      echo "=== no caching for $SRCURL ==="
+      $CACHEDOWNLOADER $1 $SRCURL
+      ERR=$?
+    fi
+    return $ERR
+
+  } # END function cached_downloader()
+
+  ##### ====== END DOWNLOADERS ====== ######
+
+
+  ##### ====== CORE FUNCTION ====== ######
+
+    # Override the slackpkg getfile().
+    # The new getfile() download all file needed from all defined repositories
+    # then merge all in a format slackpkg-compatible
   function getfile(){
     local URLFILE
     URLFILE=$1
@@ -158,21 +438,21 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     if [ $? -ne 0 ];then
       if echo $2|grep -q SLACKPKGPLUS;then
-	if [ "`basename $URLFILE`" != "MANIFEST.bz2" ];then
-	  echo -e "\n$URLFILE:\tdownload error" >> $TMPDIR/error.log
-	  if echo $2|grep -q .asc$;then
-	    echo "  Retry using 'slackpkg -checkgpg=off $CMD ...'" >> $TMPDIR/error.log
-	  fi
-	else
-	  echo
-	  echo "                   !!! N O T I C E !!!"
-	  echo "    Repository '$PREPO' does not contains MANIFEST.bz2"
-	  echo "    Don't worry... it will work fine, but the command"
-	  echo "    'slackpkg file-search' will not work on that"
-	  echo "    repository"
-	  echo
-	  sleep 3
-	fi
+        if [ "`basename $URLFILE`" != "MANIFEST.bz2" ];then
+          echo -e "\n$URLFILE:\tdownload error" >> $TMPDIR/error.log
+          if echo $2|grep -q .asc$;then
+            echo "  Retry using 'slackpkg -checkgpg=off $CMD ...'" >> $TMPDIR/error.log
+          fi
+        else
+          echo
+          echo "                   !!! N O T I C E !!!"
+          echo "    Repository '$PREPO' does not contains MANIFEST.bz2"
+          echo "    Don't worry... it will work fine, but the command"
+          echo "    'slackpkg file-search' will not work on that"
+          echo "    repository"
+          echo
+          sleep 3
+        fi
       fi
     fi
 
@@ -194,26 +474,26 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
           else
             $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc $URLFILE
-	    if [ $? -ne 0 ];then
-	      $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc `echo $URLFILE|sed 's/\.asc$/.gz.asc/'`
-	      if [ $? -eq 0 ];then
-		$DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz `echo $URLFILE|sed 's/\.asc$/.gz/'`
-		if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz) -eq 1 ];then
-		  echo
-		  echo "                   !!! N O T I C E !!!"
-		  echo "    Repository '$PREPO' does support signature checking for"
-		  echo "    CHECKSUMS.md5 file, so the repository authenticity is guaranteed,"
-		  echo "    but you MAY need to temporarily disable gpg check when you"
-		  echo "    install the packages using:"
-		  echo "    'slackpkg -checkgpg=off install packge'"
-		  echo "    The package authenticity remains guaranteed."
-		  echo
-		  zcat ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz > ${TMPDIR}/CHECKSUMS.md5-$PREPO
-		  sleep 5
-		  continue
-		fi
-	      fi
-	    fi
+            if [ $? -ne 0 ];then
+              $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc `echo $URLFILE|sed 's/\.asc$/.gz.asc/'`
+              if [ $? -eq 0 ];then
+                $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz `echo $URLFILE|sed 's/\.asc$/.gz/'`
+                if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz) -eq 1 ];then
+                  echo
+                  echo "                   !!! N O T I C E !!!"
+                  echo "    Repository '$PREPO' does support signature checking for"
+                  echo "    CHECKSUMS.md5 file, so the repository authenticity is guaranteed,"
+                  echo "    but you MAY need to temporarily disable gpg check when you"
+                  echo "    install the packages using:"
+                  echo "    'slackpkg -checkgpg=off install packge'"
+                  echo "    The package authenticity remains guaranteed."
+                  echo
+                  zcat ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz > ${TMPDIR}/CHECKSUMS.md5-$PREPO
+                  sleep 5
+                  continue
+                fi
+              fi
+            fi
           fi
           if [ $? -eq 0 ];then
             if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO) -ne 1 ];then
@@ -249,24 +529,24 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           URLFILE=${URLFILE:6}
           cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO
         elif echo $URLFILE | grep -q "^dir:/" ; then
-	  touch ${TMPDIR}/CHECKSUMS.md5-$PREPO
+          touch ${TMPDIR}/CHECKSUMS.md5-$PREPO
           continue
         else
           $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         fi
-	if [ ! -s ${TMPDIR}/CHECKSUMS.md5-$PREPO ];then
-              echo
-              echo "                        !!! F A T A L !!!"
-              echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5 download"
-              echo "    The repository may be invalid and will be SKIPPED."
-              echo
-              sleep 5
-	      echo -e "$PREPO: SKIPPING Invalid repository (fails to download CHECKSUMS.md5)" >> $TMPDIR/error.log
-	      PRIORITY=( $(echo ${PRIORITY[*]}" "|sed "s/SLACKPKGPLUS_$PREPO //") )
-	      REPOPLUS=( $(echo " "${REPOPLUS[*]}" "|sed "s/ $PREPO //") )
-	else
-	      echo "SLACKPKGPLUS_$PREPO[MD5]" $(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}') >>$2
-	fi
+        if [ ! -s ${TMPDIR}/CHECKSUMS.md5-$PREPO ];then
+          echo
+          echo "                        !!! F A T A L !!!"
+          echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5 download"
+          echo "    The repository may be invalid and will be SKIPPED."
+          echo
+          sleep 5
+          echo -e "$PREPO: SKIPPING Invalid repository (fails to download CHECKSUMS.md5)" >> $TMPDIR/error.log
+          PRIORITY=( $(echo ${PRIORITY[*]}" "|sed "s/SLACKPKGPLUS_$PREPO //") )
+          REPOPLUS=( $(echo " "${REPOPLUS[*]}" "|sed "s/ $PREPO //") )
+        else
+          echo "SLACKPKGPLUS_$PREPO[MD5]" $(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}') >>$2
+        fi
 
       done
     fi
@@ -299,10 +579,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         rm $2-tmp
       done
     fi
-  } # END getfile()
+  } # END function getfile()
 
-  # override slackpkg checkgpg()
-  # new checkgpg() is used to check gpg and to merge the CHECKSUMS.md5 files
+    # override slackpkg checkgpg()
+    # new checkgpg() is used to check gpg and to merge the CHECKSUMS.md5 files
   function checkgpg() {
     if echo $1|egrep -q "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]";then
       echo 1
@@ -317,7 +597,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ "$TAG_PRIORITY" == "on" ];then
         mv ${TMPDIR}/CHECKSUMS.md5 ${TMPDIR}/CHECKSUMS.md5-old
         for PREPO in ${PRIORITY[*]};do
-  	  grep " \./$PREPO/" ${TMPDIR}/CHECKSUMS.md5-old >> ${TMPDIR}/CHECKSUMS.md5
+          grep " \./$PREPO/" ${TMPDIR}/CHECKSUMS.md5-old >> ${TMPDIR}/CHECKSUMS.md5
         done
       fi
       X86_64=$(ls $ROOT/var/log/packages/aaa_base*x86_64* 2>/dev/null|head -1)
@@ -333,10 +613,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         fi
       done
     fi
-  } # END checkgpg()
+  } # END function checkgpg()
 
-  # override slackpkg checkmd5()
-  # Verify if the package was corrupted by checking md5sum
+    # override slackpkg checkmd5()
+    # Verify if the package was corrupted by checking md5sum
   function checkmd5() {
     local MD5ORIGINAL
     local MD5DOWNLOAD
@@ -361,18 +641,23 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     else
       echo 0
     fi
-  } # END checkmd5()
+  } # END function checkmd5()
 
-  # Found packages in repository.
-  # This function selects the package from the higher priority
-  # repository directories.
-  #
-  # This Modified version supports enhanced priority rule (priority
-  # given to package(s) from a given repository). This kind of priority
-  # uses the following syntax :
-  #
-  #   repository_name:pattern
-  #
+  #### ====== END CORE FUNCTIONS ======= ####
+
+
+  #### ===== PRIORITY AND SEARCH FUNCTIONS ===== #####
+
+    # Found packages in repository.
+    # This function selects the package from the higher priority
+    # repository directories.
+    #
+    # This Modified version supports enhanced priority rule (priority
+    # given to package(s) from a given repository). This kind of priority
+    # uses the following syntax :
+    #
+    #   repository_name:pattern
+    #
   function givepriority() {
     local DIR
     local ARGUMENT=$1
@@ -389,33 +674,33 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     AUTOP=no
     if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]];then
       if [ ! -z "$AUTOPRIORITY" ];then
-	if echo "$ARGUMENT"|grep -wq $AUTOPRIORITY;then
-	  AUTOP=$TAG_PRIORITY
-	fi
+        if echo "$ARGUMENT"|grep -wq $AUTOPRIORITY;then
+          AUTOP=$TAG_PRIORITY
+        fi
       fi
       if [ "$CMD" == "upgrade-all" ];then
-	AUTOP=$TAG_PRIORITY
+        AUTOP=$TAG_PRIORITY
       fi
     fi
     if [ "$AUTOP" == "on" ] ; then
-      PKGINFOS=$( 
-      		  cd $ROOT/var/log/packages 
-		  ls $ARGUMENT-* 2>/dev/null |sed 's/$/.txz/' | awk -f /usr/libexec/slackpkg/pkglist.awk|
-		                              grep " $ARGUMENT "|awk '{print $1,$4}'|
-					      ( read X
-					        echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1 /' -e 's/^/ /'
-						echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1_slack[0-9]/' -e 's/^/ /'
-					      )| grep -f - -n -m 1 ${TMPDIR}/pkglist
-		)
+      PKGINFOS=$(
+                  cd $ROOT/var/log/packages
+                  ls $ARGUMENT-* 2>/dev/null |sed 's/$/.txz/' | awk -f /usr/libexec/slackpkg/pkglist.awk|
+                                              grep " $ARGUMENT "|awk '{print $1,$4}'|
+                                              ( read X
+                                                echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1 /' -e 's/^/ /'
+                                                echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1_slack[0-9]/' -e 's/^/ /'
+                                              )| grep -f - -n -m 1 ${TMPDIR}/pkglist
+                )
       if [ ! -z "$PKGINFOS" ] ; then
-	LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
-	PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
-	sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
-	(( PRIORITYIDX++ ))
-	if [ "$PKGDATA" ]; then
-	  NAME=${PKGDATA[1]}
-	  FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
-	fi
+        LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
+        PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
+        sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
+        (( PRIORITYIDX++ ))
+        if [ "$PKGDATA" ]; then
+          NAME=${PKGDATA[1]}
+          FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
+        fi
       fi
     fi
 
@@ -426,31 +711,31 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       PAT=$(echo "$CPRIORITY" | cut -s -f2- -d":")
       REPOSITORY=$(echo "${DIR}" | sed "s/SLACKPKGPLUS_//")
 
-	# pass to the next iteration when there are priority filters and the
-	# current repository is not accepted by the defined filter rules ...
+        # pass to the next iteration when there are priority filters and the
+        # current repository is not accepted by the defined filter rules ...
       if [ -s ${TMPDIR}/priority.filters ] \
-	&& ! grep -q -E "^([.][*]|${REPOSITORY}) " ${TMPDIR}/priority.filters ; then
-	continue
+        && ! grep -q -E "^([.][*]|${REPOSITORY}) " ${TMPDIR}/priority.filters ; then
+        continue
       fi
 
       if echo "$CPRIORITY " | grep -q "[a-zA-Z0-9]\+[:]" ; then
 
-	  # [Reminder] ARGUMENT is always a basename, but PAT can be :
-	  #    1. a basename (ie. gcc, glibc-solibs)
-	  #    2. a regular expression (ie. .*)
-	  #    3. a (in)complete package name (ie. vlc-2, vlc-2.0.6, 1.0.3)
-	  #
-	PKGDATA=""
-	LINEIDX=""
-	PKGINFOS=$(grep -n "^${DIR} " ${TMPDIR}/pkglist | grep -w "${PAT}" | grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT} ")
+          # [Reminder] ARGUMENT is always a basename, but PAT can be :
+          #    1. a basename (ie. gcc, glibc-solibs)
+          #    2. a regular expression (ie. .*)
+          #    3. a (in)complete package name (ie. vlc-2, vlc-2.0.6, 1.0.3)
+          #
+        PKGDATA=""
+        LINEIDX=""
+        PKGINFOS=$(grep -n "^${DIR} " ${TMPDIR}/pkglist | grep -w "${PAT}" | grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT} ")
 
         if [ ! -z "$PKGINFOS" ] ; then
-	  LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
-	  PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
+          LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
+          PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
         fi
       else
-	  # $CPRIORITY is of kind "repository" (ie. slackware, extra, patches,...)
-	REPOSITORY="${CPRIORITY}"
+          # $CPRIORITY is of kind "repository" (ie. slackware, extra, patches,...)
+        REPOSITORY="${CPRIORITY}"
         PKGDATA=( $(grep -n -m 1 "^${REPOSITORY} ${ARGUMENT} " ${TMPDIR}/pkglist) )
       fi
 
@@ -459,45 +744,47 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         NAME=${PKGDATA[1]}
         FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
 
-	if [ -s ${TMPDIR}/priority.filters ] ; then
-	    # there are priority filters set. Ensure the current selected
-	    # package is accepted by the defined filter rules. Otherwise,
-	    # reset PKGDATA and LINEIDX
-	    #
+        if [ -s ${TMPDIR}/priority.filters ] ; then
+            # there are priority filters set. Ensure the current selected
+            # package is accepted by the defined filter rules. Otherwise,
+            # reset PKGDATA and LINEIDX
+            #
 
-	    # extract patterns from prioriy.filters whose 1st FIELD match ${REPOSITORY},
-	    # and, if there are filter of type .*:P, add their patterns too ...
-	  grep "^${REPOSITORY} " ${TMPDIR}/priority.filters | cut -f2 -d" " > ${TMPDIR}/filter.patterns
-	  grep "^[.][*] " ${TMPDIR}/priority.filters | cut -f2 -d" " >> ${TMPDIR}/filter.patterns
+            # extract patterns from prioriy.filters whose 1st FIELD match ${REPOSITORY},
+            # and, if there are filter of type .*:P, add their patterns too ...
+          grep "^${REPOSITORY} " ${TMPDIR}/priority.filters | cut -f2 -d" " > ${TMPDIR}/filter.patterns
+          grep "^[.][*] " ${TMPDIR}/priority.filters | cut -f2 -d" " >> ${TMPDIR}/filter.patterns
 
-	    # If no filter patterns were found, or if the selected package does not
-	    # match any of the filter patterns, the selected package is rejected...
-	  if [ ! -s ${TMPDIR}/filter.patterns ] || ! echo "${PKGDATA[5]}.${PKGDATA[7]}" | grep -q -f ${TMPDIR}/filter.patterns ;  then
-	    PKGDATA=""
-	    LINEIDX=""
-	    NAME=""
-	    FULLNAME=""
-	  fi
-	fi
+            # If no filter patterns were found, or if the selected package does not
+            # match any of the filter patterns, the selected package is rejected...
+          if [ ! -s ${TMPDIR}/filter.patterns ] || ! echo "${PKGDATA[5]}.${PKGDATA[7]}" | grep -q -f ${TMPDIR}/filter.patterns ;  then
+            PKGDATA=""
+            LINEIDX=""
+            NAME=""
+            FULLNAME=""
+          fi
+        fi
       fi
 
       if [ ! -z "$LINEIDX" ] ; then
-	  # CPRIORITY is of kind reponame:pattern. The selected package is at line #LINEIDX. To
-	  # ensure that slackpkg (ie. core code) will install|upgrade this (exact) package, the
-	  # line which describes it (ie. in TMPDIR/pkglist) must be moved at line #PRIORITYIDX.
+          # CPRIORITY is of kind reponame:pattern. The selected package is at line #LINEIDX. To
+          # ensure that slackpkg (ie. core code) will install|upgrade this (exact) package, the
+          # line which describes it (ie. in TMPDIR/pkglist) must be moved at line #PRIORITYIDX.
           #
-	  # Without this move, slackpkg could install|upgrade the wrong package. For instance,
-	  # if there are 2 repositories R1 and R2 which have two differents version of the
-	  # same package (ie. built with different options) but which have the same name P, if 
-	  # R1:P is before R2:P in pkglist, and the user issue install|upgrade R2:P, slackpkg
-	  # will install R1:P instead.
-	  #
-	sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
-	(( PRIORITYIDX++ ))
+          # Without this move, slackpkg could install|upgrade the wrong package. For instance,
+          # if there are 2 repositories R1 and R2 which have two differents version of the
+          # same package (ie. built with different options) but which have the same name P, if
+          # R1:P is before R2:P in pkglist, and the user issue install|upgrade R2:P, slackpkg
+          # will install R1:P instead.
+          #
+        sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
+        (( PRIORITYIDX++ ))
       fi
     done
-  } # END givepriority()
+  } # END function givepriority()
 
+    # Improved 'slackpkg search'/'slackpkg file-search'
+    #
   function searchPackages() {
     local i
     local GREPOPTS=""
@@ -576,8 +863,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     rm ${TMPDIR}/waiting
 
     echo -e "DONE\n"
-  } # END searchPackages()
+  } # END function searchPackages()
 
+  #### ===== PRIORITY AND SEARCH FUNCTIONS ===== #####
+
+  #### ===== SHOWLIST FUNCTIONS ====== ######
+
+    # generate output for 'slackpkg search'/'slackpkg file-search'
+    #
   function searchlistEX() {
     local i
     local BASENAME
@@ -642,45 +935,195 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "${RAWNAME}"
       fi
     done
-  } # END searchlistEX()
+  } # END function searchlistEX()
 
-  # Supersede original showlist() from core-functions.sh
-  #
-  # Show the lists and asks if the user want to proceed with that action
-  # Return accepted list in $SHOWLIST
-  #
-  # This version show the repository to which each package belongs.
-  #
-function showlist() {
-  local ANSWER
-  local i
-  local SHOWREPO=false
-  local REPONAME
 
-  if echo "$CMD" | grep -qE "install|reinstall|upgrade|upgrade-all" ; then
-	printf "[ %-24s ] [ %-40s ]\n" "Repository" "Package"
-	SHOWREPO=true
+  if [ "$DIALOG" = "on" ] || [ "$DIALOG" = "ON" ]; then
+    # Slackpkg+ Dialog functions
+    # Original functions from slackpkg modified by Marek Wodzinski (majek@mamy.to)
+    #
+    export DIALOG_CANCEL="1"
+    export DIALOG_ERROR="126"
+    export DIALOG_ESC="1"
+    export DIALOG_EXTRA="3"
+    export DIALOG_HELP="2"
+    export DIALOG_ITEM_HELP="2"
+    export DIALOG_OK="0"
+
+    # Show the lists and asks if the user want to proceed with that action
+    # Return accepted list in $SHOWLIST
+    #
+    function showlist() {
+      if [ "$ONOFF" != "off" ]; then
+        ONOFF=on
+      fi
+
+      cat $TMPDIR/greylist.* >$TMPDIR/greylist
+      if [ "$GREYLIST" == "off" ];then
+        >$TMPDIR/greylist
+      fi
+      grep -Ew -f $TMPDIR/greylist $TMPDIR/pkglist|awk '{print $2}' >$TMPDIR/unchecklist
+      rm -f $TMPDIR/dialog.tmp
+      
+      if [ "$2" = "upgrade" ]; then
+        ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
+        for i in $1; do
+          TMPONOFF=$ONOFF
+          BASENAME=$(cutpkg $i)
+          PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
+          REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
+          REPOPOSFULL=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|sed 's/SLACKPKGPLUS_//'|awk '{print $0,gensub(/([0-9]+)([^0-9]*)/,"\\1 \\2_","1",$5),$6}')
+          PKGVER=$(echo $i|rev|cut -f3 -d-|rev)
+          ALLFOUND=$(echo $(grep " ${BASENAME} " $TMPDIR/pkglist|sed -r -e 's/SLACKPKGPLUS_//' -e 's/^([^ ]*) [^ ]* ([^ ]*) [^ ]* ([^ ]*) .*/\2-\3(\1) ,/')|sed 's/,$//')
+
+          grep -q "^$(echo $i|rev|cut -f4- -d-|rev)$" $TMPDIR/unchecklist && TMPONOFF="off"
+          echo "$REPOPOSFULL $i \"$REPOPOS\" $TMPONOFF \"installed: $PKGFOUND  -->  available: $ALLFOUND\"" >>$TMPDIR/dialog.tmp.1
+        done
+
+        # 1    2       3      4    5 6                     7         8   9 1011                    12-
+        # repo package 1.0.12 i586 1 package-1.0.12-i586-1 ./path/to txz 1 _ package-1.0.12-i586-1 package-1.0.12-i586-1.txz "repo" on "installed: ... "
+        case "$SHOWORDER" in
+          "repository") SHOWORDER=1;;
+          "arch")       SHOWORDER=4;;
+          "package")    SHOWORDER=6;;
+          "path")       SHOWORDER=7;;
+          "tag")        SHOWORDER=10;;
+          *)            SHOWORDER=6;;
+        esac
+        cat $TMPDIR/dialog.tmp.1 | awk '{print $'$SHOWORDER',$0}'|sort|cut -f13- -d" " >$TMPDIR/dialog.tmp
+        HINT="--item-help"
+
+      else # other than 'upgrade'
+
+        for i in $1; do
+          TMPONOFF=$ONOFF
+          REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
+          grep -q "^$(echo $i|rev|cut -f4- -d-|rev)$" $TMPDIR/unchecklist && TMPONOFF="off"
+          echo "$i \"$REPOPOS\" $TMPONOFF" >>$TMPDIR/dialog.tmp
+        done
+        HINT=""
+      fi
+
+      # This is needed because dialog have a limit of arguments.
+      # This limit is around 20k characters in slackware 10.x
+      # Empiric tests on slackware 13.0 got a limit around 139k.
+      # If we exceed this limit, dialog got a terrible error, to
+      # avoid that, if the number of arguments is bigger than
+      # DIALOG_MAXARGS we remove the hints. If even without hints
+      # we can't got less characters than DIALOG_MAXARGS we give an
+      # error message to the user ask him to not use dialog
+      if [ $(wc -c $TMPDIR/dialog.tmp | cut -f1 -d\ ) -ge $DIALOG_MAXARGS ]; then
+        mv $TMPDIR/dialog.tmp $TMPDIR/dialog2.tmp
+        awk '{ NF=3 ; print $0 }' $TMPDIR/dialog2.tmp > $TMPDIR/dialog.tmp
+        HINT=""
+      fi
+      DTITLE=$2
+      if [ "$DOWNLOADONLY" == "on" ];then
+        DTITLE="$DTITLE (download only)"
+      fi
+      cat $TMPDIR/dialog.tmp|xargs dialog --title "$DTITLE" --backtitle "slackpkg $VERSION" $HINT --checklist "Choose packages to $2:" 19 70 13 2>$TMPDIR/dialog.out
+      case "$?" in
+        0|123)
+          dialog --clear
+        ;;
+        1|124|125|126|127)
+          dialog --clear
+          echo -e "DIALOG ERROR:\n-------------" >> $TMPDIR/error.log
+          cat $TMPDIR/dialog.out >> $TMPDIR/error.log
+          echo "-------------"
+          echo "If you want to continue using slackpkg, disable the DIALOG option in"
+          echo "$CONF/slackpkg.conf and try again."
+          echo "Help us to make slackpkg a better tool - report bugs to the slackpkg"
+          echo "developers" >> $TMPDIR/error.log
+          cleanup
+        ;;
+      esac
+      SHOWLIST=$(cat $TMPDIR/dialog.out | tr -d \")
+      if [ -z "$SHOWLIST" ]; then
+        echo "No packages selected for $2, exiting."
+        cleanup
+      fi
+    } # END function showlist()
+
+  else # (DIALOG=off)
+
+      # Supersede original showlist() from core-functions.sh
+      #
+      # Show the lists and asks if the user want to proceed with that action
+      # Return accepted list in $SHOWLIST
+      #
+      # This version show the repository to which each package belongs.
+      #
+    function showlist() {
+      local ANSWER
+      local i
+      local SHOWREPO=false
+      local REPONAME
+
+      if echo "$CMD" | grep -qE "install|reinstall|upgrade|upgrade-all" ; then
+        printf "[ %-24s ] [ %-40s ]\n" "Repository" "Package"
+        SHOWREPO=true
+      fi
+
+      for i in $1; do
+        if $SHOWREPO ; then
+          REPONAME=$(grep -m 1 "${i%.*}" $TMPDIR/pkglist | cut -f1 -d" " | sed "s/SLACKPKGPLUS_//")
+          printf "  %-24s     %-40s  \n" "$REPONAME" "$i"
+        else
+          echo $i;
+        fi
+      done | $MORECMD
+      echo
+      countpkg "$1"
+      echo -e "Do you wish to $2 selected packages (Y/n)? \c"
+      answer
+      if [ "$ANSWER" = "N" -o "$ANSWER" = "n" ]; then
+        cleanup
+      else
+        SHOWLIST="$1"
+        continue
+      fi
+    } # END function showlist()
+
+  fi # (DIALOG=on/off)
+
+  #### ===== SHOWLIST FUNCTIONS ====== ######
+
+
+
+
+
+  ### =========================== MAIN ============================ ###
+
+  if [ "$DOWNLOADONLY" == "on" ];then
+    DELALL=off
+    DOWNLOAD_ALL=on
   fi
 
-  for i in $1; do
-  	if $SHOWREPO ; then
-		REPONAME=$(grep -m 1 "${i%.*}" $TMPDIR/pkglist | cut -f1 -d" " | sed "s/SLACKPKGPLUS_//")
-		printf "  %-24s     %-40s  \n" "$REPONAME" "$i"
-	else
-		echo $i;
-	fi
-  done | $MORECMD
-  echo
-  countpkg "$1"
-  echo -e "Do you wish to $2 selected packages (Y/n)? \c"
-  answer
-  if [ "$ANSWER" = "N" -o "$ANSWER" = "n" ]; then
-	cleanup
-  else
-	SHOWLIST="$1"
-	continue
+  if [ -z "$VERBOSE" ];then
+    VERBOSE=1
   fi
-}
+
+
+
+  SPKGPLUS_VERSION="1.6.1"
+  VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
+  
+
+  if [ ! -e "$WORKDIR" ];then
+    mkdir -p "$WORKDIR"
+  fi
+
+  if [ ! -e $WORKDIR/install.log ];then
+    touch $WORKDIR/install.log
+  fi
+
+  if [ "$CMD" == "update" ];then
+    # answer to "Do you really want to download all other files"
+    # if there are new changes
+    ANSWER="Y"
+  fi
+
 
     # Ensure each repository url has a trailing slash...
     #
@@ -705,7 +1148,7 @@ function showlist() {
     fi
 
     if ! echo "$repository" | grep -qwE "$SLACKDIR_REGEXP" ; then
-	PURE_PKGSPRIORITY=( ${PURE_PKGSPRIORITY[*]} $pp )
+      PURE_PKGSPRIORITY=( ${PURE_PKGSPRIORITY[*]} $pp )
     fi
     ((INDEX++))
   done
@@ -751,8 +1194,8 @@ function showlist() {
       if [ ! -z "$repository" ] && [ ! -z "$package" ] ; then
 
         if ! echo "$repository" | grep -qwE "$SLACKDIR_REGEXP" ; then
-	  repository="SLACKPKGPLUS_${repository}"
-	fi
+          repository="SLACKPKGPLUS_${repository}"
+        fi
 
         if [ -z "$PREFIX" ] ; then
           PREFIX=( ${repository}:$package )
@@ -779,267 +1222,6 @@ function showlist() {
   #
   echo -n "" > ${TMPDIR}/blacklist.slackpkgplus
 
-  # Adds the pattern given by $(1) into the internal blacklist
-  # ${TMPDIR}/blacklist.slackpkgplus
-  #
-  # ($1) The pattern to add.
-  #
-  function internal_blacklist() {
-    echo "$1" >> ${TMPDIR}/blacklist.slackpkgplus
-  } # END internal_blacklist()
-
-  # Override original applyblackist() so that internal blacklist will
-  # be applied too.
-  #
-  function applyblacklist() {
-    # -- This is to prevent silent exclusion of multilib package
-    #    aaa_elflibs-compat32 when /etc/slackpkg/blacklist contains the
-    #    pattern aaa_elflibs.
-    if ! $USEBLACKLIST ;then
-      >${TMPDIR}/blacklist
-    fi
-    if $MLREPO_SELELECTED && grep -q "^aaa_elflibs$" ${TMPDIR}/blacklist && ! grep -q "^aaa_elflibs-compat32$" ${TMPDIR}/blacklist ; then
-      sed -i --expression "s/^aaa_elflibs/#aaa_elflibs/" ${TMPDIR}/blacklist
-      grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus | grep -v "[ ]aaa_elflibs[ ]" >${TMPDIR}/blacklist.tmp
-    else
-      grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus >${TMPDIR}/blacklist.tmp
-    fi
-    cat ${TMPDIR}/blacklist.tmp
-    if [ "$(head -1 ${TMPDIR}/blacklist.tmp|awk '{print $1}')" != "local" ];then
-      cat ${TMPDIR}/pkglist-pre
-    fi
-    cat $TMPDIR/greylist.* >$TMPDIR/greylist
-    grep -qvEw -f $TMPDIR/greylist $TMPDIR/pkglist-pre >$TMPDIR/unchecklist
-
-  } # END applyblacklist()
-  
-    # -- handle the event $1 that occured on packages $SHOWLIST
-    #
-    # $1 the event that occurs, which can be install, upgrade, remove
-    #
-  function handle_event() {
-	local EVENT="$1"
-	local SELKEYS=""
-	local KEY
-	local PATLIST
-	local EXPR
-	local MSG
-	local MSGLIST=""
-	local USERKEY
-
-	find $ROOT/var/log/packages/ -type f -printf "%f\n" | sort > ${TMPDIR}/installed.tmp
-	
-		# -- Get the basename of packages which have been effectively
-		#    installed, upgraded, or removed
-		
-	if [ "$EVENT" == "remove" ] ; then
-		echo "$SHOWLIST" | tr " " "\n"  | sort > ${TMPDIR}/showlist.tmp
-		
-		comm -1 ${TMPDIR}/installed.tmp ${TMPDIR}/showlist.tmp | rev | cut -f4- -d"-" | rev > ${TMPDIR}/basenames.tmp
-	else
-		echo "$SHOWLIST" | tr " " "\n" | rev | cut -f2- -d"." | rev | sort > ${TMPDIR}/showlist.tmp
-
-		comm -1 -2 ${TMPDIR}/installed.tmp ${TMPDIR}/showlist.tmp | rev | cut -f4- -d"-" | rev > ${TMPDIR}/basenames.tmp
-	fi
-	
-	SELKEYS=$(echo "${!NOTIFYMSG[@]}" | tr " " "\n" | grep "^on_${EVENT}@" | tr "\n" " ")
-	
-	for KEY in $SELKEYS ; do
-		PATLIST="${KEY#*@}"
-		EXPR=$(echo -en "$PATLIST" | \
-				tr --squeeze-repeats "," | \
-				sed -e "s/,$//" -e "s/^/(&/" -e "s/,/)|(/g" -e "s/$/&)/")
-
-		NV_MATCHPKGS=$(grep -E "$EXPR" ${TMPDIR}/basenames.tmp | tr "\n" "," | sed -e "s/,$//")
-		
-		if [ ! -z "$NV_MATCHPKGS" ] ; then
-			MSG=$(eval "echo \"${NOTIFYMSG[$KEY]}\"")
-			[ -z "MSGLIST" ] && MSGLIST="$MSG\n" || MSGLIST="$MSGLIST\n$MSG"
-		fi	
-	done
-
-	if [ ! -z "$MSGLIST" ] ; then
-
-		if [ "$DIALOG" = "on" ] || [ "$DIALOG" = "ON" ] ; then
-			dialog --title "post-$EVENT notifications" --backtitle "slackpkg $VERSION" --msgbox "$MSGLIST" 12 70
-		else
-			MSGLIST="====[ POST-${EVENT} NOTIFICATIONS ]===================================== \n${MSGLIST}\n======================================================================="
-			echo -e "\n$MSGLIST" | more
-			echo -en "Hit a key to continue or wait 10 seconds\r"
-			read -t 10 USERKEY
-			echo "                                        "
-		fi
-	fi
-  } # END handle_event()
-  
-    # Overrides original remove_pkg(). Required by the notification mechanism.
-  function remove_pkg() {
-	local i
-
-	for i in $SHOWLIST; do
-		echo -e "\nPackage: $i"
-		echo -e "\tRemoving... "
-		removepkg $i
-		if [ ! -e $ROOT/var/log/packages/$i ];then
-		  FDATE=$(ls -ltr --full-time $ROOT/var/log/removed_packages/$i|tail -1 |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
-		  echo "$FDATE removed:     $i" >> $WORKDIR/install.log
-		fi
-	done
-	handle_event "remove"
-  } # END remove_pkg()
-
-    # Overrides original upgrade_pkg(). Required by the notification mechanism.
-  function upgrade_pkg() {
-	local i
-
-	if [ "$DOWNLOAD_ALL" = "on" ]; then
-		OLDDEL="$DELALL"
-		DELALL="off"
-		for i in $SHOWLIST; do
-			getpkg $i true
-		done
-		DELALL="$OLDDEL"
-	fi
-	if [ "$DOWNLOADONLY" == "on" ];then
-	        echo "Download only.. not upgraded!"
-	   	return
-	fi
-	ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
-
-	for i in $SHOWLIST; do
-	        PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
-		REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-		getpkg $i upgradepkg Upgrading
-		if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
-		  FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
-		  echo "$FDATE upgraded:    $i  [$REPOPOS]  (was $PKGFOUND)" >> $WORKDIR/install.log
-		fi
-
-	done
-	handle_event "upgrade"
-  } # END upgrade_pkg()
-
-    # Overrides original install_pkg(). Required by the notification mechanism.
-  function install_pkg() {
-	local i
-
-	if [ "$DOWNLOAD_ALL" = "on" ]; then
-		OLDDEL="$DELALL"
-		DELALL="off"
-		for i in $SHOWLIST; do
-			getpkg $i true
-		done
-		DELALL="$OLDDEL"
-	fi
-	if [ "$DOWNLOADONLY" == "on" ];then
-	        echo "Download only.. not installed!"
-	   	return
-	fi
-	for i in $SHOWLIST; do
-	        INSTALL_T='installed:  '
-		if [ -e $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') ];then
-		  INSTALL_T='reinstalled:'
-		fi
-		REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-		getpkg $i installpkg Installing
-		if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
-		  FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
-		  echo "$FDATE $INSTALL_T $i  [$REPOPOS]" >> $WORKDIR/install.log
-		fi
-	done
-	handle_event "install"
-  } # END install_pkg()  
-
-  function wgetdebug(){
-    local SRCURL
-    local DSTFILE
-    SRCURL=$2
-    DSTFILE=$(echo $SRCURL|sed 's|/|,|g')
-    if [ ${SRCURL:0:5} == "https" ];then
-      WGETOPTSL="--no-check-certificate"
-    fi
-    if [ ${SRCURL:0:3} == "ftp" ];then
-      WGETOPTSL="--passive-ftp"
-    fi
-
-    DOWNTIME=$(date +%s)
-
-    wget $WGETOPTS $WGETOPTSL -O $TMPDIR/$DSTFILE $SRCURL 2>&1|tee $TMPDIR/$DSTFILE.log
-    WGETERR=${PIPESTATUS[0]}
-    cp $TMPDIR/$DSTFILE $1
-    echo "exit code: $WGETERR" >>$TMPDIR/$DSTFILE.log
-    DOWNTIME=$[$(date +%s)-$DOWNTIME]
-    if [ $WGETERR -ne 0 ];then
-      echo >> $TMPDIR/error.log
-      echo "$SRCURL --> BAD" >> $TMPDIR/error.log
-      echo "wget $WGETOPTS $WGETOPTSL -O $DSTFILE $SRCURL" >> $TMPDIR/error.log
-      echo "exit code: $WGETERR" >> $TMPDIR/error.log
-      echo "download time: $DOWNTIME secs" >> $TMPDIR/error.log
-      echo "details:" >> $TMPDIR/error.log
-      cat $TMPDIR/$DSTFILE.log >> $TMPDIR/error.log
-      ls -l $DSTFILE >> $TMPDIR/error.log 2>&1
-      md5sum $DSTFILE >> $TMPDIR/error.log 2>&1
-      echo >> $TMPDIR/error.log
-    else
-      echo "$SRCURL --> OK" >> $TMPDIR/info.log
-    fi
-    return $WGETERR
-
-
-  } # END wgetdebug()
-  function cached_downloader(){
-    local SRCURL
-    local CACHEFILE
-    local SRCBASE
-    SRCURL=$2
-    SRCBASE=$(basename $SRCURL)
-    CACHEFILE=$(echo $SRCURL|md5sum|awk '{print $1}')
-
-    case $SRCBASE in
-      CHECKSUMS.md5) TOCACHE=1 ;;
-      MANIFEST.bz2) TOCACHE=1 ;;
-      PACKAGES.TXT) TOCACHE=1 ;;
-      *) TOCACHE=0 ;;
-    esac
-
-    if [ $TOCACHE -eq 1 ];then
-      echo
-      echo "=== check cache: $SRCURL ==="
-      echo -n "headers.. "
-      curl --location --head $SRCURL 2>/dev/null|grep -v ^Date:|sed 's///' > $TMPDIR/cache.head
-      echo "Url: $SRCURL" >> $TMPDIR/cache.head
-      grep -q "200 OK" $TMPDIR/cache.head || echo "Header or Url Invalid!!! (`date`)"
-      [ $VERBOSE -eq 3 ]&&cat $TMPDIR/cache.head|sed 's/^/  /'
-      if [ -e $CACHEDIR/$CACHEFILE -a -e $CACHEDIR/$CACHEFILE.head ];then
-	echo "Is cached.. "
-	[ $VERBOSE -eq 3 ]&&cat $CACHEDIR/$CACHEFILE.head|sed 's/^/  /'
-	if diff $CACHEDIR/$CACHEFILE.head $TMPDIR/cache.head >/dev/null;then
-	  echo "Cache valid!   If not please remove manually $CACHEDIR/$CACHEFILE !"
-	  cp $CACHEDIR/$CACHEFILE $1
-	  return $?
-	fi
-	echo -n "Invalid.. "
-	rm -f $CACHEDIR/$CACHEFILE $CACHEDIR/$CACHEFILE.head
-      fi
-      echo "Download file.. "
-      $CACHEDOWNLOADER $1 $SRCURL
-      ERR=$?
-      if [ "$(ls -l $1 2>/dev/null|awk '{print $5}')" == "$(grep Content-Length: $TMPDIR/cache.head|awk '{print $2}')" ];then
-	echo "Caching it!"
-	cp $1 $CACHEDIR/$CACHEFILE
-	cp $TMPDIR/cache.head $CACHEDIR/$CACHEFILE.head
-      else
-	echo "NOT cacheable!"
-      fi
-    else
-      echo
-      echo "=== no caching for $SRCURL ==="
-      $CACHEDOWNLOADER $1 $SRCURL
-      ERR=$?
-    fi
-    return $ERR
-
-  } # END cached_downloader()
 
   if [ ! -z "$DOWNLOADCMD" ];then
     DOWNLOADER="$DOWNLOADCMD"
@@ -1076,10 +1258,10 @@ function showlist() {
       localpath=$(echo "$pref" | cut -f2- -d":"|sed -e 's_/$__' -e 's_//_/_')
       MIRRORPLUS[$PREPO]="dir:$localpath/"
       if [ ! -d "$localpath" ];then
-	continue
+        continue
       fi
       ( cd $localpath
-	ls -ld *.t[blxg]z|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$PREPO'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+        ls -ld *.t[blxg]z|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$PREPO'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
       )
     fi
   done
@@ -1087,8 +1269,8 @@ function showlist() {
   touch ${TMPDIR}/priority.filters
 
   if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]] && [ "$ALLOW32BIT" == "on" ] ; then
-       ARCH="\($ARCH\)\|\([i]*[3456x]86[^_]*\)"
-       echo -e "i[3456]86\nx86" > $TMPDIR/greylist.32bit
+    ARCH="\($ARCH\)\|\([i]*[3456x]86[^_]*\)"
+    echo -e "i[3456]86\nx86" > $TMPDIR/greylist.32bit
   fi
 
   if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] || [ "$CMD" == "remove" ] ; then
@@ -1101,7 +1283,7 @@ function showlist() {
 
       # You can specify 'slackpkg install .' that is an alias of 'slackpkg install dir:./'
       if [ "$pref" == "." ];then
-	pref="dir:./"
+        pref="dir:./"
       fi
 
       # You can specify 'slackpkg install file:package-1.0-noarch-1my.txz' on local disk;
@@ -1116,62 +1298,62 @@ function showlist() {
         repository=file$(grep ^SLACKPKGPLUS_file ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
         echo "./SLACKPKGPLUS_$repository/$package"|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
         MIRRORPLUS[$repository]="file:/$localpath/"
-	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
-	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
-	package=$(cutpkg $package)
+        PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
+        REPOPLUS=( ${repository} ${REPOPLUS[*]} )
+        package=$(cutpkg $package)
 
-	  # require to add rule "$repository $package" in the priority filter
-	PRIORITY_FILTER_RULE="${repository} ${package}"
+          # require to add rule "$repository $package" in the priority filter
+        PRIORITY_FILTER_RULE="${repository} ${package}"
 
       # You can specify 'slackpkg install dir:directory' on local disk, where 'directory' have a relative or absolute path
       elif [ "${pref:0:4}" = "dir:" ]; then
         localpath=$(echo "$pref" | cut -f2- -d":"|sed 's_/$__')
-	if [ ! -d "$localpath" ];then
-	  continue
-	fi
+        if [ ! -d "$localpath" ];then
+          continue
+        fi
         repository=dir$(grep ^SLACKPKGPLUS_dir ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
         if [ ${localpath:0:1} != "/" ];then
           localpath=$(pwd)/$localpath
         fi
-	( cd $localpath
-	  ls -ld *.t[blxg]z|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
-	)
+        ( cd $localpath
+          ls -ld *.t[blxg]z|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+        )
         MIRRORPLUS[$repository]="file:/$localpath/"
-	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
-	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
+        PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
+        REPOPLUS=( ${repository} ${REPOPLUS[*]} )
         package=SLACKPKGPLUS_$repository
 
-	  # require to add rule "$repository .*" in the priority filter
-	PRIORITY_FILTER_RULE="${repository} .*"
+          # require to add rule "$repository .*" in the priority filter
+        PRIORITY_FILTER_RULE="${repository} .*"
 
       # You can specify 'slackpkg install http://mysite.org/myrepo/package-1.0-noarch-1my.txz' to install a package from remote path
       # without manual download. You can use http,https,ftp repositories
       elif echo "$pref" | egrep -q "^(https?|ftp)://.*/.*-[^-]+-[^-]+-[^\.]+\.t.z$" ;then
-	repository=$(echo "$pref" | cut -f1 -d":")
-	repository=$repository$(grep ^SLACKPKGPLUS_$repository[0-9] ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
-	MIRRORPLUS[$repository]=$(dirname $pref)"/"
-	package=$(basename $pref)
-	echo "./SLACKPKGPLUS_$repository/$package"|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
-	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
-	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
-	package=$(cutpkg $package)
+        repository=$(echo "$pref" | cut -f1 -d":")
+        repository=$repository$(grep ^SLACKPKGPLUS_$repository[0-9] ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
+        MIRRORPLUS[$repository]=$(dirname $pref)"/"
+        package=$(basename $pref)
+        echo "./SLACKPKGPLUS_$repository/$package"|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+        PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:$package )
+        REPOPLUS=( ${repository} ${REPOPLUS[*]} )
+        package=$(cutpkg $package)
 
-	  # require to add rule "${repository} ${package}" in the priority filter
-	PRIORITY_FILTER_RULE="${repository} ${package}"
+          # require to add rule "${repository} ${package}" in the priority filter
+        PRIORITY_FILTER_RULE="${repository} ${package}"
 
       # You can specify 'slackpkg install http://mysite.org/myrepo' to list remote directory
       elif echo "$pref" | egrep -q "^(https?|ftp)://.*/.*" ;then
-	repository=$(echo "$pref" | cut -f1 -d":")
-	repository=$repository$(grep ^SLACKPKGPLUS_$repository[0-9] ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
-	lftp $pref -e "ls;quit" 2>/dev/null|awk '{print $NF}'|egrep '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|sort -rn| \
-	  awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
-	MIRRORPLUS[$repository]=$(echo "$pref" |sed 's_/$__')"/"
-	PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
-	REPOPLUS=( ${repository} ${REPOPLUS[*]} )
-	package=SLACKPKGPLUS_$repository
+        repository=$(echo "$pref" | cut -f1 -d":")
+        repository=$repository$(grep ^SLACKPKGPLUS_$repository[0-9] ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
+        lftp $pref -e "ls;quit" 2>/dev/null|awk '{print $NF}'|egrep '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|sort -rn| \
+          awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+        MIRRORPLUS[$repository]=$(echo "$pref" |sed 's_/$__')"/"
+        PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
+        REPOPLUS=( ${repository} ${REPOPLUS[*]} )
+        package=SLACKPKGPLUS_$repository
 
-	  # require to add rule "${repository} .*" in the priority filter
-	PRIORITY_FILTER_RULE="${repository} .*"
+          # require to add rule "${repository} .*" in the priority filter
+        PRIORITY_FILTER_RULE="${repository} .*"
 
       # You can specify 'slackpkg install reponame:packagename'
       elif echo "$pref" | grep -q "[a-zA-Z0-9]\+[:][a-zA-Z0-9]\+" ; then
@@ -1180,12 +1362,12 @@ function showlist() {
           repository=$(echo "$pref" | cut -f1 -d":")
           package=$(echo "$pref" | cut -f2- -d":")
 
-	    # require to add rule "${repository} ${package}" in the priority filter
-	  PRIORITY_FILTER_RULE="${repository} ${package}"
+            # require to add rule "${repository} ${package}" in the priority filter
+          PRIORITY_FILTER_RULE="${repository} ${package}"
 
           if ! echo "$repository" | grep -qwE "$SLACKDIR_REGEXP" ; then
-	    repository="SLACKPKGPLUS_${repository}"
-	  fi
+            repository="SLACKPKGPLUS_${repository}"
+          fi
 
           PRIORITYLIST=( ${PRIORITYLIST[*]} ${repository}:$package )
         fi
@@ -1204,8 +1386,8 @@ function showlist() {
           fi
         fi
 
-	  # require to add rule "${pref} .*" in the priority filter
-	PRIORITY_FILTER_RULE="${pref} .*"
+          # require to add rule "${pref} .*" in the priority filter
+        PRIORITY_FILTER_RULE="${pref} .*"
 
         package="SLACKPKGPLUS_${pref}"
         PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${pref}:.* )
@@ -1227,27 +1409,28 @@ function showlist() {
         #
         package="^${pref}"
 
-	  # require to add rule "${pref} .*" in the priority filter
-	PRIORITY_FILTER_RULE="${pref} .*"
+          # require to add rule "${pref} .*" in the priority filter
+        PRIORITY_FILTER_RULE="${pref} .*"
 
       # You can specify 'slackpkg install argument' where argument is a package name, part of package name, directory name in repository
       else
-	  # require to add rule ".* ${pref}" in the priority filter
-	PRIORITY_FILTER_RULE=".* ${pref}"
+          # require to add rule ".* ${pref}" in the priority filter
+        PRIORITY_FILTER_RULE=".* ${pref}"
 
         package=$pref
         AUTOPRIORITY=" $AUTOPRIORITY -e $package "
       fi
 
       if [ "$CMD" == "remove" ];then
-	package=$(echo $package|sed 's/\.t[blxg]z$//')
+        package=$(echo $package|sed 's/\.t[blxg]z$//')
       fi
 
       [ ! -z "${PRIORITY_FILTER_RULE}" ] && echo "${PRIORITY_FILTER_RULE}" >> ${TMPDIR}/priority.filters
 
       # -- only insert "package" if not in NEWINPUTLIST
       echo "$NEWINPUTLIST" | grep -qw "${package}" || NEWINPUTLIST="$NEWINPUTLIST $package"
-    done
+      
+    done # pref in $INPUTLIST
 
     INPUTLIST=$NEWINPUTLIST
 
@@ -1272,7 +1455,7 @@ function showlist() {
         fi
       done
     fi
-  fi
+  fi # "$CMD" == "install" / "upgrade" / "reinstall" / "remove"
 
   if [ "$CMD" == "search" ] || [ "$CMD" == "file-search" ] ; then
     PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g')
@@ -1301,81 +1484,81 @@ function showlist() {
     esac
 
     cleanup
-  fi
+  fi # "$CMD" == "search" / "file-search"
 
   if [ "$CMD" == "check-updates" ] ; then
 
-	[ ! -e ~/.slackpkg ] && mkdir ~/.slackpkg
-	echo -n "" > ~/.slackpkg/updated-repos.txt
+    [ ! -e ~/.slackpkg ] && mkdir ~/.slackpkg
+    echo -n "" > ~/.slackpkg/updated-repos.txt
 
-	UPDATES=false
+    UPDATES=false
 
-	if ! checkchangelog 1>/dev/null 2>/dev/null; then
-	
-			# -- Note: 
-			#     checkchangelog() download the ChangeLog.txt and stores it
-			#     in ${TMPDIR} 
-		
-			# extract the slackpkgplus repositories md5 from the ChangeLog.txt
-			# files (in ${WORKDIR} and ${TMPDIR} to identify updates in Slackware
-			# repository.
-			#
-		grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt > ${TMPDIR}/ChangeLog.old
-		grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/ChangeLog.txt > ${TMPDIR}/ChangeLog.new
-		
-		if [ "$(md5sum ${TMPDIR}/ChangeLog.old | cut -f1 -d' ')" != "$(md5sum ${TMPDIR}/ChangeLog.new | cut -f1 -d' ')" ] ; then
-			echo "slackware" > ${TMPDIR}/updated-repos.txt
-		fi
-		
-		  # -- get the list of the repositories configured before this call to check-updates
-	   	  #
-		grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt | sed 's/^SLACKPKGPLUS_//; s/\[MD5\]//' | cut -f1 -d" "> ${TMPDIR}/selected.3pr
+    if ! checkchangelog 1>/dev/null 2>/dev/null; then
+    
+        # -- Note:
+        #     checkchangelog() download the ChangeLog.txt and stores it
+        #     in ${TMPDIR}
 
-		  # create pseudo changelogs for the selected 3rd party repositories
-		  #
-		grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt | sort  > "${TMPDIR}/3rp-ChangeLog.old"
-		grep "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/ChangeLog.txt | sort > "${TMPDIR}/3rp-ChangeLog.new"
-		
-		  # from the pseudo changelogs, find the updated 3rd party repositories and add them
-		  # to the updates report file
-		  #
-		comm -1 -3 	"${TMPDIR}/3rp-ChangeLog.old" \
-					"${TMPDIR}/3rp-ChangeLog.new" \
-			| sed -e "s/^SLACKPKGPLUS_//" -e "s/\[MD5\]//" \
-			| cut -f1 -d" " | grep -f ${TMPDIR}/selected.3pr >> "${TMPDIR}/updated-repos.txt"
+        # extract the slackpkgplus repositories md5 from the ChangeLog.txt
+        # files (in ${WORKDIR} and ${TMPDIR} to identify updates in Slackware
+        # repository.
+        #
+      grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt > ${TMPDIR}/ChangeLog.old
+      grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/ChangeLog.txt > ${TMPDIR}/ChangeLog.new
+      
+      if [ "$(md5sum ${TMPDIR}/ChangeLog.old | cut -f1 -d' ')" != "$(md5sum ${TMPDIR}/ChangeLog.new | cut -f1 -d' ')" ] ; then
+              echo "slackware" > ${TMPDIR}/updated-repos.txt
+      fi
+      
+        # -- get the list of the repositories configured before this call to check-updates
+        #
+      grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt | sed 's/^SLACKPKGPLUS_//; s/\[MD5\]//' | cut -f1 -d" "> ${TMPDIR}/selected.3pr
 
-			# when TMPDIR/updated-repos.txt is not empty , it contains the 
-			# names of the updated repositories.
-			#
-			# NOTE: 
-			#  at this point, updated-repos.txt can be empty when user
-			#  has added a repository in REPOPLUS and run "slackpkg check-updates"
-			#  instead (or prior to) "slackpkg update" 
-			
-		[ -s "${TMPDIR}/updated-repos.txt" ] && UPDATES=true
-	fi
-	
-	if $UPDATES ; then
-		echo "News on ChangeLog.txt"
-		
-		printf "\n  [ %-24s ] [ %-20s ]\n" "Repository" "Status"
-			
-		for REPO in slackware ${REPOPLUS[*]}; do
-			if grep -q "^${REPO}$"  ${TMPDIR}/updated-repos.txt ; then
-				printf "    %-24s     %-20s \n" "$REPO" "AVAILABLE UPDATES" 
-			else
-			    printf "    %-24s     %-20s \n" "$REPO" "   Up to date   "
-			fi
-		done
+        # create pseudo changelogs for the selected 3rd party repositories
+        #
+      grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt | sort  > "${TMPDIR}/3rp-ChangeLog.old"
+      grep "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/ChangeLog.txt | sort > "${TMPDIR}/3rp-ChangeLog.new"
+      
+        # from the pseudo changelogs, find the updated 3rd party repositories and add them
+        # to the updates report file
+        #
+      comm -1 -3  "${TMPDIR}/3rp-ChangeLog.old" \
+                  "${TMPDIR}/3rp-ChangeLog.new" \
+              | sed -e "s/^SLACKPKGPLUS_//" -e "s/\[MD5\]//" \
+              | cut -f1 -d" " | grep -f ${TMPDIR}/selected.3pr >> "${TMPDIR}/updated-repos.txt"
 
-			# save ${TMPDIR}/updates-repos.txt in ~/.slackpkg/updated-repos.txt
-			#
-		cat ${TMPDIR}/updated-repos.txt > ~/.slackpkg/updated-repos.txt
-	else
-		echo "No news is good news"
-	fi
-		
-	cleanup
-  fi
+              # when TMPDIR/updated-repos.txt is not empty , it contains the
+              # names of the updated repositories.
+              #
+              # NOTE:
+              #  at this point, updated-repos.txt can be empty when user
+              #  has added a repository in REPOPLUS and run "slackpkg check-updates"
+              #  instead (or prior to) "slackpkg update"
+              
+      [ -s "${TMPDIR}/updated-repos.txt" ] && UPDATES=true
+    fi
+    
+    if $UPDATES ; then
+      echo "News on ChangeLog.txt"
+      
+      printf "\n  [ %-24s ] [ %-20s ]\n" "Repository" "Status"
+      
+      for REPO in slackware ${REPOPLUS[*]}; do
+        if grep -q "^${REPO}$"  ${TMPDIR}/updated-repos.txt ; then
+          printf "    %-24s     %-20s \n" "$REPO" "AVAILABLE UPDATES"
+        else
+          printf "    %-24s     %-20s \n" "$REPO" "   Up to date   "
+        fi
+      done
+
+        # save ${TMPDIR}/updates-repos.txt in ~/.slackpkg/updated-repos.txt
+        #
+      cat ${TMPDIR}/updated-repos.txt > ~/.slackpkg/updated-repos.txt
+    else
+      echo "No news is good news"
+    fi
+
+    cleanup
+  fi # "$CMD" == "check-updates"
 
 fi

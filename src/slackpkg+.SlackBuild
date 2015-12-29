@@ -57,7 +57,6 @@ mkdir -p usr/doc/slackpkg+-$VERSION/
 mkdir -p install/
 
 cp $CWD/slackpkgplus.sh usr/libexec/slackpkg/functions.d/
-cp $CWD/zdialogplus.sh usr/libexec/slackpkg/functions.d/
 cp $CWD/makeinstlog.sh usr/libexec/slackpkg/makeinstlog.sh
 cp $CWD/README usr/doc/slackpkg+-$VERSION/
 cp $CWD/ChangeLog.txt usr/doc/slackpkg+-$VERSION/
@@ -73,7 +72,6 @@ cat $CWD/doinst.sh|sed "s/SLPVERSION/$VERSION/" > install/doinst.sh
 cat $CWD/notifymsg.conf > etc/slackpkg/notifymsg.conf.new
 
 chmod +x usr/libexec/slackpkg/functions.d/slackpkgplus.sh
-chmod +x usr/libexec/slackpkg/functions.d/zdialogplus.sh
 chmod +x usr/libexec/slackpkg/makeinstlog.sh
 chmod +x usr/doc/slackpkg+-$VERSION/setupmultilib.sh
 
