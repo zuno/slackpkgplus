@@ -442,7 +442,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 	  #
 	PKGDATA=""
 	LINEIDX=""
-	PKGINFOS=$(grep -n "^${DIR} " ${TMPDIR}/pkglist | grep -w "${PAT}" | grep -m 1 "^[0-9]\+:${DIR} ${ARGUMENT} ")
+        grep -n "^${DIR} " ${TMPDIR}/pkglist | grep -w "${PAT}" > ${TMPDIR}/packages.matches
+        PKGINFOS=$(grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT} " ${TMPDIR}/packages.matches)
 
         if [ ! -z "$PKGINFOS" ] ; then
 	  LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
