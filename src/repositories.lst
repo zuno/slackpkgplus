@@ -38,6 +38,10 @@ http://slackware.org.uk/msb/14.1/1.8/x86_64                                     
 http://slackware.org.uk/msb/testing/1.12/x86                                      yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slackware.org.uk/msb/testing/1.12/x86_64                                   yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slakfinder.org/slackpkg+                                                   yes  yes   Matteo Rossini <zerouno@slacky.it>
+http://slint.fr/packages/14.0-i486                                                yes  yes   Didier Spaier <didier@slint.fr>
+http://slint.fr/packages/14.0-x86_64                                              yes  yes   Didier Spaier <didier@slint.fr>
+http://slint.fr/packages/14.1-i486                                                yes  yes   Didier Spaier <didier@slint.fr>
+http://slint.fr/packages/14.1-x86_64                                              yes  yes   Didier Spaier <didier@slint.fr>
 http://studioware.org/files/packages/slackware-13.37                              yes  yes   Studioware <info@studioware.org>
 http://studioware.org/files/packages/slackware-14.0                               yes  yes   Studioware <info@studioware.org>
 http://studioware.org/files/packages/slackware-14.1                               yes  yes   Studioware <info@studioware.org>

@@ -18,6 +18,7 @@ Supported Repositories:
 > rlworkman:     http://rlworkman.net/pkgs/{13.37,14.0,14.1,current}/
 > slackel:       http://www.slackel.gr/repo/{i486,x86_64}/current/
 > connochaetos:  http://connochaetos.org/slack-n-free/slack-n-free{,64}-14.1/
+> slint:         http://slint.fr/packages/{14.0,14.1}-{i486,x86_64}/
 > 
 > Partial GPG support
 > salixos(*):    http://download.salixos.org/{i486,x86_64}/{13.37,14.0,14.1}/
