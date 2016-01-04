@@ -1,7 +1,7 @@
 Supported Repositories:
 
 > Supports GPG
-> slackpkgplus:  http://slakfinder.org/slackpkg+/
+> slackpkgplus:  http://slakfinder.org/slackpkg+{,dev}/
 > multilib:      http://taper.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,14.1,current}/
 > alienbob:      http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
 > ktown:         http://taper.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,current}/{latest,5}/{x86,x86_64}/

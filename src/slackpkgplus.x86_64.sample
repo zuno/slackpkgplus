@@ -50,6 +50,12 @@ SENSITIVE_SEARCH=on
 # Select the show order in dialogbox. Available "package" "repository" "tag" "path" "arch"
 SHOWORDER=package
 
+# Enable (on) / Disable (off) a Strict GPG Check. A repository should contains packages signed
+# with the only original GPG-KEY. In some custom repository may be wanted to mix eterogeneous
+# packages; to use that repository set Strict GPG Check to off. P.S: a repository can
+# contain just ONE gpg-key; you may manually import the other.
+STRICTGPG=on
+
 # If two or more repositories contains some same packages, you can specify
 # from which repository you prefer to search it.
 # The syntax is "<repository_name>:<package_name>"
@@ -85,7 +91,8 @@ TAG_PRIORITY=off
 
 # List repositories you want to use (defined below)
 # remember to launch 'slackpkg update' if you modify that row.
-REPOPLUS=( slackpkgplus restricted alienbob slacky )
+#REPOPLUS=( slackpkgplus restricted alienbob slacky )
+REPOPLUS=( slackpkgplus )
 
 
 # Define mirrors (uncomment one or more mirror; remember to add it to REPOPLUS)
@@ -95,12 +102,12 @@ REPOPLUS=( slackpkgplus restricted alienbob slacky )
 
 # Slackware 14.1 - x86_64
 #MIRRORPLUS['multilib']=http://taper.alienbase.nl/mirrors/people/alien/multilib/14.1/
-MIRRORPLUS['alienbob']=http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86_64/
-MIRRORPLUS['restricted']=http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.1/x86_64/
-MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware64-14.1/
+#MIRRORPLUS['alienbob']=http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86_64/
+#MIRRORPLUS['restricted']=http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.1/x86_64/
+#MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware64-14.1/
 
 # use this to keep the slackpkg+ package updated
-MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
+MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+dev/
 
 # Slackware current - x86_64
 #MIRRORPLUS['multilib']=http://taper.alienbase.nl/mirrors/people/alien/multilib/current/

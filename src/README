@@ -511,6 +511,26 @@ Default is "package"
 
 -----
 
+STRICTGPG
+
+slackpkg was bird to install slackware packages from official mirrors; they
+are signed with the official slackware GPG-KEY, so no other packages may be
+added (unless you disable GPG check).
+slackpkg+ introduces the ability to download keys from many repositories; as
+implication, slackpkg+ allow also to copy packages from other repositories and
+the original signature; in this way a repository can contain a mix of packages
+that may confuse the user.
+
+Strict GPG check disallow users to do that. This improve the security.
+
+However some user may want to do a custom repository with any type of
+packages.
+To use a similar repository you may set STRICTGPG=off
+Note that sometime you may need to import manually the GPG-KEY with the command
+# gpg --import GPG-KEY
+
+-----
+
 INSTALL LOG
 
 Slackpkg+ now create a log of all installed packages in /var/lib/slackpkg/install.log

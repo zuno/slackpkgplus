@@ -25,6 +25,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTSENSITIVE_SEARCH=$SENSITIVE_SEARCH
   EXTCACHEUPDATE=$CACHEUPDATE
   EXTDOWNLOADONLY=$DOWNLOADONLY
+  EXTSTRICTGPG=$STRICTGPG
 
   . $CONF/slackpkgplus.conf
 
@@ -39,6 +40,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   SENSITIVE_SEARCH=${EXTSENSITIVE_SEARCH:-$SENSITIVE_SEARCH}
   CACHEUPDATE=${EXTCACHEUPDATE:-$CACHEUPDATE}
   DOWNLOADONLY=${EXTDOWNLOADONLY:-$DOWNLOADONLY}
+  STRICTGPG=${EXTSTRICTGPG:-$STRICTGPG}
 
   USEBLACKLIST=true
   if [ "$USEBL" == "0" ];then
@@ -457,6 +459,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     if [ $(basename $1) = "MANIFEST.bz2" ];then
+      rm -f $WORKDIR/*-filelist.gz 2>/dev/null
       if [ ! -s $2 ];then
         echo -n|bzip2 -c >$2
       fi
@@ -551,6 +554,24 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       done
     fi
     if [ $(basename $1) = "GPG-KEY" ];then
+      mkdir -p ${WORKDIR}/gpg
+      rm -f ${WORKDIR}/gpg/* 2>/dev/null
+      gpg $2
+      if gpg $2|grep -q "$SLACKKEY" || [ "$STRICTGPG" == "off" ];then
+        for PREPO in $(echo ${PRIORITY[*]}|sed 's/SLACKPKGPLUS_[^ ]*//g');do
+          gpg --output "${WORKDIR}/gpg/GPG-KEY-${PREPO}.gpg" --dearmor $2
+        done
+      else
+        echo
+        echo "                   !!! F A T A L !!!"
+        echo "    Slackware repository does NOT contain the Official GPG-KEY"
+        echo "    You SHOULD disable GPG Strict check 'STRICTGPG=off'"
+        echo "    in /etc/slackpkg/slackpkgplus.conf"
+        echo
+        sleep 5
+        echo "Fatal: Slackware repository does not contains the official gpg-key!!" >>$TMPDIR/error.log
+        gpg $2 >>$TMPDIR/error.log 2>&1
+      fi
       for PREPO in ${REPOPLUS[*]};do
         if [ "${PREPO:0:4}" = "dir:" ];then
           continue
@@ -562,10 +583,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         elif echo $URLFILE |grep -q "^dir:/";then
           continue
         else
+          echo
           $DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
         fi
         if [ $? -eq 0 ];then
+          gpg $2-tmp
           gpg --import $2-tmp
+          gpg --output "${WORKDIR}/gpg/GPG-KEY-${PREPO}.gpg" --dearmor $2-tmp
         else
           echo
           echo "                   !!! W A R N I N G !!!"
@@ -577,6 +601,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           sleep 5
         fi
         rm $2-tmp
+        echo
       done
     fi
   } # END function getfile()
@@ -584,13 +609,42 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # override slackpkg checkgpg()
     # new checkgpg() is used to check gpg and to merge the CHECKSUMS.md5 files
   function checkgpg() {
+    local FILENAME
+    local REPO
+
     if echo $1|egrep -q "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]";then
       echo 1
       return
     fi
     if [ -e "${1}.asc" ];then
-      gpg --verify ${1}.asc ${1} 2>/dev/null && echo "1" || echo "0"
-    else
+
+      FILENAME=$(basename ${1})
+      if [ "$FILENAME" == "CHECKSUMS.md5" ];then
+        REPO=slackware
+        [ -e "${WORKDIR}/gpg/GPG-KEY-slackware64.gpg" ]&&REPO=slackware64
+      elif [ ${FILENAME:0:13} == "CHECKSUMS.md5" ];then
+        REPO=$(echo $FILENAME|cut -f2 -d-|sed 's/\.gz$//')
+      else
+        REPO=$(echo $1|sed -r -e "s,^$TEMP,/," -e "s,/\./,/,g" -e "s,//,/,g" -e "s,^/,," -e "s,/.*$,," -e "s,SLACKPKGPLUS_,,")
+      fi
+
+      if [ "$STRICTGPG" != "off" ];then
+        if [ ! -z "$REPO" ] && [ -e "${WORKDIR}/gpg/GPG-KEY-${REPO}.gpg" ] ; then
+          echo "Using GPG-KEY-${REPO}.gpg" >&2
+          gpg  --no-default-keyring \
+               --keyring ${WORKDIR}/gpg/GPG-KEY-${REPO}.gpg \
+               --verify ${1}.asc ${1} 2>/dev/null && echo "1" || echo "0"
+        else
+          echo "No matching GPG-KEY for repository '$REPO' checking $FILENAME" >&2
+          echo "Try to run 'slackpkg update gpg' or 'slackpkg -checkgpg=off $CMD ...'" >&2
+          echo "No matching GPG-KEY for repository '$REPO' checking $FILENAME" >>$TMPDIR/error.log
+          echo "Try to run 'slackpkg update gpg' or 'slackpkg -checkgpg=off $CMD ...'" >>$TMPDIR/error.log
+          echo 0
+        fi
+      else
+        gpg --verify ${1}.asc ${1} 2>/dev/null && echo "1" || echo "0"
+      fi
+    else # $1.asc not downloaded
       echo 1
     fi
     if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
@@ -1107,7 +1161,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
 
-  SPKGPLUS_VERSION="1.6.1"
+  SPKGPLUS_VERSION="1.7.a1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
