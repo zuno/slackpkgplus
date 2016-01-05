@@ -1179,6 +1179,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     ANSWER="Y"
   fi
 
+  if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&& ! ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1;then
+    echo "FATAL! No Slackware GPG-KEY imported."
+    if [ -e "$WORKDIR/ChangeLog.txt" ];then
+      echo "If you are upgrading from an older release of slackpkg+, all keys must to be reimported."
+    fi
+    echo "Please run"
+    echo "  # slackpkg update gpg"
+    cleanup
+  fi
 
     # Ensure each repository url has a trailing slash...
     #
