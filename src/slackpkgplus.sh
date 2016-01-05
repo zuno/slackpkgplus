@@ -230,6 +230,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     handle_event "remove"
   } # END function remove_pkg()
 
+  if [ "$DOWNLOADONLY" == "on" ];then
+    function installpkg() {
+      echo "            Download only.. `basename $1` not installed!"
+      DELALL=off
+    }
+    function upgradepkg() {
+      echo "            Download only.. `basename $1` not upgraded!"
+      DELALL=off
+    }
+  fi
+
     # Overrides original upgrade_pkg(). Required by the notification mechanism.
   function upgrade_pkg() {
     local i
@@ -241,10 +252,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         getpkg $i true
       done
       DELALL="$OLDDEL"
-    fi
-    if [ "$DOWNLOADONLY" == "on" ];then
-      echo "Download only.. not upgraded!"
-      return
     fi
     ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
 
@@ -271,10 +278,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         getpkg $i true
       done
       DELALL="$OLDDEL"
-    fi
-    if [ "$DOWNLOADONLY" == "on" ];then
-      echo "Download only.. not installed!"
-      return
     fi
     for i in $SHOWLIST; do
       INSTALL_T='installed:  '
@@ -630,7 +633,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
       if [ "$STRICTGPG" != "off" ];then
         if [ ! -z "$REPO" ] && [ -e "${WORKDIR}/gpg/GPG-KEY-${REPO}.gpg" ] ; then
-          echo "Using GPG-KEY-${REPO}.gpg" >&2
           gpg  --no-default-keyring \
                --keyring ${WORKDIR}/gpg/GPG-KEY-${REPO}.gpg \
                --verify ${1}.asc ${1} 2>/dev/null && echo "1" || echo "0"
@@ -1093,6 +1095,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           cleanup
         ;;
       esac
+      echo
+      echo
       SHOWLIST=$(cat $TMPDIR/dialog.out | tr -d \")
       if [ -z "$SHOWLIST" ]; then
         echo "No packages selected for $2, exiting."
