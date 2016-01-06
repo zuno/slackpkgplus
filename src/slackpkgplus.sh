@@ -59,6 +59,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function cleanup()
   # function handle_event()
   # function remove_pkg()
+  # function upgradepkg() // if DOWNLOADONLY=on override /sbin/upgradepkg
+  # function installpkg() // if DOWNLOADONLY=on override /sbin/installpkg
   # function upgrade_pkg()
   # function install_pkg()
   # function wgetdebug()
@@ -346,52 +348,56 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local SRCURL
     local CACHEFILE
     local SRCBASE
+    local CURREPO
     SRCURL=$2
     SRCBASE=$(basename $SRCURL)
     CACHEFILE=$(echo $SRCURL|md5sum|awk '{print $1}')
 
+    TOCACHE=0
     case $SRCBASE in
-      CHECKSUMS.md5) TOCACHE=1 ;;
-      MANIFEST.bz2) TOCACHE=1 ;;
-      PACKAGES.TXT) TOCACHE=1 ;;
-      *) TOCACHE=0 ;;
+      CHECKSUMS.md5|CHECKSUMS.md5.asc) TOCACHE=1 ; CURREPO=$(basename $1|sed -r -e "s/CHECKSUMS.md5-?//" -e "s/\.asc//") ;;
+      MANIFEST.bz2|PACKAGES.TXT) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/-$SRCBASE//" -e "s/SLACKPKGPLUS_//");;
+      ChangeLog.txt) TOCACHE=0 ;;
+      FILELIST.TXT) TOCACHE=1 ;;
     esac
+    if [ -z "$CURREPO" ]; then
+      CURREPO=slackware
+    fi
 
+    echo
+    echo -n "    File: $CURREPO->$SRCBASE .."
+    [ $VERBOSE -eq 3 ]&&echo -n " ($CACHEFILE) "
     if [ $TOCACHE -eq 1 ];then
-      echo
-      echo "=== check cache: $SRCURL ==="
-      echo -n "headers.. "
+      echo -n "." # ... -> tocache=1
       curl --location --head $SRCURL 2>/dev/null|grep -v ^Date:|sed 's///' > $TMPDIR/cache.head
       echo "Url: $SRCURL" >> $TMPDIR/cache.head
-      grep -q "200 OK" $TMPDIR/cache.head || echo "Header or Url Invalid!!! (`date`)"
-      [ $VERBOSE -eq 3 ]&&cat $TMPDIR/cache.head|sed 's/^/  /'
+      #grep -q "200 OK" $TMPDIR/cache.head || echo "Header or Url Invalid!!! (`date`)"
+      [ $VERBOSE -eq 3 ]&&(echo;cat $TMPDIR/cache.head|sed 's/^/  /')
       if [ -e $CACHEDIR/$CACHEFILE -a -e $CACHEDIR/$CACHEFILE.head ];then
-        echo "Is cached.. "
-        [ $VERBOSE -eq 3 ]&&cat $CACHEDIR/$CACHEFILE.head|sed 's/^/  /'
+        echo -n " ." # ... . -> is in cache
+        [ $VERBOSE -eq 3 ]&&(echo;cat $CACHEDIR/$CACHEFILE.head|sed 's/^/  /')
         if diff $CACHEDIR/$CACHEFILE.head $TMPDIR/cache.head >/dev/null;then
-          echo "Cache valid!   If not please remove manually $CACHEDIR/$CACHEFILE !"
+          [ $VERBOSE -eq 3 ]&&echo "Cache valid!   If not please remove manually $CACHEDIR/$CACHEFILE !"
+          echo " Cached." # ... . Cached.
           cp $CACHEDIR/$CACHEFILE $1
           return $?
         fi
-        echo -n "Invalid.. "
+        echo -n ". " # ... .. -> cache older or corrupted
         rm -f $CACHEDIR/$CACHEFILE $CACHEDIR/$CACHEFILE.head
       fi
-      echo "Download file.. "
+      echo " Downloading... " # ... -> needed  # ... .. -> re-needed
       $CACHEDOWNLOADER $1 $SRCURL
       ERR=$?
       if [ "$(ls -l $1 2>/dev/null|awk '{print $5}')" == "$(grep Content-Length: $TMPDIR/cache.head|awk '{print $2}')" ];then
-        echo "Caching it!"
         cp $1 $CACHEDIR/$CACHEFILE
         cp $TMPDIR/cache.head $CACHEDIR/$CACHEFILE.head
-      else
-        echo "NOT cacheable!"
       fi
     else
-      echo
-      echo "=== no caching for $SRCURL ==="
+      echo " Downloading..." # .. -> tocache=0
       $CACHEDOWNLOADER $1 $SRCURL
       ERR=$?
     fi
+    echo
     return $ERR
 
   } # END function cached_downloader()
