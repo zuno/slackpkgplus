@@ -1,3 +1,8 @@
+Version 1.7.a2 - 06/Jan/2015
+  - Remember user to (re)run 'slackpkg update gpg'
+	- Fixed Download Only when upgrade base packages (aaa_base, pkgtools...)
+	- Quick output on Cached Download
+
 Version 1.7.a1 - 04/Jan/2015
   It's the time for a stable version of slackpkg+. Currently it is just a
 	development version to fix older feature and add/test new. I'll need more
