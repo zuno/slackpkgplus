@@ -364,7 +364,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       CURREPO=slackware
     fi
 
-    echo
     echo -n "    File: $CURREPO->$SRCBASE .."
     [ $VERBOSE -eq 3 ]&&echo -n " ($CACHEFILE) "
     if [ $TOCACHE -eq 1 ];then
@@ -388,6 +387,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo " Downloading... " # ... -> needed  # ... .. -> re-needed
       $CACHEDOWNLOADER $1 $SRCURL
       ERR=$?
+      echo
       if [ "$(ls -l $1 2>/dev/null|awk '{print $5}')" == "$(grep Content-Length: $TMPDIR/cache.head|awk '{print $2}')" ];then
         cp $1 $CACHEDIR/$CACHEFILE
         cp $TMPDIR/cache.head $CACHEDIR/$CACHEFILE.head
@@ -396,8 +396,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo " Downloading..." # .. -> tocache=0
       $CACHEDOWNLOADER $1 $SRCURL
       ERR=$?
+      echo
     fi
-    echo
     return $ERR
 
   } # END function cached_downloader()

@@ -95,3 +95,11 @@ http://www.microlinux.fr/microlinux/server-14.2-32bit                           
 http://www.microlinux.fr/microlinux/server-14.2-64bit                             yes  yes   Niki Kovacs <info@microlinux.fr>
 http://www.slackel.gr/repo/i486/current                                           yes  yes   Dimitris Tzemos (Slackel Creator) <djemos@slackel.gr>
 http://www.slackel.gr/repo/x86_64/current                                         yes  yes   Dimitris Tzemos (Slackel Creator) <djemos@slackel.gr>
+http://slackware.osuosl.org/slackware-13.37                                       yes  yes   Slackware Linux Project <security@slackware.com>
+http://slackware.osuosl.org/slackware-14.0                                        yes  yes   Slackware Linux Project <security@slackware.com>
+http://slackware.osuosl.org/slackware64-13.37                                     yes  yes   Slackware Linux Project <security@slackware.com>
+http://slackware.osuosl.org/slackware64-14.0                                      yes  yes   Slackware Linux Project <security@slackware.com>
+http://slackware.osuosl.org/slackware-14.1                                        yes  yes   Slackware Linux Project <security@slackware.com>
+http://slackware.osuosl.org/slackware-current                                     yes  yes   Slackware Linux Project <security@slackware.com>
+http://slackware.osuosl.org/slackware64-14.1                                      yes  yes   Slackware Linux Project <security@slackware.com>
+http://slackware.osuosl.org/slackware64-current                                   yes  yes   Slackware Linux Project <security@slackware.com>
