@@ -1242,17 +1242,21 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
   done
 
-  if [ $[$(date +%s)-$(date -d "$(ls -l --full-time $WORKDIR/pkglist 2>/dev/null|awk '{print $6,$7,$8}')" +%s)] -gt 86400 -a "$CMD" != "update" ];then
-    echo
-    echo "NOTICE: pkglist is older than 24h; you are encouraged to re-run 'slackpkg update'"
-    echo
-    sleep 1
+  if [ "$CMD" != "update" -a "$CMD" != "check-updates" ];then
+    if [ $[$(date +%s)-$(date -d "$(ls -l --full-time $WORKDIR/pkglist 2>/dev/null|awk '{print $6,$7,$8}')" +%s)] -gt 86400 ];then
+      echo
+      echo "NOTICE: pkglist is older than 24h; you are encouraged to re-run 'slackpkg update'"
+      echo
+      sleep 1
+    fi
   fi
-  if [ $CONF/slackpkgplus.conf -nt $WORKDIR/pkglist -a "$CMD" != "update" ];then
-    echo
-    echo "NOTICE: remember to re-run 'slackpkg update' after modifying slackpkgplus.conf"
-    echo
-    sleep 5
+  if [ "$CMD" != "update" -a "$CMD" != "check-updates" ];then
+    if [ $CONF/slackpkgplus.conf -nt $WORKDIR/pkglist ];then
+      echo
+      echo "NOTICE: remember to re-run 'slackpkg update' after modifying slackpkgplus.conf"
+      echo
+      sleep 5
+    fi
   fi
 
 
@@ -1630,6 +1634,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       cat ${TMPDIR}/updated-repos.txt > ~/.slackpkg/updated-repos.txt
     else
       echo "No news is good news"
+      # Suppress the "pkglist is older than 24h" notice
+      touch $WORKDIR/pkglist
     fi
 
     cleanup
