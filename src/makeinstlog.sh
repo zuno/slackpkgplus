@@ -21,10 +21,10 @@ fi
     )|sort|awk '{if(x=!x){printf("%s ", $2)}else{print $2,$3,$1}}'    \
      |sed -e 's/$/ installed/'|awk '{print $2,$3,$4,$1,$5}'
   )| sed -r -e 's/^([^ ]+) ([^ ]+) (.*)-([^-]+)-([^-]+)-([^ ]+) (\.t.z) (.*)/\1 \2 \3 \3-\4-\5-\6 \7 \8/'|sort|awk '{
-	       if (!p[$3])        { print $1" "$2" installed:   "$4$5"  []"               ; p[$3]=$4 }
-	  else if ($5=="removed") { print $1" "$2" removed:     "$4                       ; p[$3]=0  }
-	  else if (p[$3]==$4)     { print $1" "$2" reinstalled: "$4$5"  []"                          }
-	  else                    { print $1" "$2" upgraded:    "$4$5"  []  (was "p[$3]")"; p[$3]=$4 }
+         if (!p[$3])        { print $1" "$2" installed:   "$4$5"  []"               ; p[$3]=$4 }
+    else if ($5=="removed") { print $1" "$2" removed:     "$4                       ; p[$3]=0  }
+    else if (p[$3]==$4)     { print $1" "$2" reinstalled: "$4$5"  []"                          }
+    else                    { print $1" "$2" upgraded:    "$4$5"  []  (was "p[$3]")"; p[$3]=$4 }
      }'
 
   cat $WORKDIR/install.log 2>/dev/null|grep -v '\[\]'
@@ -43,9 +43,9 @@ else
   cat $WORKDIR/install.log.tmp |while read a;do 
       P=$(echo $a|awk '{print $4}')
       R=$(grep -m1 \
-	    "$(echo $P|awk -f /usr/libexec/slackpkg/pkglist.awk | awk '{print " "$1" .* "$3" "$4"$"}'| sed -r 's/ [0-9]+([^\$]*)\$/ [0-9]\\+\1 /')" \
-	    $WORKDIR/pkglist.tmp|awk '{print $1}'|sed 's/SLACKPKGPLUS_//'
-	 )
+      "$(echo $P|awk -f /usr/libexec/slackpkg/pkglist.awk | awk '{print " "$1" .* "$3" "$4"$"}'| sed -r 's/ [0-9]+([^\$]*)\$/ [0-9]\\+\1 /')" \
+      $WORKDIR/pkglist.tmp|awk '{print $1}'|sed 's/SLACKPKGPLUS_//'
+   )
       echo "$a"|sed "s/\[\]/[$R]/"
   done > $WORKDIR/install.log.new
   rm $WORKDIR/install.log.tmp

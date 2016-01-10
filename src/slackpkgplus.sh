@@ -656,23 +656,23 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo 1
     fi
     if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
-      if [ "$TAG_PRIORITY" == "on" ];then
-        mv ${TMPDIR}/CHECKSUMS.md5 ${TMPDIR}/CHECKSUMS.md5-old
-        for PREPO in ${PRIORITY[*]};do
-          grep " \./$PREPO/" ${TMPDIR}/CHECKSUMS.md5-old >> ${TMPDIR}/CHECKSUMS.md5
-        done
-      fi
+#     if [ "$TAG_PRIORITY" == "on" ];then
+      mv ${TMPDIR}/CHECKSUMS.md5 ${TMPDIR}/CHECKSUMS.md5-old
+      for PREPO in ${PRIORITY[*]};do
+        grep " \./$PREPO/" ${TMPDIR}/CHECKSUMS.md5-old >> ${TMPDIR}/CHECKSUMS.md5
+      done
+#     fi
       X86_64=$(ls $ROOT/var/log/packages/aaa_base*x86_64* 2>/dev/null|head -1)
       for PREPO in ${REPOPLUS[*]};do
-        if [ ! -z "$X86_64" ];then
-         if [ "$ALLOW32BIT" == "on" ];then
-           egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
-         else
-           egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(i[3456]86|arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
-         fi
+        if [ -z "$X86_64" ];then
+          FILTEREXCLUDE="-(x86_64|arm)-"
+        elif [ "$ALLOW32BIT" == "on" ];then
+          FILTEREXCLUDE="-(arm)-"
         else
-          egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "-(x86_64|arm)-" |sed -r "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+          FILTEREXCLUDE="-(x86|i[3456]86|arm)-"
         fi
+        egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "$FILTEREXCLUDE" |sed -r -e "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
+        #egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "$FILTEREXCLUDE" |sed -r -e "s# \./# ./SLACKPKGPLUS_$PREPO/#" -e 's#^(.*)/([^/]+)$#\2 \1/\2#'|sort -rn|cut -f2- -d" " >> ${TMPDIR}/CHECKSUMS.md5
       done
     fi
   } # END function checkgpg()
@@ -1171,7 +1171,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
 
-  SPKGPLUS_VERSION="1.7.a2"
+  SPKGPLUS_VERSION="1.7.a3"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 

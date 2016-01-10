@@ -1,17 +1,22 @@
+Version 1.7.a3 - 10/Jan/2015
+  - Do not show notices when running slackpkg update or slackpkg check-updates
+    (thanks to yars068)
+  - Fixed a bug on x86 hosts when a repository contains also x86_64 packages
+
 Version 1.7.a2 - 06/Jan/2015
   - Remember user to (re)run 'slackpkg update gpg'
-	- Fixed Download Only when upgrade base packages (aaa_base, pkgtools...)
-	- Quick output on Cached Download
+  - Fixed Download Only when upgrade base packages (aaa_base, pkgtools...)
+  - Quick output on Cached Download
 
 Version 1.7.a1 - 04/Jan/2015
   It's the time for a stable version of slackpkg+. Currently it is just a
-	development version to fix older feature and add/test new. I'll need more
-	test possible to make it bugfree ;).
-	- Code reordering; now slackpkg+ is only slackpkgplus.sh
-	- Added repositories; improved checkrepos.sh
-	- BugFix: slackpk give 'grep: write error' when running with "sudo su -"
-	- SecurityFix: Strict GPG Check. Packages MUST to be signed with root-GPG-KEY.
-	  If can disable it via CHECKGPG in slackpkgplus.sh; see README
+  development version to fix older feature and add/test new. I'll need more
+  test possible to make it bugfree ;).
+  - Code reordering; now slackpkg+ is only slackpkgplus.sh
+  - Added repositories; improved checkrepos.sh
+  - BugFix: slackpkg give 'grep: write error' when running with "sudo su -"
+  - SecurityFix: Strict GPG Check. Packages MUST to be signed with root-GPG-KEY.
+    If can disable it via CHECKGPG in slackpkgplus.sh; see README
   - New repository for slackpkg+ development version
 
 Version 1.6.1 - 20/Dec/2015

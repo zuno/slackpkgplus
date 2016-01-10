@@ -80,8 +80,8 @@ REPOPLUS=( slackpkgplus )
 
 
 # Define mirrors (uncomment one or more mirror; remember to add it to REPOPLUS)
-# GPG Note: after adding a repository, you must to run 'slackpkg update gpg'
-#           some repositories as salixos or slackel, have a partial GPG support;
+# GPG Note: after adding/renaming a repository, you must to run 'slackpkg update gpg'
+#           some repositories as salixos, have a partial GPG support;
 #           for that repositories you may need to run slackpkg with 'slackpkg -checkgpg=off ...'
 
 # Slackware 14.1 - i386
