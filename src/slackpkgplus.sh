@@ -879,7 +879,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     for i in ${PRIORITY[@]}; do
       DIR="$i"
       if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
-              DIR=$(echo "$i" | cut -f2- -d":")
+        DIR=$(echo "$i" | cut -f1 -d":")
       fi
 
       if [ "$CMD" == "file-search" ] ; then
