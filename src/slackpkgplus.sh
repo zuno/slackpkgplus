@@ -10,7 +10,7 @@ CONF=${CONF:-/etc/slackpkg} # needed if you're running slackpkg 2.28.0-12
 
   # regular expression used to distinguish the 3rd party repositories from the standard slackware directories.
   #
-SLACKDIR_REGEXP="(slackware)|(slackware64)|(extra)|(pasture)|(patches)|(testing)"
+SLACKDIR_REGEXP="^((slackware)|(slackware64)|(extra)|(pasture)|(patches)|(testing))$"
 
 if [ -e $CONF/slackpkgplus.conf ];then
   # You can override GREYLIST WGETOPTS SLACKPKGPLUS VERBOSE USEBL ALLOW32BIT SENSITIVE_SEARCH from command-line
@@ -755,8 +755,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                                               )| grep -f - -n -m 1 ${TMPDIR}/pkglist
                 )
       if [ ! -z "$PKGINFOS" ] ; then
-        LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
-        PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
+        LINEIDX=${$PKGINFOS/:*/}      #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
+        PKGDATA=( ${PKGINFOS/*:/} )   #PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
         sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
         (( PRIORITYIDX++ ))
         if [ "$PKGDATA" ]; then
@@ -769,9 +769,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     for CPRIORITY in ${PRIORITY[@]} ; do
       [ "$PKGDATA" ] && break
 
-      DIR=$(echo "$CPRIORITY" | cut -f1 -d":")
-      PAT=$(echo "$CPRIORITY" | cut -s -f2- -d":")
-      REPOSITORY=$(echo "${DIR}" | sed "s/SLACKPKGPLUS_//")
+      DIR=${CPRIORITY/:*/}                                                #DIR=$(echo "$CPRIORITY" | cut -f1 -d":")
+      [[ "$CPRIORITY" =~ ".*:.*" ]] && PAT=${CPRIORITY/*:/} || PAT=""     #PAT=$(echo "$CPRIORITY" | cut -s -f2- -d":")
+      REPOSITORY=${DIR/SLACKPKGPLUS_/}                                    #REPOSITORY=$(echo "${DIR}" | sed "s/SLACKPKGPLUS_//")
 
         # pass to the next iteration when there are priority filters and the
         # current repository is not accepted by the defined filter rules ...
@@ -780,7 +780,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         continue
       fi
 
-      if echo "$CPRIORITY " | grep -q "[a-zA-Z0-9]\+[:]" ; then
+      #if echo "$CPRIORITY " | grep -q "[a-zA-Z0-9]\+[:]" ; then
+      if [[ "$CPRIORITY" =~ "^[-_[:alnum:]]+[:]" ]] ; then
 
           # [Reminder] ARGUMENT is always a basename, but PAT can be :
           #    1. a basename (ie. gcc, glibc-solibs)
@@ -789,12 +790,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           #
         PKGDATA=""
         LINEIDX=""
-        grep -n "^${DIR} " ${TMPDIR}/pkglist | grep -w "${PAT}" > ${TMPDIR}/packages.matches
-        PKGINFOS=$(grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT} " ${TMPDIR}/packages.matches)
+        #grep -n "^${DIR} " ${TMPDIR}/pkglist | grep -w "${PAT}" > ${TMPDIR}/packages.matches
+        #PKGINFOS=$(grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT} " ${TMPDIR}/packages.matches)
+        PKGINFOS=$(grep -n "^${DIR} " ${TMPDIR}/pkglist | grep 2>/dev/null -w "${PAT}" | grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT} ")
 
         if [ ! -z "$PKGINFOS" ] ; then
-          LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
-          PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
+          LINEIDX=${PKGINFOS/:*/}       #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
+          PKGDATA=( ${PKGINFOS/*:/} )   #PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
         fi
       else
           # $CPRIORITY is of kind "repository" (ie. slackware, extra, patches,...)
