@@ -780,7 +780,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         continue
       fi
 
-      #if echo "$CPRIORITY " | grep -q "[a-zA-Z0-9]\+[:]" ; then
+      #if echo "$CPRIORITY " | grep -q "^[-_[:alnum:]]\+[:]" ; then
       if [[ "$CPRIORITY" =~ ^[-_[:alnum:]]+[:] ]] ; then
 
           # [Reminder] ARGUMENT is always a basename, but PAT can be :
@@ -887,7 +887,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     for i in ${PRIORITY[@]}; do
       DIR="$i"
-      if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
+      if echo "$DIR" | grep -q "^[-_[:alnum:]]\+[:]" ; then
         DIR=$(echo "$i" | cut -f1 -d":")
       fi
 
@@ -1445,7 +1445,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         PRIORITY_FILTER_RULE="${repository} .*"
 
       # You can specify 'slackpkg install reponame:packagename'
-      elif echo "$pref" | grep -q "[a-zA-Z0-9]\+[:][a-zA-Z0-9]\+" ; then
+      elif echo "$pref" | grep -q "^[-_[:alnum:]]\+[:][a-zA-Z0-9]\+" ; then
 
         if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] ; then
           repository=$(echo "$pref" | cut -f1 -d":")
