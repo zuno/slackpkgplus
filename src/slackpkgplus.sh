@@ -770,7 +770,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       [ "$PKGDATA" ] && break
 
       DIR=${CPRIORITY/:*/}                                                #DIR=$(echo "$CPRIORITY" | cut -f1 -d":")
-      [[ "$CPRIORITY" =~ ".*:.*" ]] && PAT=${CPRIORITY/*:/} || PAT=""     #PAT=$(echo "$CPRIORITY" | cut -s -f2- -d":")
+      [[ "$CPRIORITY" =~ .*:.* ]] && PAT=${CPRIORITY/*:/} || PAT=""       #PAT=$(echo "$CPRIORITY" | cut -s -f2- -d":")
       REPOSITORY=${DIR/SLACKPKGPLUS_/}                                    #REPOSITORY=$(echo "${DIR}" | sed "s/SLACKPKGPLUS_//")
 
         # pass to the next iteration when there are priority filters and the
@@ -781,7 +781,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
 
       #if echo "$CPRIORITY " | grep -q "[a-zA-Z0-9]\+[:]" ; then
-      if [[ "$CPRIORITY" =~ "^[-_[:alnum:]]+[:]" ]] ; then
+      if [[ "$CPRIORITY" =~ ^[-_[:alnum:]]+[:] ]] ; then
 
           # [Reminder] ARGUMENT is always a basename, but PAT can be :
           #    1. a basename (ie. gcc, glibc-solibs)
@@ -793,6 +793,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         #grep -n "^${DIR} " ${TMPDIR}/pkglist | grep -w "${PAT}" > ${TMPDIR}/packages.matches
         #PKGINFOS=$(grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT} " ${TMPDIR}/packages.matches)
         PKGINFOS=$(grep -n "^${DIR} " ${TMPDIR}/pkglist | grep 2>/dev/null -w "${PAT}" | grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT} ")
+
+        if [ ! -z "$PKGINFOS" ] ; then
+          LINEIDX=${PKGINFOS/:*/}       #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
+          PKGDATA=( ${PKGINFOS/*:/} )   #PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
+        fi
+      elif [[ "$CPRIORITY" =~ ^[.][*][:] ]] ; then
+        PKGDATA=""
+        LINEIDX=""
+        PKGINFOS=$(grep 2>/dev/null -n -w "${PAT}" ${TMPDIR}/pkglist | grep -m 1 " ${ARGUMENT} ")
 
         if [ ! -z "$PKGINFOS" ] ; then
           LINEIDX=${PKGINFOS/:*/}       #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
@@ -832,7 +841,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
 
       if [ ! -z "$LINEIDX" ] ; then
-          # CPRIORITY is of kind reponame:pattern. The selected package is at line #LINEIDX. To
+          # CPRIORITY is of kind reponame:pattern or .*:pattern. The selected package is at line #LINEIDX. To
           # ensure that slackpkg (ie. core code) will install|upgrade this (exact) package, the
           # line which describes it (ie. in TMPDIR/pkglist) must be moved at line #PRIORITYIDX.
           #
@@ -1499,6 +1508,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
         package=$pref
         AUTOPRIORITY=" $AUTOPRIORITY -e $package "
+
+        if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] ; then
+          PRIORITYLIST=( ${PRIORITYLIST[*]} ".*:${package}" )
+        fi
       fi
 
       if [ "$CMD" == "remove" ];then
