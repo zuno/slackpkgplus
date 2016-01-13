@@ -507,9 +507,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     grep -vE "(^#|^[[:blank:]]*$)" ${CONF}/blacklist > ${TMPDIR}/blacklist
     if echo $CMD | grep -q install ; then
-      ls -1 $ROOT/var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
+      ( cd $ROOT ; ls -1 ./var/log/packages/* ) | awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
     else
-      ls -1 $ROOT/var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk | applyblacklist > ${TMPDIR}/tmplist
+      ( cd $ROOT ; ls -1 ./var/log/packages/* ) | awk -f /usr/libexec/slackpkg/pkglist.awk | applyblacklist > ${TMPDIR}/tmplist
     fi
     cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
 
