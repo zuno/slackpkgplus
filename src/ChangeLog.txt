@@ -2,6 +2,8 @@ Version 1.7.a4 - 12/Jan/2016
   - Improved performance
   - Fixed search that may fails to detect repository in certain conditions
   - slackpkg search shows the repository name for the official repository
+  - Fixed a bug in gpg check when a repository name contains a '-' character
+  - Fixed a bug in slackpkg upgrade when used with $ROOT
 
 Version 1.7.a3 - 10/Jan/2016
   - Do not show notices when running slackpkg update or slackpkg check-updates
