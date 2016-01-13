@@ -632,7 +632,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         REPO=slackware
         [ -e "${WORKDIR}/gpg/GPG-KEY-slackware64.gpg" ]&&REPO=slackware64
       elif [ ${FILENAME:0:13} == "CHECKSUMS.md5" ];then
-        REPO=$(echo $FILENAME|cut -f2 -d-|sed 's/\.gz$//')
+        REPO=$(echo $FILENAME|cut -f2- -d-|sed 's/\.gz$//')
       else
         REPO=$(echo $1|sed -r -e "s,^$TEMP,/," -e "s,/\./,/,g" -e "s,//,/,g" -e "s,^/,," -e "s,/.*$,," -e "s,SLACKPKGPLUS_,,")
       fi
