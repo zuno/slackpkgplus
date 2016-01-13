@@ -1,14 +1,19 @@
-Version 1.7.a3 - 10/Jan/2015
+Version 1.7.a4 - 12/Jan/2016
+  - Improved performance
+  - Fixed search that may fails to detect repository in certain conditions
+  - slackpkg search shows the repository name for the official repository
+
+Version 1.7.a3 - 10/Jan/2016
   - Do not show notices when running slackpkg update or slackpkg check-updates
     (thanks to yars068)
   - Fixed a bug on x86 hosts when a repository contains also x86_64 packages
 
-Version 1.7.a2 - 06/Jan/2015
+Version 1.7.a2 - 06/Jan/2016
   - Remember user to (re)run 'slackpkg update gpg'
   - Fixed Download Only when upgrade base packages (aaa_base, pkgtools...)
   - Quick output on Cached Download
 
-Version 1.7.a1 - 04/Jan/2015
+Version 1.7.a1 - 04/Jan/2016
   It's the time for a stable version of slackpkg+. Currently it is just a
   development version to fix older feature and add/test new. I'll need more
   test possible to make it bugfree ;).

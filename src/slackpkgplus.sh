@@ -887,8 +887,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     for i in ${PRIORITY[@]}; do
       DIR="$i"
-      if [[ "$DIR" =~ ^[-_[:alnum:]]+[:] ]] ; then 	# was  if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
-	DIR=${DIR/:*/}					# was DIR=$(echo "$i" | cut -f1 -d":")
+      if [[ "$DIR" =~ ^[-_[:alnum:]]+[:] ]] ; then   # was  if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
+        DIR=${DIR/:*/}                               # was DIR=$(echo "$i" | cut -f1 -d":")
       fi
 
       if [ "$CMD" == "file-search" ] ; then
@@ -917,13 +917,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
 
       while read PKG ; do
-	PKGDATA=( $PKG ) # PKGDATA([0]=DIR,[1]=BASENMAE,[5]=FULLNAME)
+        PKGDATA=( $PKG ) # PKGDATA([0]=DIR,[1]=BASENMAE,[5]=FULLNAME)
 
-	PKGDIR=${PKGDATA[0]} 		# was PKGDIR=$(echo "$PKG" | cut -f1 -d" ")
-	PKGBASENAME=${PKGDATA[1]}	# was PKGBASENAME=$(echo "$PKG" | cut -f2 -d" ")
-	PKGFULLNAME=${PKGDATA[5]}	# was PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
+        PKGDIR=${PKGDATA[0]}        # was PKGDIR=$(echo "$PKG" | cut -f1 -d" ")
+        PKGBASENAME=${PKGDATA[1]}   # was PKGBASENAME=$(echo "$PKG" | cut -f2 -d" ")
+        PKGFULLNAME=${PKGDATA[5]}   # was PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
 
-	if [[ "$PKGDIR" =~ ^SLACKPKGPLUS_ ]] ; then # was if echo "$PKGDIR" | grep -q "SLACKPKGPLUS_" ; then
+        if [[ "$PKGDIR" =~ ^SLACKPKGPLUS_ ]] ; then # was if echo "$PKGDIR" | grep -q "SLACKPKGPLUS_" ; then
           grep -q "^repository:${PKGDIR}:basename:${PKGBASENAME}:" $PKGLIST && continue
         else
           grep -q ":basename:${PKGBASENAME}:" $PKGLIST  && continue
@@ -1178,7 +1178,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
 
-  SPKGPLUS_VERSION="1.7.a3"
+  SPKGPLUS_VERSION="1.7.a4"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
