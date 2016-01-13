@@ -887,8 +887,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     for i in ${PRIORITY[@]}; do
       DIR="$i"
-      if echo "$DIR" | grep -q "^[-_[:alnum:]]\+[:]" ; then
-        DIR=$(echo "$i" | cut -f1 -d":")
+      if [[ "$DIR" =~ ^[-_[:alnum:]]+[:] ]] ; then 	# was  if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
+	DIR=${DIR/:*/}					# was DIR=$(echo "$i" | cut -f1 -d":")
       fi
 
       if [ "$CMD" == "file-search" ] ; then
@@ -917,11 +917,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
 
       while read PKG ; do
-        PKGDIR=$(echo "$PKG" | cut -f1 -d" ")
-        PKGBASENAME=$(echo "$PKG" | cut -f2 -d" ")
-        PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
+	PKGDATA=( $PKG ) # PKGDATA([0]=DIR,[1]=BASENMAE,[5]=FULLNAME)
 
-        if echo "$PKGDIR" | grep -q "SLACKPKGPLUS_" ; then
+	PKGDIR=${PKGDATA[0]} 		# was PKGDIR=$(echo "$PKG" | cut -f1 -d" ")
+	PKGBASENAME=${PKGDATA[1]}	# was PKGBASENAME=$(echo "$PKG" | cut -f2 -d" ")
+	PKGFULLNAME=${PKGDATA[5]}	# was PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
+
+	if [[ "$PKGDIR" =~ ^SLACKPKGPLUS_ ]] ; then # was if echo "$PKGDIR" | grep -q "SLACKPKGPLUS_" ; then
           grep -q "^repository:${PKGDIR}:basename:${PKGBASENAME}:" $PKGLIST && continue
         else
           grep -q ":basename:${PKGBASENAME}:" $PKGLIST  && continue
@@ -955,22 +957,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local PNAME
 
     printf "[ %-16s ] [ %-24s ] [ %-40s ]\n" "Status" "Repository" "Package"
+
+    INSTPKGS="$(ls -f $ROOT/var/log/packages)"
+
     for i in $1; do
-      REPO=$(echo "$i" | cut -f1 -d":")
-      PNAME=$(echo "$i" | cut -f2- -d":")
+      REPO=${i/:*/} #$(echo "$i" | cut -f1 -d":")
+      PNAME=${i/*:/} #PNAME=$(echo "$i" | cut -f2- -d":")
 
-      if echo "$REPO" | grep -q "SLACKPKGPLUS_" ; then
-        REPO=$(echo "$REPO" | cut -f2- -d"_")
-      else
-        REPO=""
-      fi
-
-      if [ -z "$REPO" ] && [ "$BASENAME" = "$(cutpkg ${PNAME})" ]; then
-        continue
-      fi
+      REPO=${REPO/SLACKPKGPLUS_/}     #REPO=$(echo "$REPO" | cut -f2- -d"_")
 
       # BASENAME is base package name
-      BASENAME="$(cutpkg ${PNAME})"
+      BASENAME=${PNAME%-*-*-*}        #BASENAME="$(cutpkg ${PNAME})"
 
       # RAWNAME is Latest available version
       RAWNAME="${PNAME/%.t[blxg]z/}"
@@ -981,8 +978,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       # First is the package already installed?
       # Amazing what a little sleep will do
       # exclusion is so much nicer :)
-      INSTPKG=$(ls -1 $ROOT/var/log/packages | grep -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$")
-      #INSTPKG=$(ls -1 $ROOT/var/log/packages | grep -e "^${BASENAME}-[^-]\+-\(${ARCH}\|fw\|noarch\)-[^-]\+")
+      INSTPKG=$(echo "$INSTPKGS"|grep "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$")
 
       # INSTPKG is local version
       if [ ! "${INSTPKG}" = "" ]; then
