@@ -17,4 +17,4 @@
 #kdei
 #
 #do not upgrade packages installed with sbopkg; use it instead
-#_SBo
+#[0-9]+_SBo

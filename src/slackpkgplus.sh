@@ -1032,7 +1032,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ "$GREYLIST" == "off" ];then
         >$TMPDIR/greylist
       fi
-      grep -Ew -f $TMPDIR/greylist $TMPDIR/pkglist|awk '{print $2}' >$TMPDIR/unchecklist
       rm -f $TMPDIR/dialog.tmp
       
       if [ "$2" = "upgrade" ]; then
@@ -1046,7 +1045,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           PKGVER=$(echo $i|rev|cut -f3 -d-|rev)
           ALLFOUND=$(echo $(grep " ${BASENAME} " $TMPDIR/pkglist|sed -r -e 's/SLACKPKGPLUS_//' -e 's/^([^ ]*) [^ ]* ([^ ]*) [^ ]* ([^ ]*) .*/\2-\3(\1) ,/')|sed 's/,$//')
 
-          grep -q "^$(echo $i|rev|cut -f4- -d-|rev)$" $TMPDIR/unchecklist && TMPONOFF="off"
+          grep -m1 " ${BASENAME} " $TMPDIR/pkglist|grep -q -Ew -f $TMPDIR/greylist && TMPONOFF="off"
           echo "$REPOPOSFULL $i \"$REPOPOS\" $TMPONOFF \"installed: $PKGFOUND  -->  available: $ALLFOUND\"" >>$TMPDIR/dialog.tmp.1
         done
 
@@ -1068,7 +1067,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         for i in $1; do
           TMPONOFF=$ONOFF
           REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-          grep -q "^$(echo $i|rev|cut -f4- -d-|rev)$" $TMPDIR/unchecklist && TMPONOFF="off"
+          grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist| grep -q -Ew -f $TMPDIR/greylist && TMPONOFF="off"
           echo "$i \"$REPOPOS\" $TMPONOFF" >>$TMPDIR/dialog.tmp
         done
         HINT=""
