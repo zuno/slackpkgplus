@@ -1,3 +1,8 @@
+Version 1.7.a5 - 16/Jan/2016
+  - Improved greylist. Also, now it allow to match the name in installed packages
+  - Fixed download GPG-KEY; it did not show the correct repository for gpg key
+  - Fixed previous patch for $ROOT problem (did broke 'slackpkg search command')
+
 Version 1.7.a4 - 12/Jan/2016
   - Improved performance
   - Fixed search that may fails to detect repository in certain conditions
