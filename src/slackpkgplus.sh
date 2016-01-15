@@ -358,6 +358,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       CHECKSUMS.md5|CHECKSUMS.md5.asc) TOCACHE=1 ; CURREPO=$(basename $1|sed -r -e "s/CHECKSUMS.md5-?//" -e "s/\.asc//") ;;
       MANIFEST.bz2|PACKAGES.TXT) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/-$SRCBASE//" -e "s/SLACKPKGPLUS_//");;
       ChangeLog.txt) TOCACHE=0 ;;
+      GPG-KEY) TOCACHE=0 ; CURREPO=${1/*gpgkey-tmp-/};;
       FILELIST.TXT) TOCACHE=1 ;;
     esac
     if [ -z "$CURREPO" ]; then
@@ -588,17 +589,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          cp -v $URLFILE $2-tmp
+          cp -v $URLFILE $2-tmp-$PREPO
         elif echo $URLFILE |grep -q "^dir:/";then
           continue
         else
           echo
-          $DOWNLOADER $2-tmp ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
+          $DOWNLOADER $2-tmp-$PREPO ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
         fi
         if [ $? -eq 0 ];then
-          gpg $2-tmp
-          gpg --import $2-tmp
-          gpg --output "${WORKDIR}/gpg/GPG-KEY-${PREPO}.gpg" --dearmor $2-tmp
+          gpg $2-tmp-$PREPO
+          gpg --import $2-tmp-$PREPO
+          gpg --output "${WORKDIR}/gpg/GPG-KEY-${PREPO}.gpg" --dearmor $2-tmp-$PREPO
         else
           echo
           echo "                   !!! W A R N I N G !!!"
@@ -609,7 +610,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           echo
           sleep 5
         fi
-        rm $2-tmp
+        rm $2-tmp-$PREPO
         echo
       done
     fi
