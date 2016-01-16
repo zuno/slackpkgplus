@@ -1363,6 +1363,18 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     NEWINPUTLIST=""
     PRIORITYLIST=""
 
+      # The priorities in PRIORITYLIST_SX :
+      #   * are *all* of kind ".*:<pattern>"
+      #   * are defined to handle cases where a pattern, with version and/or a build number
+      #     but without any repository, is passed to install|upgrade (ex: install basename-1.0.1)
+      #
+      # Since there's no way to distinguish patterns with version/build number to other, priorities
+      # of kind ".*:<pattern>" are also generated for patterns without version/build number. As a
+      # consequence, these priorities could interfer with other defined priorities (1). To prevent
+      # this, these priorities are handled after all other priorities.
+      #
+    PRIORITYLIST_SX=""
+
     for pref in $INPUTLIST ; do
       PRIORITY_FILTER_RULE=""
 
@@ -1506,7 +1518,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         AUTOPRIORITY=" $AUTOPRIORITY -e $package "
 
         if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] ; then
-          PRIORITYLIST=( ${PRIORITYLIST[*]} ".*:${package}" )
+          PRIORITYLIST_SX=( ${PRIORITYLIST_SX[*]} ".*:${package}" )
         fi
       fi
 
@@ -1523,8 +1535,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     INPUTLIST=$NEWINPUTLIST
 
-    if [ ! -z "$PRIORITYLIST" ] ; then
-      NEWPRIORITY=( ${PRIORITYLIST[*]} ${PRIORITY[*]} )
+    if [ ! -z "$PRIORITYLIST" ] || [ ! -z "$PRIORITYLIST_SX" ] ; then
+        # PRIORITYLIST_SX includes priority of kind .*:pattern. This kind of priority must be handled
+        # after all others, and are, by consequence, added at the end.
+        #
+      NEWPRIORITY=( ${PRIORITYLIST[*]} ${PRIORITY[*]} ${PRIORITYLIST_SX[*]} )
       unset PRIORITY
 
       # -- This is to avoid duplicated priority rules in the variable
