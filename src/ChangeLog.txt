@@ -1,3 +1,8 @@
+Version 1.6.1p1 - 16/Jan/2015
+  - Bugfix: greylist did not work properly
+  - Fixed search that may fails to detect repository in certain conditions.
+  - Fixed a bug in slackpkg upgrade when used with $ROOT
+
 Version 1.6.1 - 20/Dec/2015
   - Added DOWNLOADONLY to just download packages without installing it
 
