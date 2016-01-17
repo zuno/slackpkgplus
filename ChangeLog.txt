@@ -1,3 +1,9 @@
+Version 1.7.a6 - 17/Jan/2016
+  - 'slackpkg search' if finds more duplicated packages with different
+    versions from many repository, now show all, marking it as "masked" the
+    packages that will not be installed due the priority
+  - Fixed a regression that drop PKGS_PRIORITY function in slackpkg upgrade
+
 Version 1.7.a5 - 16/Jan/2016
   - Improved greylist. Also, now it allow to match the name in installed packages
   - Fixed download GPG-KEY; it did not show the correct repository for gpg key
