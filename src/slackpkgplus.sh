@@ -881,7 +881,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # -- PKGLIST:
     #      temporary file used to store data about packages. It uses
     #      the following format:
-    #        repository:<repository_name>:basename:<package_basename>:
+    #        repo:<repository_name>:bname:<package_basename>:ver:<package_version>:fname:<package_fullname>:
     #
     PKGLIST=$(tempfile --directory=$TMPDIR)
     PKGINFOS=$(tempfile --directory=$TMPDIR)
@@ -914,23 +914,33 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           }' l_dir=${DIR} > $PKGINFOS
 
       else # -- CMD==search
-        grep ${GREPOPTS} "^${DIR}.*${SEARCHSTR}" "${TMPDIR}/pkglist" > $PKGINFOS
+        grep ${GREPOPTS} "^${DIR} \([^ ]*${SEARCHSTR}\)\|\(.*/${SEARCHSTR}/\)\|\(.*/SLACKPKGPLUS_${SEARCHSTR}\)" "${TMPDIR}/pkglist" > $PKGINFOS
       fi
 
-      while read PKG ; do
-        PKGDATA=( $PKG ) # PKGDATA([0]=DIR,[1]=BASENMAE,[5]=FULLNAME)
+      while read PKGDIR PKGBASENAME PKGVER PKGARCH PKGBUILD PKGFULLNAME PKGPATH PKGEXT ; do
 
-        PKGDIR=${PKGDATA[0]}        # was PKGDIR=$(echo "$PKG" | cut -f1 -d" ")
-        PKGBASENAME=${PKGDATA[1]}   # was PKGBASENAME=$(echo "$PKG" | cut -f2 -d" ")
-        PKGFULLNAME=${PKGDATA[5]}   # was PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
+        # does nothing when the package has been handled ...
+        grep -q "^repo:${PKGDIR}:bname:${PKGBASENAME}:ver:${PKGVER}:fname:${PKGFULLNAME}:" $PKGLIST && continue
 
-        if [[ "$PKGDIR" =~ ^SLACKPKGPLUS_ ]] ; then # was if echo "$PKGDIR" | grep -q "SLACKPKGPLUS_" ; then
-          grep -q "^repository:${PKGDIR}:basename:${PKGBASENAME}:" $PKGLIST && continue
+        # When a package P' with the same basename has been handled before the current package, this means
+        # the package P' has precedence over P.
+
+        if grep -q ":bname:${PKGBASENAME}:" $PKGLIST ; then
+
+           # if the current package P is installed, this means the previous P' will be
+           # proposed as an upgrade to P. In this case, the loop must continue without
+           # any other action...
+          grep -q " $PKGFULLNAME " ${TMPDIR}/tmplist && continue
+
+            # The current package P is not installed. In this case P must be shown as
+            # being uninstalled and masked.
+          LIST="$LIST MASKED_${PKGDIR}:${PKGFULLNAME}"
         else
-          grep -q ":basename:${PKGBASENAME}:" $PKGLIST  && continue
+          LIST="$LIST ${PKGDIR}:${PKGFULLNAME}"
         fi
-        LIST="$LIST ${PKGDIR}:${PKGFULLNAME}"
-        echo "repository:${PKGDIR}:basename:${PKGBASENAME}:" >> $PKGLIST
+
+        echo "repo:${PKGDIR}:bname:${PKGBASENAME}:ver:${PKGVER}:fname:${PKGFULLNAME}:" >> $PKGLIST
+
       done < $PKGINFOS
     done
     rm -f $PKGLIST $PKGINFOS
@@ -976,10 +986,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       # Default is uninstalled
       STATUS="uninstalled"
 
-      # First is the package already installed?
-      # Amazing what a little sleep will do
-      # exclusion is so much nicer :)
-      INSTPKG=$(echo "$INSTPKGS"|grep "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$")
+      if [[ $REPO =~ ^MASKED_.* ]] ; then
+        REPO=${REPO/MASKED_/}
+        STATUS="uninstalled(masked)"
+        INSTPKG=""
+      else
+        # First is the package already installed?
+        # Amazing what a little sleep will do
+        # exclusion is so much nicer :)
+        INSTPKG=$(echo "$INSTPKGS"|grep "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$")
+      fi
+
 
       # INSTPKG is local version
       if [ ! "${INSTPKG}" = "" ]; then
@@ -988,24 +1005,24 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         # that match the basename ${BASENAME} must be handled
 
         for CINSTPKG in ${INSTPKG} ; do
-          CBASENAME=$(echo "${CINSTPKG}" | rev | cut -f4- -d- | rev)
+          CBASENAME=${CINSTPKG%-*-*-*}
 
           if [ "${CBASENAME}" == "${BASENAME}" ] ; then
 
             # If installed is it uptodate?
             if [ "${CINSTPKG}" = "${RAWNAME}" ]; then
               STATUS=" installed "
-              printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$CINSTPKG"
+              printf "  %-20s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$CINSTPKG"
             else
               STATUS="upgrade"
-              printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$CINSTPKG --> ${RAWNAME}"
+              printf "  %-20s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$CINSTPKG --> ${RAWNAME}"
             fi
           fi
         done
       else
-        printf "  %-16s     %-24s     %-40s  \n" "$STATUS" "$REPO" "${RAWNAME}"
+        printf "  %-20s     %-24s     %-40s  \n" "$STATUS" "$REPO" "${RAWNAME}"
       fi
-    done
+    done|sort
   } # END function searchlistEX()
 
 
