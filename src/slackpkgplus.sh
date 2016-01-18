@@ -758,7 +758,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ ! -z "$PKGINFOS" ] ; then
         LINEIDX=${$PKGINFOS/:*/}      #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
         PKGDATA=( ${PKGINFOS/*:/} )   #PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
-        sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
+        mv ${TMPDIR}/pkglist ${TMPDIR}/pkglist.old
+        sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist.old > ${TMPDIR}/pkglist
         (( PRIORITYIDX++ ))
         if [ "$PKGDATA" ]; then
           NAME=${PKGDATA[1]}
@@ -852,7 +853,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           # R1:P is before R2:P in pkglist, and the user issue install|upgrade R2:P, slackpkg
           # will install R1:P instead.
           #
-        sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist
+        mv ${TMPDIR}/pkglist ${TMPDIR}/pkglist.old
+        sed  --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist.old > ${TMPDIR}/pkglist
         (( PRIORITYIDX++ ))
       fi
     done
