@@ -1,40 +1,37 @@
-Version 1.7.a6 - 17/Jan/2016
-  - 'slackpkg search' if finds more duplicated packages with different
-    versions from many repository, now show all, marking it as "masked" the
-    packages that will not be installed due the priority
-  - Fixed a regression that drop PKGS_PRIORITY function in slackpkg upgrade
-
-Version 1.7.a5 - 16/Jan/2016
-  - Improved greylist. Also, now it allow to match the name in installed packages
-  - Fixed download GPG-KEY; it did not show the correct repository for gpg key
-  - Fixed previous patch for $ROOT problem (did broke 'slackpkg search command')
-
-Version 1.7.a4 - 12/Jan/2016
-  - Improved performance
-  - Fixed search that may fails to detect repository in certain conditions
-  - slackpkg search shows the repository name for the official repository
-  - Fixed a bug in gpg check when a repository name contains a '-' character
-  - Fixed a bug in slackpkg upgrade when used with $ROOT
-
-Version 1.7.a3 - 10/Jan/2016
-  - Do not show notices when running slackpkg update or slackpkg check-updates
-    (thanks to yars068)
+Version 1.7.b1 - 18/Jan/2016
+  Well, I think that we can mark that version as Beta.  It does not contains
+  new features, but it was done a large work of bugfixes and improvements.
+  A special thanks is for phenixia2003 and yars068 for code contributing and
+  for many other for ideas and testing. It's the time for the tests, to find
+  for bugs or someother improvement.
+  - Improved greylist. Now it allow to match the name in installed packages,
+    so it also impact remove and clean-system actions.
+  - Improved performance searching packages and preparing the package list in
+    large install/upgrade.
+  - Improved 'slackpkg search' that now shows all packages matching from all
+    repositories, not just that in priority; it will mark as 'masked' the
+    packages that would not selected in install/upgrade mode. Also always show
+    repository source for official packages.
+  - Quick output for Cached Download..
+  - Does not show notices to remember to run 'slackpkg update' when running
+    slackpkg check-updates.
+  - Fixed Download Only when upgrade base packages (aaa_base, pkgtools...).
+  - Fixed a bug in slackpkg upgrade when used with $ROOT.
+  - Repositories now can contains letters, numbers, minus and underscore
   - Fixed a bug on x86 hosts when a repository contains also x86_64 packages
-
-Version 1.7.a2 - 06/Jan/2016
-  - Remember user to (re)run 'slackpkg update gpg'
-  - Fixed Download Only when upgrade base packages (aaa_base, pkgtools...)
-  - Quick output on Cached Download
+  - Some fix in Strict GPG Check.
 
 Version 1.7.a1 - 04/Jan/2016
   It's the time for a stable version of slackpkg+. Currently it is just a
   development version to fix older feature and add/test new. I'll need more
   test possible to make it bugfree ;).
   - Code reordering; now slackpkg+ is only slackpkgplus.sh
+  - BugFix: slackpkg did give 'grep: write error' when running with "sudo su -".
   - Added repositories; improved checkrepos.sh
-  - BugFix: slackpkg give 'grep: write error' when running with "sudo su -"
-  - SecurityFix: Strict GPG Check. Packages MUST to be signed with root-GPG-KEY.
-    If can disable it via CHECKGPG in slackpkgplus.sh; see README
+  - Strict GPG Check: Packages and metadata in one repository should be signed
+    with just the root GPG-KEY. This improve security. Some repository might
+    want to contains eterogeneous package. In this case, set STRICTGPG=off.
+    See README.
   - New repository for slackpkg+ development version
 
 Version 1.6.1 - 20/Dec/2015

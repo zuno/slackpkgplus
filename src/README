@@ -76,6 +76,8 @@ The MIRRORPLUS array defines all mirrors. It accepts these protocols:
    Note that 'slackpkg update' ignores these repositories. Every time you run
    slackpkg, it reads the directory contents.
 
+As mirror name, slackpkg+ accepts numbers, letters, minus and underscore, but
+you are encouraged to not use the minus character.
 
 -----
 
@@ -529,6 +531,10 @@ To use a similar repository you may set STRICTGPG=off
 Note that sometime you may need to import manually the GPG-KEY with the command
 # gpg --import GPG-KEY
 
+Note: after upgrading from slackpkg+ <= 1.7, you must run slackpkg update gpg.
+Also you need it everytime you add or rename a reporitory in
+slackpkgplus.conf.
+
 -----
 
 INSTALL LOG
@@ -553,6 +559,17 @@ CHECK-UPDATE IMPROVEMENT
 the command "slackpkg check-updates" reports the repositories which have been changed since
 the last update. For more details and some suggests how to use it in crontab see:
 http://www.linuxquestions.org/questions/showthread.php?p=5146591
+
+-----
+
+SEARCH FUNCTION IMPROVEMENT
+
+The command "slackpkg search ..." when finds two packages with the same name
+but with different versions, it will show all so you know all repositories
+that contains that package, not just the first in priority list.
+It will mark all versions not in priority (i.e. that install/upgrade will not
+show) as 'masked'. To install that packages you must explicitly specify the
+repository name with "slackpkg install/upgrade repository:package".
 
 -----
 

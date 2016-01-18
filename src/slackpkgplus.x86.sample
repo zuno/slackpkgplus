@@ -65,7 +65,7 @@ STRICTGPG=on
 #PKGS_PRIORITY=( ktown )
 # and DO NOT MISS to read special instruction on /usr/doc/slackpkg+-*/repositories.txt
 
-# Otherwise you can try to upgrade a package from a repository that contains a package with the 
+# Otherwise you can try to upgrade a package from a repository that contains a package with the
 # same tag of the already installed package. Tipically that means to upgrade a package from the
 # same author of the already installed package.
 # Note that this method may not works properly where two repositories contains a package with the
