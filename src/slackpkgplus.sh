@@ -357,7 +357,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     case $SRCBASE in
       CHECKSUMS.md5|CHECKSUMS.md5.asc) TOCACHE=1 ; CURREPO=$(basename $1|sed -r -e "s/CHECKSUMS.md5-?//" -e "s/\.asc//") ;;
       MANIFEST.bz2|PACKAGES.TXT) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/-$SRCBASE//" -e "s/SLACKPKGPLUS_//");;
-      ChangeLog.txt) TOCACHE=0 ;;
+      ChangeLog.txt) TOCACHE=1 ;;
       GPG-KEY) TOCACHE=0 ; CURREPO=${1/*gpgkey-tmp-/};;
       FILELIST.TXT) TOCACHE=1 ;;
     esac
@@ -383,15 +383,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           return $?
         fi
         echo -n ". " # ... .. -> cache older or corrupted
-        rm -f $CACHEDIR/$CACHEFILE $CACHEDIR/$CACHEFILE.head
+        rm -f $CACHEDIR/$CACHEFILE $CACHEDIR/$CACHEFILE.head 2>/dev/null
       fi
       echo " Downloading... " # ... -> needed  # ... .. -> re-needed
       $CACHEDOWNLOADER $1 $SRCURL
       ERR=$?
       echo
       if [ "$(ls -l $1 2>/dev/null|awk '{print $5}')" == "$(grep Content-Length: $TMPDIR/cache.head|awk '{print $2}')" ];then
-        cp $1 $CACHEDIR/$CACHEFILE
-        cp $TMPDIR/cache.head $CACHEDIR/$CACHEFILE.head
+        cp $1 $CACHEDIR/$CACHEFILE 2>/dev/null
+        cp $TMPDIR/cache.head $CACHEDIR/$CACHEFILE.head 2>/dev/null
       fi
     else
       echo " Downloading..." # .. -> tocache=0
@@ -1186,6 +1186,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   ### =========================== MAIN ============================ ###
 
+  export LC_ALL=C
+
   if [ "$DOWNLOADONLY" == "on" ];then
     DELALL=off
     DOWNLOAD_ALL=on
@@ -1342,7 +1344,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
   fi
 
-  if [ "$CMD" == "update" -a "$CACHEUPDATE" == "on" ];then
+  if [ "$CACHEUPDATE" == "on" ]&&[ "$CMD" == "update" -o "$CMD" == "check-updates" ];then
     CACHEDOWNLOADER=$DOWNLOADER
     CACHEDIR=$WORKDIR/cache
     mkdir -p $CACHEDIR
@@ -1615,8 +1617,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     echo -n "" > ~/.slackpkg/updated-repos.txt
 
     UPDATES=false
-
-    if ! checkchangelog 1>/dev/null 2>/dev/null; then
+    if [ $VERBOSE -eq 3 ];then
+      checkchangelog
+    else
+      checkchangelog >/dev/null 2>&1
+    fi
+    if [ $? -ne 0 ]; then
     
         # -- Note:
         #     checkchangelog() download the ChangeLog.txt and stores it
