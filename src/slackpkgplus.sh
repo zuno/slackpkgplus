@@ -880,6 +880,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     [ "$SENSITIVE_SEARCH" = "off" ] && GREPOPTS="--ignore-case"
 
+    if [[ ! ${SPINNING} = "off" ]]; then
+       echo -n "Searching... "
+       spinning ${TMPDIR}/waiting &
+    fi
     # -- PKGLIST:
     #      temporary file used to store data about packages. It uses
     #      the following format:
@@ -1617,6 +1621,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     echo -n "" > ~/.slackpkg/updated-repos.txt
 
     UPDATES=false
+
+    touch ${TMPDIR}/waiting
+    if [[ ! ${SPINNING} = "off" ]]; then
+      echo -n "Searching for updates... "
+      spinning ${TMPDIR}/waiting &
+    fi
+
     if [ $VERBOSE -eq 3 ];then
       checkchangelog
     else
@@ -1689,6 +1700,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       touch $WORKDIR/pkglist
     fi
 
+    rm -f ${TMPDIR}/waiting
     cleanup
   fi # "$CMD" == "check-updates"
 
