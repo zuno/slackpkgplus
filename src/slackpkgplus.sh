@@ -77,6 +77,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   fi
 
   function cleanup(){	
+    rm -f ${TMPDIR}/waiting
     if [ "$CMD" == "update" ];then
       if [ "$ANSWER" != "Y" ] && [ "$ANSWER" != "y" ]; then
 	touch $WORKDIR/pkglist
@@ -86,7 +87,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ "$DELALL" = "on" ] && [ "$NAMEPKG" != "" ]; then
       rm $CACHEPATH/$NAMEPKG &>/dev/null
     fi
-    wait 
     if [ $VERBOSE -gt 2 ];then
       echo "The temp directory $TMPDIR will NOT be removed!" >>$TMPDIR/info.log
       echo
