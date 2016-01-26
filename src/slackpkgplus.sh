@@ -562,9 +562,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         PKGFULLNAME=$(echo "$PKG" | cut -f6 -d" ")
 
         if echo "$PKGDIR" | grep -q "SLACKPKGPLUS_" ; then
-          grep -q "^repository:${PKGDIR}:basename:${PKGBASENAME}:" $PKGLIST && continue
+          grep ${GREPOPTS} -q "^repository:${PKGDIR}:basename:${PKGBASENAME}:" $PKGLIST && continue
         else
-          grep -q ":basename:${PKGBASENAME}:" $PKGLIST  && continue
+          grep ${GREPOPTS} -q ":basename:${PKGBASENAME}:" $PKGLIST  && continue
         fi
         LIST="$LIST ${PKGDIR}:${PKGFULLNAME}"
         echo "repository:${PKGDIR}:basename:${PKGBASENAME}:" >> $PKGLIST
