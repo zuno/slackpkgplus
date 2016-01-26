@@ -118,16 +118,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Override cleanup() to improve log messages and debug functions
     #
   function cleanup(){
+    rm -f ${TMPDIR}/waiting
     if [ "$CMD" == "update" ];then
       if [ "$ANSWER" != "Y" ] && [ "$ANSWER" != "y" ]; then
         touch $WORKDIR/pkglist
       fi
     fi
+    [ "$TTYREDIRECTION" ] && exec 1>&3 2>&4
     [ "$SPINNING" = "off" ] || tput cnorm
     if [ "$DELALL" = "on" ] && [ "$NAMEPKG" != "" ]; then
       rm $CACHEPATH/$NAMEPKG &>/dev/null
     fi
-    wait
     if [ $VERBOSE -gt 2 ];then
       echo "The temp directory $TMPDIR will NOT be removed!" >>$TMPDIR/info.log
       echo
@@ -877,6 +878,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
 
     touch ${TMPDIR}/waiting
+    echo -n "Looking for $PATTERN in package list. Please wait... "
+    [ "$SPINNING" = "off" ] || spinning ${TMPDIR}/waiting &
 
     [ "$SENSITIVE_SEARCH" = "off" ] && GREPOPTS="--ignore-case"
 
@@ -945,11 +948,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
       done < $PKGINFOS
     done
+    rm ${TMPDIR}/waiting
     rm -f $PKGLIST $PKGINFOS
 
     LIST=$(echo -e $LIST | tr \  "\n" | uniq )
-
-    rm ${TMPDIR}/waiting
 
     echo -e "DONE\n"
   } # END function searchPackages()
@@ -1617,10 +1619,21 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     echo -n "" > ~/.slackpkg/updated-repos.txt
 
     UPDATES=false
+
+    touch ${TMPDIR}/waiting
+
     if [ $VERBOSE -eq 3 ];then
       checkchangelog
     else
+      if [[ ! ${SPINNING} = "off" ]]; then
+        echo -n "Searching for updates... "
+        spinning ${TMPDIR}/waiting &
+      fi
+      exec 3>&1 4>&2
+      TTYREDIRECTION=1
       checkchangelog >/dev/null 2>&1
+      TTYREDIRECTION=""
+      exec 1>&3 2>&4
     fi
     if [ $? -ne 0 ]; then
     
@@ -1666,6 +1679,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               
       [ -s "${TMPDIR}/updated-repos.txt" ] && UPDATES=true
     fi
+    rm -f ${TMPDIR}/waiting
     
     if $UPDATES ; then
       echo "News on ChangeLog.txt"
