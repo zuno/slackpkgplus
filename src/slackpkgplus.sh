@@ -756,7 +756,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                                               )| grep -f - -n -m 1 ${TMPDIR}/pkglist
                 )
       if [ ! -z "$PKGINFOS" ] ; then
-        LINEIDX=${$PKGINFOS/:*/}      #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
+        LINEIDX=${PKGINFOS/:*/}       #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
         PKGDATA=( ${PKGINFOS/*:/} )   #PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
         mv ${TMPDIR}/pkglist ${TMPDIR}/pkglist.old
         sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist.old > ${TMPDIR}/pkglist
