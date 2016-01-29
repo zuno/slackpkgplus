@@ -1,3 +1,13 @@
+Version 1.7.b2 - 29/Jan/2016
+  - Avoid slackpkg to corrupt the slackware database if there are some manual
+    upgrade in progress.
+  - Fixed a regression in TAG_PRIORITY.
+  - Added spinning in check-updates.
+  - Fixed bad trap CTRL+C when spinning is on.
+  - Fixed a regression in SENSITIVE_SEARCH.
+  - Cached Download works with check-updates too.
+  - check-updates shows downloader output if VERBOSE=3
+
 Version 1.7.b1 - 18/Jan/2016
   Well, I think that we can mark that version as Beta.  It does not contains
   new features, but it was done a large work of bugfixes and improvements.

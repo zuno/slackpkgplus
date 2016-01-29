@@ -1213,7 +1213,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   fi
 
 
-  SPKGPLUS_VERSION="1.7.b1"
+  SPKGPLUS_VERSION="1.7.b2"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
