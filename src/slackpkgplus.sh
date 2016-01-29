@@ -1200,6 +1200,18 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   fi
 
 
+  if [ "$CMD" == "upgrade" -o "$CMD" == "upgrade-all" ]&&ls $ROOT/var/log/packages/*:* >/dev/null 2>&1;then
+    echo "FATAL! There is some problem in packages database"
+    echo "       or maybe an installation or upgrade in progress:"
+    echo
+    echo "   "$(cd $ROOT/var/log/packages/ ; ls *:*)
+    echo
+    echo "       If you continue you may corrupt packages database."
+    echo "       Check or retry later"
+    echo
+    cleanup
+  fi
+
 
   SPKGPLUS_VERSION="1.7.b1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
