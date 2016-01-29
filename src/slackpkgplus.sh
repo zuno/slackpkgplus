@@ -760,7 +760,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         LINEIDX=${PKGINFOS/:*/}       #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
         PKGDATA=( ${PKGINFOS/*:/} )   #PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
         mv ${TMPDIR}/pkglist ${TMPDIR}/pkglist.old
-        sed -i --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist.old > ${TMPDIR}/pkglist
+        sed --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist.old > ${TMPDIR}/pkglist
         (( PRIORITYIDX++ ))
         if [ "$PKGDATA" ]; then
           NAME=${PKGDATA[1]}
