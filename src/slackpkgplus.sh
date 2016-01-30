@@ -1183,6 +1183,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   #### ===== SHOWLIST FUNCTIONS ====== ######
 
 
+  function debug(){
+    echo "DEBUG $(date +%H:%M:%S.%N) (${BASH_LINENO[*]}): $@" >&2
+  }
 
 
 
