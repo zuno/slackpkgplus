@@ -734,6 +734,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     unset FULLNAME
     unset PKGDATA
     unset LINEIDX
+    unset PKGINFOS
 
     AUTOP=no
     if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]];then
@@ -746,6 +747,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         AUTOP=$TAG_PRIORITY
       fi
     fi
+    if [[ "$CMD" == "reinstall" ]];then
+      PKGINFOS=$( grep " $ARGUMENT " $TMPDIR/tmplist|awk '{print " "$6" "}'|grep -f - -n -m 1 ${TMPDIR}/pkglist)
+    fi
     if [ "$AUTOP" == "on" ] ; then
       PKGINFOS=$(
                   cd $ROOT/var/log/packages
@@ -756,6 +760,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                                                 echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1_slack[0-9]/' -e 's/^/ /'
                                               )| grep -f - -n -m 1 ${TMPDIR}/pkglist
                 )
+    fi
       if [ ! -z "$PKGINFOS" ] ; then
         LINEIDX=${PKGINFOS/:*/}       #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
         PKGDATA=( ${PKGINFOS/*:/} )   #PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
@@ -767,7 +772,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
         fi
       fi
-    fi
 
     for CPRIORITY in ${PRIORITY[@]} ; do
       [ "$PKGDATA" ] && break
