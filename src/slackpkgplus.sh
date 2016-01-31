@@ -761,24 +761,24 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                                               )| grep -f - -n -m 1 ${TMPDIR}/pkglist
                 )
     fi
-      if [ ! -z "$PKGINFOS" ] ; then
-        LINEIDX=${PKGINFOS/:*/}       #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
-        PKGDATA=( ${PKGINFOS/*:/} )   #PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
-        mv ${TMPDIR}/pkglist ${TMPDIR}/pkglist.old
-        sed --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist.old > ${TMPDIR}/pkglist
-        (( PRIORITYIDX++ ))
-        if [ "$PKGDATA" ]; then
-          NAME=${PKGDATA[1]}
-          FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
-        fi
+    if [ ! -z "$PKGINFOS" ] ; then
+      LINEIDX=${PKGINFOS/:*/}
+      PKGDATA=( ${PKGINFOS/*:/} )
+      mv ${TMPDIR}/pkglist ${TMPDIR}/pkglist.old
+      sed --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist.old > ${TMPDIR}/pkglist
+      (( PRIORITYIDX++ ))
+      if [ "$PKGDATA" ]; then
+        NAME=${PKGDATA[1]}
+        FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
       fi
+    fi
 
     for CPRIORITY in ${PRIORITY[@]} ; do
       [ "$PKGDATA" ] && break
 
-      DIR=${CPRIORITY/:*/}                                                #DIR=$(echo "$CPRIORITY" | cut -f1 -d":")
-      [[ "$CPRIORITY" =~ .*:.* ]] && PAT=${CPRIORITY/*:/} || PAT=""       #PAT=$(echo "$CPRIORITY" | cut -s -f2- -d":")
-      REPOSITORY=${DIR/SLACKPKGPLUS_/}                                    #REPOSITORY=$(echo "${DIR}" | sed "s/SLACKPKGPLUS_//")
+      DIR=${CPRIORITY/:*/}
+      [[ "$CPRIORITY" =~ .*:.* ]] && PAT=${CPRIORITY/*:/} || PAT=""
+      REPOSITORY=${DIR/SLACKPKGPLUS_/}
 
         # pass to the next iteration when there are priority filters and the
         # current repository is not accepted by the defined filter rules ...
@@ -787,7 +787,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         continue
       fi
 
-      #if echo "$CPRIORITY " | grep -q "^[-_[:alnum:]]\+[:]" ; then
       if [[ "$CPRIORITY" =~ ^[-_[:alnum:]]+[:] ]] ; then
 
           # [Reminder] ARGUMENT is always a basename, but PAT can be :
@@ -797,13 +796,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           #
         PKGDATA=""
         LINEIDX=""
-        #grep -n "^${DIR} " ${TMPDIR}/pkglist | grep -w "${PAT}" > ${TMPDIR}/packages.matches
-        #PKGINFOS=$(grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT} " ${TMPDIR}/packages.matches)
         PKGINFOS=$(grep -n "^${DIR} " ${TMPDIR}/pkglist | grep 2>/dev/null -w "${PAT}" | grep -m 1 "^[[:digit:]]\+:${DIR} ${ARGUMENT} ")
 
         if [ ! -z "$PKGINFOS" ] ; then
-          LINEIDX=${PKGINFOS/:*/}       #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
-          PKGDATA=( ${PKGINFOS/*:/} )   #PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
+          LINEIDX=${PKGINFOS/:*/}
+          PKGDATA=( ${PKGINFOS/*:/} )
         fi
       elif [[ "$CPRIORITY" =~ ^[.][*][:] ]] ; then
         PKGDATA=""
@@ -811,8 +808,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         PKGINFOS=$(grep 2>/dev/null -n -w "${PAT}" ${TMPDIR}/pkglist | grep -m 1 " ${ARGUMENT} ")
 
         if [ ! -z "$PKGINFOS" ] ; then
-          LINEIDX=${PKGINFOS/:*/}       #LINEIDX=$(echo "$PKGINFOS" | cut -f1 -d":")
-          PKGDATA=( ${PKGINFOS/*:/} )   #PKGDATA=( $(echo "$PKGINFOS" | cut -f2- -d":") )
+          LINEIDX=${PKGINFOS/:*/}
+          PKGDATA=( ${PKGINFOS/*:/} )
         fi
       else
           # $CPRIORITY is of kind "repository" (ie. slackware, extra, patches,...)
