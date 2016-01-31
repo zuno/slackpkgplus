@@ -102,10 +102,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     else
       grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus >${TMPDIR}/blacklist.tmp
     fi
-    cat ${TMPDIR}/blacklist.tmp
     if [ "$(head -1 ${TMPDIR}/blacklist.tmp|awk '{print $1}')" != "local" ];then
       cat ${TMPDIR}/pkglist-pre
     fi
+    cat ${TMPDIR}/blacklist.tmp
     cat $TMPDIR/greylist.* >$TMPDIR/greylist
     grep -qvEw -f $TMPDIR/greylist $TMPDIR/pkglist-pre >$TMPDIR/unchecklist
 
@@ -1452,7 +1452,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           localpath=$(pwd)/$localpath
         fi
         ( cd $localpath
-          ls -ld *.t[blxg]z|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+          ls -ld *.t[blxg]z 2>/dev/null|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
         )
         MIRRORPLUS[$repository]="file:/$localpath/"
         PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
