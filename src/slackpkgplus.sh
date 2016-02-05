@@ -748,7 +748,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
     fi
     if [[ "$CMD" == "reinstall" ]];then
-      PKGINFOS=$( grep " $ARGUMENT " $TMPDIR/tmplist|awk '{print " "$6" "}'|grep -f - -n -m 1 ${TMPDIR}/pkglist)
+      PKGINFOS=$( grep " $ARGUMENT " $TMPDIR/tmplist|awk '{print " "$6" "}'|grep -f - -n ${TMPDIR}/pkglist|grep -f ${TMPDIR}/priority.filters -E -m 1 )
     fi
     if [ "$AUTOP" == "on" ] ; then
       PKGINFOS=$(
@@ -1494,7 +1494,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       # You can specify 'slackpkg install reponame:packagename'
       elif echo "$pref" | grep -q "^[-_[:alnum:]]\+[:][a-zA-Z0-9]\+" ; then
 
-        if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] ; then
+        if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] ; then
           repository=$(echo "$pref" | cut -f1 -d":")
           package=$(echo "$pref" | cut -f2- -d":")
 
