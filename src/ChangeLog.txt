@@ -1,4 +1,9 @@
-Version 1.6.1p1 - 16/Jan/2015
+Version 1.6.1p2 - 6/Feb/2016
+  - Fixed SENSITIVE_SEARCH that did not work under some conditions
+  - Fixed a not correctly trapped ctrl+c when spinning is running
+  - slackpkg reinstall did not work under certain conditions
+
+Version 1.6.1p1 - 16/Jan/2016
   - Bugfix: greylist did not work properly
   - Fixed search that may fails to detect repository in certain conditions.
   - Fixed a bug in slackpkg upgrade when used with $ROOT

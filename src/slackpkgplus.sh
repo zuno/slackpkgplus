@@ -60,7 +60,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
 
-  SPKGPLUS_VERSION="1.6.1p1"
+  SPKGPLUS_VERSION="1.6.1p2"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
