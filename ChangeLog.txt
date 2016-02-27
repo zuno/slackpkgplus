@@ -1,3 +1,13 @@
+Version 1.7.b3 - 27/Feb/2016
+  - Added WW_FILE_SEARCH to file-search whole-words o not (thanks to yars068)
+  - Colorized the slackpkg search results
+  - Added DETAILED_INFO to allow slackpkg info to show many details on the
+    package
+  - slackpkg reinstall fixed; also now allow to choose the repository as in 
+    install/upgrade; this becouse there more than one repository containing 
+    identicals packages.
+  - dir:// repositories and inline repositories has most priority
+
 Version 1.7.b2 - 29/Jan/2016
   - Avoid slackpkg to corrupt the slackware database if there are some manual
     upgrade in progress.
