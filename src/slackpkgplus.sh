@@ -1034,7 +1034,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       else
         printf "  %-20s     %-24s     %-40s  \n" "$STATUS" "$REPO" "${RAWNAME}"
       fi
-    done|sort
+    done|sort|( [[  "$CMD" == "search" ]]&&grep -i --color -e ^ -e "$PATTERN"||cat )
   } # END function searchlistEX()
 
     # Show detailed info for slackpkg info
