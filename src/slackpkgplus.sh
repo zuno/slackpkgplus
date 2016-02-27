@@ -26,6 +26,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTCACHEUPDATE=$CACHEUPDATE
   EXTDOWNLOADONLY=$DOWNLOADONLY
   EXTSTRICTGPG=$STRICTGPG
+  EXTDETAILED_INFO=$DETAILED_INFO
 
   . $CONF/slackpkgplus.conf
 
@@ -41,6 +42,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   CACHEUPDATE=${EXTCACHEUPDATE:-$CACHEUPDATE}
   DOWNLOADONLY=${EXTDOWNLOADONLY:-$DOWNLOADONLY}
   STRICTGPG=${EXTSTRICTGPG:-$STRICTGPG}
+  DETAILED_INFO=${EXTDETAILED_INFO:-$DETAILED_INFO}
 
   USEBLACKLIST=true
   if [ "$USEBL" == "0" ];then
@@ -71,6 +73,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function givepriority()
   # function searchPackages()
   # function searchlistEX()
+  # function mode_info()
   # function showlist() // dialog=on
   # function showlist() // dialog=off
 
@@ -118,6 +121,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Override cleanup() to improve log messages and debug functions
     #
   function cleanup(){
+    if [ "$CMD" == "info" ];then
+      DETAILED_INFO=${DETAILED_INFO:-none}
+      [[ "$DETAILED_INFO" != "none" ]]&&more_info
+    fi
     rm -f ${TMPDIR}/waiting
     if [ "$CMD" == "update" ];then
       if [ "$ANSWER" != "Y" ] && [ "$ANSWER" != "y" ]; then
@@ -1030,6 +1037,32 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     done|sort
   } # END function searchlistEX()
 
+    # Show detailed info for slackpkg info
+    #
+  function more_info(){
+    echo
+    cat $WORKDIR/pkglist|grep -E "^[^ ]* $NAME "|while read repository name version arch tag namepkg fullpath ext;do
+      echo "Package:    $namepkg"
+      echo "Repository: ${repository/SLACKPKGPLUS_/}"
+      echo "Path:       ${fullpath/\/SLACKPKGPLUS_${repository/SLACKPKGPLUS_/}/}/$namepkg.$ext"
+      URLFILE=${SOURCE}${fullpath}/${namepkg}.${ext}
+      if echo $URLFILE|grep -q /SLACKPKGPLUS_;then
+        PREPO=$(echo $URLFILE|sed -r 's#^.*/SLACKPKGPLUS_([^/]+)/.*$#\1#')
+        URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
+      fi
+      echo "Url:        ${URLFILE/.\//}"
+      if [ "$DETAILED_INFO" == "filelist" ];then
+        FILELIST="$(zgrep ^${fullpath/\/${repository}/}/$namepkg.$ext $WORKDIR/$repository-filelist.gz 2>/dev/null)"
+        if [ -z "$FILELIST" ];then
+          echo "Filelist:   no file list available"
+        else
+          echo "Filelist:"
+          echo "$FILELIST"|sed "s/ /\n/g"|tail +2|sed 's/^/  /'
+        fi
+      fi
+      echo
+    done
+  }
 
   if [ "$DIALOG" = "on" ] || [ "$DIALOG" = "ON" ]; then
     # Slackpkg+ Dialog functions
@@ -1181,7 +1214,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   fi # (DIALOG=on/off)
 
-  #### ===== SHOWLIST FUNCTIONS ====== ######
+
+
+  #### ===== END SHOWLIST FUNCTIONS ====== ######
 
 
   function debug(){

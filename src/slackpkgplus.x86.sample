@@ -42,6 +42,9 @@ SENSITIVE_SEARCH=on
 # Select the show order in dialogbox. Available "package" "repository" "tag" "path" "arch"
 SHOWORDER=package
 
+# Allow to show more details of the package in slackpkg info <package>. Accept "none", "basic", "filelist"
+DETAILED_INFO=none
+
 # Enable (on) / Disable (off) a Strict GPG Check. A repository should contains packages signed
 # with the only original GPG-KEY. In some custom repository may be wanted to mix eterogeneous
 # packages; to use that repository set Strict GPG Check to off. P.S: a repository can

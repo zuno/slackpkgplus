@@ -513,6 +513,19 @@ Default is "package"
 
 -----
 
+DETAILED_INFO
+
+By default, "slackpkg info <package>" show the metadata and the package
+description.
+This is the same if you select DETAILED_INFO=none
+
+DETAILED_INFO=basic show the repository on the repository, and the url to 
+download it.
+
+DETAILED_INFO=filelist alo show the full file list of the package.
+
+-----
+
 STRICTGPG
 
 slackpkg was bird to install slackware packages from official mirrors; they
