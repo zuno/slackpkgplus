@@ -499,6 +499,19 @@ may take a very lot of time!
 
 -----
 
+WW_FILE_SEARCH
+
+By default 'slackpkg file-search' search whole words, so 
+# slackpkg file-search slackpkgpl
+returns nothing.
+
+By setting WW_FILE_SEARCH to on, the same command should find slackpkg+
+becouse match slackpkgplus.conf and other.
+
+Note that a short pattern may match many many packages.
+
+-----
+
 SHOWORDER
 
 By default slackpkg in dialogbox sort packages by name.

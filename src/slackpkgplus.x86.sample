@@ -39,6 +39,10 @@ GREYLIST=on
 # Defines if commands 'search' and 'file-search' are case-sensitive (on) or not (off). Default to "on"
 SENSITIVE_SEARCH=on
 
+# Defines if command 'file-search' does search Wole Word (on) of accept partial words (off). Note that
+# you may obtains many many results searching a short partial word
+WW_FILE_SEARCH=on
+
 # Select the show order in dialogbox. Available "package" "repository" "tag" "path" "arch"
 SHOWORDER=package
 

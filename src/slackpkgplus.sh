@@ -27,6 +27,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTDOWNLOADONLY=$DOWNLOADONLY
   EXTSTRICTGPG=$STRICTGPG
   EXTDETAILED_INFO=$DETAILED_INFO
+  EXTWW_FILE_SEARCH=$WW_FILE_SEARCH
 
   . $CONF/slackpkgplus.conf
 
@@ -43,6 +44,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   DOWNLOADONLY=${EXTDOWNLOADONLY:-$DOWNLOADONLY}
   STRICTGPG=${EXTSTRICTGPG:-$STRICTGPG}
   DETAILED_INFO=${EXTDETAILED_INFO:-$DETAILED_INFO}
+  WW_FILE_SEARCH=${EXTWW_FILE_SEARCH:-$WW_FILE_SEARCH}
 
   USEBLACKLIST=true
   if [ "$USEBL" == "0" ];then
@@ -890,6 +892,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     [ "$SPINNING" = "off" ] || spinning ${TMPDIR}/waiting &
 
     [ "$SENSITIVE_SEARCH" = "off" ] && GREPOPTS="--ignore-case"
+    [ ! "$WW_FILE_SEARCH" = "off" ] && GREPOPTS="$GREPOPTS --word-regexp"
 
     # -- PKGLIST:
     #      temporary file used to store data about packages. It uses
@@ -914,7 +917,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         #  for the fields: version(3) arch(4) build(5), path(7),
         #  extension(8)
         #
-        zegrep ${GREPOPTS} -w "${SEARCHSTR}" ${WORKDIR}/${DIR}-filelist.gz | \
+        zegrep ${GREPOPTS} "${SEARCHSTR}" ${WORKDIR}/${DIR}-filelist.gz | \
           cut -d" " -f 1 | rev | cut -f2- -d"." | cut -f1 -d"/" | rev |\
           awk '{
                   l_pname=$0
@@ -1636,7 +1639,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   fi # "$CMD" == "install" / "upgrade" / "reinstall" / "remove"
 
   if [ "$CMD" == "search" ] || [ "$CMD" == "file-search" ] ; then
-    PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g')
+    PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g' -e 's/^\///')
     searchPackages $PATTERN
 
     case $CMD in
