@@ -930,7 +930,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           }' l_dir=${DIR} > $PKGINFOS
 
       else # -- CMD==search
-        grep ${GREPOPTS} "^$DIR" $WORKDIR/pkglist|grep ${GREPOPTS} "/SLACKPKGPLUS_$SEARCHSTR/\|/$SEARCHSTR/\|/$SEARCHSTR \| [^ /]*$SEARCHSTR[^ /]* " > $PKGINFOS
+        grep -h ${GREPOPTS} "^$DIR" ${WORKDIR}/pkglist ${TMPDIR}/pkglist-pre|grep ${GREPOPTS} "/SLACKPKGPLUS_$SEARCHSTR/\|/$SEARCHSTR/\|/$SEARCHSTR \| [^ /]*$SEARCHSTR[^ /]* " > $PKGINFOS
       fi
 
       while read PKGDIR PKGBASENAME PKGVER PKGARCH PKGBUILD PKGFULLNAME PKGPATH PKGEXT ; do
