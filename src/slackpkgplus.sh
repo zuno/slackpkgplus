@@ -1423,7 +1423,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         continue
       fi
       ( cd $localpath
-        ls -ld *.t[blxg]z|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$PREPO'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+        ls -ld *.t[blxg]z 2>/dev/null|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$PREPO'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
       )
     fi
   done
