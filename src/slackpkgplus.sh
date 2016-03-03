@@ -1423,7 +1423,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         continue
       fi
       ( cd $localpath
-        ls -ld *.t[blxg]z 2>/dev/null|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$PREPO'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+        find . -type f -name '*.t[blxg]z'|sed "s,^./,./SLACKPKGPLUS_$PREPO/,"|awk -f /usr/libexec/slackpkg/pkglist.awk|sort -k6 -rn >> ${TMPDIR}/pkglist-pre
       )
     fi
   done
@@ -1490,7 +1490,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           localpath=$(pwd)/$localpath
         fi
         ( cd $localpath
-          ls -ld *.t[blxg]z 2>/dev/null|sort -rn|grep ^-|awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
+          find . -type f -name '*.t[blxg]z'|sed "s,^./,./SLACKPKGPLUS_$PREPO/,"|awk -f /usr/libexec/slackpkg/pkglist.awk|sort -k6 -rn >> ${TMPDIR}/pkglist-pre
         )
         MIRRORPLUS[$repository]="file:/$localpath/"
         PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
