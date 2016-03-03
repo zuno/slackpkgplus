@@ -930,23 +930,23 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           }' l_dir=${DIR} > $PKGINFOS
 
       else # -- CMD==search
-        grep -h ${GREPOPTS} "^$DIR" ${WORKDIR}/pkglist ${TMPDIR}/pkglist-pre|grep ${GREPOPTS} "/SLACKPKGPLUS_$SEARCHSTR/\|/$SEARCHSTR/\|/$SEARCHSTR \| [^ /]*$SEARCHSTR[^ /]* " > $PKGINFOS
+        grep -h ${GREPOPTS} "^$DIR" ${WORKDIR}/pkglist ${TMPDIR}/pkglist-pre|grep -E ${GREPOPTS} "/SLACKPKGPLUS_$SEARCHSTR/|/$SEARCHSTR/|/$SEARCHSTR | [^ /]*$SEARCHSTR[^ /]* " > $PKGINFOS
       fi
 
       while read PKGDIR PKGBASENAME PKGVER PKGARCH PKGBUILD PKGFULLNAME PKGPATH PKGEXT ; do
 
         # does nothing when the package has been handled ...
-        grep ${GREPOPTS} -q "^repo:${PKGDIR}:bname:${PKGBASENAME}:ver:${PKGVER}:fname:${PKGFULLNAME}:" $PKGLIST && continue
+        grep -E ${GREPOPTS} -q "^repo:${PKGDIR}:bname:${PKGBASENAME}:ver:${PKGVER}:fname:${PKGFULLNAME}:" $PKGLIST && continue
 
         # When a package P' with the same basename has been handled before the current package, this means
         # the package P' has precedence over P.
 
-        if grep ${GREPOPTS} -q ":bname:${PKGBASENAME}:" $PKGLIST ; then
+        if grep -E ${GREPOPTS} -q ":bname:${PKGBASENAME}:" $PKGLIST ; then
 
            # if the current package P is installed, this means the previous P' will be
            # proposed as an upgrade to P. In this case, the loop must continue without
            # any other action...
-          grep ${GREPOPTS} -q " $PKGFULLNAME " ${TMPDIR}/tmplist && continue
+          grep -E ${GREPOPTS} -q " $PKGFULLNAME " ${TMPDIR}/tmplist && continue
 
             # The current package P is not installed. In this case P must be shown as
             # being uninstalled and masked.
@@ -1037,7 +1037,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       else
         printf "  %-20s     %-24s     %-40s  \n" "$STATUS" "$REPO" "${RAWNAME}"
       fi
-    done|sort|( [[  "$CMD" == "search" ]]&&grep -i --color -e ^ -e "$PATTERN"||cat )
+    done|sort|( [[  "$CMD" == "search" ]]&&grep -E -i --color -e ^ -e "$PATTERN"||cat )
   } # END function searchlistEX()
 
     # Show detailed info for slackpkg info
