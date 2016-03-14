@@ -1,3 +1,10 @@
+Version 1.7.b4 - 14/Mar/2016
+  - slackpkg search now search in dir:// repositories too.
+  - subdirectory allowed in dir:// repositories.
+  - slackpkg search honour correctly the '+' character
+  - Added 'ChangeLog' dialog box to show the changelog of selected packages
+    (thanks to phenixia2003)
+
 Version 1.7.b3 - 27/Feb/2016
   - Added WW_FILE_SEARCH to file-search whole-words o not (thanks to yars068)
   - Colorized the slackpkg search results

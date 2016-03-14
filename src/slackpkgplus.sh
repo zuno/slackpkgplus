@@ -1079,12 +1079,100 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     export DIALOG_ITEM_HELP="2"
     export DIALOG_OK="0"
 
+      # Prints, into a dialog box, the changelog entries about the packages listed in file $1
+      #
+    function showChangeLogInfo() {
+      local PKGREGEX="[.]t[blxg]z[:][ ]+(added|moved|rebuilt|removed|upgraded)"
+      local SEPREGEX="^[+][-]+[+][ ]*$"
+      local Cpkg
+      local CpkgInfos
+      local Idx
+      local CLogStartIdx
+      local CLogEndIdx
+      local Pathname
+      local Status
+      local Cline
+
+          # Extract each package entry in ChangeLog.txt and store them in
+          # $WORKDIR/ChangeLog-packages.idx
+          #
+          # The output file is formatted as below :
+          #   <idx>:<pathname>: <status>
+          #
+          # <idx> is the line index of the entry in original ChangeLog.txt
+          # <pathname> is the full pathname of the package (ie. a/cryptsetup-1.7.1-x86_64-1.txz)
+          # <status> is the package status, which can be added,moved,rebuilt,removed,upgraded)
+          #
+          # [PENDING] this should be done only once when slackpkg update is called
+          #
+      grep -inE "$PKGREGEX" $WORKDIR/ChangeLog.txt > $WORKDIR/ChangeLog-packages.idx
+
+      echo -n "" > $TMPDIR/Packages.clog
+
+      for Cpkg in $(<$TMPDIR/dialog.out) ; do
+
+        #  get infos about the current package from changeLog-packages.idx file, if any. The
+        #  variable CpkgInfos is a string formatted as below:
+        #    <idx1>:<clogidx>:<pathname>: <status>
+        #
+        #  idx1=index of the line in changelog-packages.idx which match Cpkg
+        #  clogidx=line index of the entry in ChangeLog.txt that match Cpkg
+        #
+        CpkgInfos=( $(grep -n $Cpkg  $WORKDIR/ChangeLog-packages.idx | tr ":" " ") )
+
+        if [ ! -z "$CpkgInfos" ] ; then
+          Idx=${CpkgInfos[0]}
+          CLogStartIdx=${CpkgInfos[1]}
+          Pathname=${CpkgInfos[2]}
+          Status=$(echo ${CpkgInfos[3]} | tr --delete " .")
+
+          echo "$Pathname ($Status)" >> $TMPDIR/Packages.clog
+
+          # extra information on package Cpkg can be found in ChangeLog.txt file
+          # starting at line CLogStartIdx+1 and ending the line before the first
+          # line matching the regular expression SEPREGEX or PKGREGEX.
+          #
+          # SEPREGEX match the "standard" changelog separator entry, ie. a string
+          # which start with a plus followed by dashes and a plus. For instance:
+          #  +----------------------+
+          #
+          # PKGREGEX match the "standard" changelog package entry, ie. a string
+          # which starts with a package pathname followed by colon, one or more
+          # space and the status. For instance:
+          #   n/bind-1.2.3-x86_64-1.txz: Upgraded.
+
+          ((CLogStartIdx++))
+
+          tail -n "+$CLogStartIdx" $WORKDIR/ChangeLog.txt | while read Cline ; do
+            if ! echo "$Cline" | grep -qiE "($SEPREGEX)|($PKGREGEX)" ; then
+              echo -e "\t$Cline" >> $TMPDIR/Packages.clog
+            else
+              break
+            fi
+          done
+          echo "" >> $TMPDIR/Packages.clog
+        fi
+      done
+       
+      dialog --title "ChangeLog" \
+        --backtitle "slackpkg $VERSION" $HINT \
+        --textbox $TMPDIR/Packages.clog 19 70
+    }
+
+
     # Show the lists and asks if the user want to proceed with that action
     # Return accepted list in $SHOWLIST
     #
     function showlist() {
+      local CLOGopt=false
+      local EXIT=false
+
       if [ "$ONOFF" != "off" ]; then
         ONOFF=on
+      fi
+
+      if [ "$2" == "upgrade" ] || [ "$2" == "upgrade-all" ] || [ "$2" == "install" ] ; then
+        CLOGopt=true
       fi
 
       cat $TMPDIR/greylist.* >$TMPDIR/greylist
@@ -1149,23 +1237,90 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ "$DOWNLOADONLY" == "on" ];then
         DTITLE="$DTITLE (download only)"
       fi
-      cat $TMPDIR/dialog.tmp|xargs dialog --title "$DTITLE" --backtitle "slackpkg $VERSION" $HINT --checklist "Choose packages to $2:" 19 70 13 2>$TMPDIR/dialog.out
-      case "$?" in
-        0|123)
-          dialog --clear
-        ;;
-        1|124|125|126|127)
-          dialog --clear
-          echo -e "DIALOG ERROR:\n-------------" >> $TMPDIR/error.log
-          cat $TMPDIR/dialog.out >> $TMPDIR/error.log
-          echo "-------------"
-          echo "If you want to continue using slackpkg, disable the DIALOG option in"
-          echo "$CONF/slackpkg.conf and try again."
-          echo "Help us to make slackpkg a better tool - report bugs to the slackpkg"
-          echo "developers" >> $TMPDIR/error.log
-          cleanup
-        ;;
-      esac
+
+      if $CLogOpt ; then
+        # When the user "click" the button <ChangeLog> to read the changelog of
+        # the selected pacakges, the
+        # duplicate TMPDIR/dialog.tmp so that all items are deselected to be able to
+        # regenerate the list of selected items when showChangeLogInfo() returns, ie.
+        # when the user has checked the changelog.
+
+        # When the user "clicks" the button "<ChangeLog>" to read the changelog of
+        # currently selected packages,  the dialog to select packages is terminated
+        # and the changelog is printed in a textbox.
+        #
+        # When the user exits from the textbox, the user must retrieve the packages
+        # selection dialog with the packages that were selected previously. To do that,
+        # the file $TMPDIR/dialog.tmp is duplicated with all items deselected into
+        # file $TMPDIR/dialog.tmp.off, so that the list of selected packages can
+        # be regenerated using the data in file $TMPDIR/dialog.out when
+        # showChangeLogInfos() returns.
+
+        cat $TMPDIR/dialog.tmp | sed "s/ on / off /g" > $TMPDIR/dialog.tmp.off
+      fi
+
+      while ! $EXIT ; do
+
+        if $CLOGopt ; then
+          dialog --extra-button \
+            --extra-label "ChangeLog" \
+            --title "$DTITLE" \
+            --backtitle "slackpkg $VERSION" $HINT \
+            --checklist "Choose packages to $2:" \
+            19 70 13 \
+            --file $TMPDIR/dialog.tmp 2>$TMPDIR/dialog.out
+        else
+          dialog  --title "$DTITLE" \
+            --backtitle "slackpkg $VERSION" $HINT \
+            --checklist "Choose packages to $2:" \
+            19 70 13 \
+            --file $TMPDIR/dialog.tmp 2>$TMPDIR/dialog.out
+        fi
+
+        case $? in
+          0|1)
+            EXIT=true
+                  dialog --clear
+          ;;
+
+          3)
+            dialog --clear
+
+            if $CLOGopt ; then
+
+              if [ -s $TMPDIR/dialog.out ] ; then
+                showChangeLogInfo $TMPDIR/dialog.out
+
+                # regenerate the list of selected package from the patterns
+                # in TMPDIR/dialog.out and the file TMPDIR/dialog.tmp.off
+
+                PKGS_REGEX=$(cat $TMPDIR/dialog.out|sed "s/ /\\\|/g")
+
+                cat $TMPDIR/dialog.tmp.off > $TMPDIR/dialog.tmp
+                sed -i -e "/^$PKGS_REGEX/ s= off = on =" $TMPDIR/dialog.tmp
+              else
+                # all packages are deselected ...
+                cat $TMPDIR/dialog.tmp.off > $TMPDIR/dialog.tmp
+              fi
+            else
+              EXIT=true
+            fi
+          ;;
+
+          -1)
+            EXIT=true
+            dialog --clear
+            echo -e "DIALOG ERROR:\n-------------" >> $TMPDIR/error.log
+            cat $TMPDIR/dialog.out >> $TMPDIR/error.log
+            echo "-------------"
+            echo "If you want to continue using slackpkg, disable the DIALOG option in"
+            echo "$CONF/slackpkg.conf and try again."
+            echo "Help us to make slackpkg a better tool - report bugs to the slackpkg"
+            echo "developers" >> $TMPDIR/error.log
+            cleanup
+          ;;
+        esac
+      done
       echo
       echo
       SHOWLIST=$(cat $TMPDIR/dialog.out | tr -d \")
@@ -1255,7 +1410,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   fi
 
 
-  SPKGPLUS_VERSION="1.7.b3"
+  SPKGPLUS_VERSION="1.7.b4"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
