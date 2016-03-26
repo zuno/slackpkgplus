@@ -92,8 +92,8 @@ REPOPLUS=( slackpkgplus )
 #           for that repositories you may need to run slackpkg with 'slackpkg -checkgpg=off ...'
 
 # Slackware 14.1 - i386
-#MIRRORPLUS['alienbob']=http://taper.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86/
-#MIRRORPLUS['restricted']=http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.1/x86/
+#MIRRORPLUS['alienbob']=http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86/
+#MIRRORPLUS['restricted']=http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.1/x86/
 #MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware-14.1/
 
 # use this to keep the slackpkg+ package updated

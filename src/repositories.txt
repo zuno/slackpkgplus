@@ -2,10 +2,10 @@ Supported Repositories:
 
 > Supports GPG
 > slackpkgplus:  http://slakfinder.org/slackpkg+{,dev}/
-> multilib:      http://taper.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,14.1,current}/
-> alienbob:      http://taper.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
-> ktown:         http://taper.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,current}/{latest,5}/{x86,x86_64}/
-> restricted:    http://taper.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
+> multilib:      http://bear.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,14.1,current}/
+> alienbob:      http://bear.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
+> ktown:         http://bear.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,current}/{latest,5}/{x86,x86_64}/
+> restricted:    http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
 > slacky:        http://repository.slacky.eu/slackware{,64}-{13.37,14.0,14.1}/
 > mleddesktop:   http://www.microlinux.fr/microlinux/desktop-{14.1,14.2}-{32,64}bit/
 > mledextras:    http://www.microlinux.fr/microlinux/extras-{14.1,14.2}-{32,64}bit/
