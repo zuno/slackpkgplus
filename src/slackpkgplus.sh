@@ -372,7 +372,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     case $SRCBASE in
       CHECKSUMS.md5|CHECKSUMS.md5.asc) TOCACHE=1 ; CURREPO=$(basename $1|sed -r -e "s/CHECKSUMS.md5-?//" -e "s/\.asc//") ;;
       MANIFEST.bz2|PACKAGES.TXT) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/-$SRCBASE//" -e "s/SLACKPKGPLUS_//");;
-      ChangeLog.txt) TOCACHE=1 ;;
+      ChangeLog.txt) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/ChangeLog-//" -e "s/\.txt//") ;;
       GPG-KEY) TOCACHE=0 ; CURREPO=${1/*gpgkey-tmp-/};;
       FILELIST.TXT) TOCACHE=1 ;;
     esac
@@ -384,7 +384,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     [ $VERBOSE -eq 3 ]&&echo -n " ($CACHEFILE) "
     if [ $TOCACHE -eq 1 ];then
       echo -n "." # ... -> tocache=1
-      curl --location --head $SRCURL 2>/dev/null|grep -v ^Date:|sed 's///' > $TMPDIR/cache.head
+      curl --max-time 10 --location --head $SRCURL 2>/dev/null|grep -v ^Date:|sed 's///' > $TMPDIR/cache.head
       echo "Url: $SRCURL" >> $TMPDIR/cache.head
       #grep -q "200 OK" $TMPDIR/cache.head || echo "Header or Url Invalid!!! (`date`)"
       [ $VERBOSE -eq 3 ]&&(echo;cat $TMPDIR/cache.head|sed 's/^/  /')
@@ -400,7 +400,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         echo -n ". " # ... .. -> cache older or corrupted
         rm -f $CACHEDIR/$CACHEFILE $CACHEDIR/$CACHEFILE.head 2>/dev/null
       fi
-      echo " Downloading... " # ... -> needed  # ... .. -> re-needed
+      echo -n " Downloading... " # ... -> needed  # ... .. -> re-needed
+      [ $VERBOSE -gt 1 ]&&echo
       $CACHEDOWNLOADER $1 $SRCURL
       ERR=$?
       echo
@@ -590,10 +591,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         done
 
         if [ -s ${TMPDIR}/$CLOGNAM ] ; then
-          echo -e "[INFO] Merging ChangeLog.txt from repository $PREPO with ${WORKDIR}/Unified-ChangeLog.txt.\n"
+          echo -e "                Merging ChangeLog.txt from repository $PREPO with Unified-ChangeLog.txt.\n"
           cat ${TMPDIR}/$CLOGNAM >> ${WORKDIR}/Unified-ChangeLog.txt
         else
-          echo -e "[INFO] Repository $PREPO has no ChangeLog.txt.\n"
+          echo -e "                Repository $PREPO has no ChangeLog.txt.\n"
         fi
       done
 
@@ -629,6 +630,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           echo
           sleep 5
           echo -e "$PREPO: SKIPPING Invalid repository (fails to download CHECKSUMS.md5)" >> $TMPDIR/error.log
+          echo "    ( ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5 )" >> $TMPDIR/error.log
+
           PRIORITY=( $(echo ${PRIORITY[*]}" "|sed "s/SLACKPKGPLUS_$PREPO //") )
           REPOPLUS=( $(echo " "${REPOPLUS[*]}" "|sed "s/ $PREPO //") )
         else
@@ -1625,7 +1628,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     elif [ "$VERBOSE" = "3" ];then
       DOWNLOADER="wgetdebug"
     elif [ "$CMD" = "update" ];then
-      DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
+      if [ "$CACHEUPDATE" == "on" ];then
+        DOWNLOADER="wget $WGETOPTS --no-check-certificate -q --passive-ftp -O"
+      else
+        DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
+      fi
     fi
   fi
 
