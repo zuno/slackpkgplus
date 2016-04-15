@@ -68,8 +68,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function cleanup()
   # function handle_event()
   # function remove_pkg()
-  # function upgradepkg() // if DOWNLOADONLY=on override /sbin/upgradepkg
   # function installpkg() // if DOWNLOADONLY=on override /sbin/installpkg
+  # function upgradepkg() // if DOWNLOADONLY=on override /sbin/upgradepkg
   # function upgrade_pkg()
   # function install_pkg()
   # function wgetdebug()
@@ -80,7 +80,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function givepriority()
   # function searchPackages()
   # function searchlistEX()
-  # function mode_info()
+  # function more_info()
+  # function showChangeLogInfo()
   # function showlist() // dialog=on
   # function showlist() // dialog=off
 
@@ -229,7 +230,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         echo "                                        "
       fi
     fi
-  } # END functino handle_event()
+  } # END function handle_event()
 
     # Overrides original remove_pkg(). Required by the notification mechanism.
   function remove_pkg() {
@@ -251,11 +252,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     function installpkg() {
       echo "            Download only.. `basename $1` not installed!"
       DELALL=off
-    }
+    } # END function installpkg()
     function upgradepkg() {
       echo "            Download only.. `basename $1` not upgraded!"
       DELALL=off
-    }
+    } # END function upgradepkg()
   fi
 
     # Overrides original upgrade_pkg(). Required by the notification mechanism.
@@ -1132,7 +1133,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
       echo
     done
-  }
+  } # END function more_info()
 
   if [ "$DIALOG" = "on" ] || [ "$DIALOG" = "ON" ]; then
     # Slackpkg+ Dialog functions
@@ -1208,7 +1209,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       dialog --title "ChangeLog" \
         --backtitle "slackpkg $VERSION" $HINT \
         --textbox $TMPDIR/Packages.clog 19 70
-    }
+    } # END function showChangeLogInfo()
 
 
     # Show the lists and asks if the user want to proceed with that action
@@ -1456,7 +1457,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   function debug(){
     echo "DEBUG $(date +%H:%M:%S.%N) (${BASH_LINENO[*]}): $@" >&2
-  }
+  } # END function debug()
 
 
 
@@ -1487,7 +1488,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   fi
 
 
-  SPKGPLUS_VERSION="1.7.b4"
+  SPKGPLUS_VERSION="1.7.b4.1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
