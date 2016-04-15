@@ -12,6 +12,11 @@ CONF=${CONF:-/etc/slackpkg} # needed if you're running slackpkg 2.28.0-12
   #
 SLACKDIR_REGEXP="^((slackware)|(slackware64)|(extra)|(pasture)|(patches)|(testing))$"
 
+  # CLOG_PKGREGEX : regular expression used to find package entry in ChangeLog files
+  # CLOG_SEPREGEX : regular expression that match the "standard" entry separator in a ChangeLog file
+CLOG_PKGREGEX="[.]t[blxg]z[:][ ]+(added|moved|rebuilt|upgraded)"
+CLOG_SEPREGEX="^[+][-]+[+][ ]*$"
+
 if [ -e $CONF/slackpkgplus.conf ];then
   # You can override GREYLIST WGETOPTS SLACKPKGPLUS VERBOSE USEBL ALLOW32BIT SENSITIVE_SEARCH from command-line
   EXTGREYLIST=$GREYLIST
@@ -545,6 +550,65 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
     fi
     if [ $(basename $1) = "ChangeLog.txt" ];then
+
+      # ChangeLog.txt from slackware and 3rd party repository are merged
+      # into WORKDIR/Unified-ChangeLog.txt
+      #
+      # At this point, ChangeLog.txt from slackware has been already
+      # download and is stored in WORKDIR/ChangeLog.txt
+
+      cat $WORKDIR/ChangeLog.txt > $WORKDIR/Unified-ChangeLog.txt
+
+      for PREPO in ${REPOPLUS[*]}; do
+        BASEDIR=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]%}
+        CLOGNAM=ChangeLog-$PREPO.txt
+
+        LIMIT=1
+
+        if [ "$SEARCH_CLOG_INPARENT" == "on" ] ; then
+          BDNAMES=( $(echo $BASEDIR | tr "/" " ") )
+          LIMIT=$(( ${#BDNAMES[@]} - 1 ))
+        fi
+
+
+        LEVEL=1
+        while [ ! -s ${TMPDIR}/$CLOGNAM ] && [ $LEVEL -le $LIMIT ] ; do
+
+          URLFILE=$BASEDIR/ChangeLog.txt
+
+          if echo $URLFILE | grep -q "^file://" ; then
+            URLFILE=${URLFILE:6}
+            cp -v $URLFILE ${TMPDIR}/$CLOGNAM
+          elif echo $URLFILE | grep -q "^dir:/" ; then
+            touch ${TMPDIR}/$CLOGNAM
+          else
+            $DOWNLOADER ${TMPDIR}/$CLOGNAM $URLFILE
+          fi
+
+          ((LEVEL++))
+          BASEDIR=$(echo ${BASEDIR%/} |rev|cut -f2- -d/ |rev)
+        done
+
+        if [ -s ${TMPDIR}/$CLOGNAM ] ; then
+          echo -e "[INFO] Merging ChangeLog.txt from repository $PREPO with ${WORKDIR}/Unified-ChangeLog.txt.\n"
+          cat ${TMPDIR}/$CLOGNAM >> ${WORKDIR}/Unified-ChangeLog.txt
+        else
+          echo -e "[INFO] Repository $PREPO has no ChangeLog.txt.\n"
+        fi
+      done
+
+      # Extract each package entry in Unified-ChangeLog.txt and store them in
+      # $WORKDIR/Unified-ChangeLog.idx which is used by showChangeLogInfo()
+      #
+      # The output file is formatted as below :
+      #   <idx>:<pathname>: <status>
+      #
+      # <idx> is the line index of the entry in original Unified-ChangeLog.txt
+      # <pathname> is the full pathname of the package (ie. a/cryptsetup-1.7.1-x86_64-1.txz)
+      # <status> is the package status, which can be added,moved,rebuilt,removed,upgraded)
+      #
+      grep -inE "$CLOG_PKGREGEX" ${WORKDIR}/Unified-ChangeLog.txt > ${WORKDIR}/Unified-ChangeLog.idx
+
       for PREPO in ${REPOPLUS[*]};do
         # Not all repositories have the ChangeLog.txt, so I use md5 of CHECKSUMS.md5 instead
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
@@ -1082,30 +1146,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       # Prints, into a dialog box, the changelog entries about the packages listed in file $1
       #
     function showChangeLogInfo() {
-      local PKGREGEX="[.]t[blxg]z[:][ ]+(added|moved|rebuilt|removed|upgraded)"
-      local SEPREGEX="^[+][-]+[+][ ]*$"
       local Cpkg
       local CpkgInfos
-      local Idx
       local CLogStartIdx
-      local CLogEndIdx
       local Pathname
       local Status
       local Cline
-
-          # Extract each package entry in ChangeLog.txt and store them in
-          # $WORKDIR/ChangeLog-packages.idx
-          #
-          # The output file is formatted as below :
-          #   <idx>:<pathname>: <status>
-          #
-          # <idx> is the line index of the entry in original ChangeLog.txt
-          # <pathname> is the full pathname of the package (ie. a/cryptsetup-1.7.1-x86_64-1.txz)
-          # <status> is the package status, which can be added,moved,rebuilt,removed,upgraded)
-          #
-          # [PENDING] this should be done only once when slackpkg update is called
-          #
-      grep -inE "$PKGREGEX" $WORKDIR/ChangeLog.txt > $WORKDIR/ChangeLog-packages.idx
 
       echo -n "" > $TMPDIR/Packages.clog
 
@@ -1113,39 +1159,37 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
         #  get infos about the current package from changeLog-packages.idx file, if any. The
         #  variable CpkgInfos is a string formatted as below:
-        #    <idx1>:<clogidx>:<pathname>: <status>
+        #    <clogidx>:<pathname>: <status>
         #
-        #  idx1=index of the line in changelog-packages.idx which match Cpkg
         #  clogidx=line index of the entry in ChangeLog.txt that match Cpkg
         #
-        CpkgInfos=( $(grep -n $Cpkg  $WORKDIR/ChangeLog-packages.idx | tr ":" " ") )
+        CpkgInfos=( $(grep $Cpkg  $WORKDIR/Unified-ChangeLog.idx | tr ":" " ") )
 
         if [ ! -z "$CpkgInfos" ] ; then
-          Idx=${CpkgInfos[0]}
-          CLogStartIdx=${CpkgInfos[1]}
-          Pathname=${CpkgInfos[2]}
-          Status=$(echo ${CpkgInfos[3]} | tr --delete " .")
+          CLogStartIdx=${CpkgInfos[0]}
+          Pathname=${CpkgInfos[1]}
+          Status=$(echo ${CpkgInfos[2]} | tr --delete " .")
 
           echo "$Pathname ($Status)" >> $TMPDIR/Packages.clog
 
           # extra information on package Cpkg can be found in ChangeLog.txt file
           # starting at line CLogStartIdx+1 and ending the line before the first
-          # line matching the regular expression SEPREGEX or PKGREGEX.
+          # line matching the regular expression CLOG_SEPREGEX or CLOG_PKGREGEX.
           #
-          # SEPREGEX match the "standard" changelog separator entry, ie. a string
+          # CLOG_SEPREGEX match the "standard" changelog separator entry, ie. a string
           # which start with a plus followed by dashes and a plus. For instance:
           #  +----------------------+
           #
-          # PKGREGEX match the "standard" changelog package entry, ie. a string
+          # CLOG_PKGREGEX match the "standard" changelog package entry, ie. a string
           # which starts with a package pathname followed by colon, one or more
           # space and the status. For instance:
           #   n/bind-1.2.3-x86_64-1.txz: Upgraded.
 
           ((CLogStartIdx++))
 
-          tail -n "+$CLogStartIdx" $WORKDIR/ChangeLog.txt | while read Cline ; do
-            if ! echo "$Cline" | grep -qiE "($SEPREGEX)|($PKGREGEX)" ; then
-              echo -e "\t$Cline" >> $TMPDIR/Packages.clog
+          tail -n "+$CLogStartIdx" $WORKDIR/Unified-ChangeLog.txt | while read Cline ; do
+            if ! echo "$Cline" | grep -qiE "($CLOG_SEPREGEX)|($CLOG_PKGREGEX)" ; then
+              echo -e "    $Cline" >> $TMPDIR/Packages.clog
             else
               break
             fi
@@ -1153,7 +1197,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           echo "" >> $TMPDIR/Packages.clog
         fi
       done
-       
+
+      if [ ! -s $TMPDIR/Packages.clog ] ; then
+        echo "Sorry, no entry in the ChangeLog.txt matching the selected packages." > $TMPDIR/Packages.clog
+      fi
+
       dialog --title "ChangeLog" \
         --backtitle "slackpkg $VERSION" $HINT \
         --textbox $TMPDIR/Packages.clog 19 70
@@ -1238,7 +1286,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         DTITLE="$DTITLE (download only)"
       fi
 
-      if $CLogOpt ; then
+      if $CLOGopt ; then
         # When the user "click" the button <ChangeLog> to read the changelog of
         # the selected pacakges, the
         # duplicate TMPDIR/dialog.tmp so that all items are deselected to be able to
@@ -1256,7 +1304,19 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         # be regenerated using the data in file $TMPDIR/dialog.out when
         # showChangeLogInfos() returns.
 
-        cat $TMPDIR/dialog.tmp | sed "s/ on / off /g" > $TMPDIR/dialog.tmp.off
+          # in case of install, dialog.tmp is to the format (1), otherwise the format (2)
+          # is used :
+          #
+          # format (1)
+          #   <pkg-name> <repository> on|off
+          # format (2)
+          #   <pkg-name> <repository> on|off <installed-version> --> <available-version>
+
+        if [ "$2" == "install" ] ; then
+                cat $TMPDIR/dialog.tmp | sed "s/ on$/ off/g" > $TMPDIR/dialog.tmp.off
+        else
+                cat $TMPDIR/dialog.tmp | sed "s/ on / off /g" > $TMPDIR/dialog.tmp.off
+        fi
       fi
 
       while ! $EXIT ; do
@@ -1297,8 +1357,22 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                 PKGS_REGEX=$(cat $TMPDIR/dialog.out|sed "s/ /\\\|/g")
 
                 cat $TMPDIR/dialog.tmp.off > $TMPDIR/dialog.tmp
-                sed -i -e "/^$PKGS_REGEX/ s= off = on =" $TMPDIR/dialog.tmp
+                  # in case of install, dialog.tmp is to the format (1), otherwise the format (2)
+                  # is used :
+                  #
+                  # format (1)
+                  #   <pkg-name> <repository> on|off
+                  # format (2)
+                  #   <pkg-name> <repository> on|off <installed-version> --> <available-version>
+
+                if [ "$2" == "install" ] ; then
+                        sed -i -e "/^$PKGS_REGEX/ s= off$= on=" $TMPDIR/dialog.tmp
+                else
+                        sed -i -e "/^$PKGS_REGEX/ s= off = on =" $TMPDIR/dialog.tmp
+                fi
+
               else
+                dialog --title "ChangeLog" --msgbox "Please, select at least one package." 5 40
                 # all packages are deselected ...
                 cat $TMPDIR/dialog.tmp.off > $TMPDIR/dialog.tmp
               fi
