@@ -1,3 +1,9 @@
+Version 1.7.b4.2 - 18/Apr/2016
+  - Improved cached downloader with specifics output for ChangeLogs
+  - Fixed a bug in TAG_PRIORITY when the package is not installed
+  - Improved performance in upgrade by skipping priority check for
+    not installed packages
+
 Version 1.7.b4.1 - 15/Apr/2016
   - slackpkg allow ChangeLog for third-party repositories too.
   - Reduced verbosity in cached downloader == most clear output.

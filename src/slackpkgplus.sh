@@ -371,9 +371,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     TOCACHE=0
     case $SRCBASE in
-      CHECKSUMS.md5|CHECKSUMS.md5.asc) TOCACHE=1 ; CURREPO=$(basename $1|sed -r -e "s/CHECKSUMS.md5-?//" -e "s/\.asc//") ;;
+      CHECKSUMS.md5|CHECKSUMS.md5.asc|CHECKSUMS.md5.gz|CHECKSUMS.md5.gz.asc) TOCACHE=1 ; CURREPO=$(basename $1|sed -r -e "s/CHECKSUMS.md5-?//" -e "s/\.asc//" -e "s/\.gz//") ;;
       MANIFEST.bz2|PACKAGES.TXT) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/-$SRCBASE//" -e "s/SLACKPKGPLUS_//");;
-      ChangeLog.txt) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/ChangeLog-//" -e "s/\.txt//") ;;
+      ChangeLog.txt) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/ChangeLog-//" -e "s/^-//" -e "s/\.txt//") ;;
       GPG-KEY) TOCACHE=0 ; CURREPO=${1/*gpgkey-tmp-/};;
       FILELIST.TXT) TOCACHE=1 ;;
     esac
@@ -385,10 +385,18 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     [ $VERBOSE -eq 3 ]&&echo -n " ($CACHEFILE) "
     if [ $TOCACHE -eq 1 ];then
       echo -n "." # ... -> tocache=1
-      curl --max-time 10 --location --head $SRCURL 2>/dev/null|grep -v ^Date:|sed 's///' > $TMPDIR/cache.head
+      curl --max-time 10 --location --head $SRCURL 2>/dev/null|grep -v -e ^Date: -e ^Set-Cookie: -e ^Expires: -e ^X-Varnish:|sed 's///' > $TMPDIR/cache.head
       echo "Url: $SRCURL" >> $TMPDIR/cache.head
       #grep -q "200 OK" $TMPDIR/cache.head || echo "Header or Url Invalid!!! (`date`)"
       [ $VERBOSE -eq 3 ]&&(echo;cat $TMPDIR/cache.head|sed 's/^/  /')
+      if grep -q "^HTTP/.* 404" $TMPDIR/cache.head;then
+        if [ $SRCBASE == "ChangeLog.txt" ]&&[ $LEVEL -lt $LIMIT ];then
+          echo " Trying parent URL ($LEVEL) "
+        else
+          echo " Not Found."
+        fi
+        return 8 # wget return 8 if server return error so we return 8
+      fi
       if [ -e $CACHEDIR/$CACHEFILE -a -e $CACHEDIR/$CACHEFILE.head ];then
         echo -n " ." # ... . -> is in cache
         [ $VERBOSE -eq 3 ]&&(echo;cat $CACHEDIR/$CACHEFILE.head|sed 's/^/  /')
@@ -534,6 +542,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               echo "    Remember to import keys by launching 'slackpkg update gpg'."
               echo
               sleep 5
+              echo "Repository '$PREPO' FAILS the CHECKSUMS.md5 signature check." >> $TMPDIR/error.log
+              echo "Try to run 'slackpkg update gpg'" >> $TMPDIR/error.log
+              echo >> $TMPDIR/error.log
               echo > ${TMPDIR}/CHECKSUMS.md5-$PREPO
             fi
           else
@@ -562,6 +573,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       cat $WORKDIR/ChangeLog.txt > $WORKDIR/Unified-ChangeLog.txt
 
       for PREPO in ${REPOPLUS[*]}; do
+        echo "======== Repository: $PREPO ========" >>${WORKDIR}/Unified-ChangeLog.txt
         BASEDIR=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]%}
         CLOGNAM=ChangeLog-$PREPO.txt
 
@@ -576,7 +588,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         LEVEL=1
         while [ ! -s ${TMPDIR}/$CLOGNAM ] && [ $LEVEL -le $LIMIT ] ; do
 
-          URLFILE=$BASEDIR/ChangeLog.txt
+          URLFILE=${BASEDIR%/}/ChangeLog.txt
 
           if echo $URLFILE | grep -q "^file://" ; then
             URLFILE=${URLFILE:6}
@@ -815,6 +827,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     AUTOP=no
     if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]];then
+      ( cd $ROOT/var/log/packages
+        ls $ARGUMENT-*-*-* 2>/dev/null|sed 's/$/.txz/' | awk -f /usr/libexec/slackpkg/pkglist.awk|awk '{print $1}'|grep -q " $ARGUMENT "
+      )||return
       if [ ! -z "$AUTOPRIORITY" ];then
         if echo "$ARGUMENT"|grep -wq $AUTOPRIORITY;then
           AUTOP=$TAG_PRIORITY
@@ -832,9 +847,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                   cd $ROOT/var/log/packages
                   ls $ARGUMENT-* 2>/dev/null |sed 's/$/.txz/' | awk -f /usr/libexec/slackpkg/pkglist.awk|
                                               grep " $ARGUMENT "|awk '{print $1,$4}'|
-                                              ( read X
+                                              ( read X && (
                                                 echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1 /' -e 's/^/ /'
                                                 echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1_slack[0-9]/' -e 's/^/ /'
+                                                )
                                               )| grep -f - -n -m 1 ${TMPDIR}/pkglist
                 )
     fi
@@ -1488,7 +1504,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   fi
 
 
-  SPKGPLUS_VERSION="1.7.b4.1"
+  SPKGPLUS_VERSION="1.7.b4.2"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
