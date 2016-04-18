@@ -828,7 +828,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     AUTOP=no
     if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]];then
       ( cd $ROOT/var/log/packages
-        ls $ARGUMENT-*-*-* 2>/dev/null|sed 's/$/.txz/' | awk -f /usr/libexec/slackpkg/pkglist.awk|awk '{print $1}'|grep -q " $ARGUMENT "
+        ls $ARGUMENT-*-*-* 2>/dev/null|sed 's/$/.txz/' | awk -f /usr/libexec/slackpkg/pkglist.awk|grep -q " $ARGUMENT "
       )||return
       if [ ! -z "$AUTOPRIORITY" ];then
         if echo "$ARGUMENT"|grep -wq $AUTOPRIORITY;then
