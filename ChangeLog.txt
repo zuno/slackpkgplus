@@ -1,3 +1,6 @@
+Version 1.7.b4.3 - 02/May/2016
+  - Optimized code for generating ChangeLogs. (phenixia2003)
+
 Version 1.7.b4.2 - 18/Apr/2016
   - Improved cached downloader with specifics output for ChangeLogs
   - Fixed a bug in TAG_PRIORITY when the package is not installed
