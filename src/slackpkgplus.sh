@@ -1000,7 +1000,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     [ "$SPINNING" = "off" ] || spinning ${TMPDIR}/waiting &
 
     [ "$SENSITIVE_SEARCH" = "off" ] && GREPOPTS="--ignore-case"
-    [ ! "$WW_FILE_SEARCH" = "off" ] && GREPOPTS="$GREPOPTS --word-regexp"
 
     # -- PKGLIST:
     #      temporary file used to store data about packages. It uses
@@ -1018,6 +1017,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
       if [ "$CMD" == "file-search" ] ; then
         [ ! -e "${WORKDIR}/${DIR}-filelist.gz" ] && continue
+        [ ! "$WW_FILE_SEARCH" = "off" ] && GREPOPTS="$GREPOPTS --word-regexp"
 
         # NOTE:
         #  The awk below produces an output formatted like
