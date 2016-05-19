@@ -628,6 +628,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           cat ${TMPDIR}/$CLOGNAM >> ${TMPDIR}/ChangeLogs/$CLOGNAM
         else
           echo -e "                Repository $PREPO has no ChangeLog.txt.\n"
+          touch ${TMPDIR}/ChangeLogs/$CLOGNAM
         fi
       done
 
@@ -893,6 +894,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
       DIR=${CPRIORITY/:*/}
       [[ "$CPRIORITY" =~ .*:.* ]] && PAT=${CPRIORITY/*:/} || PAT=""
+      PAT=${PAT/.t?z/}
       REPOSITORY=${DIR/SLACKPKGPLUS_/}
 
         # pass to the next iteration when there are priority filters and the
@@ -1774,7 +1776,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           localpath=$(pwd)/$localpath
         fi
         ( cd $localpath
-          find . -type f -name '*.t[blxg]z'|sed "s,^./,./SLACKPKGPLUS_$PREPO/,"|awk -f /usr/libexec/slackpkg/pkglist.awk|sort -k6 -rn >> ${TMPDIR}/pkglist-pre
+          find . -type f -name '*.t[blxg]z'|sed "s,^./,./SLACKPKGPLUS_$repository/,"|awk -f /usr/libexec/slackpkg/pkglist.awk|sort -k6 -rn >> ${TMPDIR}/pkglist-pre
         )
         MIRRORPLUS[$repository]="file:/$localpath/"
         PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
@@ -1883,9 +1885,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         fi
       fi
 
-      if [ "$CMD" == "remove" ];then
-        package=$(echo $package|sed 's/\.t[blxg]z$//')
-      fi
+      package=$(echo $package|sed 's/\.t[blxg]z$//')
 
       [ ! -z "${PRIORITY_FILTER_RULE}" ] && echo "${PRIORITY_FILTER_RULE}" >> ${TMPDIR}/priority.filters
 
