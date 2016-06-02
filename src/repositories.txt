@@ -1,7 +1,7 @@
 Supported Repositories:
 
 > Supports GPG
-> slackpkgplus:  http://slakfinder.org/slackpkg+{,dev}/
+> slackpkgplus:  http://slakfinder.org/slackpkg+{,dev,1.6,1.7}/
 > multilib:      http://bear.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,14.1,14.2,current}/
 > alienbob:      http://bear.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,14.1,14.2,current}/{x86,x86_64}/
 > ktown:         http://bear.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,14.2,current}/{latest,5}/{x86,x86_64}/
@@ -10,9 +10,9 @@ Supported Repositories:
 > mleddesktop:   http://www.microlinux.fr/microlinux/desktop-{14.1,14.2}-{32,64}bit/
 > mledextras:    http://www.microlinux.fr/microlinux/extras-{14.1,14.2}-{32,64}bit/
 > mles:          http://www.microlinux.fr/microlinux/server-{14.0,14.1,14.2}-{32,64}bit/
-> msb:           http://slackware.org.uk/msb/{14.0,14.1,14.2,testing}/{1.6,1.8,1.10,1.12,1.14}/{x86,x86_64}/
+> msb:           http://slackware.org.uk/msb/{14.0,14.1,14.2,testing}/{1.6,1.8,1.10,1.12,1.14,1.14-gtk}/{x86,x86_64}/
 > slackers:      http://slack.conraid.net/repository/
-> slacke18:      http://ngc891.blogdns.net/pub/slacke18/slackware{,64,arm}-{14.1,14.2}/
+> slacke18:      http://ngc891.blogdns.net/pub/slacke18/slackware{,64}-{14.1,14.2}/
 > studioware:    http://studioware.org/files/packages/slackware{,64}-{13.37,14.0,14.1,14.2}/
 > slackonly:     http://panos.slackonly.com/pub/packages/{14.1,14.2,current}-{x86,x86_64}/
 > rlworkman:     http://rlworkman.net/pkgs/{13.37,14.0,14.1,14.2,current}/
@@ -21,9 +21,9 @@ Supported Repositories:
 > slint:         http://slint.fr/packages/{14.0,14.1,14.2}-{i486,x86_64}/
 > 
 > Partial GPG support
-> salixos(*):    http://download.salixos.org/{i486,x86_64}/{13.37,14.0,14.1,14.2}/
+> salixos:       http://download.salixos.org/{i486,x86_64}/{13.37,14.0,14.1,14.2}/
 
-(*) salixos partially supports GPG. These repositories contains the .asc file
+    salixos partially supports GPG. This repository contains the .asc file
     for CHECKSUMS.md5, so the 'update' process works with CHECKGPG=on and repository authenticity
     is guaranteed.
     Unfortunately the single packages do not include the related .asc file, so you must
@@ -31,7 +31,6 @@ Supported Repositories:
     integrity is guaranteed by the md5 authenticity.
 
 
-You can find a larger list at http://slakfinder.org
 
 
 Some specific notes:
@@ -43,9 +42,8 @@ Some specific notes:
 
 * ktown: 
     You need to put 'ktown' in PKGS_PRIORITY
-    Periodically you should run "slackpkg install ktown"
-      after run "slackpkg upgrade-all"
-    at moment 'latest' is 'kde4', 'testing' is 'kde5'.
+    Periodically you should run "slackpkg install ktown" after run "slackpkg upgrade-all"
+    at moment 'latest/' is 'kde4', '5/' is 'kde5'.
     after install you need to do some postinstall operation, see
       http://alien.slackbook.org/ktown/14.1/latest/
       http://alien.slackbook.org/ktown/current/5/
@@ -53,6 +51,10 @@ Some specific notes:
       slackpkg remove kdeadmin kdenetwork kdesdk kdetoys kwallet kdnssd
     kde5:
       kde5 (available only in slackware-current)
-      slackpkg remove libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt plasma-nm polkit-kde-agent-1 polkit-kde-kcmodules-1 kdeconnect-kde
+      slackpkg remove \
+          amor kde-base-artwork kdeartwork kgamma ksnapshot ktux oxygen-icons pairs \
+          superkaramba libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt \
+          plasma-nm polkit-kde-agent-1 polkit-kde-kcmodules-1 kdeconnect-kde
+
 
 Please read /usr/doc/slackpkg+-*/README for more details

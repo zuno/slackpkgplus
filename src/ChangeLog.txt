@@ -1,3 +1,13 @@
+Version 1.7.0rc2 - 22/May/2016
+  - ChangeLog did not skipped for dir:/ repositories
+  - ChangeLog did not show correctly certain slackware changelog
+  - dir:/ repositories does not need STRICTGPG nor GPG key; however remember
+    that if .asc file exists a key must be manually imported
+  - Removed makeinstlog.sh since it was bugged and no longer supported
+  - Repositories in default configuration file are bumped to 14.2
+  - Full 1.7.0 changes tracked in CHANGES file
+  - Added /usr/libexec/slackpkg/zchangelog.sh tool. Edit it to see instructions.
+
 Version 1.7.0rc1 - 19/May/2016
   - WW_FILE_SEARCH did affect file search AND package search
   - fixed warning in update when one repository does not have the changelog

@@ -31,6 +31,7 @@ http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86               
 http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86_64             yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://connochaetos.org/slack-n-free/slack-n-free-14.1                           yes  yes   Henry Jensen <hjensen@connochaetos.org>
 http://connochaetos.org/slack-n-free/slack-n-free64-14.1                         yes  yes   Henry Jensen <hjensen@connochaetos.org>
+http://connochaetos.org/slack-n-free/slack-n-free64-14.2                         yes  yes   Henry Jensen <hjensen@connochaetos.org>
 http://download.salixos.org/i486/13.37                                           yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
 http://download.salixos.org/i486/14.0                                            yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
 http://download.salixos.org/i486/14.1                                            yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
@@ -41,7 +42,6 @@ http://download.salixos.org/x86_64/14.1                                         
 http://download.salixos.org/x86_64/14.2                                          yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
 http://ngc891.blogdns.net/pub/slacke18/slackware-14.1                            yes  yes   Jérôme Pinot <ngc891@gmail.com>
 http://ngc891.blogdns.net/pub/slacke18/slackware64-14.1                          yes  yes   Jérôme Pinot <ngc891@gmail.com>
-http://ngc891.blogdns.net/pub/slacke18/slackwarearm-14.1                         yes  yes   Jérôme Pinot <ngc891@gmail.com>
 http://panos.slackonly.com/pub/packages/14.1-x86                                 yes  yes   Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
 http://panos.slackonly.com/pub/packages/14.1-x86_64                              yes  yes   Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
 http://panos.slackonly.com/pub/packages/current-x86                              yes  yes   Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
@@ -67,16 +67,15 @@ http://slackware.org.uk/msb/14.1/1.6/x86                                        
 http://slackware.org.uk/msb/14.1/1.6/x86_64                                      yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slackware.org.uk/msb/14.1/1.8/x86                                         yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slackware.org.uk/msb/14.1/1.8/x86_64                                      yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.org.uk/msb/testing/1.12/x86_64                                  yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slackware.org.uk/msb/testing/1.14/x86_64                                  yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slakfinder.org/slackpkg+                                                  yes  yes   Matteo Rossini <zerouno@slacky.it>
+http://slakfinder.org/slackpkg+1.6                                               yes  yes   Matteo Rossini <zerouno@slacky.it>
+http://slakfinder.org/slackpkg+1.7                                               yes  yes   Matteo Rossini <zerouno@slacky.it>
 http://slakfinder.org/slackpkg+dev                                               yes  yes   Matteo Rossini <zerouno@slacky.it>
 http://slint.fr/packages/14.0-i486                                               yes  yes   Didier Spaier <didier@slint.fr>
 http://slint.fr/packages/14.0-x86_64                                             yes  yes   Didier Spaier <didier@slint.fr>
 http://slint.fr/packages/14.1-i486                                               yes  yes   Didier Spaier <didier@slint.fr>
 http://slint.fr/packages/14.1-x86_64                                             yes  yes   Didier Spaier <didier@slint.fr>
-http://slint.fr/packages/14.2-i486                                               yes  yes   bad
-http://slint.fr/packages/14.2-x86_64                                             yes  yes   bad
 http://studioware.org/files/packages/slackware-13.37                             yes  yes   Studioware <info@studioware.org>
 http://studioware.org/files/packages/slackware-14.0                              yes  yes   Studioware <info@studioware.org>
 http://studioware.org/files/packages/slackware-14.1                              yes  yes   Studioware <info@studioware.org>

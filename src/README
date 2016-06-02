@@ -185,7 +185,7 @@ multilib repository in slackpkgplus.conf and install multilib simply by running:
 
 To configure multilib manually (e.g. if you have installed multilib already),
 uncomment the correct "MIRRORPLUS['multilib']=...",
-and uncomment "PKGS_PRIORITY=( multilib:.* )".
+and uncomment "PKGS_PRIORITY=( multilib )".
 If you do not plan to build yourself 32bit packages on your 64bit machine, you may
 avoid to install gcc:
 
@@ -201,10 +201,11 @@ To install multilib manually, launch:
 After that, you can keep multilib up-to-date by launching:
 # slackpkg update
 # slackpkg upgrade-all
-and re-running 'slackpkg install multilib' if 'slackpkg install-new' has found
-any new packages.
+periodically lauch
+# slackpkg install multilib
+to check for new multilib packages availability
 
-To uninstall multilib, you must remove 'multilib:.*' from PKGS_PRIORITY and from
+To uninstall multilib, you must remove 'multilib' from PKGS_PRIORITY and from
 REPOPLUS, but do NOT delete the related MIRRORPLUS line, then launch:
 # slackpkg update
 # slackpkg remove multilib
@@ -224,7 +225,7 @@ or just re-run
 KTOWN (LATEST KDE)
 
 If you want to install the latest KDE packages from AlienBOB's ktown repository
-(currently kde 4.14.3 in slackware 14.1 and kde 5.15.7 in slackware current),
+(currently kde 4.14.3 in slackware 14.1 and kde 5_16.05 in slackware current),
 add "PKGS_PRIORITY=( ktown )"
 # slackpkg update gpg
 # slackpkg update
@@ -244,6 +245,9 @@ slackpkg clean-system
 * ktown5 on slackware current:
 
 slackpkg remove libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt plasma-nm polkit-kde-agent-1 polkit-kde-kcmodules-1 kdeconnect-kde
+slackpkg remove amor kde-base-artwork kdeartwork kgamma ksnapshot ktux oxygen-icons pairs \
+                superkaramba libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt \
+                plasma-nm polkit-kde-agent-1 polkit-kde-kcmodules-1 kdeconnect-kde
 slackpkg install ktown
 slackpkg upgrade-all
 slackpkg clean-system
@@ -253,7 +257,9 @@ slackpkg reinstall ktown
 BEFORE slackpkg install ktown
 
 
-Note - for both ktown4 and ktown5 - that the packages to remove may change in newer version of ktown (at moment are kde-4.14.3 and kde-5_15.11), so I encourage to read linked documents BEFORE install it.
+Note - for both ktown4 and ktown5 - that the packages to remove may change in
+newer version of ktown (at moment are kde-4.14.3 and kde-5_16.05), 
+so I encourage to read linked documents BEFORE install it.
 
 
 After that, you can keep the ktown KDE up-to-date by launching:
@@ -261,13 +267,14 @@ After that, you can keep the ktown KDE up-to-date by launching:
 # slackpkg upgrade-all
 Periodically you should re-run
 # slackpkg install ktown
+to be sure that newer packages are installed
 
 To restore the Slackware KDE, remove all 'ktown' referall in config file, then launch:
 # slackpkg update
 # slackpkg reinstall kde
 # slackpkg install kde
 # slackpkg upgrade-all
-# slackpkg clean-system ktown
+# slackpkg clean-system
 # slackpkg update
 
 
@@ -291,8 +298,8 @@ You can:
    or
    # slackpkg upgrade file:../repo/package-2.0-noarch-1my.txz
 
-2) install/upgrade/reinstall all packages in a single directory (but not in a
-   subtree) by passing a directory name (optionally with absolute or relative
+2) install/upgrade/reinstall all packages in a directory and subdirectory
+   by passing a directory name (optionally with absolute or relative
    path), for example
    # slackpkg install dir:/myrep
    or
@@ -307,9 +314,8 @@ You can:
    of packages to install (see man slackpkg)
 
    If a directory contains the same package with two different versions,
-   slackpkg shows the 'alphabetically' highest, so pkg-9.1 will be listed
-   instead of pkg-8, but pkg-9 will be listed instead of pkg-10.
-   Sorry... this is a slackpkg limitation!
+   slackpkg+ try to get the higher version, but it can fail and list one in an
+   unpredictable order
 
    Tip: if you want to use dir:/myrepo to track your installations and you have
    lost the original txz/tgz file, you can simply create an empty file; this
@@ -321,7 +327,9 @@ You can:
    'slackpkg install .' (or upgrade) does not show you those packages, but
    'slackpkg reinstall .' DOES show them (so do not continue the installation)
 
-NOTE: slackpkg+ will skip the gpg and md5 check for personal packages!!
+NOTE: slackpkg+ honour gpg check if a .asc file exists but you must manually
+import the gpg key. If you don't want that, run with -checkgpg=off. The Strict
+GPG Check is disabled. If a .asc file does noti exists, the gpg check is disabled.
 
 -----
 
@@ -341,7 +349,7 @@ You can:
    For example, you may use this function to install a snapshot of slackpkg+
    (that is not available with 'slackpkg upgrade slackpkg+' because it is a beta
    version):
-   # slackpkg upgrade http://www.slakfinder.org/slackpkg+/pkg/slackpkg+-20130905.2-noarch-1mt.txz
+   # slackpkg upgrade http://www.slakfinder.org/slackpkg+/pkg/slackpkg+-1.7.0-noarch-1mt.txz
 
 2) install/upgrade/reinstall all packages in a single remote directory (but not
    in a subtree) even if the site owner does not create metadata:
@@ -454,7 +462,7 @@ By default slackpkg+ deny to install 32bit packages on a 64bit system.
 
 Set ALLOW32BIT=on to allow slackpkg+ to install 32bit packages on a 64bit slackware 
 installation (possibly unsafe). Please, do not install both 32 and 64bit of the same 
-package to avoid problems, and NEVER upgrade exitant 64bit packages with relative 32bit
+package to avoid problems, and NEVER upgrade existant 64bit packages with relative 32bit
 package.
 
 Do not forget to install the multilibs.
@@ -491,11 +499,8 @@ You can also do temporary case-insensitive searches overriding that setting in c
 SENSITIVE_SEARCH=off slackpkg search mplayer
 
 
-Note tha 'slackpkg install' still remains case sensitive, so you must use
+Note that 'slackpkg install' still remains case sensitive, so you must use
 slackpkg install MPlayer
-
-WARNING: do NOT run 'slackpkg search slackpkg' with SENSITIVE_SEARCH=on. It
-may take a very lot of time!
 
 -----
 
@@ -535,7 +540,7 @@ This is the same if you select DETAILED_INFO=none
 DETAILED_INFO=basic show the repository on the repository, and the url to 
 download it.
 
-DETAILED_INFO=filelist alo show the full file list of the package.
+DETAILED_INFO=filelist also show the full file list of the package.
 
 -----
 
@@ -557,26 +562,16 @@ To use a similar repository you may set STRICTGPG=off
 Note that sometime you may need to import manually the GPG-KEY with the command
 # gpg --import GPG-KEY
 
-Note: after upgrading from slackpkg+ <= 1.7, you must run slackpkg update gpg.
-Also you need it everytime you add or rename a reporitory in
+Note: after upgrading from slackpkg+ < 1.7, you must run slackpkg update gpg.
+Also you need it everytime you add or _rename_ a reporitory in
 slackpkgplus.conf.
 
 -----
 
 INSTALL LOG
 
-Slackpkg+ now create a log of all installed packages in /var/lib/slackpkg/install.log
-and try to add in this log from which repository you have downloaded the file.
+Slackpkg+ logs all install/remove/upgrade/reinstall actions in /var/lib/slackpkg/install.log
 This help you to track your slackware installation.
-
-You are encouraged to run '/usr/lib/slackpkg/makeinstlog.sh -t' (this may take a few)
-to initialize the log (it will create /var/lib/slackpkg/install.log.tmp). The '-t' 
-param add the repository name from which the packages was downloaded, but it may fails,
-so you are encouraged to review the file before rename it in install.log.
-Note that you can edit manually to modify or add informations.
-
-At every slackpkg install/upgrade/remove invocation, a new log will be added.
-At every slackpkg update invocation, a fast list rebuild will be done.
 
 -----
 

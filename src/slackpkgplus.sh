@@ -14,7 +14,7 @@ SLACKDIR_REGEXP="^((slackware)|(slackware64)|(extra)|(pasture)|(patches)|(testin
 
   # CLOG_PKGREGEX : regular expression used to find package entry in ChangeLog files
   # CLOG_SEPREGEX : regular expression that match the "standard" entry separator in a ChangeLog file
-CLOG_PKGREGEX="[.]t[blxg]z[:][ ]+(added|moved|rebuilt|upgraded)"
+CLOG_PKGREGEX="^[^ ]*:[ ]+(added|moved|rebuilt|upgraded)"
 CLOG_SEPREGEX="^[+][-]+[+][ ]*$"
 
 if [ -e $CONF/slackpkgplus.conf ];then
@@ -597,6 +597,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         BASEDIR=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]%}
         CLOGNAM=$PREPO.txt
 
+        if echo $BASEDIR | grep -q "^dir:/" ; then
+          # dir:/ repositories are ignored by slackpkg update
+          # but the ChangeLog must exists
+          touch ${TMPDIR}/ChangeLogs/$CLOGNAM
+          continue
+        fi
         LIMIT=1
 
         if [ "$SEARCH_CLOG_INPARENT" == "on" ] ; then
@@ -613,8 +619,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           if echo $URLFILE | grep -q "^file://" ; then
             URLFILE=${URLFILE:6}
             cp -v $URLFILE ${TMPDIR}/$CLOGNAM
-          elif echo $URLFILE | grep -q "^dir:/" ; then
-            touch ${TMPDIR}/$CLOGNAM
           else
             $DOWNLOADER ${TMPDIR}/$CLOGNAM $URLFILE
           fi
@@ -751,7 +755,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         REPO=$(echo $1|sed -r -e "s,^$TEMP,/," -e "s,/\./,/,g" -e "s,//,/,g" -e "s,^/,," -e "s,/.*$,," -e "s,SLACKPKGPLUS_,,")
       fi
 
-      if [ "$STRICTGPG" != "off" ];then
+      if [ "$STRICTGPG" != "off" ] && ! echo ${MIRRORPLUS[$REPO]}|grep -q ^dir:/;then
         if [ ! -z "$REPO" ] && [ -e "${WORKDIR}/gpg/GPG-KEY-${REPO}.gpg" ] ; then
           gpg  --no-default-keyring \
                --keyring ${WORKDIR}/gpg/GPG-KEY-${REPO}.gpg \
@@ -1537,7 +1541,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   fi
 
 
-  SPKGPLUS_VERSION="1.7.0rc1"
+  SPKGPLUS_VERSION="1.7.0rc2"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
