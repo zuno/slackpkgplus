@@ -884,8 +884,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ ! -z "$PKGINFOS" ] ; then
       LINEIDX=${PKGINFOS/:*/}
       PKGDATA=( ${PKGINFOS/*:/} )
-      mv ${TMPDIR}/pkglist ${TMPDIR}/pkglist.old
-      sed --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist.old > ${TMPDIR}/pkglist
+      if [ ${PRIORITYIDX} -ne ${LINEIDX} ];then
+        mv ${TMPDIR}/pkglist ${TMPDIR}/pkglist.old
+        sed --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist.old > ${TMPDIR}/pkglist
+      fi
       (( PRIORITYIDX++ ))
       if [ "$PKGDATA" ]; then
         NAME=${PKGDATA[1]}
@@ -976,8 +978,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           # R1:P is before R2:P in pkglist, and the user issue install|upgrade R2:P, slackpkg
           # will install R1:P instead.
           #
-        mv ${TMPDIR}/pkglist ${TMPDIR}/pkglist.old
-        sed  --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist.old > ${TMPDIR}/pkglist
+        if [ ${PRIORITYIDX} -ne ${LINEIDX} ];then
+          mv ${TMPDIR}/pkglist ${TMPDIR}/pkglist.old
+          sed  --expression "${LINEIDX}d" --expression "${PRIORITYIDX}i${PKGDATA[*]}" ${TMPDIR}/pkglist.old > ${TMPDIR}/pkglist
+        fi
         (( PRIORITYIDX++ ))
       fi
     done
@@ -1438,15 +1442,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             fi
           ;;
 
-          -1)
+          -1|124|125|126|127)
             EXIT=true
             dialog --clear
             echo -e "DIALOG ERROR:\n-------------" >> $TMPDIR/error.log
             cat $TMPDIR/dialog.out >> $TMPDIR/error.log
-            echo "-------------"
-            echo "If you want to continue using slackpkg, disable the DIALOG option in"
-            echo "$CONF/slackpkg.conf and try again."
-            echo "Help us to make slackpkg a better tool - report bugs to the slackpkg"
+            echo "-------------" >> $TMPDIR/error.log
+            echo "If you want to continue using slackpkg, disable the DIALOG option in" >> $TMPDIR/error.log
+            echo "$CONF/slackpkg.conf and try again." >> $TMPDIR/error.log
+            echo "Help us to make slackpkg a better tool - report bugs to the slackpkg" >> $TMPDIR/error.log
             echo "developers" >> $TMPDIR/error.log
             cleanup
           ;;

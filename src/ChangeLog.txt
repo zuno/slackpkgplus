@@ -1,4 +1,4 @@
-Version 1.7.0rc2 - 22/May/2016
+Version 1.7.0rc2 - 02/Jun/2016
   - ChangeLog did not skipped for dir:/ repositories
   - ChangeLog did not show correctly certain slackware changelog
   - dir:/ repositories does not need STRICTGPG nor GPG key; however remember
