@@ -1,58 +1,176 @@
+Expanded repositories
+http://slakfinder.org/slackpkg+/
+http://slakfinder.org/slackpkg+dev/
+http://slakfinder.org/slackpkg+1.6/
+http://slakfinder.org/slackpkg+1.7/
+http://bear.alienbase.nl/mirrors/people/alien/multilib/13.37/
+http://bear.alienbase.nl/mirrors/people/alien/multilib/14.0/
+http://bear.alienbase.nl/mirrors/people/alien/multilib/14.1/
+http://bear.alienbase.nl/mirrors/people/alien/multilib/14.2/
+http://bear.alienbase.nl/mirrors/people/alien/multilib/current/
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/13.37/x86/
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/13.37/x86_64/
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86/
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86_64/
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86/
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86_64/
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.2/x86/
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.2/x86_64/
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86/
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86_64/
+http://bear.alienbase.nl/mirrors/alien-kde/13.37/latest/x86/
+http://bear.alienbase.nl/mirrors/alien-kde/13.37/latest/x86_64/
+http://bear.alienbase.nl/mirrors/alien-kde/13.37/5/x86/
+http://bear.alienbase.nl/mirrors/alien-kde/13.37/5/x86_64/
+http://bear.alienbase.nl/mirrors/alien-kde/14.0/latest/x86/
+http://bear.alienbase.nl/mirrors/alien-kde/14.0/latest/x86_64/
+http://bear.alienbase.nl/mirrors/alien-kde/14.0/5/x86/
+http://bear.alienbase.nl/mirrors/alien-kde/14.0/5/x86_64/
+http://bear.alienbase.nl/mirrors/alien-kde/14.1/latest/x86/
+http://bear.alienbase.nl/mirrors/alien-kde/14.1/latest/x86_64/
+http://bear.alienbase.nl/mirrors/alien-kde/14.1/5/x86/
+http://bear.alienbase.nl/mirrors/alien-kde/14.1/5/x86_64/
+http://bear.alienbase.nl/mirrors/alien-kde/14.2/latest/x86/
+http://bear.alienbase.nl/mirrors/alien-kde/14.2/latest/x86_64/
+http://bear.alienbase.nl/mirrors/alien-kde/14.2/5/x86/
+http://bear.alienbase.nl/mirrors/alien-kde/14.2/5/x86_64/
+http://bear.alienbase.nl/mirrors/alien-kde/current/latest/x86/
+http://bear.alienbase.nl/mirrors/alien-kde/current/latest/x86_64/
+http://bear.alienbase.nl/mirrors/alien-kde/current/5/x86/
+http://bear.alienbase.nl/mirrors/alien-kde/current/5/x86_64/
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/13.37/x86/
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/13.37/x86_64/
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86/
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86_64/
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.1/x86/
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.1/x86_64/
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.2/x86/
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.2/x86_64/
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86/
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86_64/
+http://repository.slacky.eu/slackware-13.37/
+http://repository.slacky.eu/slackware-14.0/
+http://repository.slacky.eu/slackware-14.1/
+http://repository.slacky.eu/slackware-14.2/
+http://repository.slacky.eu/slackware64-13.37/
+http://repository.slacky.eu/slackware64-14.0/
+http://repository.slacky.eu/slackware64-14.1/
+http://repository.slacky.eu/slackware64-14.2/
+http://www.microlinux.fr/microlinux/desktop-14.1-32bit/
+http://www.microlinux.fr/microlinux/desktop-14.1-64bit/
+http://www.microlinux.fr/microlinux/desktop-14.2-32bit/
+http://www.microlinux.fr/microlinux/desktop-14.2-64bit/
+http://www.microlinux.fr/microlinux/extras-14.1-32bit/
+http://www.microlinux.fr/microlinux/extras-14.1-64bit/
+http://www.microlinux.fr/microlinux/extras-14.2-32bit/
+http://www.microlinux.fr/microlinux/extras-14.2-64bit/
+http://www.microlinux.fr/microlinux/server-14.0-32bit/
+http://www.microlinux.fr/microlinux/server-14.0-64bit/
+http://www.microlinux.fr/microlinux/server-14.1-32bit/
+http://www.microlinux.fr/microlinux/server-14.1-64bit/
+http://www.microlinux.fr/microlinux/server-14.2-32bit/
+http://www.microlinux.fr/microlinux/server-14.2-64bit/
+http://slackware.org.uk/msb/14.0/1.6/x86/
+http://slackware.org.uk/msb/14.0/1.6/x86_64/
+http://slackware.org.uk/msb/14.0/1.8/x86/
+http://slackware.org.uk/msb/14.0/1.8/x86_64/
+http://slackware.org.uk/msb/14.0/1.10/x86/
+http://slackware.org.uk/msb/14.0/1.10/x86_64/
+http://slackware.org.uk/msb/14.0/1.12/x86/
+http://slackware.org.uk/msb/14.0/1.12/x86_64/
+http://slackware.org.uk/msb/14.0/1.14/x86/
+http://slackware.org.uk/msb/14.0/1.14/x86_64/
+http://slackware.org.uk/msb/14.1/1.6/x86/
+http://slackware.org.uk/msb/14.1/1.6/x86_64/
+http://slackware.org.uk/msb/14.1/1.8/x86/
+http://slackware.org.uk/msb/14.1/1.8/x86_64/
+http://slackware.org.uk/msb/14.1/1.10/x86/
+http://slackware.org.uk/msb/14.1/1.10/x86_64/
+http://slackware.org.uk/msb/14.1/1.12/x86/
+http://slackware.org.uk/msb/14.1/1.12/x86_64/
+http://slackware.org.uk/msb/14.1/1.14/x86/
+http://slackware.org.uk/msb/14.1/1.14/x86_64/
+http://slackware.org.uk/msb/14.2/1.6/x86/
+http://slackware.org.uk/msb/14.2/1.6/x86_64/
+http://slackware.org.uk/msb/14.2/1.8/x86/
+http://slackware.org.uk/msb/14.2/1.8/x86_64/
+http://slackware.org.uk/msb/14.2/1.10/x86/
+http://slackware.org.uk/msb/14.2/1.10/x86_64/
+http://slackware.org.uk/msb/14.2/1.12/x86/
+http://slackware.org.uk/msb/14.2/1.12/x86_64/
+http://slackware.org.uk/msb/14.2/1.14/x86/
+http://slackware.org.uk/msb/14.2/1.14/x86_64/
+http://slackware.org.uk/msb/testing/1.6/x86/
+http://slackware.org.uk/msb/testing/1.6/x86_64/
+http://slackware.org.uk/msb/testing/1.8/x86/
+http://slackware.org.uk/msb/testing/1.8/x86_64/
+http://slackware.org.uk/msb/testing/1.10/x86/
+http://slackware.org.uk/msb/testing/1.10/x86_64/
+http://slackware.org.uk/msb/testing/1.12/x86/
+http://slackware.org.uk/msb/testing/1.12/x86_64/
+http://slackware.org.uk/msb/testing/1.14/x86/
+http://slackware.org.uk/msb/testing/1.14/x86_64/
+http://slack.conraid.net/repository/
+http://ngc891.blogdns.net/pub/slacke18/slackware-14.1/
+http://ngc891.blogdns.net/pub/slacke18/slackware-14.2/
+http://ngc891.blogdns.net/pub/slacke18/slackware64-14.1/
+http://ngc891.blogdns.net/pub/slacke18/slackware64-14.2/
+http://ngc891.blogdns.net/pub/slacke18/slackwarearm-14.1/
+http://ngc891.blogdns.net/pub/slacke18/slackwarearm-14.2/
+http://studioware.org/files/packages/slackware-13.37/
+http://studioware.org/files/packages/slackware-14.0/
+http://studioware.org/files/packages/slackware-14.1/
+http://studioware.org/files/packages/slackware-14.2/
+http://studioware.org/files/packages/slackware64-13.37/
+http://studioware.org/files/packages/slackware64-14.0/
+http://studioware.org/files/packages/slackware64-14.1/
+http://studioware.org/files/packages/slackware64-14.2/
+http://panos.slackonly.com/pub/packages/14.1-x86/
+http://panos.slackonly.com/pub/packages/14.1-x86_64/
+http://panos.slackonly.com/pub/packages/14.2-x86/
+http://panos.slackonly.com/pub/packages/14.2-x86_64/
+http://panos.slackonly.com/pub/packages/current-x86/
+http://panos.slackonly.com/pub/packages/current-x86_64/
+http://rlworkman.net/pkgs/13.37/
+http://rlworkman.net/pkgs/14.0/
+http://rlworkman.net/pkgs/14.1/
+http://rlworkman.net/pkgs/14.2/
+http://rlworkman.net/pkgs/current/
+http://www.slackel.gr/repo/i486/current/
+http://www.slackel.gr/repo/x86_64/current/
+http://connochaetos.org/slack-n-free/slack-n-free-14.1/
+http://connochaetos.org/slack-n-free/slack-n-free-14.2/
+http://connochaetos.org/slack-n-free/slack-n-free64-14.1/
+http://connochaetos.org/slack-n-free/slack-n-free64-14.2/
+http://slint.fr/packages/14.0-i486/
+http://slint.fr/packages/14.0-x86_64/
+http://slint.fr/packages/14.1-i486/
+http://slint.fr/packages/14.1-x86_64/
+http://slint.fr/packages/14.2-i486/
+http://slint.fr/packages/14.2-x86_64/
+http://download.salixos.org/i486/13.37/
+http://download.salixos.org/i486/14.0/
+http://download.salixos.org/i486/14.1/
+http://download.salixos.org/i486/14.2/
+http://download.salixos.org/x86_64/13.37/
+http://download.salixos.org/x86_64/14.0/
+http://download.salixos.org/x86_64/14.1/
+http://download.salixos.org/x86_64/14.2/
+http://slakfinder.org
+http://alien.slackbook.org/ktown/14.1/latest/
+http://alien.slackbook.org/ktown/current/5/
 url	md5	gpg	pack
 
-http://download.salixos.org/i486/13.37	yes	yes	yes
-http://download.salixos.org/i486/14.0	yes	yes	yes
-http://download.salixos.org/i486/14.1	yes	yes	yes
-http://download.salixos.org/x86_64/13.37	yes	yes	yes
-http://download.salixos.org/x86_64/14.0	yes	yes	yes
-http://download.salixos.org/x86_64/14.1	yes	yes	yes
-http://ngc891.blogdns.net/pub/slacke18/slackware-14.1	yes	yes	yes
-http://ngc891.blogdns.net/pub/slacke18/slackware64-14.1	yes	yes	yes
-http://ngc891.blogdns.net/pub/slacke18/slackwarearm-14.1	yes	yes	yes
-http://packages.slackonly.com/pub/packages/14.1-x86	yes	yes	yes
-http://packages.slackonly.com/pub/packages/14.1-x86_64	yes	yes	yes
-http://packages.slackonly.com/pub/packages/current-x86	yes	yes	yes
-http://packages.slackonly.com/pub/packages/current-x86_64	yes	yes	yes
-http://ponce.cc/slackers/repository	yes	yes	yes
-http://repository.slacky.eu/slackware-13.37	yes	no	yes
-http://repository.slacky.eu/slackware-14.0	yes	yes	yes
-http://repository.slacky.eu/slackware-14.1	yes	yes	yes
-http://repository.slacky.eu/slackware64-13.37	yes	no	yes
-http://repository.slacky.eu/slackware64-14.0	yes	yes	yes
-http://repository.slacky.eu/slackware64-14.1	yes	yes	yes
-http://rlworkman.net/pkgs/13.37	yes	yes	yes
-http://rlworkman.net/pkgs/14.0	yes	yes	yes
-http://rlworkman.net/pkgs/14.1	yes	yes	yes
-http://rlworkman.net/pkgs/current	yes	yes	yes
-http://slackware.org.uk/msb/14.0/1.6/x86	yes	yes	yes
-http://slackware.org.uk/msb/14.0/1.6/x86_64	yes	yes	yes
-http://slackware.org.uk/msb/14.1/1.10/x86	yes	yes	yes
-http://slackware.org.uk/msb/14.1/1.10/x86_64	yes	yes	yes
-http://slackware.org.uk/msb/14.1/1.12/x86	yes	yes	yes
-http://slackware.org.uk/msb/14.1/1.12/x86_64	yes	yes	yes
-http://slackware.org.uk/msb/14.1/1.6/x86	yes	yes	yes
-http://slackware.org.uk/msb/14.1/1.6/x86_64	yes	yes	yes
-http://slackware.org.uk/msb/14.1/1.8/x86	yes	yes	yes
-http://slackware.org.uk/msb/14.1/1.8/x86_64	yes	yes	yes
-http://slackware.org.uk/msb/testing/1.12/x86	yes	yes	yes
-http://slackware.org.uk/msb/testing/1.12/x86_64	yes	yes	yes
-http://slakfinder.org/slackpkg+	yes	yes	yes
-http://studioware.org/files/packages/slackware-13.37	yes	yes	yes
-http://studioware.org/files/packages/slackware-14.0	yes	yes	yes
-http://studioware.org/files/packages/slackware-14.1	yes	yes	yes
-http://studioware.org/files/packages/slackware64-13.37	yes	yes	yes
-http://studioware.org/files/packages/slackware64-14.0	yes	yes	yes
-http://studioware.org/files/packages/slackware64-14.1	yes	yes	yes
 http://bear.alienbase.nl/mirrors/alien-kde/13.37/latest/x86	yes	yes	yes
 http://bear.alienbase.nl/mirrors/alien-kde/13.37/latest/x86_64	yes	yes	yes
 http://bear.alienbase.nl/mirrors/alien-kde/14.0/latest/x86	yes	yes	yes
 http://bear.alienbase.nl/mirrors/alien-kde/14.0/latest/x86_64	yes	yes	yes
 http://bear.alienbase.nl/mirrors/alien-kde/14.1/latest/x86	yes	yes	yes
 http://bear.alienbase.nl/mirrors/alien-kde/14.1/latest/x86_64	yes	yes	yes
+http://bear.alienbase.nl/mirrors/alien-kde/current/5/x86	yes	yes	yes
+http://bear.alienbase.nl/mirrors/alien-kde/current/5/x86_64	yes	yes	yes
 http://bear.alienbase.nl/mirrors/alien-kde/current/latest/x86	yes	yes	yes
 http://bear.alienbase.nl/mirrors/alien-kde/current/latest/x86_64	yes	yes	yes
-http://bear.alienbase.nl/mirrors/alien-kde/current/testing/x86	yes	yes	yes
-http://bear.alienbase.nl/mirrors/alien-kde/current/testing/x86_64	yes	yes	yes
 http://bear.alienbase.nl/mirrors/people/alien/multilib/13.37	yes	yes	yes
 http://bear.alienbase.nl/mirrors/people/alien/multilib/14.0	yes	yes	yes
 http://bear.alienbase.nl/mirrors/people/alien/multilib/14.1	yes	yes	yes
@@ -73,6 +191,62 @@ http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86	yes	yes	yes
 http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86_64	yes	yes	yes
 http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86	yes	yes	yes
 http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86_64	yes	yes	yes
+http://connochaetos.org/slack-n-free/slack-n-free-14.1	yes	yes	yes
+http://connochaetos.org/slack-n-free/slack-n-free64-14.1	yes	yes	yes
+http://connochaetos.org/slack-n-free/slack-n-free64-14.2	yes	yes	yes
+http://download.salixos.org/i486/13.37	yes	yes	yes
+http://download.salixos.org/i486/14.0	yes	yes	yes
+http://download.salixos.org/i486/14.1	yes	yes	yes
+http://download.salixos.org/i486/14.2	yes	yes	yes
+http://download.salixos.org/x86_64/13.37	yes	yes	yes
+http://download.salixos.org/x86_64/14.0	yes	yes	yes
+http://download.salixos.org/x86_64/14.1	yes	yes	yes
+http://download.salixos.org/x86_64/14.2	yes	yes	yes
+http://ngc891.blogdns.net/pub/slacke18/slackware-14.1	yes	yes	yes
+http://ngc891.blogdns.net/pub/slacke18/slackware64-14.1	yes	yes	yes
+http://ngc891.blogdns.net/pub/slacke18/slackwarearm-14.1	yes	yes	yes
+http://panos.slackonly.com/pub/packages/14.1-x86	yes	yes	yes
+http://panos.slackonly.com/pub/packages/14.1-x86_64	yes	yes	yes
+http://panos.slackonly.com/pub/packages/current-x86	yes	yes	yes
+http://panos.slackonly.com/pub/packages/current-x86_64	yes	yes	yes
+http://repository.slacky.eu/slackware-13.37	yes	yes	yes
+http://repository.slacky.eu/slackware-14.0	yes	yes	yes
+http://repository.slacky.eu/slackware-14.1	yes	yes	yes
+http://repository.slacky.eu/slackware64-13.37	yes	yes	yes
+http://repository.slacky.eu/slackware64-14.0	yes	yes	yes
+http://repository.slacky.eu/slackware64-14.1	yes	yes	yes
+http://rlworkman.net/pkgs/13.37	yes	yes	yes
+http://rlworkman.net/pkgs/14.0	yes	yes	yes
+http://rlworkman.net/pkgs/14.1	yes	yes	yes
+http://rlworkman.net/pkgs/current	yes	yes	yes
+http://slack.conraid.net/repository	yes	yes	yes
+http://slackware.org.uk/msb/14.0/1.6/x86	yes	yes	yes
+http://slackware.org.uk/msb/14.0/1.6/x86_64	yes	yes	yes
+http://slackware.org.uk/msb/14.1/1.10/x86	yes	yes	yes
+http://slackware.org.uk/msb/14.1/1.10/x86_64	yes	yes	yes
+http://slackware.org.uk/msb/14.1/1.12/x86	yes	yes	yes
+http://slackware.org.uk/msb/14.1/1.12/x86_64	yes	yes	yes
+http://slackware.org.uk/msb/14.1/1.6/x86	yes	yes	yes
+http://slackware.org.uk/msb/14.1/1.6/x86_64	yes	yes	yes
+http://slackware.org.uk/msb/14.1/1.8/x86	yes	yes	yes
+http://slackware.org.uk/msb/14.1/1.8/x86_64	yes	yes	yes
+http://slackware.org.uk/msb/testing/1.14/x86_64	yes	yes	yes
+http://slakfinder.org/slackpkg+	yes	yes	yes
+http://slakfinder.org/slackpkg+1.6	yes	yes	yes
+http://slakfinder.org/slackpkg+1.7	yes	yes	yes
+http://slakfinder.org/slackpkg+dev	yes	yes	yes
+http://slint.fr/packages/14.0-i486	yes	yes	yes
+http://slint.fr/packages/14.0-x86_64	yes	yes	yes
+http://slint.fr/packages/14.1-i486	yes	yes	yes
+http://slint.fr/packages/14.1-x86_64	yes	yes	yes
+http://slint.fr/packages/14.2-i486	yes	bad	yes
+http://slint.fr/packages/14.2-x86_64	yes	bad	yes
+http://studioware.org/files/packages/slackware-13.37	yes	yes	yes
+http://studioware.org/files/packages/slackware-14.0	yes	yes	yes
+http://studioware.org/files/packages/slackware-14.1	yes	yes	yes
+http://studioware.org/files/packages/slackware64-13.37	yes	yes	yes
+http://studioware.org/files/packages/slackware64-14.0	yes	yes	yes
+http://studioware.org/files/packages/slackware64-14.1	yes	yes	yes
 http://www.microlinux.fr/microlinux/desktop-14.1-32bit	yes	yes	yes
 http://www.microlinux.fr/microlinux/desktop-14.1-64bit	yes	yes	yes
 http://www.microlinux.fr/microlinux/desktop-14.2-32bit	yes	yes	yes
@@ -88,6 +262,4 @@ http://www.microlinux.fr/microlinux/server-14.1-64bit	yes	yes	yes
 http://www.microlinux.fr/microlinux/server-14.2-32bit	yes	yes	yes
 http://www.microlinux.fr/microlinux/server-14.2-64bit	yes	yes	yes
 http://www.slackel.gr/repo/i486/current	yes	yes	yes
-http://www.slackel.gr/repo/i486/kde5	yes	yes	yes
 http://www.slackel.gr/repo/x86_64/current	yes	yes	yes
-http://www.slackel.gr/repo/x86_64/kde5	yes	yes	yes

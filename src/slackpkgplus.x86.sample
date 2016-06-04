@@ -83,6 +83,10 @@ MIRRORPLUS['restricted']=http://bear.alienbase.nl/mirrors/people/alien/restricte
 MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware-14.1/
 
 # use this to keep the slackpkg+ package updated
+# note: slackpkg+1.7 is coming up; when it will be released as stable, slackpkg+/ tree will
+#       be upgraded to the new release. set slackpkg+1.6/ to avoid the upgrade or slackpkg+1.7/ to
+#       start using the pre-release.
+#MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+1.6/
 MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
 
 # Local repository:

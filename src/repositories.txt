@@ -1,32 +1,34 @@
 Supported Repositories:
 
 > Supports GPG
-> slackpkgplus:  http://slakfinder.org/slackpkg+/
-> multilib:      http://bear.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,14.1,current}/
-> alienbob:      http://bear.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
-> ktown:         http://bear.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,current}/{latest,testing}/{x86,x86_64}/
-> restricted:    http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,14.1,current}/{x86,x86_64}/
-> slacky:        http://repository.slacky.eu/slackware{,64}-{13.37,14.0,14.1}/
+> slackpkgplus:  http://slakfinder.org/slackpkg+{,dev,1.6,1.7}/
+> multilib:      http://bear.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,14.1,14.2,current}/
+> alienbob:      http://bear.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,14.1,14.2,current}/{x86,x86_64}/
+> ktown:         http://bear.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,14.2,current}/{latest,5}/{x86,x86_64}/
+> restricted:    http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,14.1,14.2,current}/{x86,x86_64}/
+> slacky:        http://repository.slacky.eu/slackware{,64}-{13.37,14.0,14.1,14.2}/
 > mleddesktop:   http://www.microlinux.fr/microlinux/desktop-{14.1,14.2}-{32,64}bit/
 > mledextras:    http://www.microlinux.fr/microlinux/extras-{14.1,14.2}-{32,64}bit/
 > mles:          http://www.microlinux.fr/microlinux/server-{14.0,14.1,14.2}-{32,64}bit/
-> msb:           http://slackware.org.uk/msb/{14.0,14.1,testing}/{1.6,1.8,1.10,1.12}/{x86,x86_64}/
-> slackers:      http://ponce.cc/slackers/repository/
-> slacke18:      http://ngc891.blogdns.net/pub/slacke18/slackware{,64,arm}-14.1/
-> studioware:    http://studioware.org/files/packages/slackware{,64}-{13.37,14.0,14.1}/
-> slackonly:     http://packages.slackonly.com/pub/packages/{14.1,current}-{x86,x86_64}/
-> rlworkman:     http://rlworkman.net/pkgs/{13.37,14.0,14.1,current}/
-> slackel:       http://www.slackel.gr/repo/{i486,x86_64}/{current,kde5}/
+> msb:           http://slackware.org.uk/msb/{14.0,14.1,14.2,testing}/{1.6,1.8,1.10,1.12,1.14}/{x86,x86_64}/
+> slackers:      http://slack.conraid.net/repository/
+> slacke18:      http://ngc891.blogdns.net/pub/slacke18/slackware{,64,arm}-{14.1,14.2}/
+> studioware:    http://studioware.org/files/packages/slackware{,64}-{13.37,14.0,14.1,14.2}/
+> slackonly:     http://panos.slackonly.com/pub/packages/{14.1,14.2,current}-{x86,x86_64}/
+> rlworkman:     http://rlworkman.net/pkgs/{13.37,14.0,14.1,14.2,current}/
+> slackel:       http://www.slackel.gr/repo/{i486,x86_64}/current/
+> connochaetos:  http://connochaetos.org/slack-n-free/slack-n-free{,64}-{14.1,14.2}/
+> slint:         http://slint.fr/packages/{14.0,14.1,14.2}-{i486,x86_64}/
 > 
-> Does NOT support GPG
-> salixos(*):    http://download.salixos.org/{i486,x86_64}/{13.37,14.0,14.1}/
+> Partial GPG support
+> salixos(*):    http://download.salixos.org/{i486,x86_64}/{13.37,14.0,14.1,14.2}/
 
-(*) salixos and slackel partially supports GPG. These repositories contains the .asc file
+(*) salixos partially supports GPG. These repositories contains the .asc file
     for CHECKSUMS.md5, so the 'update' process works with CHECKGPG=on and repository authenticity
     is guaranteed.
     Unfortunately the single packages do not include the related .asc file, so you must
     install the packages with 'slackpkg -checkgpg=off install <packagename>', but the
-    authenticity is guaranteed by the md5 authenticity.
+    integrity is guaranteed by the md5 authenticity.
 
 
 You can find a larger list at http://slakfinder.org
