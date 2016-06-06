@@ -1,0 +1,68 @@
+# Slackware slackpkg(8) completion                             -*- shell-script -*-
+#
+# This add the bash completation for slackpkg command.
+# To enable it copy this file in /etc/bash_completion.d/
+#
+# Be sure to install the bash-completation package
+#
+# # slackpkg install bash-completation
+# 
+
+_slackpkg()
+{
+    local cur prev words cword
+    _init_completion || return
+
+    local special i wc
+    wc=${#words[@]}
+
+    for (( i=0; i < ${#words[@]}-1; i++ )); do
+      if [[ ${words[i]} == @(install|remove|search|upgrade|reinstall|clean-system|upgrade-all|install-new|search|file-search|info|update|new-config|check-updates) ]]; then
+        special=${words[i]}
+        break
+      fi
+    done
+
+    if [[ -n $special ]]; then
+      case $special in
+        upgrade|remove) COMPREPLY=( $( cd /var/log/packages; ls -- $cur* 2>/dev/null|rev|cut -f4- -d-|rev ) ) ;;
+        update)  (( i++ )) ; (( wc-- )) ; [ $i -eq $wc ]&& COMPREPLY=( $( echo gpg|grep "^$cur" ) ) ;;
+        search) COMPREPLY=( $( grep -- "$cur" /var/lib/slackpkg/pkglist 2>/dev/null|awk '{print $2}'|grep -- "$cur" ) ) ;;
+        info) COMPREPLY=( $( grep -- " $cur" /var/lib/slackpkg/pkglist 2>/dev/null|awk '{print $2}'|grep -- "^$cur" ) ) ;;
+        install) COMPREPLY=( $(cd /var/log/packages
+                               grep "^[^ ]* $cur" /var/lib/slackpkg/pkglist 2>/dev/null|awk '{print $2}' |
+                                       grep -v -f <(ls -- $cur* 2>/dev/null|rev|cut -f4- -d-|rev|sed -r -e "s/^/^/" -e "s/$/$/") 
+                            ) )
+                ;;
+        reinstall) [ ! -z "$cur" ]&& COMPREPLY=( $( cd /var/log/packages
+                                grep "^[^ ]* $cur" /var/lib/slackpkg/pkglist 2>/dev/null|
+                                      grep -f <(ls -- $cur* 2>/dev/null) |awk '{print $2}'
+                            ) )
+                ;;
+        update) COMPREPLY=( gpg ) ;;
+      esac
+      return 0
+    fi
+
+    if [[ "$cur" == -* ]]; then
+      COMPREPLY=( $( compgen -W '
+                                    -delall=off -checkmd5=off -checkgpg=off -checksize=on 
+                                    -postinst=off -onoff=off -download_all=off -dialog=off 
+                                    -batch=on -only_new_dotnew=on 
+                                    -use_includes=off -spinning=off -default_answer=yes
+            ' -- "$cur" ) )
+    else
+
+      COMPREPLY=( $( compgen -W '
+                                    install remove search upgrade reinstall 
+                                    clean-system upgrade-all install-new
+                                    search file-search
+                                    info update new-config check-updates
+                                    -
+            ' -- "$cur" ) )
+
+    fi
+
+    return 0
+} &&
+complete -F _slackpkg slackpkg

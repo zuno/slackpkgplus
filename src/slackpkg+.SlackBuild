@@ -66,6 +66,7 @@ cp $CWD/setupmultilib.sh usr/doc/slackpkg+-$VERSION/
 cp $CWD/checkrepos.sh usr/doc/slackpkg+-$VERSION/
 cp $CWD/zchangelog.sh usr/libexec/slackpkg/zchangelog.sh
 cp $CWD/slackpkg+.SlackBuild usr/doc/slackpkg+-$VERSION/
+cp $CWD/slackpkg.bash_completion usr/doc/slackpkg+-$VERSION/
 cp $CWD/slackpkgplus.*.sample usr/doc/slackpkg+-$VERSION/
 cp $CWD/greylist etc/slackpkg/greylist.new
 cp $CWD/slack-desc install/

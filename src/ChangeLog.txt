@@ -1,3 +1,10 @@
+Version 1.7.0rc3 - 03/Jun/2016
+  This could be the last batch of updates before 1.7.0 stable, so please test!
+  - dialog did no more trap develop errors (but if occurs please report it)
+  - givepriority did drop matched package if it is the first in pkglist
+  - Added /usr/src/slackpkg+-*/slackpkg.bash_completation. Edit it for
+    instructions.
+
 Version 1.7.0rc2 - 02/Jun/2016
   - ChangeLog did not skipped for dir:/ repositories
   - ChangeLog did not show correctly certain slackware changelog
