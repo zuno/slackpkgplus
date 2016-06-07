@@ -1,4 +1,4 @@
-Tue Jun 06 21:33:00 CEST 2016
+Tue Jun 07 19:55:00 CEST 2016
 pkg/slackpkg+-1.7.0-noarch-1mt.txz: Upgraded
   After an huge work from community, we release the new slackpkg+ 1.7; so as
   everytime :), a big thanks goes to phenixia2003 that wrote most new code.
