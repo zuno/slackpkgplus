@@ -40,7 +40,7 @@
 
 - slackpkg+ now uses a Strict GPG Check for packages and metadata .asc files.
     This is a security fix.
-    slackpkg was bird to install slackware packages from official mirrors; they
+    slackpkg was born to install slackware packages from official mirrors; they
     are signed with the official slackware GPG-KEY, so no other packages may be
     added (unless you disable GPG check).
     slackpkg+ introduces the ability to download keys from many repositories; as
@@ -264,7 +264,7 @@ Version 1.7.a1 - 04/Jan/2016
   - Added repositories; improved checkrepos.sh
   - Strict GPG Check: Packages and metadata in one repository should be signed
     with just the root GPG-KEY. This improve security. Some repository might
-    want to contains eterogeneous package. In this case, set STRICTGPG=off.
+    want to contains heterogeneous package. In this case, set STRICTGPG=off.
     See README.
   - New repository for slackpkg+ development version
  

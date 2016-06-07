@@ -120,7 +120,7 @@ Version 1.7.a1 - 04/Jan/2016
   - Added repositories; improved checkrepos.sh
   - Strict GPG Check: Packages and metadata in one repository should be signed
     with just the root GPG-KEY. This improve security. Some repository might
-    want to contains eterogeneous package. In this case, set STRICTGPG=off.
+    want to contains heterogeneous package. In this case, set STRICTGPG=off.
     See README.
   - New repository for slackpkg+ development version
 
