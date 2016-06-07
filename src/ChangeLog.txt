@@ -1,3 +1,30 @@
+Tue Jun 07 19:55:00 CEST 2016
+pkg/slackpkg+-1.7.0-noarch-1mt.txz: Upgraded
+  After an huge work from community, we release the new slackpkg+ 1.7; so as
+  everytime :), a big thanks goes to phenixia2003 that wrote most new code.
+  We tried to release a more stable and improved version.
+  slackpkg+ 1.7 adds new features with some new entries in configuration file
+  that you should merge in your old slackpkgplus.conf:
+    SEARCH_CLOG_INPARENT , WW_FILE_SEARCH , DETAILED_INFO , STRICTGPG
+  see README for details.
+  New features:
+  - Now slackpkg+ allow you to see the ChangeLog in dialogbox.
+  - Now 'info' command allow you to see more details for the packages.
+  - Now slackpkg+ uses a Strict GPG Check.
+  Improvements:
+  - Quick output for Cached Download for a most clear output.
+  - Improved performance for huge package lists.
+  - Graylist works in remove and clean-system.
+  - 'search' command is faster, looks for dir:/ repositories too, shows packages
+    from all repositories (duplicated included), sort it by status and colors
+    the output, and the 'file-search' command now can find substrings.
+  - Cached Download works with check-updates too.
+  - Reinstall command allow to select repository name when two repositories
+    contains the same package.
+  And many other BugFix or small things. See 'CHANGES' in documentation for a
+  full list.
++-------------------------+
+
 Version 1.7.0rc3 - 03/Jun/2016
   This could be the last batch of updates before 1.7.0 stable, so please test!
   - dialog did no more trap develop errors (but if occurs please report it)

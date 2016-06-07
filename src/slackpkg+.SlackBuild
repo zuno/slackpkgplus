@@ -2,8 +2,9 @@
 
 set -e 
 
-VERSION=$(head -1 ChangeLog.txt|awk '{print $2}')
-BUILD=${BUILD:-1mt}
+TXZ=$(head -2 ChangeLog.txt|cut -f1 -d:|cut -f2 -d/|tail -1)
+VERSION=$(echo $TXZ|cut -f2 -d-)
+BUILD=$(echo $TXZ|cut -f4 -d-|sed 's/.txz//')
 
 CWD=`pwd`
 TMP=${TMP:-/tmp}
@@ -33,7 +34,7 @@ if [ ! -z "$INST" ];then
   fi
 fi
 
-SPKGPLUS_VERSION=$(grep 'SPKGPLUS_VERSION="'$VERSION'"' slackpkgplus.sh|cut -f2 -d'"')
+SPKGPLUS_VERSION=$(grep 'SPKGPLUS_VERSION="' slackpkgplus.sh|cut -f2 -d'"')
 if [ "$SPKGPLUS_VERSION" != "$VERSION" ];then
   echo "WARNING: slackpkg+ version in ChangeLog.txt ($VERSION) does not match with"
   echo "         slackpkg+ version in slackpkgplus.sh ($SPKGPLUS_VERSION)"
@@ -78,7 +79,7 @@ chmod +x usr/libexec/slackpkg/zchangelog.sh
 chmod +x usr/doc/slackpkg+-$VERSION/setupmultilib.sh
 
 
-makepkg -l y -c y $OUTPUT/slackpkg+-$VERSION-noarch-$BUILD.txz
+makepkg -l y -c y $OUTPUT/$TXZ
 
 
 
