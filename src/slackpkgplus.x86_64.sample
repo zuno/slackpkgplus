@@ -62,7 +62,7 @@ SHOWORDER=package
 DETAILED_INFO=none
 
 # Enable (on) / Disable (off) a Strict GPG Check. A repository should contains packages signed
-# with the only original GPG-KEY. In some custom repository may be wanted to mix eterogeneous
+# with the only original GPG-KEY. In some custom repository may be wanted to mix heterogeneous
 # packages; to use that repository set Strict GPG Check to off. P.S: a repository can
 # contain just ONE gpg-key; you may manually import the other.
 STRICTGPG=on
@@ -117,8 +117,12 @@ REPOPLUS=( slackpkgplus )
 #MIRRORPLUS['restricted']=http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.2/x86_64/
 #MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware64-14.2/
 
-# use this to keep the slackpkg+ package updated
+# use this to keep the slackpkg+ package updated to the latest stable release
+#MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
+
+# use the development branch to use the mainline version and help develop by reporting bugs.
 MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+dev/
+
 
 # Slackware current - x86_64
 #MIRRORPLUS['multilib']=http://bear.alienbase.nl/mirrors/people/alien/multilib/current/

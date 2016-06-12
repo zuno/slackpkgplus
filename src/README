@@ -434,6 +434,33 @@ the file.
 
 Set CACHEUPDATE=on to enable it. Default is 'off'
 
+-----
+
+SEARCH_CLOG_INPARENT Option
+
+Starting from 1.7.0, slackpkg+ allow you to see the ChangeLog in dialog box.
+When you run 'slackpkg update' it download all ChangeLog.txt from all
+repositories (if available).
+Then when you go to in install/upgrade a package, you have a chance to
+read it before install the package.
+Note that the ChangeLog must be in the same Slackware changelog format.
+
+Some repository does not have the ChangeLog.txt in the main url but has it
+in a parent url.
+
+For example the alienbob multilib repository:
+  http://bear.alienbase.nl/mirrors/people/alien/multilib/14.1/
+has not the ChangeLog.txt in tree, but it is placed in parent directory:
+  http://bear.alienbase.nl/mirrors/people/alien/multilib/ChangeLog.txt
+
+Be sure to set SEARCH_CLOG_INPARENT to 'on' to search it in parent.
+Note that ascend out of main url sometime may be unsafe; so if it does not
+work reset it to 'off'.
+Also note that slackpkg+ use wget as default downloader and when the
+ChangeLog.txt is not found it return "ERROR 404: Not Found" before try
+again in the parent url.
+You may avoid it by use the Cached Updates downloader that trap it for a
+quick output. So you are encouraged to set CACHEUPDATE=on
 
 -----
 
@@ -546,7 +573,7 @@ DETAILED_INFO=filelist also show the full file list of the package.
 
 STRICTGPG
 
-slackpkg was bird to install slackware packages from official mirrors; they
+slackpkg was born to install slackware packages from official mirrors; they
 are signed with the official slackware GPG-KEY, so no other packages may be
 added (unless you disable GPG check).
 slackpkg+ introduces the ability to download keys from many repositories; as

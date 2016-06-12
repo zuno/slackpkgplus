@@ -1,3 +1,9 @@
+Tue Jun 12 20:11:00 CEST 2016
+pkg/slackpkg+-1.7.0d0-noarch-1mt.txz: Upgraded
+  Setting up mainline branch.
+  - Fixed some typos and missed SEARCH_CLOG_INPARENT documentation in README
++-------------------------+
+
 Version 1.7.0rc3 - 03/Jun/2016
   This could be the last batch of updates before 1.7.0 stable, so please test!
   - dialog did no more trap develop errors (but if occurs please report it)
@@ -93,7 +99,7 @@ Version 1.7.a1 - 04/Jan/2016
   - Added repositories; improved checkrepos.sh
   - Strict GPG Check: Packages and metadata in one repository should be signed
     with just the root GPG-KEY. This improve security. Some repository might
-    want to contains eterogeneous package. In this case, set STRICTGPG=off.
+    want to contains heterogeneous package. In this case, set STRICTGPG=off.
     See README.
   - New repository for slackpkg+ development version
 
