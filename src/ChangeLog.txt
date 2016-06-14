@@ -1,4 +1,4 @@
-Tue Jun 12 20:11:00 CEST 2016
+Tue Jun 15 00:45:00 CEST 2016
 pkg/slackpkg+-1.7.0d0-noarch-1mt.txz: Upgraded
   Setting up mainline branch.
   - Fixed some typos and missed SEARCH_CLOG_INPARENT documentation in README
