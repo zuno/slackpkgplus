@@ -398,7 +398,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       CURREPO=slackware
     fi
 
-    echo -n "    File: $CURREPO->$SRCBASE .."
+    [ $SRCBASE != "ChangeLog.txt" ]||[ -z "$LEVEL" -o "$LEVEL" == "1" ]&&echo -n "    File: $CURREPO->$SRCBASE .."
     [ $VERBOSE -eq 3 ]&&echo -n " ($CACHEFILE) "
     if [ $TOCACHE -eq 1 ];then
       echo -n "." # ... -> tocache=1
@@ -408,7 +408,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       [ $VERBOSE -eq 3 ]&&(echo;cat $TMPDIR/cache.head|sed 's/^/  /')
       if grep -q "^HTTP/.* 404" $TMPDIR/cache.head;then
         if [ $SRCBASE == "ChangeLog.txt" ]&&[ $LEVEL -lt $LIMIT ];then
-          echo " Trying parent URL ($LEVEL) "
+          echo -n
         else
           echo " Not Found."
         fi
@@ -620,7 +620,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             URLFILE=${URLFILE:6}
             cp -v $URLFILE ${TMPDIR}/$CLOGNAM
           else
-            $DOWNLOADER ${TMPDIR}/$CLOGNAM $URLFILE
+            if [ $VERBOSE -gt 2 ];then
+              $DOWNLOADER ${TMPDIR}/$CLOGNAM $URLFILE
+            else
+              $DOWNLOADER ${TMPDIR}/$CLOGNAM $URLFILE 2>/dev/null
+            fi
           fi
 
           ((LEVEL++))
@@ -672,8 +676,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           echo -e "$PREPO: SKIPPING Invalid repository (fails to download CHECKSUMS.md5)" >> $TMPDIR/error.log
           echo "    ( ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5 )" >> $TMPDIR/error.log
 
-          PRIORITY=( $(echo ${PRIORITY[*]}" "|sed "s/SLACKPKGPLUS_$PREPO //") )
-          REPOPLUS=( $(echo " "${REPOPLUS[*]}" "|sed "s/ $PREPO //") )
+          PRIORITY=( $(echo ${PRIORITY[*]}" "|sed "s/SLACKPKGPLUS_$PREPO / /") )
+          REPOPLUS=( $(echo " "${REPOPLUS[*]}" "|sed "s/ $PREPO / /") )
         else
           echo "SLACKPKGPLUS_$PREPO[MD5]" $(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}') >>$2
         fi
