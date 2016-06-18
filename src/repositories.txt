@@ -10,7 +10,8 @@ Supported Repositories:
 > mleddesktop:   http://www.microlinux.fr/microlinux/desktop-{14.1,14.2}-{32,64}bit/
 > mledextras:    http://www.microlinux.fr/microlinux/extras-{14.1,14.2}-{32,64}bit/
 > mles:          http://www.microlinux.fr/microlinux/server-{14.0,14.1,14.2}-{32,64}bit/
-> msb:           http://slackware.org.uk/msb/{14.0,14.1,14.2,testing}/{1.6,1.8,1.10,1.12,1.14,1.14-gtk}/{x86,x86_64}/
+> msb:           http://slackware.uk/msb/{14.0,14.1,14.2,testing}/{1.6,1.8,1.10,1.12,1.14,1.14-gtk3}/{x86,x86_64}/
+> csb:           http://slackware.uk/csb/{14.1,14.2,testing}/{x86,x86_64}/
 > slackers:      http://slack.conraid.net/repository/
 > slacke18:      http://ngc891.blogdns.net/pub/slacke18/slackware{,64}-{14.1,14.2}/
 > studioware:    http://studioware.org/files/packages/slackware{,64}-{13.37,14.0,14.1,14.2}/
