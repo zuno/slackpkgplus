@@ -1974,6 +1974,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     if [ $VERBOSE -eq 3 ];then
       checkchangelog
+      ERR=$?
     else
       if [[ ! ${SPINNING} = "off" ]]; then
         echo -n "Searching for updates... "
@@ -1982,10 +1983,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       exec 3>&1 4>&2
       TTYREDIRECTION=1
       checkchangelog >/dev/null 2>&1
+      ERR=$?
       TTYREDIRECTION=""
       exec 1>&3 2>&4
     fi
-    if [ $? -ne 0 ]; then
+    if [ $ERR -ne 0 ]; then
     
         # -- Note:
         #     checkchangelog() download the ChangeLog.txt and stores it

@@ -1,3 +1,9 @@
+Wed Jun 22 00:01:56 CEST 2016
+pkg/slackpkg+-1.7.0d0-noarch-2mt.txz: Rebuilt
+  - slackpkg check-updates did not work unless you set VERBOSE=3 (thanks to
+    Talus).
++-------------------------+
+
 Tue Jun 15 00:45:00 CEST 2016
 pkg/slackpkg+-1.7.0d0-noarch-1mt.txz: Upgraded
   Setting up mainline branch.
