@@ -1056,17 +1056,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       while read PKGDIR PKGBASENAME PKGVER PKGARCH PKGBUILD PKGFULLNAME PKGPATH PKGEXT ; do
 
         # does nothing when the package has been handled ...
-        grep -E ${GREPOPTS} -q "^repo:${PKGDIR}:bname:${PKGBASENAME}:ver:${PKGVER}:fname:${PKGFULLNAME}:" $PKGLIST && continue
+        grep ${GREPOPTS} -q "^repo:${PKGDIR}:bname:${PKGBASENAME}:ver:${PKGVER}:fname:${PKGFULLNAME}:" $PKGLIST && continue
 
         # When a package P' with the same basename has been handled before the current package, this means
         # the package P' has precedence over P.
 
-        if grep -E ${GREPOPTS} -q ":bname:${PKGBASENAME}:" $PKGLIST ; then
+        if grep ${GREPOPTS} -q ":bname:${PKGBASENAME}:" $PKGLIST ; then
 
            # if the current package P is installed, this means the previous P' will be
            # proposed as an upgrade to P. In this case, the loop must continue without
            # any other action...
-          grep -E ${GREPOPTS} -q " $PKGFULLNAME " ${TMPDIR}/tmplist && continue
+          grep ${GREPOPTS} -q " $PKGFULLNAME " ${TMPDIR}/tmplist && continue
 
             # The current package P is not installed. In this case P must be shown as
             # being uninstalled and masked.

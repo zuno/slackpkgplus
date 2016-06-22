@@ -1,3 +1,8 @@
+Wed Jun 22 21:05:15 CEST 2016
+pkg/slackpkg+-1.7.0d0-noarch-3mt.txz: Rebuilt
+  - slackpkg search did not honor the '+' symbol (thanks to yars)
++-------------------------+
+
 Wed Jun 22 00:01:56 CEST 2016
 pkg/slackpkg+-1.7.0d0-noarch-2mt.txz: Rebuilt
   - slackpkg check-updates did not work unless you set VERBOSE=3 (thanks to
