@@ -1,3 +1,10 @@
+Sat Jun 25 15:36:00 CEST 2016
+pkg/slackpkg+-1.7.0-noarch-3mt.txz: Rebuilt
+  - slackpkg search did not honor the '+' symbol (thanks to yars)
+  - slackpkg check-updates did not work unless you set VERBOSE=3 (thanks to
+    Talus).
++-------------------------+
+
 Sat Jun 18 13:43:00 CEST 2016
 pkg/slackpkg+-1.7.0-noarch-2mt.txz: Rebuilt
   - Suppress wget output in ChangeLog downloading to avoid unwanted 404 errors
