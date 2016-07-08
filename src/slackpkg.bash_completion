@@ -1,7 +1,6 @@
 # Slackware slackpkg(8) completion                             -*- shell-script -*-
 #
 # This add the bash completation for slackpkg command.
-# To enable it copy this file in /etc/bash_completion.d/
 #
 # Be sure to install the bash-completation package
 #

@@ -1,4 +1,5 @@
-# Configuration for slackpkg+. See /usr/doc/slackpkg+-*/README for more details
+# Configuration for slackpkg+.
+# Please read manpage: "man slackpkgplus.conf" and documentation /usr/doc/slackpkg+-*/README
 
 # Enable (on) / Disable (off) slackpkg+
 SLACKPKGPLUS=on
@@ -9,10 +10,10 @@ SLACKPKGPLUS=on
 # set to '3' for a debug mode
 VERBOSE=1
 
-# Enable (1) / Disable (0) the official slackpkg blacklist. May be useful to temporarily skip
+# Enable (on) / Disable (off) the official slackpkg blacklist. May be useful to temporarily skip
 # the slackware blacklist. You can also override it from command line:
-# 'USEBL=0 slackpkg upgrade-all'
-USEBL=1
+# 'USEBL=off slackpkg upgrade-all'
+USEBL=on
 
 # Add custom option to 'wget'.
 # You can solve the repository indisponibility issue by set a timeout here
@@ -41,17 +42,17 @@ CACHEUPDATE=off
 GREYLIST=on
 
 # Defines if commands 'search' and 'file-search' are case-sensitive (on) or not (off). Default to "on"
-SENSITIVE_SEARCH=on
+SENSITIVE_SEARCH=off
 
 # Defines if command 'file-search' does search Wole Word (on) of accept partial words (off). Note that
 # you may obtains many many results searching a short partial word
-WW_FILE_SEARCH=on
+WW_FILE_SEARCH=off
 
 # Select the show order in dialogbox. Available "package" "repository" "tag" "path" "arch"
 SHOWORDER=package
 
 # Allow to show more details of the package in slackpkg info <package>. Accept "none", "basic", "filelist"
-DETAILED_INFO=none
+DETAILED_INFO=basic
 
 # Enable (on) / Disable (off) a Strict GPG Check. A repository should contains packages signed
 # with the only original GPG-KEY. In some custom repository may be wanted to mix heterogeneous

@@ -107,6 +107,8 @@ for R in $REPOS;do
     continue
   fi
 
+  SIZE=0
+  DATE=""
   MD5=no
   [ $V ]&&echo -en "  CHECKSUMS.md5: "||echo -n .
   curl --location --head $REPO/CHECKSUMS.md5 > CHECKSUMS.md5.R 2>/dev/null
@@ -137,9 +139,11 @@ for R in $REPOS;do
     [ $V ]&&echo -n "OK "||echo -n .
     if grep -q Content-Length: PACKAGES.TXT.R;then
       [ $V ]&&echo -n "$(grep Content-Length: PACKAGES.TXT.R|awk '{print $2}'|sed 's///') bytes "
+      SIZE="$(grep Content-Length: PACKAGES.TXT.R|awk '{print $2}'|sed 's///')"
     fi
     if grep -q Last-Modified: PACKAGES.TXT.R;then
       [ $V ]&&echo -n "($(grep Last-Modified: PACKAGES.TXT.R|cut -f2- -d:|sed 's///') ) "
+      DATE="$(grep Last-Modified: PACKAGES.TXT.R|cut -f2- -d:|sed 's/^M//')"
     fi
     [ $V ]&&echo
     PACK=yes
@@ -184,6 +188,11 @@ for R in $REPOS;do
     GPG=no
   fi
 
+  if [ "$GPG" = "bad" ];then
+    [ $V ]&&echo -e "  invalid GPG key\nInvalid repository"|grep --color .||echo " Invalid (GPG-KEY failure)"|grep --color .
+    continue
+  fi
+
   if [ ! $V ];then
     echo -n " OK"
     if [ "$GPG" != "yes" ];then
@@ -193,8 +202,19 @@ for R in $REPOS;do
   else
     echo "Done"
   fi
+  if ! echo $SIZE|grep -q "^[1-9][0-9]*$";then
+    SIZE="-"
+  fi
+  SIZE="$(printf "%8d" $SIZE)"
+  if date -d "$DATE" >/dev/null 2>&1;then
+    DATE=$(date -d "$DATE" "+%Y/%m/%d %H:%M:%S")
+  else
+    DATE="-"
+  fi
 
-  echo -e "$REPO#$MD5#$PACK#$GPG" >> repositories.tmp
+
+
+  echo -e "$REPO#$SIZE#$DATE#$GPG" >> repositories.tmp
 
 
 done
@@ -202,8 +222,10 @@ echo
 echo "========================================================"
 ) >&2
 
+date
+echo
 (
-echo -e "url#md5#pack#gpg" 
+echo -e "url#    size#date#gpg" 
 echo
 cat repositories.tmp|sort
 )|LANG=C.utf8 column -t -s '#'

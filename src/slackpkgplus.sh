@@ -52,7 +52,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   WW_FILE_SEARCH=${EXTWW_FILE_SEARCH:-$WW_FILE_SEARCH}
 
   USEBLACKLIST=true
-  if [ "$USEBL" == "0" ];then
+  if [ "$USEBL" == "off" -o "$USEBL" == "0" ];then
     USEBLACKLIST=false
   fi
   if [ "$ENABLENOTIFY" = "on" -a -e $CONF/notifymsg.conf ];then

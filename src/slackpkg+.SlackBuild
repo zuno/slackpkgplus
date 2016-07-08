@@ -53,8 +53,11 @@ mkdir -p $PKG
 
 cd $PKG
 mkdir -p etc/slackpkg/
+mkdir -p etc/bash_completion.d/
 mkdir -p usr/libexec/slackpkg/functions.d/
 mkdir -p usr/doc/slackpkg+-$VERSION/
+mkdir -p usr/man/man5
+mkdir -p usr/man/it/man5
 mkdir -p install/
 
 cp $CWD/slackpkgplus.sh usr/libexec/slackpkg/functions.d/
@@ -67,10 +70,12 @@ cp $CWD/setupmultilib.sh usr/doc/slackpkg+-$VERSION/
 cp $CWD/checkrepos.sh usr/doc/slackpkg+-$VERSION/
 cp $CWD/zchangelog.sh usr/libexec/slackpkg/zchangelog.sh
 cp $CWD/slackpkg+.SlackBuild usr/doc/slackpkg+-$VERSION/
-cp $CWD/slackpkg.bash_completion usr/doc/slackpkg+-$VERSION/
+cp $CWD/slackpkg.bash_completion etc/bash_completion.d/slackpkg
 cp $CWD/slackpkgplus.*.sample usr/doc/slackpkg+-$VERSION/
 cp $CWD/greylist etc/slackpkg/greylist.new
 cp $CWD/slack-desc install/
+gzip -9c $CWD/slackpkgplus.conf.5 > usr/man/man5/slackpkgplus.conf.5.gz
+gzip -9c $CWD/slackpkgplus.conf.5.it > usr/man/it/man5/slackpkgplus.conf.5.gz
 cat $CWD/doinst.sh|sed "s/SLPVERSION/$VERSION/" > install/doinst.sh
 cat $CWD/notifymsg.conf > etc/slackpkg/notifymsg.conf.new
 

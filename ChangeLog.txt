@@ -1,3 +1,13 @@
+Fri Jul  8 19:18:29 CEST 2016
+pkg/slackpkg+-1.7.0d0-noarch-4mt.txz
+  - Slackware 14.2 was finally released. Updated repository list.
+  - Added manpage for the configuration file (man slackpkgplus.conf)
+  - bash_completion is now enabled by default
+  - Improved checkrepos.sh (now write PACKAGES.TXT size and last update time)
+  - Changed some default settings in sample configuration file; also
+    USEBL accepts on/off instead 0/1
++-------------------------+
+
 Wed Jun 22 21:05:15 CEST 2016
 pkg/slackpkg+-1.7.0d0-noarch-3mt.txz: Rebuilt
   - slackpkg search did not honor the '+' symbol (thanks to yars)
