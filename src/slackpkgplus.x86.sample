@@ -1,4 +1,5 @@
 # Configuration for slackpkg+. See /usr/doc/slackpkg+-*/README for more details
+# Please read manpage: "man slackpkgplus.conf" and documentation /usr/doc/slackpkg+-*/README
 
 # Enable (on) / Disable (off) slackpkg+
 SLACKPKGPLUS=on

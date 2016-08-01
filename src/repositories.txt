@@ -1,28 +1,25 @@
 Supported Repositories:
 
-> Supports GPG
 > slackpkgplus:  http://slakfinder.org/slackpkg+{,dev,1.6,1.7}/
-> multilib:      http://bear.alienbase.nl/mirrors/people/alien/multilib/{13.37,14.0,14.1,14.2,current}/
-> alienbob:      http://bear.alienbase.nl/mirrors/people/alien/sbrepos/{13.37,14.0,14.1,14.2,current}/{x86,x86_64}/
-> ktown:         http://bear.alienbase.nl/mirrors/alien-kde/{13.37,14.0,14.1,14.2,current}/{latest,5}/{x86,x86_64}/
-> restricted:    http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{13.37,14.0,14.1,14.2,current}/{x86,x86_64}/
-> slacky:        http://repository.slacky.eu/slackware{,64}-{13.37,14.0,14.1,14.2}/
+> multilib:      http://bear.alienbase.nl/mirrors/people/alien/multilib/{14.0,14.1,14.2,current}/
+> alienbob:      http://bear.alienbase.nl/mirrors/people/alien/sbrepos/{14.0,14.1,14.2,current}/{x86,x86_64}/
+> ktown:         http://bear.alienbase.nl/mirrors/alien-kde/{14.1,14.2,current}/{latest,testing}/{x86,x86_64}/
+> restricted:    http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{14.0,14.1,14.2,current}/{x86,x86_64}/
+> slacky:        http://repository.slacky.eu/slackware{,64}-{14.0,14.1,14.2}/
 > mleddesktop:   http://www.microlinux.fr/microlinux/desktop-{14.1,14.2}-{32,64}bit/
 > mledextras:    http://www.microlinux.fr/microlinux/extras-{14.1,14.2}-{32,64}bit/
 > mles:          http://www.microlinux.fr/microlinux/server-{14.0,14.1,14.2}-{32,64}bit/
-> msb:           http://slackware.uk/msb/{14.0,14.1,14.2,testing}/{1.6,1.8,1.10,1.12,1.14,1.14-gtk3}/{x86,x86_64}/
-> csb:           http://slackware.uk/csb/{14.1,14.2,testing}/{x86,x86_64}/
-> slackers:      http://slack.conraid.net/repository/
+> msb:           http://slackware.uk/msb/{14.0,14.1,14.2,current}/{1.6,1.8,1.10,1.12,1.14,1.15,1.15-gtk3,latest}/{x86,x86_64}/
+> csb:           http://slackware.uk/csb/{14.1,14.2}/{x86,x86_64}/
+> slackers:      http://slack.conraid.net/repository/slackware64-current/
 > slacke18:      http://ngc891.blogdns.net/pub/slacke18/slackware{,64}-{14.1,14.2}/
-> studioware:    http://studioware.org/files/packages/slackware{,64}-{13.37,14.0,14.1,14.2}/
+> studioware:    http://studioware.org/files/packages/slackware{,64}-{14.0,14.1,14.2}/
 > slackonly:     http://panos.slackonly.com/pub/packages/{14.1,14.2,current}-{x86,x86_64}/
-> rlworkman:     http://rlworkman.net/pkgs/{13.37,14.0,14.1,14.2,current}/
+> rlworkman:     http://rlworkman.net/pkgs/{14.0,14.1,14.2,current}/
 > slackel:       http://www.slackel.gr/repo/{i486,x86_64}/current/
 > connochaetos:  http://connochaetos.org/slack-n-free/slack-n-free{,64}-{14.1,14.2}/
 > slint:         http://slint.fr/packages/{14.0,14.1,14.2}-{i486,x86_64}/
-> 
-> Partial GPG support
-> salixos:       http://download.salixos.org/{i486,x86_64}/{13.37,14.0,14.1,14.2}/
+> salixos:       http://download.salixos.org/{i486,x86_64}/{14.0,14.1,14.2}/
 
     salixos partially supports GPG. This repository contains the .asc file
     for CHECKSUMS.md5, so the 'update' process works with CHECKGPG=on and repository authenticity
@@ -31,6 +28,7 @@ Supported Repositories:
     install the packages with 'slackpkg -checkgpg=off install <packagename>', but the
     integrity is guaranteed by the md5 authenticity.
 
+See /usr/doc/slackpkg+-*/repositories.lst for an expanded list.
 
 
 
@@ -44,14 +42,13 @@ Some specific notes:
 * ktown: 
     You need to put 'ktown' in PKGS_PRIORITY
     Periodically you should run "slackpkg install ktown" after run "slackpkg upgrade-all"
-    at moment 'latest/' is 'kde4', '5/' is 'kde5'.
     after install you need to do some postinstall operation, see
-      http://alien.slackbook.org/ktown/14.1/latest/
-      http://alien.slackbook.org/ktown/current/5/
-    kde4:
+      http://alien.slackbook.org/ktown/14.1/latest/ (kde4)
+      http://alien.slackbook.org/ktown/14.2/latest/ (kde5)
+    kde4 (available for slackware 14.1):
       slackpkg remove kdeadmin kdenetwork kdesdk kdetoys kwallet kdnssd
     kde5:
-      kde5 (available only in slackware-current)
+      kde5 (available for slackware 14.2 and slackware current)
       slackpkg remove \
           amor kde-base-artwork kdeartwork kgamma ksnapshot ktux oxygen-icons pairs \
           superkaramba libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt \
@@ -59,3 +56,7 @@ Some specific notes:
 
 
 Please read /usr/doc/slackpkg+-*/README for more details
+
+
+Slackware repositories:
+http://ftp.slackware.com/pub/slackware/slackware{,64}-{14.0,14.1,14.2,current}

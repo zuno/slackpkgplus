@@ -1,3 +1,9 @@
+Mon Aug  1 23:02:54 CEST 2016
+pkg/slackpkg+-1.7.0-noarch-4mt.txz: Rebuilt
+  - Added manpage for the configuration file (man slackpkgplus.conf)
+  - Updated setupmultilib.sh for slackware 14.2
++-------------------------+
+
 Sat Jun 25 15:36:00 CEST 2016
 pkg/slackpkg+-1.7.0-noarch-3mt.txz: Rebuilt
   - slackpkg search did not honor the '+' symbol (thanks to yars)

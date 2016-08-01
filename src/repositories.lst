@@ -1,68 +1,73 @@
 url                                                                              md5  pack  gpg
-http://bear.alienbase.nl/mirrors/alien-kde/13.37/latest/x86                      yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/alien-kde/13.37/latest/x86_64                   yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/alien-kde/14.0/latest/x86                       yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/alien-kde/14.0/latest/x86_64                    yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/alien-kde/14.1/latest/x86                       yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/alien-kde/14.1/latest/x86_64                    yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/alien-kde/current/5/x86                         yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/alien-kde/current/5/x86_64                      yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/alien-kde/14.2/latest/x86                       yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/alien-kde/14.2/latest/x86_64                    yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/alien-kde/14.2/testing/x86                      yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/alien-kde/14.2/testing/x86_64                   yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/alien-kde/current/latest/x86                    yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/alien-kde/current/latest/x86_64                 yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/people/alien/multilib/13.37                     yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/alien-kde/current/testing/x86                   yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/alien-kde/current/testing/x86_64                yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/multilib/14.0                      yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/multilib/14.1                      yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/people/alien/multilib/14.2                      yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/multilib/current                   yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/13.37/x86       yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/13.37/x86_64    yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86        yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86_64     yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.1/x86        yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.1/x86_64     yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.2/x86        yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.2/x86_64     yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86     yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86_64  yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/people/alien/sbrepos/13.37/x86                  yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/people/alien/sbrepos/13.37/x86_64               yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86                   yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86_64                yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86                   yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86_64                yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.2/x86                   yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.2/x86_64                yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86                yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86_64             yes  yes   Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 http://connochaetos.org/slack-n-free/slack-n-free-14.1                           yes  yes   Henry Jensen <hjensen@connochaetos.org>
 http://connochaetos.org/slack-n-free/slack-n-free-14.2                           yes  yes   Henry Jensen <hjensen@connochaetos.org>
 http://connochaetos.org/slack-n-free/slack-n-free64-14.1                         yes  yes   Henry Jensen <hjensen@connochaetos.org>
 http://connochaetos.org/slack-n-free/slack-n-free64-14.2                         yes  yes   Henry Jensen <hjensen@connochaetos.org>
-http://download.salixos.org/i486/13.37                                           yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
 http://download.salixos.org/i486/14.0                                            yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
 http://download.salixos.org/i486/14.1                                            yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
 http://download.salixos.org/i486/14.2                                            yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-http://download.salixos.org/x86_64/13.37                                         yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
 http://download.salixos.org/x86_64/14.0                                          yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
 http://download.salixos.org/x86_64/14.1                                          yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
 http://download.salixos.org/x86_64/14.2                                          yes  yes   Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
+http://ftp.slackware.com/pub/slackware/slackware-14.0                            yes  yes   Slackware Linux Project <security@slackware.com>
+http://ftp.slackware.com/pub/slackware/slackware-14.1                            yes  yes   Slackware Linux Project <security@slackware.com>
+http://ftp.slackware.com/pub/slackware/slackware-14.2                            yes  yes   Slackware Linux Project <security@slackware.com>
+http://ftp.slackware.com/pub/slackware/slackware-current                         yes  yes   Slackware Linux Project <security@slackware.com>
+http://ftp.slackware.com/pub/slackware/slackware64-14.0                          yes  yes   Slackware Linux Project <security@slackware.com>
+http://ftp.slackware.com/pub/slackware/slackware64-14.1                          yes  yes   Slackware Linux Project <security@slackware.com>
+http://ftp.slackware.com/pub/slackware/slackware64-14.2                          yes  yes   Slackware Linux Project <security@slackware.com>
+http://ftp.slackware.com/pub/slackware/slackware64-current                       yes  yes   Slackware Linux Project <security@slackware.com>
 http://ngc891.blogdns.net/pub/slacke18/slackware-14.1                            yes  yes   Jérôme Pinot <ngc891@gmail.com>
 http://ngc891.blogdns.net/pub/slacke18/slackware64-14.1                          yes  yes   Jérôme Pinot <ngc891@gmail.com>
-http://panos.slackonly.com/pub/packages/14.1-x86                                 yes  yes   Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
-http://panos.slackonly.com/pub/packages/14.1-x86_64                              yes  yes   Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
-http://panos.slackonly.com/pub/packages/current-x86                              yes  yes   Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
-http://panos.slackonly.com/pub/packages/current-x86_64                           yes  yes   Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
-http://repository.slacky.eu/slackware-13.37                                      yes  yes   Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
 http://repository.slacky.eu/slackware-14.0                                       yes  yes   Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
 http://repository.slacky.eu/slackware-14.1                                       yes  yes   Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
-http://repository.slacky.eu/slackware64-13.37                                    yes  yes   Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
+http://repository.slacky.eu/slackware-14.2                                       yes  yes   Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
 http://repository.slacky.eu/slackware64-14.0                                     yes  yes   Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
 http://repository.slacky.eu/slackware64-14.1                                     yes  yes   Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
-http://rlworkman.net/pkgs/13.37                                                  yes  yes   Robby Workman <rworkman@slackware.com>
+http://repository.slacky.eu/slackware64-14.2                                     yes  yes   Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
 http://rlworkman.net/pkgs/14.0                                                   yes  yes   Robby Workman <rworkman@slackware.com>
 http://rlworkman.net/pkgs/14.1                                                   yes  yes   Robby Workman <rworkman@slackware.com>
+http://rlworkman.net/pkgs/14.2                                                   yes  yes   Robby Workman <rworkman@slackware.com>
 http://rlworkman.net/pkgs/current                                                yes  yes   Robby Workman <rworkman@slackware.com>
-http://slack.conraid.net/repository                                              yes  yes   Corrado Franco (Conraid) <conraid@gmail.com>
+http://slack.conraid.net/repository/slackware64-current                          yes  yes   Corrado Franco (Conraid) <conraid@gmail.com>
 http://slackware.uk/csb/14.1/x86                                                 yes  yes   Willy Sudiarto Raharjo <willysr@gmail.com>
 http://slackware.uk/csb/14.1/x86_64                                              yes  yes   Willy Sudiarto Raharjo <willysr@gmail.com>
-http://slackware.uk/csb/testing/x86_64                                           yes  yes   Willy Sudiarto Raharjo <willysr@gmail.com>
+http://slackware.uk/csb/14.2/x86                                                 yes  yes   Willy Sudiarto Raharjo <willysr@gmail.com>
+http://slackware.uk/csb/14.2/x86_64                                              yes  yes   Willy Sudiarto Raharjo <willysr@gmail.com>
 http://slackware.uk/msb/14.0/1.6/x86                                             yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slackware.uk/msb/14.0/1.6/x86_64                                          yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/14.0/latest/x86                                          yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/14.0/latest/x86_64                                       yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slackware.uk/msb/14.1/1.10/x86                                            yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slackware.uk/msb/14.1/1.10/x86_64                                         yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slackware.uk/msb/14.1/1.12/x86                                            yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
@@ -71,8 +76,14 @@ http://slackware.uk/msb/14.1/1.6/x86                                            
 http://slackware.uk/msb/14.1/1.6/x86_64                                          yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slackware.uk/msb/14.1/1.8/x86                                             yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slackware.uk/msb/14.1/1.8/x86_64                                          yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/testing/1.14-gtk3/x86_64                                 yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/testing/1.14/x86_64                                      yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/14.1/latest/x86                                          yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/14.1/latest/x86_64                                       yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/14.2/1.14/x86                                            yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/14.2/1.14/x86_64                                         yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/14.2/latest/x86                                          yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/14.2/latest/x86_64                                       yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/current/1.15-gtk3/x86_64                                 yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/current/1.15/x86_64                                      yes  yes   MATE SlackBuilds <mateslackbuilds@gmail.com>
 http://slakfinder.org/slackpkg+                                                  yes  yes   Matteo Rossini <zerouno@slacky.it>
 http://slakfinder.org/slackpkg+1.6                                               yes  yes   Matteo Rossini <zerouno@slacky.it>
 http://slakfinder.org/slackpkg+1.7                                               yes  yes   Matteo Rossini <zerouno@slacky.it>
@@ -83,10 +94,8 @@ http://slint.fr/packages/14.1-i486                                              
 http://slint.fr/packages/14.1-x86_64                                             yes  yes   Didier Spaier <didier@slint.fr>
 http://slint.fr/packages/14.2-i486                                               yes  yes   bad
 http://slint.fr/packages/14.2-x86_64                                             yes  yes   bad
-http://studioware.org/files/packages/slackware-13.37                             yes  yes   Studioware <info@studioware.org>
 http://studioware.org/files/packages/slackware-14.0                              yes  yes   Studioware <info@studioware.org>
 http://studioware.org/files/packages/slackware-14.1                              yes  yes   Studioware <info@studioware.org>
-http://studioware.org/files/packages/slackware64-13.37                           yes  yes   Studioware <info@studioware.org>
 http://studioware.org/files/packages/slackware64-14.0                            yes  yes   Studioware <info@studioware.org>
 http://studioware.org/files/packages/slackware64-14.1                            yes  yes   Studioware <info@studioware.org>
 http://www.microlinux.fr/microlinux/desktop-14.1-32bit                           yes  yes   Niki Kovacs <info@microlinux.fr>
