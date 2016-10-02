@@ -393,18 +393,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       ChangeLog.txt) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/ChangeLog-//" -e "s/^-//" -e "s/\.txt//") ;;
       GPG-KEY) TOCACHE=0 ; CURREPO=${1/*gpgkey-tmp-/};;
       FILELIST.TXT) TOCACHE=1 ;;
+      SLACKBUILDS.TXT.gz) TOCACHE=1 ; CURREPO=SBo ;;
     esac
     if [ -z "$CURREPO" ]; then
       CURREPO=slackware
     fi
 
-    [ $SRCBASE != "ChangeLog.txt" ]||[ -z "$LEVEL" -o "$LEVEL" == "1" ]&&echo -n "    File: $CURREPO->$SRCBASE .."
+    [ $SRCBASE != "ChangeLog.txt" ]||[ -z "$LEVEL" -o "$LEVEL" == "1" ]&&printf "    File: %-20s -> %-20s .." "$CURREPO" "$SRCBASE"
     [ $VERBOSE -eq 3 ]&&echo -n " ($CACHEFILE) "
     if [ $TOCACHE -eq 1 ];then
-      echo -n "." # ... -> tocache=1
       curl --max-time 10 --location --head $SRCURL 2>/dev/null|grep -v -e ^Date: -e ^Set-Cookie: -e ^Expires: -e ^X-Varnish:|sed 's///' > $TMPDIR/cache.head
       echo "Url: $SRCURL" >> $TMPDIR/cache.head
-      #grep -q "200 OK" $TMPDIR/cache.head || echo "Header or Url Invalid!!! (`date`)"
       [ $VERBOSE -eq 3 ]&&(echo;cat $TMPDIR/cache.head|sed 's/^/  /')
       if grep -q "^HTTP/.* 404" $TMPDIR/cache.head;then
         if [ $SRCBASE == "ChangeLog.txt" ]&&[ $LEVEL -lt $LIMIT ];then
@@ -415,18 +414,16 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         return 8 # wget return 8 if server return error so we return 8
       fi
       if [ -e $CACHEDIR/$CACHEFILE -a -e $CACHEDIR/$CACHEFILE.head ];then
-        echo -n " ." # ... . -> is in cache
         [ $VERBOSE -eq 3 ]&&(echo;cat $CACHEDIR/$CACHEFILE.head|sed 's/^/  /')
         if diff $CACHEDIR/$CACHEFILE.head $TMPDIR/cache.head >/dev/null;then
           [ $VERBOSE -eq 3 ]&&echo "Cache valid!   If not please remove manually $CACHEDIR/$CACHEFILE !"
-          echo " Cached." # ... . Cached.
+          echo " Cached."
           cp $CACHEDIR/$CACHEFILE $1
           return $?
         fi
-        echo -n ". " # ... .. -> cache older or corrupted
         rm -f $CACHEDIR/$CACHEFILE $CACHEDIR/$CACHEFILE.head 2>/dev/null
       fi
-      echo -n " Downloading... " # ... -> needed  # ... .. -> re-needed
+      echo -n " Downloading... "
       [ $VERBOSE -gt 1 ]&&echo
       $CACHEDOWNLOADER $1 $SRCURL
       ERR=$?
@@ -436,7 +433,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         cp $TMPDIR/cache.head $CACHEDIR/$CACHEFILE.head 2>/dev/null
       fi
     else
-      echo " Downloading..." # .. -> tocache=0
+      echo " Downloading... "
       $CACHEDOWNLOADER $1 $SRCURL
       ERR=$?
       echo
@@ -456,6 +453,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   function getfile(){
     local URLFILE
     URLFILE=$1
+
+    if [ $(basename $1) = "ChangeLog.txt" ];then
+      echo "                ChangeLogs"
+    fi
 
     if echo $1|egrep -q '/SLACKPKGPLUS_(file|dir|http|https|ftp)[0-9].*\.asc$';then
       return 0
@@ -507,6 +508,19 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           echo
           sleep 3
         fi
+      fi
+    fi
+
+    if [ $(basename $1) = "FILELIST.TXT" ];then
+      if [ ! -z "$SBOURL" ];then
+        SBOURL=${SBOURL%/}/
+        $DOWNLOADER $TMPDIR/SLACKBUILDS.TXT.gz ${SBOURL}SLACKBUILDS.TXT.gz
+        zcat $TMPDIR/SLACKBUILDS.TXT.gz |awk '{
+                                                if($2=="NAME:")       name=$3
+                                                if($2=="LOCATION:")   location=$3
+                                                if($2=="VERSION:")    version=$3
+                                                if($1=="")            print name,version,location
+                                              }' > $WORKDIR/sbolist
       fi
     fi
 
@@ -632,10 +646,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         done
 
         if [ -s ${TMPDIR}/$CLOGNAM ] ; then
-          echo -e "                Saving ChangeLog.txt from repository $PREPO ...\n"
           cat ${TMPDIR}/$CLOGNAM >> ${TMPDIR}/ChangeLogs/$CLOGNAM
         else
-          echo -e "                Repository $PREPO has no ChangeLog.txt.\n"
           touch ${TMPDIR}/ChangeLogs/$CLOGNAM
         fi
       done
@@ -1549,7 +1561,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   fi
 
 
-  SPKGPLUS_VERSION="1.7.0d0"
+  SPKGPLUS_VERSION="1.7.0d1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
 
@@ -1947,6 +1959,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           searchlistEX "$LIST"
           echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"
         fi
+        if [ ! -z "$SBOURL" ];then
+          SBORESULT="$(grep -E -i "^[^ ]*$PATTERN" $WORKDIR/sbolist 2>/dev/null|sed -e 's/ /-/' -e "s#\./#$SBOURL#" -e 's/$/.tar.gz/')"
+          if [ ! -z "$SBORESULT" ];then
+            echo
+            echo "Also found in SBo:"
+            echo
+            echo -e "[package] [url]\n$SBORESULT"|column -t|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "$PATTERN" -e ^
+            echo
+         fi
+       fi
+
       ;;
 
       file-search)

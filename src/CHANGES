@@ -2,7 +2,37 @@
 
 == From 1.7 to mainline ==
 
-- Nothing (just setting up branch)
+*Configuration file:
+
+- USEBL now accepts 'on'/'off' values instead '0'/'1'
+
+- Changed some default settings in sample configuration file
+
+
+*New features:
+
+- Added manpages (italian and english) for slackpkgplus.conf
+
+
+*Improvements
+
+- Improved checkrepos.sh
+
+
+*BugFixes
+
+- 'slackpkg search' did not honor the '+' symbol
+
+- Issues when an invalid repository is configured
+
+
+*Various
+
+- Suppress wget output in ChangeLog downloading
+
+- Bash completation enabled by default (if you have bash_completation package
+    installed) 
+
 
 == From 1.6 and 1.7 ==
 

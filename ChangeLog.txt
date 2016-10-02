@@ -1,3 +1,10 @@
+Sun Oct  2 13:55:26 CEST 2016
+pkg/slackpkg+-1.7.0d1-noarch-1mt.txz
+  - Added SBo support. This does not replace sbopkg. It just search in
+    SlackBuilds.org and report the url to download to build and install
+    packages yourself.
++-------------------------+
+
 Fri Jul  8 19:18:29 CEST 2016
 pkg/slackpkg+-1.7.0d0-noarch-4mt.txz
   - Slackware 14.2 was finally released. Updated repository list.
