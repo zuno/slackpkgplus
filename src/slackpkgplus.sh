@@ -1114,7 +1114,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local REPO
     local PNAME
 
-    printf "[ %-16s ] [ %-24s ] [ %-40s ]\n" "Status" "Repository" "Package"
+    {
+    echo "[ Status#] [ Repository#] [ Package# ]"
 
     INSTPKGS="$(ls -f $ROOT/var/log/packages)"
 
@@ -1158,18 +1159,19 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
             # If installed is it uptodate?
             if [ "${CINSTPKG}" = "${RAWNAME}" ]; then
-              STATUS=" installed "
-              printf "  %-20s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$CINSTPKG"
+              STATUS="installed"
+              echo "  $STATUS#    $REPO#    $CINSTPKG"
             else
               STATUS="upgrade"
-              printf "  %-20s     %-24s     %-40s  \n" "$STATUS" "$REPO" "$CINSTPKG --> ${RAWNAME}"
+              echo "  $STATUS#    $REPO#    $CINSTPKG --> ${RAWNAME}"
             fi
           fi
         done
       else
-        printf "  %-20s     %-24s     %-40s  \n" "$STATUS" "$REPO" "${RAWNAME}"
+        echo "  $STATUS#    $REPO#    ${RAWNAME}"
       fi
-    done|sort|( [[  "$CMD" == "search" ]]&&grep -E -i --color -e ^ -e "$PATTERN"||cat )
+    done|sort
+    }|column -t -s '#' -o ' '|( [[  "$CMD" == "search" ]]&&grep -E -i --color -e ^ -e "$PATTERN"||cat )
   } # END function searchlistEX()
 
     # Show detailed info for slackpkg info
