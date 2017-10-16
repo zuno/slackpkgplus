@@ -116,10 +116,10 @@ for R in $REPOS;do
   if grep -q "200 OK" CHECKSUMS.md5.R;then
     [ $V ]&&echo -n "OK "||echo -n .
     if grep -q Content-Length: CHECKSUMS.md5.R;then
-      [ $V ]&&echo -n "$(grep Content-Length: CHECKSUMS.md5.R|awk '{print $2}'|sed 's///') bytes "
+      [ $V ]&&echo -n "$(grep Content-Length: CHECKSUMS.md5.R|tail -1|awk '{print $2}'|sed 's///') bytes "
     fi
     if grep -q Last-Modified: CHECKSUMS.md5.R;then
-      [ $V ]&&echo -n "($(grep Last-Modified: CHECKSUMS.md5.R|cut -f2- -d:|sed 's///') ) "
+      [ $V ]&&echo -n "($(grep Last-Modified: CHECKSUMS.md5.R|tail -1|cut -f2- -d:|sed 's///') ) "
     fi
     [ $V ]&&echo
     MD5=yes
@@ -138,12 +138,12 @@ for R in $REPOS;do
   if grep -q "200 OK" PACKAGES.TXT.R;then
     [ $V ]&&echo -n "OK "||echo -n .
     if grep -q Content-Length: PACKAGES.TXT.R;then
-      [ $V ]&&echo -n "$(grep Content-Length: PACKAGES.TXT.R|awk '{print $2}'|sed 's///') bytes "
-      SIZE="$(grep Content-Length: PACKAGES.TXT.R|awk '{print $2}'|sed 's///')"
+      [ $V ]&&echo -n "$(grep Content-Length: PACKAGES.TXT.R|tail -1|awk '{print $2}'|sed 's///') bytes "
+      SIZE="$(grep Content-Length: PACKAGES.TXT.R|tail -1|awk '{print $2}'|sed 's///')"
     fi
     if grep -q Last-Modified: PACKAGES.TXT.R;then
-      [ $V ]&&echo -n "($(grep Last-Modified: PACKAGES.TXT.R|cut -f2- -d:|sed 's///') ) "
-      DATE="$(grep Last-Modified: PACKAGES.TXT.R|cut -f2- -d:|sed 's/^M//')"
+      [ $V ]&&echo -n "($(grep Last-Modified: PACKAGES.TXT.R|tail -1|cut -f2- -d:|sed 's///') ) "
+      DATE="$(grep Last-Modified: PACKAGES.TXT.R|tail -1|cut -f2- -d:|sed 's/^M//')"
     fi
     [ $V ]&&echo
     PACK=yes
