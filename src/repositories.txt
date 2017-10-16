@@ -3,23 +3,24 @@ Supported Repositories:
 > slackpkgplus:  http://slakfinder.org/slackpkg+{,dev,1.6,1.7}/
 > multilib:      http://bear.alienbase.nl/mirrors/people/alien/multilib/{14.0,14.1,14.2,current}/
 > alienbob:      http://bear.alienbase.nl/mirrors/people/alien/sbrepos/{14.0,14.1,14.2,current}/{x86,x86_64}/
-> ktown:         http://bear.alienbase.nl/mirrors/alien-kde/{14.1,14.2,current}/{latest,testing}/{x86,x86_64}/
+> ktown:         http://bear.alienbase.nl/mirrors/alien-kde/{14.2,current}/5/{x86,x86_64}/
 > restricted:    http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{14.0,14.1,14.2,current}/{x86,x86_64}/
 > slacky:        http://repository.slacky.eu/slackware{,64}-{14.0,14.1,14.2}/
-> mleddesktop:   http://www.microlinux.fr/microlinux/desktop-{14.1,14.2}-{32,64}bit/
-> mledextras:    http://www.microlinux.fr/microlinux/extras-{14.1,14.2}-{32,64}bit/
-> mles:          http://www.microlinux.fr/microlinux/server-{14.0,14.1,14.2}-{32,64}bit/
-> msb:           http://slackware.uk/msb/{14.0,14.1,14.2,current}/{1.6,1.8,1.10,1.12,1.14,1.16,1.17,latest}/{x86,x86_64}/
-> csb:           http://slackware.uk/csb/{14.1,14.2}/{x86,x86_64}/
+> mleddesktop:   http://slackware.uk/microlinux/desktop-{14.1,14.2}-{32,64}bit/
+> mledextras:    http://slackware.uk/microlinux/extras-{14.1,14.2}-{32,64}bit/
+> mles:          http://slackware.uk/microlinux/server-{14.0,14.1,14.2}-{32,64}bit/
+> msb:           http://slackware.uk/msb/{14.0,14.1,14.2,current}/{1.6,1.8,1.10,1.12,1.14,1.16,1.18,1.19,latest}/{x86,x86_64}/
+> csb:           http://slackware.uk/csb/{14.1,14.2,current}/{x86,x86_64}/
 > slackers:      http://slack.conraid.net/repository/slackware64-current/
-> slacke18:      http://ngc891.blogdns.net/pub/slacke18/slackware{,64}-{14.1,14.2}/
-> studioware:    http://studioware.org/files/packages/slackware{,64}-{14.0,14.1,14.2}/
+> slacke18:      http://ngc891.blogdns.net/pub/slacke18/slackware{,64}-{14.1}/
+> studioware:    http://slackware.uk/studioware/14.2
 > slackonly:     http://packages.slackonly.com/pub/packages/{14.1,14.2,current}-{x86,x86_64}/
 > rlworkman:     http://rlworkman.net/pkgs/{14.0,14.1,14.2,current}/
 > slackel:       http://www.slackel.gr/repo/{i486,x86_64}/current/
-> connochaetos:  http://connochaetos.org/slack-n-free/slack-n-free{,64}-{14.1,14.2}/
-> slint:         http://slint.fr/packages/{14.0,14.1,14.2}-{i486,x86_64}/
+> connochaetos:  http://connochaetos.org/slack-n-free/slack-n-free{,64}-{14.2}/
+> slint:         http://slackware.uk/slint/{i586,x86_64}/slint-{14.2,testing}/
 > salixos:       http://download.salixos.org/{i486,x86_64}/{14.0,14.1,14.2}/
+> salixextra:    http://download.salixos.org/{i486,x86_64}/extra-{14.2}/
 
     salixos partially supports GPG. This repository contains the .asc file
     for CHECKSUMS.md5, so the 'update' process works with CHECKGPG=on and repository authenticity
@@ -43,20 +44,30 @@ Some specific notes:
     You need to put 'ktown' in PKGS_PRIORITY
     Periodically you should run "slackpkg install ktown" after run "slackpkg upgrade-all"
     after install you need to do some postinstall operation, see
-      http://alien.slackbook.org/ktown/14.1/latest/ (kde4)
       http://alien.slackbook.org/ktown/14.2/latest/ (kde5)
-    kde4 (available for slackware 14.1):
-      slackpkg remove kdeadmin kdenetwork kdesdk kdetoys kwallet kdnssd
-    kde5:
-      kde5 (available for slackware 14.2 and slackware current)
-      slackpkg remove \
-          amor kde-base-artwork kdeartwork kgamma ksnapshot ktux oxygen-icons pairs \
-          superkaramba libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt \
-          plasma-nm polkit-kde-agent-1 polkit-kde-kcmodules-1 kdeconnect-kde
+      If you have Slackware 14.2 or -current's default KDE 4.14.3 installed:
+	# removepkg /var/log/packages/*-4.14.3-*
+	# removepkg libkscreen
+	# removepkg kscreen
+	# removepkg kactivities
+	# removepkg kde-workspace
+	# removepkg libmm-qt
+	# removepkg libnm-qt
+	# removepkg plasma-nm
+	# removepkg polkit-kde-agent-1
+	# removepkg polkit-kde-kcmodules-1
+	# removepkg kdeconnect-kde
+	# removepkg kdepim
+	# removepkg kdepimlibs
+	# removepkg kdev-python
+	# removepkg kdevelop-php
+	# removepkg kdevelop-php-docs
+	..or instead of the above, simply '# slackpkg remove kde' and de-select
+	the packages you want to keep (amarok, etc).
 
 
 Please read /usr/doc/slackpkg+-*/README for more details
 
 
 Slackware repositories:
-http://ftp.slackware.com/pub/slackware/slackware{,64}-{14.0,14.1,14.2,current}
+http://mirrors.slackware.com/slackware/slackware{,64}-{14.0,14.1,14.2,current}
