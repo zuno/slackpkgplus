@@ -871,7 +871,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     AUTOP=no
     if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]];then
       ( cd $ROOT/var/log/packages
-        ls $ARGUMENT-*-*-* 2>/dev/null|sed 's/$/.txz/' | awk -f /usr/libexec/slackpkg/pkglist.awk|grep -q " $ARGUMENT "
+        ( cd $ROOT/ ; ls -1 ./var/log/packages/$ARGUMENT-*-*-* 2>/dev/null ) | awk -f /usr/libexec/slackpkg/pkglist.awk|grep -q " $ARGUMENT "
       )||return
       if [ ! -z "$AUTOPRIORITY" ];then
         if echo "$ARGUMENT"|grep -wq $AUTOPRIORITY;then
@@ -888,7 +888,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ "$AUTOP" == "on" ] ; then
       PKGINFOS=$(
                   cd $ROOT/var/log/packages
-                  ls $ARGUMENT-* 2>/dev/null |sed 's/$/.txz/' | awk -f /usr/libexec/slackpkg/pkglist.awk|
+                  ( cd $ROOT/ ; ls -1 ./var/log/packages/$ARGUMENT-*-*-* 2>/dev/null ) | awk -f /usr/libexec/slackpkg/pkglist.awk|
                                               grep " $ARGUMENT "|awk '{print $1,$4}'|
                                               ( read X && (
                                                 echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1 /' -e 's/^/ /'
