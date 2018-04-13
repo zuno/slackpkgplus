@@ -1,117 +1,62 @@
-Mon Oct 16 16:22:26 CEST 2017
+Sat Apr 14 00:09:12 CEST 2018
 
 url                                                                                  size  date                 gpg
-http://bear.alienbase.nl/mirrors/alien-kde/14.2/5/x86                              201541  2017/10/14 01:16:18  Eric Hameleers (Alien BOB) <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/alien-kde/14.2/5/x86_64                           250991  2017/10/14 01:18:54  Eric Hameleers (Alien BOB) <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/alien-kde/current/5/x86                           248345  2017/10/14 01:21:45  Eric Hameleers (Alien BOB) <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/alien-kde/current/5/x86_64                        249212  2017/10/14 01:24:37  Eric Hameleers (Alien BOB) <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/multilib/14.0                        111646  2017/10/14 13:13:16  Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/people/alien/multilib/14.1                        114273  2017/10/14 13:14:07  Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/people/alien/multilib/14.2                        127686  2017/10/14 13:15:02  Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/people/alien/multilib/current                     138942  2017/10/14 13:16:17  Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86            5297  2017/09/13 22:54:12  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.0/x86_64         5315  2017/09/13 22:54:06  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.1/x86            3761  2017/09/13 22:53:26  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.1/x86_64         3773  2017/09/13 22:53:19  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.2/x86            3126  2017/09/13 22:54:00  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.2/x86_64         3136  2017/09/13 22:53:52  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86         3762  2017/09/13 22:53:43  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86_64      3774  2017/09/13 22:53:35  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86                     131412  2017/10/14 01:35:11  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.0/x86_64                  129545  2017/10/14 01:33:56  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86                     217869  2017/10/14 01:20:30  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.1/x86_64                  217110  2017/10/14 01:18:07  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.2/x86                     219637  2017/10/14 01:32:26  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.2/x86_64                  221480  2017/10/14 01:29:33  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86                  218062  2017/10/14 01:26:36  Eric Hameleers <alien@slackware.com>
-http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86_64               219351  2017/10/14 01:23:35  Eric Hameleers <alien@slackware.com>
-http://connochaetos.org/slack-n-free/slack-n-free-14.2                              95282  2017/10/04 10:33:19  Henry Jensen <hjensen@connochaetos.org>
-http://connochaetos.org/slack-n-free/slack-n-free64-14.2                            11408  2017/09/29 15:26:20  Henry Jensen <hjensen@connochaetos.org>
-http://download.salixos.org/i486/14.0                                              717708  2017/10/11 13:39:29  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-http://download.salixos.org/i486/14.1                                              654902  2017/10/11 13:37:38  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-http://download.salixos.org/i486/14.2                                              533170  2017/10/11 13:35:45  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-http://download.salixos.org/i486/extra-14.2                                       1920750  2017/10/14 14:35:29  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-http://download.salixos.org/x86_64/14.0                                            719942  2017/10/11 13:39:54  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-http://download.salixos.org/x86_64/14.1                                            656064  2017/10/11 13:39:05  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-http://download.salixos.org/x86_64/14.2                                            537329  2017/10/11 13:36:20  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-http://download.salixos.org/x86_64/extra-14.2                                     1918582  2017/10/14 14:36:51  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-http://mirrors.slackware.com/slackware/slackware-14.0                              612360  2014/08/29 01:48:10  Slackware Linux Project <security@slackware.com>
-http://mirrors.slackware.com/slackware/slackware-14.1                              663145  2013/11/03 07:13:37  Slackware Linux Project <security@slackware.com>
+http://bear.alienbase.nl/mirrors/alien-kde/14.2/5/x86                              201541  2018/04/04 14:20:51  Eric Hameleers (Alien BOB) <alien@slackware.com>
+http://bear.alienbase.nl/mirrors/alien-kde/14.2/5/x86_64                           252067  2018/04/04 14:23:27  Eric Hameleers (Alien BOB) <alien@slackware.com>
+http://bear.alienbase.nl/mirrors/alien-kde/current/5/x86                           215421  2018/04/04 14:26:33  Eric Hameleers (Alien BOB) <alien@slackware.com>
+http://bear.alienbase.nl/mirrors/alien-kde/current/5/x86_64                        216242  2018/04/04 14:29:32  Eric Hameleers (Alien BOB) <alien@slackware.com>
+http://bear.alienbase.nl/mirrors/people/alien/multilib/14.2                        128592  2018/04/06 19:42:46  Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/people/alien/multilib/current                     144614  2018/04/06 19:44:18  Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.2/x86            4384  2018/02/14 15:24:03  Eric Hameleers <alien@slackware.com>
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.2/x86_64         4398  2018/02/14 15:23:51  Eric Hameleers <alien@slackware.com>
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86         4384  2018/02/14 15:23:38  Eric Hameleers <alien@slackware.com>
+http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/current/x86_64      4398  2018/02/14 15:23:26  Eric Hameleers <alien@slackware.com>
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.2/x86                     225198  2018/04/11 21:01:07  Eric Hameleers <alien@slackware.com>
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/14.2/x86_64                  227789  2018/04/11 20:58:04  Eric Hameleers <alien@slackware.com>
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86                  222536  2018/04/11 20:55:02  Eric Hameleers <alien@slackware.com>
+http://bear.alienbase.nl/mirrors/people/alien/sbrepos/current/x86_64               224573  2018/04/11 20:51:56  Eric Hameleers <alien@slackware.com>
+http://connochaetos.org/slack-n-free/slack-n-free-14.2                              94181  2018/04/05 12:33:48  Henry Jensen <hjensen@connochaetos.org>
+http://connochaetos.org/slack-n-free/slack-n-free64-14.2                            16924  2018/04/08 13:37:47  Henry Jensen <hjensen@connochaetos.org>
+http://download.salixos.org/i486/14.2                                              533763  2018/04/11 08:08:08  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
+http://download.salixos.org/i486/extra-14.2                                       1923164  2018/04/01 18:53:16  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
+http://download.salixos.org/x86_64/14.2                                            537924  2018/04/11 08:08:47  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
+http://download.salixos.org/x86_64/extra-14.2                                     1923793  2018/04/01 18:54:04  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
 http://mirrors.slackware.com/slackware/slackware-14.2                              702459  2016/06/29 21:42:35  Slackware Linux Project <security@slackware.com>
-http://mirrors.slackware.com/slackware/slackware-current                           722271  2017/10/10 20:14:18  Slackware Linux Project <security@slackware.com>
-http://mirrors.slackware.com/slackware/slackware64-14.0                            613454  2012/09/25 19:59:50  Slackware Linux Project <security@slackware.com>
-http://mirrors.slackware.com/slackware/slackware64-14.1                            664593  2013/11/03 07:19:37  Slackware Linux Project <security@slackware.com>
+http://mirrors.slackware.com/slackware/slackware-current                           717197  2018/04/13 01:05:59  Slackware Linux Project <security@slackware.com>
 http://mirrors.slackware.com/slackware/slackware64-14.2                            704195  2016/06/29 21:49:56  Slackware Linux Project <security@slackware.com>
-http://mirrors.slackware.com/slackware/slackware64-current                         724101  2017/10/10 20:26:00  Slackware Linux Project <security@slackware.com>
+http://mirrors.slackware.com/slackware/slackware64-current                         719046  2018/04/13 01:16:17  Slackware Linux Project <security@slackware.com>
 http://ngc891.blogdns.net/pub/slacke18/slackware-14.1                               22891  2016/09/24 04:31:23  Jérôme Pinot <ngc891@gmail.com>
 http://ngc891.blogdns.net/pub/slacke18/slackware64-14.1                             22981  2016/09/24 04:31:40  Jérôme Pinot <ngc891@gmail.com>
-http://packages.slackonly.com/pub/packages/14.1-x86                               3846671  2016/01/23 19:45:07  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
-http://packages.slackonly.com/pub/packages/14.1-x86_64                            4051503  2016/05/01 21:05:08  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
 http://packages.slackonly.com/pub/packages/14.2-x86                               4525711  2017/08/07 00:38:53  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
-http://packages.slackonly.com/pub/packages/14.2-x86_64                            4944244  2017/10/16 06:29:05  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
+http://packages.slackonly.com/pub/packages/14.2-x86_64                            4934830  2018/02/04 05:27:12  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
 http://packages.slackonly.com/pub/packages/current-x86                            2795351  2017/05/08 05:25:15  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
 http://packages.slackonly.com/pub/packages/current-x86_64                         3215041  2017/09/11 20:00:50  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
-http://repository.slacky.eu/slackware-14.0                                         888843  2013/10/22 05:04:28  Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
-http://repository.slacky.eu/slackware-14.1                                         319695  2015/05/10 05:08:18  Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
 http://repository.slacky.eu/slackware-14.2                                          28134  2016/11/06 05:39:38  Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
-http://repository.slacky.eu/slackware64-14.0                                       505829  2013/10/17 05:10:54  Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
-http://repository.slacky.eu/slackware64-14.1                                       294487  2015/07/18 05:00:32  Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
 http://repository.slacky.eu/slackware64-14.2                                        43790  2016/10/08 05:41:23  Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
-http://rlworkman.net/pkgs/14.0                                                      44424  2017/01/01 08:15:13  Robby Workman <rworkman@slackware.com>
-http://rlworkman.net/pkgs/14.1                                                     117045  2016/07/22 08:36:18  Robby Workman <rworkman@slackware.com>
-http://rlworkman.net/pkgs/14.2                                                      54029  2017/07/25 11:02:46  Robby Workman <rworkman@slackware.com>
+http://rlworkman.net/pkgs/14.2                                                      53979  2017/12/22 09:39:05  Robby Workman <rworkman@slackware.com>
 http://rlworkman.net/pkgs/current                                                    3230  2015/11/08 09:37:01  Robby Workman <rworkman@slackware.com>
-http://slack.conraid.net/repository/slackware64-current                            344451  2017/10/14 16:36:03  Corrado Franco (Conraid) <conraid@gmail.com>
-http://slackware.uk/csb/14.1/x86                                                    23946  2016/07/15 13:23:55  Willy Sudiarto Raharjo <willysr@gmail.com>
-http://slackware.uk/csb/14.1/x86_64                                                 24034  2016/07/15 13:24:05  Willy Sudiarto Raharjo <willysr@gmail.com>
-http://slackware.uk/csb/14.2/x86                                                    27843  2017/09/17 05:36:35  Willy Sudiarto Raharjo <willysr@gmail.com>
-http://slackware.uk/csb/14.2/x86_64                                                 27230  2017/09/17 05:37:04  Willy Sudiarto Raharjo <willysr@gmail.com>
-http://slackware.uk/csb/current/x86_64                                              25770  2017/10/16 00:48:10  Willy Sudiarto Raharjo <willysr@gmail.com>
-http://slackware.uk/microlinux/desktop-14.1-32bit                                  185090  2017/04/25 06:49:59  Niki Kovacs <info@microlinux.fr>
-http://slackware.uk/microlinux/desktop-14.1-64bit                                  186132  2017/04/25 06:50:13  Niki Kovacs <info@microlinux.fr>
+http://slack.conraid.net/repository/slackware64-current                            356683  2018/04/12 17:19:03  Corrado Franco (Conraid) <conraid@gmail.com>
+http://slackware.uk/csb/14.2/x86                                                    29003  2017/12/09 20:21:22  Willy Sudiarto Raharjo <willysr@gmail.com>
+http://slackware.uk/csb/14.2/x86_64                                                 28392  2017/12/09 20:21:12  Willy Sudiarto Raharjo <willysr@gmail.com>
+http://slackware.uk/csb/current/x86_64                                              26140  2018/03/28 04:08:09  Willy Sudiarto Raharjo <willysr@gmail.com>
 http://slackware.uk/microlinux/desktop-14.2-32bit                                  151132  2017/04/27 16:16:44  Niki Kovacs <info@microlinux.fr>
 http://slackware.uk/microlinux/desktop-14.2-64bit                                  151985  2017/04/27 16:16:54  Niki Kovacs <info@microlinux.fr>
-http://slackware.uk/microlinux/extras-14.1-32bit                                    17251  2017/02/20 19:55:51  Niki Kovacs <info@microlinux.fr>
-http://slackware.uk/microlinux/extras-14.1-64bit                                    17343  2017/02/20 19:56:04  Niki Kovacs <info@microlinux.fr>
 http://slackware.uk/microlinux/extras-14.2-32bit                                    13626  2017/02/20 19:56:17  Niki Kovacs <info@microlinux.fr>
 http://slackware.uk/microlinux/extras-14.2-64bit                                    13696  2017/02/20 19:56:29  Niki Kovacs <info@microlinux.fr>
-http://slackware.uk/microlinux/server-14.0-32bit                                    60714  2017/02/03 09:16:20  Niki Kovacs <info@microlinux.fr>
-http://slackware.uk/microlinux/server-14.0-64bit                                    60316  2017/02/03 09:16:31  Niki Kovacs <info@microlinux.fr>
-http://slackware.uk/microlinux/server-14.1-32bit                                    70455  2017/02/03 09:16:46  Niki Kovacs <info@microlinux.fr>
-http://slackware.uk/microlinux/server-14.1-64bit                                    70863  2017/02/03 09:16:57  Niki Kovacs <info@microlinux.fr>
 http://slackware.uk/microlinux/server-14.2-32bit                                    32597  2017/02/03 09:17:01  Niki Kovacs <info@microlinux.fr>
 http://slackware.uk/microlinux/server-14.2-64bit                                    32787  2017/02/03 09:17:12  Niki Kovacs <info@microlinux.fr>
-http://slackware.uk/msb/14.0/1.6/x86                                                28374  2015/12/26 06:11:35  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.0/1.6/x86_64                                             28464  2015/12/26 06:11:49  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.0/latest/x86                                             28374  2015/12/26 06:11:35  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.0/latest/x86_64                                          28464  2015/12/26 06:11:49  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.1/1.10/x86                                               38193  2015/12/26 06:13:17  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.1/1.10/x86_64                                            36589  2015/12/26 06:13:34  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.1/1.12/x86                                               36464  2016/07/04 12:52:21  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.1/1.12/x86_64                                            36585  2016/07/04 12:52:41  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.1/1.6/x86                                                36621  2015/12/26 06:12:06  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.1/1.6/x86_64                                             36734  2015/12/26 06:12:23  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.1/1.8/x86                                                33853  2015/12/26 06:12:40  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.1/1.8/x86_64                                             34544  2015/12/26 06:12:58  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.1/latest/x86                                             36464  2016/07/04 12:52:21  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.1/latest/x86_64                                          36585  2016/07/04 12:52:41  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.2/1.14/x86                                               26912  2016/09/06 17:19:46  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.2/1.14/x86_64                                            27006  2016/09/06 17:20:08  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.2/1.16/x86                                               28332  2017/03/12 15:53:22  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.2/1.16/x86_64                                            28432  2017/03/12 15:53:45  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.2/1.18/x86                                               30258  2017/08/26 19:21:56  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.2/1.18/x86_64                                            31343  2017/08/26 19:22:38  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.2/latest/x86                                             30258  2017/08/26 19:21:56  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/14.2/latest/x86_64                                          31343  2017/08/26 19:22:38  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/current/1.19/x86_64                                         29940  2017/10/15 13:48:27  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/msb/current/latest/x86_64                                       29940  2017/10/15 13:48:27  MATE SlackBuilds <mateslackbuilds@gmail.com>
-http://slackware.uk/slint/i586/slint-14.2                                           41431  2017/10/07 10:34:46  Didier Spaier <didier@slint.fr>
-http://slackware.uk/slint/x86_64/slint-14.2                                         42223  2017/10/07 10:21:54  Didier Spaier <didier@slint.fr>
-http://slackware.uk/slint/x86_64/slint-testing                                     310572  2017/10/15 20:43:03  Didier Spaier <didier@slint.fr>
-http://slackware.uk/studioware/14.2                                                112986  2017/05/12 11:09:12  Studioware <info@studioware.org>
+http://slackware.uk/msb/14.2/1.18/x86                                               30258  2018/04/11 20:12:16  MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/14.2/1.18/x86_64                                            30364  2018/04/11 20:12:29  MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/14.2/latest/x86                                             30258  2018/04/11 20:12:16  MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/14.2/latest/x86_64                                          30364  2018/04/11 20:12:29  MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/current/1.20/x86_64                                         29941  2018/04/07 04:48:19  MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/msb/current/latest/x86_64                                       29941  2018/04/07 04:48:19  MATE SlackBuilds <mateslackbuilds@gmail.com>
+http://slackware.uk/slint/i586/slint-14.2                                           41431  2018/01/02 19:08:28  Didier Spaier <didier@slint.fr>
+http://slackware.uk/slint/x86_64/slint-14.2                                         42223  2018/01/02 19:13:35  Didier Spaier <didier@slint.fr>
+http://slackware.uk/slint/x86_64/slint-14.2.1                                      351887  2018/04/10 19:38:10  Didier Spaier <didier@slint.fr>
+http://slackware.uk/studioware/14.2                                                112985  2018/01/13 03:11:17  Studioware <info@studioware.org>
 http://slakfinder.org/slackpkg+                                                       624  2017/10/16 16:10:16  Matteo Rossini <zerouno@slacky.it>
-http://slakfinder.org/slackpkg+1.6                                                    626  2016/06/04 12:09:43  Matteo Rossini <zerouno@slacky.it>
 http://slakfinder.org/slackpkg+1.7                                                    624  2017/10/16 16:10:16  Matteo Rossini <zerouno@slacky.it>
 http://slakfinder.org/slackpkg+dev                                                    629  2016/10/02 15:55:08  Matteo Rossini <zerouno@slacky.it>
-http://www.slackel.gr/repo/i486/current                                            588408  2017/10/15 19:10:11  Dimitris Tzemos (Slackel Creator) <dijemos@gmail.com>
-http://www.slackel.gr/repo/x86_64/current                                          593127  2017/10/15 19:07:07  Dimitris Tzemos (Slackel Creator) <dijemos@gmail.com>
+http://www.slackel.gr/repo/i486/current                                            742692  2018/04/13 13:09:47  Dimitris Tzemos (Slackel Creator) <dijemos@gmail.com>
+http://www.slackel.gr/repo/x86_64/current                                          753792  2018/04/13 13:07:09  Dimitris Tzemos (Slackel Creator) <dijemos@gmail.com>
