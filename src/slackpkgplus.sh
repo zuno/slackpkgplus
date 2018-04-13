@@ -165,7 +165,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo "The temp directory $TMPDIR will NOT be removed!" >>$TMPDIR/info.log
       echo
     fi
-    if [ -s $TMPDIR/error.log -o -s $TMPDIR/info.log ];then
+    if [ -s $TMPDIR/error.log -o -s $TMPDIR/info.log -o -s $TMPDIR/fatal.log ];then
       echo -e "\n\n=============================================================================="
     fi
     if [ -e $TMPDIR/error.log ]; then
@@ -180,6 +180,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo "  INFO! Debug informations"
       echo "------------------------------------------------------------------------------"
       cat $TMPDIR/info.log
+      echo "=============================================================================="
+    fi
+    if [ -s $TMPDIR/fatal.log ]; then
+      echo
+      echo "=============================================================================="
+      echo 
+      echo "                        !!! F A T A L !!!"
+      echo "          Some operation has failed and need attention!!"
+      echo
+      cat $TMPDIR/fatal.log
+      echo
       echo "=============================================================================="
     fi
     echo
@@ -260,6 +271,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ ! -e $ROOT/var/log/packages/$i ];then
         FDATE=$(ls -ltr --full-time $ROOT/var/log/removed_packages/$i|tail -1 |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
         echo "$FDATE removed:     $i" >> $WORKDIR/install.log
+      else
+        echo "Remove FAILED: $i : please retry." >> $TMPDIR/fatal.log
       fi
     done
     handle_event "remove"
@@ -297,6 +310,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
         FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
         echo "$FDATE upgraded:    $i  [$REPOPOS]  (was $PKGFOUND)" >> $WORKDIR/install.log
+      else
+        echo "Upgrade FAILED: $REPOPOS:$i : please retry." >> $TMPDIR/fatal.log
       fi
     done
     handle_event "upgrade"
@@ -324,6 +339,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
         FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
         echo "$FDATE $INSTALL_T $i  [$REPOPOS]" >> $WORKDIR/install.log
+      else
+        echo "Install FAILED: $REPOPOS:$i : please retry." >> $TMPDIR/fatal.log
       fi
     done
     handle_event "install"
