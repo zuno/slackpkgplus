@@ -307,14 +307,16 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
       getpkg $i upgradepkg Upgrading
-      if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
-        FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
-        echo "$FDATE upgraded:    $i  [$REPOPOS]  (was $PKGFOUND)" >> $WORKDIR/install.log
-      else
-        echo "Upgrade FAILED: $REPOPOS:$i : please retry." >> $TMPDIR/fatal.log
+      if [ "$DOWNLOADONLY" != "on" ];then
+	if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+	  FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+	  echo "$FDATE upgraded:    $i  [$REPOPOS]  (was $PKGFOUND)" >> $WORKDIR/install.log
+	else
+	  echo "Upgrade FAILED: $REPOPOS:$i : please retry." >> $TMPDIR/fatal.log
+	fi
       fi
     done
-    handle_event "upgrade"
+    [ "$DOWNLOADONLY" != "on" ]&&handle_event "upgrade"
   } # END function upgrade_pkg()
 
     # Overrides original install_pkg(). Required by the notification mechanism.
@@ -336,14 +338,16 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
       getpkg $i installpkg Installing
-      if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
-        FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
-        echo "$FDATE $INSTALL_T $i  [$REPOPOS]" >> $WORKDIR/install.log
-      else
-        echo "Install FAILED: $REPOPOS:$i : please retry." >> $TMPDIR/fatal.log
+      if [ "$DOWNLOADONLY" != "on" ];then
+	if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+	  FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+	  echo "$FDATE $INSTALL_T $i  [$REPOPOS]" >> $WORKDIR/install.log
+	else
+	  echo "Install FAILED: $REPOPOS:$i : please retry." >> $TMPDIR/fatal.log
+	fi
       fi
     done
-    handle_event "install"
+    [ "$DOWNLOADONLY" != "on" ]&&handle_event "install"
   } # END function install_pkg()
 
   ##### ====== END INSTALL/POSTINSTALL FUNCTIONS ====== #####
