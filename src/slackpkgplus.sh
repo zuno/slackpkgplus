@@ -785,7 +785,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       elif [ ${FILENAME:0:13} == "CHECKSUMS.md5" ];then
         REPO=$(echo $FILENAME|cut -f2- -d-|sed 's/\.gz$//')
       else
-        REPO=$(echo $1|sed -r -e "s,^$TEMP,/," -e "s,/\./,/,g" -e "s,//,/,g" -e "s,^/,," -e "s,/.*$,," -e "s,SLACKPKGPLUS_,,")
+        REPO=$(echo $1|sed -r -e "s,^/*$TEMP,/," -e "s,/\./,/,g" -e "s,//,/,g" -e "s,^/,," -e "s,/.*$,," -e "s,SLACKPKGPLUS_,,")
       fi
 
       if [ "$STRICTGPG" != "off" ] && ! echo ${MIRRORPLUS[$REPO]}|grep -q ^dir:/;then
@@ -840,7 +840,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo 1
       return
     fi
-    ARG=$(echo $1|sed "s|^$TEMP/||")
+    ARG=$(echo $1|sed "s|^/*$TEMP/||")
     PREPO=$(echo $ARG | cut -f2 -d/|sed 's/SLACKPKGPLUS_//' )
     if echo ${MIRRORPLUS[$PREPO]}|grep -q ^dir:/;then
       echo 1
@@ -887,7 +887,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     AUTOP=no
     if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]];then
-      ( cd $ROOT/var/log/packages
+      (
         ( cd $ROOT/ ; ls -1 ./var/log/packages/$ARGUMENT-*-*-* 2>/dev/null ) | awk -f /usr/libexec/slackpkg/pkglist.awk|grep -q " $ARGUMENT "
       )||return
       if [ ! -z "$AUTOPRIORITY" ];then
@@ -904,7 +904,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     if [ "$AUTOP" == "on" ] ; then
       PKGINFOS=$(
-                  cd $ROOT/var/log/packages
                   ( cd $ROOT/ ; ls -1 ./var/log/packages/$ARGUMENT-*-*-* 2>/dev/null ) | awk -f /usr/libexec/slackpkg/pkglist.awk|
                                               grep " $ARGUMENT "|awk '{print $1,$4}'|
                                               ( read X && (
