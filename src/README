@@ -21,6 +21,9 @@ for any damage that may be caused to your computer.
 
 CONFIGURATION
 
+see man slackpkgplus.conf. If you are italian export LANG=it_IT.UTF8 to see
+the italian manpage.
+
 For the basic configuration:
 
 * Edit /etc/slackpkg/slackpkgplus.conf
@@ -33,7 +36,7 @@ the official repositories (see below).
   present in multiple repositories or to allow repositories to override
   official slackware packages
 
-For a list of supported repositories see repositories.txt, but you can also
+For a list of known repositories see repositories.lst, but you can also
 add others yourself.
 
 If you configure repositories that do not support gpg, you may need to set
@@ -56,7 +59,7 @@ The MIRRORPLUS array defines all mirrors. It accepts these protocols:
 
 1) http/ftp/https: for example,
 
-     MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware64/
+     MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware64-14.2/
 
    The mirror must contains all metadata files (CHECKSUMS.md5 ...)
    You must run 'slackpkg update' after adding/removing a repository.
@@ -224,30 +227,48 @@ or just re-run
 
 KTOWN (LATEST KDE)
 
-If you want to install the latest KDE packages from AlienBOB's ktown repository
-(currently kde 4.14.3 in slackware 14.1 and kde 5_16.05 in slackware current),
-add "PKGS_PRIORITY=( ktown )"
+If you want to install the latest KDE 5 packages from AlienBOB's ktown repository
+add 
+  PKGS_PRIORITY=( ktown )
+  MIRRORPLUS['ktown']=http://alien.slackbook.org/ktown/14.2/5/
+to slackpkgplus.conf, then
 # slackpkg update gpg
 # slackpkg update
 
 To install ktown you need some attention, so please refeer to official
 documentation for details:
-http://alien.slackbook.org/ktown/14.1/latest/ (kde 4)
-http://alien.slackbook.org/ktown/current/5/   (kde 5)
+http://alien.slackbook.org/ktown/14.2/5/
+http://alien.slackbook.org/ktown/current/5/
 
-* ktown4 on slackware 14.1:
+At time of writting, latest release are KDE 5_17.11 for slackware 14.2 and KDE 5_18.04
+for slackware current
 
-slackpkg install ktown
-slackpkg upgrade-all
-slackpkg remove kdeadmin kdenetwork kdesdk kdetoys kwallet kdnssd
-slackpkg clean-system
+From official documentation:
+--
+If you have Slackware 14.2 or -current's default KDE 4.14.3 installed:
+  # removepkg /var/log/packages/*-4.14.3-*
+  # removepkg amarok
+  # removepkg kscreen
+  # removepkg kactivities
+  # removepkg kde-workspace
+  # removepkg kdeconnect-kde
+  # removepkg kdepim
+  # removepkg kdepimlibs
+  # removepkg kdev-python
+  # removepkg kdevelop-php
+  # removepkg kdevelop-php-docs
+  # removepkg libkscreen
+  # removepkg libmm-qt
+  # removepkg libnm-qt
+  # removepkg plasma-nm
+  # removepkg polkit-kde-agent-1
+  # removepkg polkit-kde-kcmodules-1
+  # removepkg wicd-kde
+  ... or instead of the above, simply run 'slackpkg remove kde'.
+---
 
-* ktown5 on slackware current:
+After that you can run
 
-slackpkg remove libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt plasma-nm polkit-kde-agent-1 polkit-kde-kcmodules-1 kdeconnect-kde
-slackpkg remove amor kde-base-artwork kdeartwork kgamma ksnapshot ktux oxygen-icons pairs \
-                superkaramba libkscreen kscreen kactivities kde-workspace libmm-qt libnm-qt \
-                plasma-nm polkit-kde-agent-1 polkit-kde-kcmodules-1 kdeconnect-kde
 slackpkg install ktown
 slackpkg upgrade-all
 slackpkg clean-system
@@ -257,8 +278,7 @@ slackpkg reinstall ktown
 BEFORE slackpkg install ktown
 
 
-Note - for both ktown4 and ktown5 - that the packages to remove may change in
-newer version of ktown (at moment are kde-4.14.3 and kde-5_16.05), 
+Note that the packages to remove may change in newer version of ktown,
 so I encourage to read linked documents BEFORE install it.
 
 
@@ -267,7 +287,10 @@ After that, you can keep the ktown KDE up-to-date by launching:
 # slackpkg upgrade-all
 Periodically you should re-run
 # slackpkg install ktown
-to be sure that newer packages are installed
+to be sure that newer packages are installed, and
+# slackpkg clean-system
+to be sure to clean removed packages.
+
 
 To restore the Slackware KDE, remove all 'ktown' referall in config file, then launch:
 # slackpkg update
@@ -275,7 +298,6 @@ To restore the Slackware KDE, remove all 'ktown' referall in config file, then l
 # slackpkg install kde
 # slackpkg upgrade-all
 # slackpkg clean-system
-# slackpkg update
 
 
 -----
@@ -541,6 +563,15 @@ By setting WW_FILE_SEARCH to on, the same command should find slackpkg+
 becouse match slackpkgplus.conf and other.
 
 Note that a short pattern may match many many packages.
+
+-----
+
+SBOURL
+
+'slackpkg search' allow you to search packages in SlackBuilds.org.
+Note that slackpkg+ does not replace sbopkg or other similar tools.
+slackpkg+ show you the url of the SlackBuild, then you have to manually
+download, build and install it, or use sbopkg to do that.
 
 -----
 

@@ -82,6 +82,7 @@ Seguono le differenti impostazioni disponibili:
 .ds 3 GREYLIST\t\t\t\ton/off\t\ton\t\tsi
 .ds 4 SENSITIVE_SEARCH\t\ton/off\t\ton\t\tsi
 .ds 5 WW_FILE_SEARCH\t\t\ton/off\t\ton\t\tsi
+.ds 6 SBOURL\t\t\t\tstringa\t\t-\t\tno
 .in +2
 \*1
 .br
@@ -92,6 +93,8 @@ Seguono le differenti impostazioni disponibili:
 \*4
 .br
 \*5
+.br
+\*6
 .in
 
 
@@ -358,6 +361,14 @@ Impostando \fB\%WW_FILE_SEARCH\fP=\fIoff\fP il comando \fB\%file-search\fP cerch
 
 Nota che la ricerca per stringhe troppo corte può tirare fuori centinaia e centinaia di risultati ed impiegare molto tempo.
 
+.TP  5
+\fBSBOURL\fP
+.br
+Il comando \fB\%slackpkg\ search\fP consente di effettuare la ricerca anche nel repository di SlackBuilds.org.
+
+\fB\%SBOURL\fP contiene l'indirizzo del repository di SlackBuilds.org. Se non viene settata la ricerca non verrà effettuata.
+
+Nota che slackpkg+ non sostituisce \fB\%sbopkg\fP o altri tool, ma serve solo per sapere se un pacchetto è presente o meno su SBo. slackpkg+ mostra l'url, poi l'utente dovrà scaricarlo e compilarlo manualmente oppure affidarsi a sbopkg.
 
 
 .TP  5

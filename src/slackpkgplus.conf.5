@@ -82,6 +82,7 @@ Here is the list of available settings:
 .ds 3 GREYLIST\t\t\t\ton/off\t\ton\t\tyes
 .ds 4 SENSITIVE_SEARCH\t\ton/off\t\ton\t\tyes
 .ds 5 WW_FILE_SEARCH\t\t\ton/off\t\ton\t\tyes
+.ds 6 SBOURL\t\t\t\tstring\t\t-\t\tno
 .in +2
 \*1
 .br
@@ -92,6 +93,8 @@ Here is the list of available settings:
 \*4
 .br
 \*5
+.br
+\*6
 .in
 
 
@@ -353,13 +356,21 @@ Note that this option does not affect the behavior of \fB\%slackpkg\ install\fP 
 \fBWW_FILE_SEARCH\fP
 .br
 \fBWW\fP means "Whole Word".
-Il comando \fB\%slackpkg\ file-search\fP per impostazione predefinita cerca i file in modalità Whole Word (usando il comando \fB\%grep\ \-w\fP), quindi \fB\%slackpkg\ file\-search\ libext2\fP non troverà alcuna occorenza.
-
-The \fB\%slackpkg\ file-search\fP by default looks for files in Whole Word mode (using the command \fB\%grep\ \-w\fP), and \fB\%slackpkg\ files\-search\ libext2\fP will not find any result.
+The \fB\%slackpkg\ file-search\fP command by default looks for files in Whole Word mode (using the command \fB\%grep\ \-w\fP), and \fB\%slackpkg\ files\-search\ libext2\fP will not find any result.
 
 Setting \fB\%WW_FILE_SEARCH\fP=\fIoff\fP command \fB\%file-search\fP will also look for substrings, so the above command will find the \fB\%e2fsprogs\fP for the presence of the file \fB\%libext2fs.a\fP.
 
 Note that the search for too short strings can pull out hundreds and hundreds of results and take a long time.
+
+.TP  5
+\fBSBOURL\fP
+.br
+The \fB\%slackpkg\ search\fP command allow you to search packages in the SlackBuilds.org repository.
+
+\fB\%SBOURL\fP contains the url of SlackBuilds.org repository. It it is not set, the search will be skipped.
+
+Note that slackpkg+ does not replace \fB\%sbopkg\fP o similar tools, but is only useful to know if a package is present on SBo. slackpkg+ show you the url, so the user can manually download and compile it, or he can use sbopkg instead.
+
 
 .TP  5
 \fBSHOWORDER\fP

@@ -12,7 +12,6 @@ Supported Repositories:
 > msb:           http://slackware.uk/msb/{14.2,current}/{1.18,1.20,latest}/{x86,x86_64}/
 > csb:           http://slackware.uk/csb/{14.2,current}/{x86,x86_64}/
 > slackers:      http://slack.conraid.net/repository/slackware64-current/
-> slacke18:      http://ngc891.blogdns.net/pub/slacke18/slackware{,64}-{14.1}/
 > studioware:    http://slackware.uk/studioware/{14.2}
 > slackonly:     http://packages.slackonly.com/pub/packages/{14.2,current}-{x86,x86_64}/
 > rlworkman:     http://rlworkman.net/pkgs/{14.2,current}/

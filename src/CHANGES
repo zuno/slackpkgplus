@@ -8,15 +8,26 @@
 
 - Changed some default settings in sample configuration file
 
+- Added SBOURL to configure the SlackBuild.org repository
+
 
 *New features:
 
 - Added manpages (italian and english) for slackpkgplus.conf
 
+- Added a 'fatal log' to show some serious error that the users should not
+    ignore. For example a failure installing packages.
+
+- Added SBo support. This does not replace sbopkg. It just search in
+   SlackBuilds.org and report the url to download to build and install
+   packages yourself.
+
 
 *Improvements
 
 - Improved checkrepos.sh
+
+- Smaller output for 'slackpkg search'
 
 
 *BugFixes
@@ -25,6 +36,8 @@
 
 - Issues when an invalid repository is configured
 
+- 'slackpkg check-updates' did not work unless you set VERBOSE=3
+
 
 *Various
 
@@ -32,6 +45,10 @@
 
 - Bash completation enabled by default (if you have bash_completation package
     installed) 
+
+- 'slackpkg upgrade' now works with slackpkg-2.83 (development release).
+     This is not officially released, so not all regressions can be solved.
+     Currently slackpkg+ does not work with slackpkg-2.83 if $ROOT is non-empty.
 
 
 == From 1.6 and 1.7 ==
