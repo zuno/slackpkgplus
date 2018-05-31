@@ -1,3 +1,11 @@
+Thu May 31 09:39:12 CEST 2018
+pkg/slackpkg+-1.7.0-noarch-6mt.txz: Rebuilt
+  - It works with the newest slackpkg-2.83.0; it broke something about the
+    $ROOT feature. Slackpkg+ stable will work only if $ROOT is not set.
+    IMPORTANT!!! this slackpkg+ version also broke the $ROOT feature in
+    slackware-current! If you need it do not upgrade slackpkg+!!!
++-------------------------+
+
 Mon Oct 16 14:20:01 CEST 2017
 pkg/slackpkg+-1.7.0-noarch-5mt.txz: Rebuilt
   - Update repositories list
