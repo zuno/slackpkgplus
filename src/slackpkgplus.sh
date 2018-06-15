@@ -288,7 +288,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       done
       DELALL="$OLDDEL"
     fi
-    ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
+    ls -1 $ROOT/var/log/packages/ > $TMPDIR/tmplist
 
     for i in $SHOWLIST; do
       PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
@@ -454,8 +454,25 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # The new getfile() download all file needed from all defined repositories
     # then merge all in a format slackpkg-compatible
   function getfile(){
+    if [ "$DOWNLOADCHANGELOG" = "force" -a $(basename $1) = "CHECKSUMS.md5.asc" ];then
+      echo "force to download ChangeLog"
+      DOWNLOADCHANGELOG=no
+      getfile "$(echo "$1"|sed 's/CHECKSUMS.md5.asc$/ChangeLog.txt/')" "$(echo "$2"|sed 's/CHECKSUMS.md5.asc$/ChangeLog.txt/')"
+      >$TMPDIR/changelogdownloaded
+      echo "PGP" >$TMPDIR/CHECKSUMS.md5.asc
+      return
+    fi
     local URLFILE
     URLFILE=$1
+
+    if [ $(basename $1) = "ChangeLog.txt" ];then
+      if [ -e $TMPDIR/changelogdownloaded ];then
+        echo "                Done."
+        return
+      fi
+      rm -f $TMPDIR/CHECKSUMS.md5.asc
+      echo "                ChangeLogs"
+    fi
 
     if echo $1|egrep -q '/SLACKPKGPLUS_(file|dir|http|https|ftp)[0-9].*\.asc$';then
       return 0
@@ -876,7 +893,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ "$AUTOP" == "on" ] ; then
       PKGINFOS=$(
                   ( cd $ROOT/ ; ls -1 ./var/log/packages/$ARGUMENT-*-*-* 2>/dev/null ) | awk -f /usr/libexec/slackpkg/pkglist.awk|
-                                              grep " $ARGUMENT "|awk '{print $1,$4}'|
+                                              grep " $ARGUMENT "|awk '{print $2,$5}'|
                                               ( read X && (
                                                 echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1 /' -e 's/^/ /'
                                                 echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1_slack[0-9]/' -e 's/^/ /'
@@ -1103,7 +1120,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     printf "[ %-16s ] [ %-24s ] [ %-40s ]\n" "Status" "Repository" "Package"
 
-    INSTPKGS="$(ls -f $ROOT/var/log/packages)"
+    INSTPKGS="$(ls -f $ROOT/var/log/packages/)"
 
     for i in $1; do
       REPO=${i/:*/} #$(echo "$i" | cut -f1 -d":")
@@ -1294,7 +1311,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       rm -f $TMPDIR/dialog.tmp
       
       if [ "$2" = "upgrade" ]; then
-        ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
+        ls -1 $ROOT/var/log/packages/ > $TMPDIR/tmplist
         for i in $1; do
           TMPONOFF=$ONOFF
           BASENAME=$(cutpkg $i)
@@ -1564,6 +1581,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # answer to "Do you really want to download all other files"
     # if there are new changes
     ANSWER="Y"
+    DOWNLOADCHANGELOG=force
   fi
 
   if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&& ! ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1;then
