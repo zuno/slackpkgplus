@@ -1,3 +1,8 @@
+Fri Jun 15 18:30:19 CEST 2018
+pkg/slackpkg+-1.7.0-noarch-8mt.txz: Rebuilt
+  - Fix incompatibility with slackpkg prior 2.83.0-noarch-3
++-------------------------+
+
 Fri Jun 15 16:09:51 CEST 2018
 pkg/slackpkg+-1.7.0-noarch-7mt.txz: Rebuilt
   - Fix incompatibility with slackpkg-2.83.0-noarch-3

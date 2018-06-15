@@ -466,6 +466,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     URLFILE=$1
 
     if [ $(basename $1) = "ChangeLog.txt" ];then
+      DOWNLOADCHANGELOG=no
       if [ -e $TMPDIR/changelogdownloaded ];then
         echo "                Done."
         return
