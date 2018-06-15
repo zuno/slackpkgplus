@@ -909,7 +909,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ "$AUTOP" == "on" ] ; then
       PKGINFOS=$(
                   ( cd $ROOT/ ; ls -1 ./var/log/packages/$ARGUMENT-*-*-* 2>/dev/null ) | awk -f /usr/libexec/slackpkg/pkglist.awk|
-                                              grep " $ARGUMENT "|awk '{print $1,$4}'|
+                                              grep " $ARGUMENT "|awk '{print $2,$5}'|
                                               ( read X && (
                                                 echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1 /' -e 's/^/ /'
                                                 echo "$X"|sed -r -e 's/ [0-9]+([^0-9].*)*$/ [^ ]\\+ [^ ]\\+ [0-9]\\+\1_slack[0-9]/' -e 's/^/ /'

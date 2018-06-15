@@ -15,18 +15,18 @@ if [ $ISX64 -ne 1 ];then
   echo "Slackware multilib's are supported only from slackware x86_64!"
   exit 1
 fi
-SVER=$(grep -v ^\# $CONF/mirrors|sed -r 's,^.*/slackware64-(current|14.1|14.0|13.37|13.0)/,\1,'|head -1)
+SVER=$(grep -v ^\# $CONF/mirrors|sed -r 's,^.*/slackware64-(current|14.2|14.1|14.0)/,\1,'|head -1)
 if [ -z "$SVER" ];then
   echo "I can't detect your Slackware version."
-  echo "Which Slackware version are you running? (current/14.1/14.0/13.37/13.0)"
+  echo "Which Slackware version are you running? (current/14.2/14.1/14.0)"
   read $SVER
 fi
-if ! echo $SVER|egrep -q '^(current|14.1|14.0|13.37|13.0)$';then
+if ! echo $SVER|egrep -q '^(current|14.2|14.1|14.0|13.37|13.0)$';then
   echo "Invalid Slackware version ($SVER)"
   exit 1
 fi
 
-if grep -q -e '^PKGS_PRIORITY=.* multilib:\.\* .*$' -e '^MIRRORPLUS..multilib..=.*multilib.*' $CONF/slackpkgplus.conf;then
+if grep -q -e '^PKGS_PRIORITY=.* multilib .*$' -e '^MIRRORPLUS..multilib..=.*multilib.*' $CONF/slackpkgplus.conf;then
   echo "slackpkg+ seems to be already configured for multilib support. Would you like to remove multilib support from the configuration? (y/N)"
   read ANS
   if [ "$ANS" == "y" -o "$ANS" == "Y" ];then
@@ -65,9 +65,9 @@ if [ "$ANS" == "y" -o "$ANS" == "Y" ];then
   MULTILIBREPO="MIRRORPLUS['multilib']="$(grep -m1 '> multilib: ' repositories.txt|awk '{print $3}'|sed "s/{.*}/$SVER/")
   cp $CONF/slackpkgplus.conf $CONF/slackpkgplus.conf.backup
   if grep -q ^PKGS_PRIORITY= $CONF/slackpkgplus.conf;then
-    sed -i -r -e 's/^PKGS_PRIORITY=\( (.*) \)/PKGS_PRIORITY=( multilib:.* \1 )/' $CONF/slackpkgplus.conf
+    sed -i -r -e 's/^PKGS_PRIORITY=\( (.*) \)/PKGS_PRIORITY=( multilib \1 )/' $CONF/slackpkgplus.conf
   else
-    sed -i -r -e '1,/^#PKGS_PRIORITY=.*$/s/^(#PKGS_PRIORITY=.*)$/\1\nPKGS_PRIORITY=( multilib: )\n/' $CONF/slackpkgplus.conf
+    sed -i -r -e '1,/^#PKGS_PRIORITY=.*$/s/^(#PKGS_PRIORITY=.*)$/\1\nPKGS_PRIORITY=( multilib )\n/' $CONF/slackpkgplus.conf
   fi
   sed -i -r -e 's|^(PKGS_PRIORITY=.*)$|\1\n'"$MULTILIBREPO|" $CONF/slackpkgplus.conf
   sed -i.backup -r -e 's/^(\[0-9\]\+compat32)$/\#\1/' $CONF/blacklist
