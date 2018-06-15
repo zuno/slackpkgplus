@@ -301,7 +301,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       done
       DELALL="$OLDDEL"
     fi
-    ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
+    ls -1 $ROOT/var/log/packages/ > $TMPDIR/tmplist
 
     for i in $SHOWLIST; do
       PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
@@ -1150,7 +1150,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     {
     echo "[ Status#] [ Repository#] [ Package# ]"
 
-    INSTPKGS="$(ls -f $ROOT/var/log/packages)"
+    INSTPKGS="$(ls -f $ROOT/var/log/packages/)"
 
     for i in $1; do
       REPO=${i/:*/} #$(echo "$i" | cut -f1 -d":")
@@ -1342,7 +1342,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       rm -f $TMPDIR/dialog.tmp
       
       if [ "$2" = "upgrade" ]; then
-        ls -1 $ROOT/var/log/packages > $TMPDIR/tmplist
+        ls -1 $ROOT/var/log/packages/ > $TMPDIR/tmplist
         for i in $1; do
           TMPONOFF=$ONOFF
           BASENAME=$(cutpkg $i)
