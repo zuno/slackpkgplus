@@ -1,3 +1,9 @@
+Sun Jul 22 12:37:37 CEST 2018
+pkg/slackpkg+-1.7.0-noarch-9mt.txz: Rebuilt
+  - slackpkg+ did not work properly when run as a package group instead
+    single packages. Thankyou to Poprocks an phenixia2003
++-------------------------+
+
 Fri Jun 15 18:30:19 CEST 2018
 pkg/slackpkg+-1.7.0-noarch-8mt.txz: Rebuilt
   - Fix incompatibility with slackpkg prior 2.83.0-noarch-3
