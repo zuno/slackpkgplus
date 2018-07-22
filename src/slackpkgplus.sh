@@ -308,12 +308,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
       getpkg $i upgradepkg Upgrading
       if [ "$DOWNLOADONLY" != "on" ];then
-	if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
-	  FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
-	  echo "$FDATE upgraded:    $i  [$REPOPOS]  (was $PKGFOUND)" >> $WORKDIR/install.log
-	else
-	  echo "Upgrade FAILED: $REPOPOS:$i : please retry." >> $TMPDIR/fatal.log
-	fi
+        if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+          FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+          echo "$FDATE upgraded:    $i  [$REPOPOS]  (was $PKGFOUND)" >> $WORKDIR/install.log
+        else
+          echo "Upgrade FAILED: $REPOPOS:$i : please retry." >> $TMPDIR/fatal.log
+        fi
       fi
     done
     [ "$DOWNLOADONLY" != "on" ]&&handle_event "upgrade"
@@ -339,12 +339,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
       getpkg $i installpkg Installing
       if [ "$DOWNLOADONLY" != "on" ];then
-	if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
-	  FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
-	  echo "$FDATE $INSTALL_T $i  [$REPOPOS]" >> $WORKDIR/install.log
-	else
-	  echo "Install FAILED: $REPOPOS:$i : please retry." >> $TMPDIR/fatal.log
-	fi
+        if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
+          FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
+          echo "$FDATE $INSTALL_T $i  [$REPOPOS]" >> $WORKDIR/install.log
+        else
+          echo "Install FAILED: $REPOPOS:$i : please retry." >> $TMPDIR/fatal.log
+        fi
       fi
     done
     [ "$DOWNLOADONLY" != "on" ]&&handle_event "install"
@@ -486,8 +486,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ $(basename $1) = "ChangeLog.txt" ];then
       DOWNLOADCHANGELOG=no
       if [ -e $TMPDIR/changelogdownloaded ];then
-	echo "                Done."
-	return
+        echo "                Done."
+        return
       fi
       rm -f $TMPDIR/CHECKSUMS.md5.asc
       echo "                ChangeLogs"
@@ -1006,13 +1006,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           grep "^${REPOSITORY} " ${TMPDIR}/priority.filters | cut -f2 -d" " > ${TMPDIR}/filter.patterns
           grep "^[.][*] " ${TMPDIR}/priority.filters | cut -f2 -d" " >> ${TMPDIR}/filter.patterns
 
-	    # The selected package is rejected when (1) no filter patterns were found, or (2)
-	    # none of the filter patterns matches the package's data
-	    #
+            # The selected package is rejected when (1) no filter patterns were found, or (2)
+            # none of the filter patterns matches the package's data
+            #
           if [ ! -s ${TMPDIR}/filter.patterns ] \
- 		|| \
- 		! echo "${PKGDATA[*]}" | grep -q -f ${TMPDIR}/filter.patterns ;  then
-
+                || \
+                ! echo "${PKGDATA[*]}" | grep -q -f ${TMPDIR}/filter.patterns ;  then
             PKGDATA=""
             LINEIDX=""
             NAME=""
