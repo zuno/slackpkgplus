@@ -977,9 +977,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           grep "^${REPOSITORY} " ${TMPDIR}/priority.filters | cut -f2 -d" " > ${TMPDIR}/filter.patterns
           grep "^[.][*] " ${TMPDIR}/priority.filters | cut -f2 -d" " >> ${TMPDIR}/filter.patterns
 
-            # If no filter patterns were found, or if the selected package does not
-            # match any of the filter patterns, the selected package is rejected...
-          if [ ! -s ${TMPDIR}/filter.patterns ] || ! echo "${PKGDATA[5]}.${PKGDATA[7]}" | grep -q -f ${TMPDIR}/filter.patterns ;  then
+	    # The selected package is rejected when (1) no filter patterns were found, or (2)
+	    # none of the filter patterns matches the package's data
+	    #
+          if [ ! -s ${TMPDIR}/filter.patterns ] \
+ 		|| \
+ 		! echo "${PKGDATA[*]}" | grep -q -f ${TMPDIR}/filter.patterns ;  then
+
             PKGDATA=""
             LINEIDX=""
             NAME=""
