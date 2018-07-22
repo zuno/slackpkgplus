@@ -774,7 +774,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       elif [ ${FILENAME:0:13} == "CHECKSUMS.md5" ];then
         REPO=$(echo $FILENAME|cut -f2- -d-|sed 's/\.gz$//')
       else
-	REPO=$(echo $1|sed -r -e "s,^/*$TEMP,/," -e "s,/\./,/,g" -e "s,//,/,g" -e "s,^/,," -e "s,/.*$,," -e "s,SLACKPKGPLUS_,,")
+        REPO=$(echo $1|sed -r -e "s,^/*$TEMP,/," -e "s,/\./,/,g" -e "s,//,/,g" -e "s,^/,," -e "s,/.*$,," -e "s,SLACKPKGPLUS_,,")
       fi
 
       if [ "$STRICTGPG" != "off" ] && ! echo ${MIRRORPLUS[$REPO]}|grep -q ^dir:/;then
@@ -977,13 +977,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           grep "^${REPOSITORY} " ${TMPDIR}/priority.filters | cut -f2 -d" " > ${TMPDIR}/filter.patterns
           grep "^[.][*] " ${TMPDIR}/priority.filters | cut -f2 -d" " >> ${TMPDIR}/filter.patterns
 
-	    # The selected package is rejected when (1) no filter patterns were found, or (2)
-	    # none of the filter patterns matches the package's data
-	    #
+            # The selected package is rejected when (1) no filter patterns were found, or (2)
+            # none of the filter patterns matches the package's data
+            #
           if [ ! -s ${TMPDIR}/filter.patterns ] \
- 		|| \
- 		! echo "${PKGDATA[*]}" | grep -q -f ${TMPDIR}/filter.patterns ;  then
-
+                || \
+                ! echo "${PKGDATA[*]}" | grep -q -f ${TMPDIR}/filter.patterns ;  then
             PKGDATA=""
             LINEIDX=""
             NAME=""
