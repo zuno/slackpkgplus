@@ -1659,7 +1659,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   done
 
   REPOPLUS=( $(echo "${REPOPLUS[*]} ${PURE_PKGSPRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}') )
-  PRIORITY=( ${PRIORITY[*]} SLACKPKGPLUS_$(echo ${REPOPLUS[*]}|sed 's/ / SLACKPKGPLUS_/g') )
+  if [ ! -z "${REPOPLUS[*]}" ];then
+    PRIORITY=( ${PRIORITY[*]} SLACKPKGPLUS_$(echo ${REPOPLUS[*]}|sed 's/ / SLACKPKGPLUS_/g') )
+  fi
 
   # Test repositories
   for pp in ${REPOPLUS[*]};do
