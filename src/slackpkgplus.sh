@@ -1612,7 +1612,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     touch $WORKDIR/install.log
   fi
 
-  if [ "$CMD" == "update" ];then
+  if [ "$CMD" == "update" -o "$CMD" == "check-updates" ];then
     # answer to "Do you really want to download all other files"
     # if there are new changes
     ANSWER="Y"
