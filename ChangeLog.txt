@@ -1,3 +1,10 @@
+Thu Jan  3 12:32:53 CET 2019
+pkg/slackpkg+-1.7.0-noarch-10mt.txz: Rebuilt
+  - Allow to use the blacklist system from slackpkg 2.84 (still in beta).
+    Only impact install/upgrade/remove options, and does not impact
+    greylist.
++-------------------------+
+
 Sun Jul 22 12:37:37 CEST 2018
 pkg/slackpkg+-1.7.0-noarch-9mt.txz: Rebuilt
   - slackpkg+ did not work properly when run as a package group instead
