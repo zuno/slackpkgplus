@@ -109,9 +109,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     if $MLREPO_SELELECTED && grep -q "^aaa_elflibs$" ${TMPDIR}/blacklist && ! grep -q "^aaa_elflibs-compat32$" ${TMPDIR}/blacklist ; then
       sed -i --expression "s/^aaa_elflibs/#aaa_elflibs/" ${TMPDIR}/blacklist
-      grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus | grep -v "[ ]aaa_elflibs[ ]" >${TMPDIR}/blacklist.tmp
+      grep -vE $LEGACYBLACKLIST -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus | grep -v "[ ]aaa_elflibs[ ]" >${TMPDIR}/blacklist.tmp
     else
-      grep -vEw -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus >${TMPDIR}/blacklist.tmp
+      grep -vE $LEGACYBLACKLIST -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus >${TMPDIR}/blacklist.tmp
     fi
     if [ "$(head -1 ${TMPDIR}/blacklist.tmp|awk '{print $1}')" != "local" ];then
       cat ${TMPDIR}/pkglist-pre
@@ -1599,6 +1599,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
+  if [ ${VERSION:0:4} == "2.84" ];then
+    LEGACYBLACKLIST=""
+  else
+    LEGACYBLACKLIST="-w"
+  fi
 
   SPKGPLUS_VERSION="1.7.0d1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
