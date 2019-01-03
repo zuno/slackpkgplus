@@ -1,3 +1,10 @@
+Thu Jan  3 12:18:57 CET 2019
+pkg/slackpkg+-1.7.0d1-noarch-6mt.txz
+  - Allow to use the blacklist system from slackpkg 2.84 (still in beta).
+    Only impact install/upgrade/remove options, and does not impact
+    greylist.
++-------------------------+
+
 Fri Jun 15 18:25:33 CEST 2018
 pkg/slackpkg+-1.7.0d1-noarch-5mt.txz
   - Fix incompatibility with slackpkg prior 2.83.0-noarch-3
