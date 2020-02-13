@@ -292,29 +292,20 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Overrides original upgrade_pkg(). Required by the notification mechanism.
   function upgrade_pkg() {
     local i
-    local q
-    local c
-    q=$(echo $SHOWLIST|wc -w)
 
     if [ "$DOWNLOAD_ALL" = "on" ]; then
       OLDDEL="$DELALL"
       DELALL="off"
-      c=1
       for i in $SHOWLIST; do
-        echo -n "[$c/$q]"
-        let c++
         getpkg $i true
       done
       DELALL="$OLDDEL"
     fi
     ls -1 $ROOT/var/log/packages/ > $TMPDIR/tmplist
 
-    c=1
     for i in $SHOWLIST; do
       PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-      echo -n "[$c/$q]"
-      let c++
       getpkg $i upgradepkg Upgrading
       if [ "$DOWNLOADONLY" != "on" ];then
         if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
@@ -331,30 +322,21 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Overrides original install_pkg(). Required by the notification mechanism.
   function install_pkg() {
     local i
-    local q
-    local c
-    
-    q=$(echo $SHOWLIST|wc -w)
+
     if [ "$DOWNLOAD_ALL" = "on" ]; then
       OLDDEL="$DELALL"
       DELALL="off"
-      c=1
       for i in $SHOWLIST; do
-        echo -n "[$c/$q]"
-        let c++
         getpkg $i true
       done
       DELALL="$OLDDEL"
     fi
-    c=1
     for i in $SHOWLIST; do
       INSTALL_T='installed:  '
       if [ -e $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') ];then
         INSTALL_T='reinstalled:'
       fi
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-      echo -n "[$c/$q]"
-      let c++
       getpkg $i installpkg Installing
       if [ "$DOWNLOADONLY" != "on" ];then
         if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
@@ -921,17 +903,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     unset LINEIDX
     unset PKGINFOS
 
-    if [ "$CMD" == "upgrade-all" ];then
-      if [ -z "$TOPROCESS" ];then
-        TOPROCESS=$(comm -1 -2 ${TMPDIR}/lpkg ${TMPDIR}/dpkg | comm -1 -2 - ${TMPDIR}/spkg|wc -l)
-      fi
-      let INPROGRESS++
-      printf "%3s%%\b\b\b\b" "$[$INPROGRESS*100/$TOPROCESS]"
-    else
-      let INPROGRESS++
-      printf "%4s\b\b\b\b" "$INPROGRESS"
-    fi
-
     AUTOP=no
     if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]];then
       (
@@ -973,6 +944,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         FULLNAME=$(echo "${PKGDATA[5]}.${PKGDATA[7]}")
       fi
     fi
+
     for CPRIORITY in ${PRIORITY[@]} ; do
       [ "$PKGDATA" ] && break
 
@@ -1372,14 +1344,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         >$TMPDIR/greylist
       fi
       rm -f $TMPDIR/dialog.tmp
-      q=$(echo $1|wc -w)
-      c=1
-      echo -n "Preparing list "
+      
       if [ "$2" = "upgrade" ]; then
         ls -1 $ROOT/var/log/packages/ > $TMPDIR/tmplist
         for i in $1; do
-          printf "%10s\b\b\b\b\b\b\b\b\b\b" "[$c/$q]"
-          let c++
           TMPONOFF=$ONOFF
           BASENAME=$(cutpkg $i)
           PKGFOUND=$(grep -m1 -e "^${BASENAME}-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
@@ -1408,8 +1376,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       else # other than 'upgrade'
 
         for i in $1; do
-          printf "%10s\b\b\b\b\b\b\b\b\b\b" "[$c/$q]"
-          let c++
           TMPONOFF=$ONOFF
           REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
           ( echo $i;grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist ) | grep -q -Ew -f $TMPDIR/greylist && TMPONOFF="off"
@@ -1608,10 +1574,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
   ### =========================== MAIN ============================ ###
-
-
-  SPINNING=off
-  #if [ "$CMD" == "upgrade-all" ];then SPINNING=off ;fi
 
   export LC_ALL=C
 
@@ -2167,6 +2129,3 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   fi # "$CMD" == "check-updates"
 
 fi
-
-INPROGRESS=0
-
