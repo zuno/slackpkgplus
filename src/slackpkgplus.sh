@@ -429,7 +429,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     case $SRCBASE in
       CHECKSUMS.md5|CHECKSUMS.md5.asc|CHECKSUMS.md5.gz|CHECKSUMS.md5.gz.asc) TOCACHE=1 ; CURREPO=$(basename $1|sed -r -e "s/CHECKSUMS.md5-?//" -e "s/\.asc//" -e "s/\.gz//") ;;
       MANIFEST.bz2|PACKAGES.TXT) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/-$SRCBASE//" -e "s/SLACKPKGPLUS_//");;
-      ChangeLog.txt) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/ChangeLog-//" -e "s/^-//" -e "s/\.txt//") ;;
+      ChangeLog.txt) TOCACHE=1 ; CURREPO=$(basename $1|sed -e "s/ChangeLog//" -e "s/^-//" -e "s/\.txt//") ;;
       GPG-KEY) TOCACHE=0 ; CURREPO=${1/*gpgkey-tmp-/};;
       FILELIST.TXT) TOCACHE=1 ;;
       SLACKBUILDS.TXT.gz) TOCACHE=1 ; CURREPO=SBo ;;
@@ -593,7 +593,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           fi
           if echo $URLFILE | grep -q "^file://" ; then
             URLFILE=${URLFILE:6}
-            cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
+            cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc 2>/dev/null
           else
             $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc $URLFILE
             if [ $? -ne 0 ];then
@@ -685,7 +685,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
           if echo $URLFILE | grep -q "^file://" ; then
             URLFILE=${URLFILE:6}
-            cp -v $URLFILE ${TMPDIR}/$CLOGNAM
+            cp -v $URLFILE ${TMPDIR}/$CLOGNAM 2>/dev/null
           else
             if [ $VERBOSE -gt 2 ];then
               $DOWNLOADER ${TMPDIR}/$CLOGNAM $URLFILE
@@ -724,7 +724,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO
+          cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO 2>/dev/null
         elif echo $URLFILE | grep -q "^dir:/" ; then
           touch ${TMPDIR}/CHECKSUMS.md5-$PREPO
           continue
@@ -775,7 +775,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          cp -v $URLFILE $2-tmp-$PREPO
+          cp -v $URLFILE $2-tmp-$PREPO 2>/dev/null
         elif echo $URLFILE |grep -q "^dir:/";then
           continue
         else
@@ -1779,19 +1779,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   if [ ! -z "$DOWNLOADCMD" ];then
     DOWNLOADER="$DOWNLOADCMD"
   else
-    DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
-    if [ "$VERBOSE" = "0" ];then
-      DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
-    elif [ "$VERBOSE" = "2" ];then
-      DOWNLOADER="wget $WGETOPTS --no-check-certificate --passive-ftp -O"
-    elif [ "$VERBOSE" = "3" ];then
+    if [ "$VERBOSE" = "3" ];then
       DOWNLOADER="wgetdebug"
-    elif [ "$CMD" = "update" ];then
-      if [ "$CACHEUPDATE" == "on" ];then
-        DOWNLOADER="wget $WGETOPTS --no-check-certificate -q --passive-ftp -O"
+    else
+      FLAG=""
+      if [ "$CMD" = "update" ];then
+        [ $VERBOSE -lt 2 ]&&FLAG="-nv"
+        [ "$CACHEUPDATE" = "on" ]&&FLAG="-q"
       else
-        DOWNLOADER="wget $WGETOPTS --no-check-certificate -nv --passive-ftp -O"
+        [ $VERBOSE -lt 1 ]&&FLAG="-nv"
       fi
+      DOWNLOADER="wget $WGETOPTS --no-check-certificate $FLAG --passive-ftp -O"
     fi
   fi
 
