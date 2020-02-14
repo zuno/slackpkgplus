@@ -441,7 +441,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     [ $SRCBASE != "ChangeLog.txt" ]||[ -z "$LEVEL" -o "$LEVEL" == "1" ]&&printf "    File: %-20s -> %-20s .." "$CURREPO" "$SRCBASE"
     [ $VERBOSE -eq 3 ]&&echo -n " ($CACHEFILE) "
     if [ $TOCACHE -eq 1 ];then
-      curl --max-time 10 --location --head $SRCURL 2>/dev/null|tac|sed '/^HTTP/q'|tac|grep -v -i -e ^Date: -e ^Set-Cookie: -e ^Expires: -e ^X-Varnish:|sed 's///' > $TMPDIR/cache.head
+      curl --max-time 10 --location --head $SRCURL 2>/dev/null|tac|sed '/^HTTP/q'|tac|grep -v -i -e ^Date: -e ^Set-Cookie: -e ^Expires: -e ^X-Varnish:|sed $'s/\r//' > $TMPDIR/cache.head
       echo "Url: $SRCURL" >> $TMPDIR/cache.head
       [ $VERBOSE -eq 3 ]&&(echo;cat $TMPDIR/cache.head|sed 's/^/  /')
       if grep -q "^HTTP/.* 404" $TMPDIR/cache.head;then
