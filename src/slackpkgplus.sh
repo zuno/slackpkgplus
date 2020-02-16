@@ -1102,7 +1102,24 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     for i in ${PRIORITY[@]}; do
       DIR="$i"
       if [[ "$DIR" =~ ^[-_[:alnum:]]+[:] ]] ; then   # was  if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
-        DIR=${DIR/:*/}                               # was DIR=$(echo "$i" | cut -f1 -d":")
+        DIR=${i/:*/}                                 # was DIR=$(echo "$i" | cut -f1 -d":")
+        PAT=${i/*:/}
+
+        # when the current priority is of kind <REPO>:<PATTERN>, the loop must be short-circuited
+        # when SEARCHSTR does not match PATTERN, otherwise, some packages could be mistakenly
+        # selected.
+        #
+        # Example:
+        #  - p7zip is present in alien and boost
+        #  - alien has precedence over boost
+        #  - PKGS_PRIORITY=(boost:infozip)
+        #  - p7zip from alien is installed.
+        #
+        # In these case, the priority boost:infozip must be ignored otherwise slackpkg+ will
+        # wrongly shows boost:p7zip as an upgrade for alien:p7zip
+        #
+
+        [ ! -z "$PAT" ] && ! echo "$SEARCHSTR" | grep  -qw "$PAT" && continue
       fi
 
       if [ "$CMD" == "file-search" ] ; then
