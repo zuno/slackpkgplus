@@ -1091,12 +1091,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     [ "$SENSITIVE_SEARCH" = "off" ] && GREPOPTS="--ignore-case"
 
     # -- PKGLIST:
-    #      temporary file used to store data about packages. It uses
+    #      temporary file used to store data about handled packages. It uses
     #      the following format:
     #        repo:<repository_name>:bname:<package_basename>:ver:<package_version>:fname:<package_fullname>:
     #
     PKGLIST=$(tempfile --directory=$TMPDIR)
     PKGINFOS=$(tempfile --directory=$TMPDIR)
+
 
     for i in ${PRIORITY[@]}; do
       DIR="$i"
@@ -1127,7 +1128,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           }' l_dir=${DIR} > $PKGINFOS
 
       else # -- CMD==search
-        grep -h ${GREPOPTS} "^$DIR" ${WORKDIR}/pkglist ${TMPDIR}/pkglist-pre|grep -E ${GREPOPTS} "/SLACKPKGPLUS_$SEARCHSTR/|/$SEARCHSTR/|/$SEARCHSTR | [^ /]*$SEARCHSTR[^ /]* " > $PKGINFOS
+        grep -h ${GREPOPTS} "^$DIR" ${TMPDIR}/pkglist ${TMPDIR}/pkglist-pre|grep -E ${GREPOPTS} "/SLACKPKGPLUS_$SEARCHSTR/|/$SEARCHSTR/|/$SEARCHSTR | [^ /]*$SEARCHSTR[^ /]* " > $PKGINFOS
       fi
 
       while read PKGDIR PKGBASENAME PKGVER PKGARCH PKGBUILD PKGFULLNAME PKGPATH PKGEXT ; do
@@ -1140,14 +1141,26 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
         if grep ${GREPOPTS} -q ":bname:${PKGBASENAME}:" $PKGLIST ; then
 
-           # if the current package P is installed, this means the previous P' will be
-           # proposed as an upgrade to P. In this case, the loop must continue without
-           # any other action...
-          grep ${GREPOPTS} -q " $PKGFULLNAME " ${TMPDIR}/tmplist && continue
+             # P' has precedence over P. Therefore, P must be displayed with masked
+             # attribute, unless when installed, in which case P' will be proposed
+             # as an upgrade to P.
 
-            # The current package P is not installed. In this case P must be shown as
-            # being uninstalled and masked.
-          LIST="$LIST MASKED_${PKGDIR}:${PKGFULLNAME}"
+          MASKED=true
+
+          if grep ${GREPOPTS} -q " $PKGFULLNAME " ${TMPDIR}/tmplist ; then
+                COUNT=$(grep ":$PKGFULLNAME:" $PKGLIST | wc -l)
+
+                # P is installed. It should not be masked. However, when different
+                # repositories offer the same package (ie. same name,version,arch,
+                # build) this rule must be applied only when there's *no occurence*
+                # of fullname(P) in PKGLIST (ie. list of handled packages).
+                #
+                [ $COUNT -eq 0 ] && MASKED=false
+          fi
+
+          if [ $MASKED = true ] ; then
+            LIST="$LIST MASKED_${PKGDIR}:${PKGFULLNAME}"
+          fi
         else
           LIST="$LIST ${PKGDIR}:${PKGFULLNAME}"
         fi
@@ -1227,6 +1240,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               STATUS="installed"
               echo "  $STATUS#    $REPO#    $CINSTPKG"
             else
+
+              INSTPKG_REPO=$(grep -m 1 "$CINSTPKG" ${WORKDIR}/pkglist | cut -f1 -d" " | sed "s/SLACKPKGPLUS_//")
+
+              if [ ! -z "$INSTPKG_REPO" ] && [ "$INSTPKG_REPO" != "$REPO" ] ; then
+                CINSTPKG="$INSTPKG_REPO:$CINSTPKG"
+              fi
+
               STATUS="upgrade"
               echo "  $STATUS#    $REPO#    $CINSTPKG --> ${RAWNAME}"
             fi
