@@ -1,25 +1,24 @@
 Supported Repositories:
 
 > slackpkgplus:  http://slakfinder.org/slackpkg+{,dev,1.7}/
-> multilib:      http://bear.alienbase.nl/mirrors/people/alien/multilib/{14.2,current}/
-> alienbob:      http://bear.alienbase.nl/mirrors/people/alien/sbrepos/{14.2,current}/{x86,x86_64}/
-> ktown:         http://bear.alienbase.nl/mirrors/alien-kde/{14.2,current}/5/{x86,x86_64}/
-> restricted:    http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{14.2,current}/{x86,x86_64}/
-> slacky:        http://repository.slacky.eu/slackware{,64}-{14.2}/
-> mleddesktop:   http://slackware.uk/microlinux/desktop-{14.2}-{32,64}bit/
-> mledextras:    http://slackware.uk/microlinux/extras-{14.2}-{32,64}bit/
-> mles:          http://slackware.uk/microlinux/server-{14.2}-{32,64}bit/
-> msb:           http://slackware.uk/msb/{14.2,current}/{1.18,1.20,latest}/{x86,x86_64}/
-> csb:           http://slackware.uk/csb/{14.2,current}/{x86,x86_64}/
-> slackers:      http://slack.conraid.net/repository/slackware64-current/
-> studioware:    http://slackware.uk/studioware/{14.2}
-> slackonly:     http://packages.slackonly.com/pub/packages/{14.2,current}-{x86,x86_64}/
-> rlworkman:     http://rlworkman.net/pkgs/{14.2,current}/
+> multilib:      https://bear.alienbase.nl/mirrors/people/alien/multilib/{14.2,current}/
+> alienbob:      https://bear.alienbase.nl/mirrors/people/alien/sbrepos/{14.2,current}/{x86,x86_64}/
+> ktown:         https://bear.alienbase.nl/mirrors/alien-kde/{14.2,current}/5/{x86,x86_64}/
+> restricted:    https://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{14.2,current}/{x86,x86_64}/
+> slacky:        https://slacky.eu/repository/slackware{,64}-{14.2}/
+> mleddesktop:   https://slackware.uk/microlinux/desktop-{14.2}-{32,64}bit/
+> mledextras:    https://slackware.uk/microlinux/extras-{14.2}-{32,64}bit/
+> mles:          https://slackware.uk/microlinux/server-{14.2}-{32,64}bit/
+> msb:           https://slackware.uk/msb/{14.2,current}/{1.18,1.22,latest}/{x86,x86_64}/
+> csb:           https://slackware.uk/csb/{14.2,current}/{x86,x86_64}/
+> slackers:      http://slack.conraid.net/repository/slackware64-current{-binary,-extra}/
+> studioware:    https://slackware.uk/studioware/{14.2}
+> slackonly:     https://packages.slackonly.com/pub/packages/{14.2,current}-{x86,x86_64}/
+> rlworkman:     https://rlworkman.net/pkgs/{14.2,current}/
 > slackel:       http://www.slackel.gr/repo/{i486,x86_64}/current/
-> connochaetos:  http://connochaetos.org/slack-n-free/slack-n-free{,64}-{14.2}/
-> slint:         http://slackware.uk/slint/{i586,x86_64}/slint-{14.2,14.2.1}/
-> salixos:       http://download.salixos.org/{i486,x86_64}/{14.2}/
-> salixextra:    http://download.salixos.org/{i486,x86_64}/extra-{14.2}/
+> slint:         https://slackware.uk/slint/{i586,x86_64}/slint-{14.2,14.2.1,testing,wip}/
+> salixos:       https://download.salixos.org/{i486,x86_64}/{14.2}/
+> salixextra:    https://download.salixos.org/{i486,x86_64}/extra-{14.2}/
 
     salixos partially supports GPG. This repository contains the .asc file
     for CHECKSUMS.md5, so the 'update' process works with CHECKGPG=on and repository authenticity

@@ -57,9 +57,9 @@ if [ "$1" == "-v" ];then
 fi
 
 if [ -f "$1" ];then
-  REPOS=$(cat $1|egrep -o 'http://[^ ]*')
+  REPOS=$(cat $1|egrep -o -e 'http://[^ ]*' -e 'https://[^ ]*')
 else
-  REPOS=$(echo $*|egrep -o 'http://[^ ]*')
+  REPOS=$(echo $*|egrep -o -e 'http://[^ ]*' -e 'https://[^ ]*')
 fi
 
 REPOS=$(eval echo $REPOS|sed -e 's/{//g' -e 's/}//g')
@@ -113,17 +113,17 @@ for R in $REPOS;do
   [ $V ]&&echo -en "  CHECKSUMS.md5: "||echo -n .
   curl --location --head $REPO/CHECKSUMS.md5 > CHECKSUMS.md5.R 2>/dev/null
   ERR=$?
-  if grep -q "200 OK" CHECKSUMS.md5.R;then
+  if grep -q "^HTTP.*200" CHECKSUMS.md5.R;then
     [ $V ]&&echo -n "OK "||echo -n .
-    if grep -q Content-Length: CHECKSUMS.md5.R;then
-      [ $V ]&&echo -n "$(grep Content-Length: CHECKSUMS.md5.R|tail -1|awk '{print $2}'|sed 's///') bytes "
+    if grep -q -i Content-Length: CHECKSUMS.md5.R;then
+      [ $V ]&&echo -n "$(grep -i Content-Length: CHECKSUMS.md5.R|tail -1|awk '{print $2}'|sed $'s/\r//') bytes "
     fi
-    if grep -q Last-Modified: CHECKSUMS.md5.R;then
-      [ $V ]&&echo -n "($(grep Last-Modified: CHECKSUMS.md5.R|tail -1|cut -f2- -d:|sed 's///') ) "
+    if grep -q -i Last-Modified: CHECKSUMS.md5.R;then
+      [ $V ]&&echo -n "($(grep -i Last-Modified: CHECKSUMS.md5.R|tail -1|cut -f2- -d:|sed $'s/\r//') ) "
     fi
     [ $V ]&&echo
     MD5=yes
-  elif grep -q "404 Not Found" CHECKSUMS.md5.R;then
+  elif grep -q "^HTTP.*404" CHECKSUMS.md5.R;then
     [ $V ]&&echo -e "  not present\nInvalid repository"|grep --color .||echo " Invalid (CHECKSUMS.md5 not present)"|grep --color .
     continue
   else
@@ -135,19 +135,19 @@ for R in $REPOS;do
   [ $V ]&&echo -en "  PACKAGES.TXT: "||echo -n .
   curl --location --head $REPO/PACKAGES.TXT > PACKAGES.TXT.R 2>/dev/null
   ERR=$?
-  if grep -q "200 OK" PACKAGES.TXT.R;then
+  if grep -q "HTTP.*200" PACKAGES.TXT.R;then
     [ $V ]&&echo -n "OK "||echo -n .
-    if grep -q Content-Length: PACKAGES.TXT.R;then
-      [ $V ]&&echo -n "$(grep Content-Length: PACKAGES.TXT.R|tail -1|awk '{print $2}'|sed 's///') bytes "
-      SIZE="$(grep Content-Length: PACKAGES.TXT.R|tail -1|awk '{print $2}'|sed 's///')"
+    if grep -q -i Content-Length: PACKAGES.TXT.R;then
+      [ $V ]&&echo -n "$(grep -i Content-Length: PACKAGES.TXT.R|tail -1|awk '{print $2}'|sed $'s/\r//') bytes "
+      SIZE="$(grep -i Content-Length: PACKAGES.TXT.R|tail -1|awk '{print $2}'|sed $'s/\r//')"
     fi
-    if grep -q Last-Modified: PACKAGES.TXT.R;then
-      [ $V ]&&echo -n "($(grep Last-Modified: PACKAGES.TXT.R|tail -1|cut -f2- -d:|sed 's///') ) "
-      DATE="$(grep Last-Modified: PACKAGES.TXT.R|tail -1|cut -f2- -d:|sed 's/^M//')"
+    if grep -q -i Last-Modified: PACKAGES.TXT.R;then
+      [ $V ]&&echo -n "($(grep -i Last-Modified: PACKAGES.TXT.R|tail -1|cut -f2- -d:|sed $'s/\r//') ) "
+      DATE="$(grep -i Last-Modified: PACKAGES.TXT.R|tail -1|cut -f2- -d:|sed 's/^M//')"
     fi
     [ $V ]&&echo
     PACK=yes
-  elif grep -q "404 Not Found" PACKAGES.TXT.R;then
+  elif grep -q "HTTP.*404" PACKAGES.TXT.R;then
     [ $V ]&&echo -e "  not present\nInvalid repository"|grep --color .||echo " Invalid (PACKAGES.TXT not present)"|grep --color .
     continue
   else
