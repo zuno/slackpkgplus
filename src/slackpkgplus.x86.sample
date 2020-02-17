@@ -10,6 +10,13 @@ SLACKPKGPLUS=on
 # set to '3' for a debug mode
 VERBOSE=1
 
+# Enable TERSE to use a smaller output in installpkg/upgradepkg
+USETERSE=on
+
+# Use proxy. Leave commented to use system settings.
+#PROXY=off
+#PROXY=<host>:<port>
+
 # Enable (on) / Disable (off) the official slackpkg blacklist. May be useful to temporarily skip
 # the slackware blacklist. You can also override it from command line:
 # 'USEBL=off slackpkg upgrade-all'

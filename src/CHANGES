@@ -8,7 +8,11 @@
 
 - Changed some default settings in sample configuration file
 
-- Added SBOURL to configure the SlackBuild.org repository
+- Added SBOURL to configure the SlackBuild.org repository (search only)
+
+- Added USETERSE to use the --terse mode for pkgtools
+
+- Added PROXY to specify a proxy server
 
 
 *New features:
@@ -22,6 +26,8 @@
    SlackBuilds.org and report the url to download to build and install
    packages yourself.
 
+- Added optional script to configure lilo/elilo/initrd after a kernel upgrade
+
 
 *Improvements
 
@@ -29,14 +35,27 @@
 
 - Smaller output for 'slackpkg search'
 
+- Replaced Spinning with Percentage
+
 
 *BugFixes
 
 - 'slackpkg search' did not honor the '+' symbol
 
-- Issues when an invalid repository is configured
+- Issues when an invalid repository is configured or no repositories are
+  configured
 
 - 'slackpkg check-updates' did not work unless you set VERBOSE=3
+
+- Fix a not work properly when run as a package group instead single packages
+  (a, ap, d, ...)
+
+- Fix caching HTTP/2 servers
+
+- Fix setupmultilib script
+
+- 'slackpkg search' did not show duplicated packages (as ffmpeg in alienbob
+  and restricted repositories)
 
 
 *Various
@@ -46,9 +65,11 @@
 - Bash completation enabled by default (if you have bash_completation package
     installed) 
 
-- 'slackpkg upgrade' now works with slackpkg-2.83 (development release).
+- Works with slackpkg-2.84 (development release).
      This is not officially released, so not all regressions can be solved.
-     Currently slackpkg+ does not work with slackpkg-2.83 if $ROOT is non-empty.
+     Currently slackpkg+ does not work with slackpkg-2.84 if $ROOT is non-empty.
+     slackpkg 2.84 introduces a new blacklist system. slackpkg+ uses it in
+     install/upgrade/remove options; not 'search' and does not impact greylist.
 
 
 == From 1.6 and 1.7 ==

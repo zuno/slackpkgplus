@@ -3,7 +3,7 @@
 .\" Questa manpage è scritta modificando quella di slackpkg.conf
 .\"
 .\"*******************************************************************
-.TH SLACKPKGPLUS.CONF 5 "Luglio 2016" slackpkg+\-1.7.0 ""
+.TH SLACKPKGPLUS.CONF 5 "Febbraio 2020" slackpkg+\-1.8.0 ""
 .SH NOME
 \fBslackpkgplus.conf\fP \- Configurazione per slackpkg+
 
@@ -53,12 +53,14 @@ Seguono le differenti impostazioni disponibili:
 
 \fBImpostazioni di download\fP
 .ds 1 VERBOSE\t\t\t\t0,1,2,3\t\t1\t\tsi
-.ds 2 WGETOPTS\t\t\t\tstringa\t\t-\t\tsi
-.ds 3 DOWNLOADCMD\t\t\tstringa\t\twget\t\tsi
-.ds 4 DOWNLOADONLY\t\t\ton/off\t\toff\t\tsi
-.ds 5 CACHEUPDATE\t\t\ton/off\t\toff\t\tsi
-.ds 6 SEARCH_CLOG_INPARENT\ton/off\t\toff\t\tno
-.ds 7 STRICTGPG\t\t\t\ton/off\t\ton\t\tsi
+.ds 2 USETERSE\t\t\t\ton/off\t\toff\t\tsi
+.ds 3 PROXY\t\t\t\tstrings\t\t-\t\tsi
+.ds 4 WGETOPTS\t\t\t\tstringa\t\t-\t\tsi
+.ds 5 DOWNLOADCMD\t\t\tstringa\t\twget\t\tsi
+.ds 6 DOWNLOADONLY\t\t\ton/off\t\toff\t\tsi
+.ds 7 CACHEUPDATE\t\t\ton/off\t\toff\t\tsi
+.ds 8 SEARCH_CLOG_INPARENT\ton/off\t\toff\t\tno
+.ds 9 STRICTGPG\t\t\t\ton/off\t\ton\t\tsi
 .in +2
 \*1
 .br
@@ -73,6 +75,10 @@ Seguono le differenti impostazioni disponibili:
 \*6
 .br
 \*7
+.br
+\*8
+.br
+\*9
 .in
 
 
@@ -211,6 +217,21 @@ Con questa impostazione si può specificare quanto output wget deve mostrare. I v
 
 Questa impostazione viene ignorata (o parzialmente ignorata se viene impostata a \fI3\fP in caso si utilizzi un altro downloader con l'impostazione \fB\%DOWNLOADCMD\fP (v.sotto).
 
+.TP  5
+\fBUSETERSE\fP
+.br
+Impostando questa variabile a \fIon\fP verrà abilitata l'opzione TERSE di installpkg(8), upgradepkg(8), removepkg(8). Ovvero in fase di installazione mostra solo una singola riga di descrizione anzichè descrizione completa e lista di file.
+
+.TP  5
+\fBPROXY\fP
+.br
+Imposta il proxy dove necessario.
+
+.in +4
+PROXY=192.168.0.1:3128
+.in
+
+Se non impostato usa quello di sistema (variabili d'ambiente http_proxy e https_proxy). Impostando a \fIoff\fP disattiva il proxy.
 .TP  5
 \fBWGETOPTS\fP
 .br
