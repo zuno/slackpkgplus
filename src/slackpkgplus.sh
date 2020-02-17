@@ -1101,9 +1101,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     for i in ${PRIORITY[@]}; do
       DIR="$i"
+      PAT=""
       if [[ "$DIR" =~ ^[-_[:alnum:]]+[:] ]] ; then   # was  if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
         DIR=${i/:*/}                                 # was DIR=$(echo "$i" | cut -f1 -d":")
-        PAT=${i/*:/}
+
+        # extract the pattern from $i, if and only if "$i" is to the syntax <repo>:<pattern>. Without
+        # this, PAT would be set to $DIR when $i is to the syntax <repo>.
+        #
+        [[ "$DIR" =~ [:][:alnum:]+ ]] && PAT=${i/*:/} 
 
         # when the current priority is of kind <REPO>:<PATTERN>, the loop must be short-circuited
         # when SEARCHSTR does not match PATTERN, otherwise, some packages could be mistakenly
@@ -1258,7 +1263,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               echo "  $STATUS#    $REPO#    $CINSTPKG"
             else
 
-              INSTPKG_REPO=$(grep -m 1 "$CINSTPKG" ${WORKDIR}/pkglist | cut -f1 -d" " | sed "s/SLACKPKGPLUS_//")
+              INSTPKG_REPO=$(grep -m 1 " $CINSTPKG " ${WORKDIR}/pkglist | cut -f1 -d" " | sed "s/SLACKPKGPLUS_//")
 
               if [ ! -z "$INSTPKG_REPO" ] && [ "$INSTPKG_REPO" != "$REPO" ] ; then
                 CINSTPKG="$INSTPKG_REPO:$CINSTPKG"
