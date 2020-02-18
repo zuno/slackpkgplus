@@ -33,6 +33,8 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTSTRICTGPG=$STRICTGPG
   EXTDETAILED_INFO=$DETAILED_INFO
   EXTWW_FILE_SEARCH=$WW_FILE_SEARCH
+  EXTUSETERSE=$USETERSE
+  EXTPROXY=$PROXY
 
   . $CONF/slackpkgplus.conf
 
@@ -50,6 +52,24 @@ if [ -e $CONF/slackpkgplus.conf ];then
   STRICTGPG=${EXTSTRICTGPG:-$STRICTGPG}
   DETAILED_INFO=${EXTDETAILED_INFO:-$DETAILED_INFO}
   WW_FILE_SEARCH=${EXTWW_FILE_SEARCH:-$WW_FILE_SEARCH}
+  USETERSE=${EXTUSETERSE:-$USETERSE}
+  PROXY=${EXTPROXY:-$PROXY}
+
+  if [ "$PROXY" == "off" ];then
+    unset http_proxy
+    unset https_proxy
+  else
+    http_proxy=$PROXY
+    https_proxy=$PROXY
+    export http_proxy https_proxy
+  fi
+
+  if [ "$USETERSE" == "on" ];then
+    TERSE=0    # note that TERSE=0 means TERSE ENABLED; undocumentated feature in installpkg(8)
+  else
+    TERSE=
+  fi
+  export TERSE
 
   USEBLACKLIST=true
   if [ "$USEBL" == "off" -o "$USEBL" == "0" ];then

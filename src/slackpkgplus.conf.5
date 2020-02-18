@@ -3,7 +3,7 @@
 .\" Questa manpage è scritta modificando quella di slackpkg.conf
 .\"
 .\"*******************************************************************
-.TH SLACKPKGPLUS.CONF 5 "July 2016" slackpkg+\-1.7.0 ""
+.TH SLACKPKGPLUS.CONF 5 "Febbraio 2020" slackpkg+\-1.8.0 ""
 .SH NOME
 \fBslackpkgplus.conf\fP \- Configuration file for slackpkg+
 
@@ -53,12 +53,14 @@ Here is the list of available settings:
 
 \fBDownload settings\fP
 .ds 1 VERBOSE\t\t\t\t0,1,2,3\t\t1\t\tyes
-.ds 2 WGETOPTS\t\t\t\tstring\t\t-\t\tyes
-.ds 3 DOWNLOADCMD\t\t\tstring\t\twget\t\tyes
-.ds 4 DOWNLOADONLY\t\t\ton/off\t\toff\t\tyes
-.ds 5 CACHEUPDATE\t\t\ton/off\t\toff\t\tyes
-.ds 6 SEARCH_CLOG_INPARENT\ton/off\t\toff\t\tno
-.ds 7 STRICTGPG\t\t\t\ton/off\t\ton\t\tyes
+.ds 2 USETERSE\t\t\t\ton/off\t\toff\t\tyes
+.ds 3 PROXY\t\t\t\tstrings\t\t-\t\tyes
+.ds 4 WGETOPTS\t\t\t\tstring\t\t-\t\tyes
+.ds 5 DOWNLOADCMD\t\t\tstring\t\twget\t\tyes
+.ds 6 DOWNLOADONLY\t\t\ton/off\t\toff\t\tyes
+.ds 7 CACHEUPDATE\t\t\ton/off\t\toff\t\tyes
+.ds 8 SEARCH_CLOG_INPARENT\ton/off\t\toff\t\tno
+.ds 9 STRICTGPG\t\t\t\ton/off\t\ton\t\tyes
 .in +2
 \*1
 .br
@@ -73,6 +75,10 @@ Here is the list of available settings:
 \*6
 .br
 \*7
+.br
+\*8
+.br
+\*9
 .in
 
 
@@ -211,6 +217,23 @@ With this setting you can specify how many output should show wget. Possible val
 \fI3\fP)\ Extended wget output and more other error reporting options; also temporary files are not deleted at the end of process. Use in case of troubleshooting and when you report a bug to the developers.
 
 This setting is ignored (or partially ignored if it is set to \fI3\fP if you are using another downloader with setting \fB\%DOWNLOADCMD\fP (see below).
+
+.TP  5
+\fBUSETERSE\fP
+.br
+Set this variable ti \fIon\P to use the TERSE option of installpkg(8), upgradepkg(8), removepkg(8). Install displaying only a single description line to stdout instead full description and coplete filelist.
+
+.TP  5
+\fBPROXY\fP
+.br
+Use proxy when needed
+
+.in +4
+PROXY=192.168.0.1:3128
+.in
+
+If empty use the system settings (enviroment variable http_proxy and https_proxy). Set to \fIoff\fP to disable the proxy.
+
 
 .TP  5
 \fBWGETOPTS\fP
