@@ -1,8 +1,22 @@
+Tue Feb 18 08:30:10 CET 2020
+pkg/slackpkg+-1.7.0d1-noarch-7mt.txz
+  - Replace SPINNING with PROGRESS status
+  - Small fix the Cached Downloader output
+  - Added USETERSE option to enable --terse on pkgtools
+  - Added PROXY to use a proxy
+  - Fix for servers using HTTP/2 on checkrepos.sh
+  - Fix search where there are duplicated packages (thanks phenixia2003)
+  - Improved upgrade info on search (thanks phenixia2003)
+  - Added Added /usr/libexec/slackpkg/zlookkernel.sh tool. Edit it to see instructions.
++-------------------------+
+
 Thu Jan  3 12:18:57 CET 2019
 pkg/slackpkg+-1.7.0d1-noarch-6mt.txz
   - Allow to use the blacklist system from slackpkg 2.84 (still in beta).
     Only impact install/upgrade/remove options, and does not impact
     greylist.
+  - Fixed searching groups (a, ap, ...) instead packages
+  - Fix for servers using HTTP/2 on cached downloader
 +-------------------------+
 
 Fri Jun 15 18:25:33 CEST 2018

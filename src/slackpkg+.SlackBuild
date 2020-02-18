@@ -69,6 +69,7 @@ cp $CWD/repositories.lst usr/doc/slackpkg+-$VERSION/
 cp $CWD/setupmultilib.sh usr/doc/slackpkg+-$VERSION/
 cp $CWD/checkrepos.sh usr/doc/slackpkg+-$VERSION/
 cp $CWD/zchangelog.sh usr/libexec/slackpkg/zchangelog.sh
+cp $CWD/zlookkernel.sh usr/libexec/slackpkg/zlookkernel.sh
 cp $CWD/slackpkg+.SlackBuild usr/doc/slackpkg+-$VERSION/
 cp $CWD/slackpkg.bash_completion etc/bash_completion.d/slackpkg
 cp $CWD/slackpkgplus.*.sample usr/doc/slackpkg+-$VERSION/
@@ -81,6 +82,7 @@ cat $CWD/notifymsg.conf > etc/slackpkg/notifymsg.conf.new
 
 chmod +x usr/libexec/slackpkg/functions.d/slackpkgplus.sh
 chmod +x usr/libexec/slackpkg/zchangelog.sh
+chmod +x usr/libexec/slackpkg/zlookkernel.sh
 chmod +x usr/doc/slackpkg+-$VERSION/setupmultilib.sh
 
 
