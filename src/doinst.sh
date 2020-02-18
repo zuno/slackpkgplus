@@ -38,8 +38,7 @@ copy_config_file
 config etc/slackpkg/slackpkgplus.conf.new
 config etc/slackpkg/greylist.new
 config etc/slackpkg/notifymsg.conf.new
-renam var/lib/slackpkg/ChangeLog.txt
-renam var/lib/slackpkg/pkglist
+rm -f var/lib/slackpkg/pkglist
 
 echo
 echo
