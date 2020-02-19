@@ -152,6 +152,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Get the current exit-code so that we can check if cleanup is
     # called in response of a CTRL+C (ie. $?=130) or not.
     local lEcode=$?
+    local retval=0
 
     if [ "$CMD" == "info" ];then
       DETAILED_INFO=${DETAILED_INFO:-none}
@@ -189,6 +190,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo -e "\n\n=============================================================================="
     fi
     if [ -e $TMPDIR/error.log ]; then
+      retval=1
       echo "  WARNING! One or more errors occurred while slackpkg was running"
       echo "------------------------------------------------------------------------------"
       cat $TMPDIR/error.log
@@ -203,6 +205,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo "=============================================================================="
     fi
     if [ -s $TMPDIR/fatal.log ]; then
+      retval=2
       echo
       echo "=============================================================================="
       echo 
@@ -218,7 +221,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ $VERBOSE -lt 3 ];then
       rm -rf $TMPDIR
     fi
-    exit
+    exit $retval
   } # END function cleanup()
 
     # -- handle the event $1 that occured on packages $SHOWLIST
