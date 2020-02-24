@@ -944,15 +944,24 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     unset LINEIDX
     unset PKGINFOS
 
-    if [ "$CMD" == "upgrade-all" ];then
-      if [ -z "$TOPROCESS" ];then
-        TOPROCESS=$(comm -1 -2 ${TMPDIR}/lpkg ${TMPDIR}/dpkg | comm -1 -2 - ${TMPDIR}/spkg|wc -l)
-      fi
-      let INPROGRESS++
-      printf "%3s%%\b\b\b\b" "$[$INPROGRESS*100/$TOPROCESS]"
-    else
+    if [ -z "$TOPROCESS" ];then
+      case "$CMD" in
+        upgrade-all) TOPROCESS=$(comm -1 -2 ${TMPDIR}/lpkg ${TMPDIR}/dpkg | comm -1 -2 - ${TMPDIR}/spkg|wc -l);;
+        install-new) TOPROCESS=$(awk -f /usr/libexec/slackpkg/install-new.awk ${ROOT}/${WORKDIR}/ChangeLog.txt|wc -l);;
+        install|upgrade|reinstall)
+                     TOPROCESS=0
+                     for ARGUMENT in $(echo $INPUTLIST); do
+                       TOPROCESS=$[$TOPROCESS+$(grep -w -- "${ARGUMENT}" ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u|wc -l)]
+                     done
+                     ;;
+      esac
+    fi
+    if [ -z "$TOPROCESS" ];then
       let INPROGRESS++
       printf "%4s\b\b\b\b" "$INPROGRESS"
+    else
+      let INPROGRESS++
+      printf "%3s%%\b\b\b\b" "$[$INPROGRESS*100/$TOPROCESS]"
     fi
 
     AUTOP=no
@@ -1121,8 +1130,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     PKGLIST=$(tempfile --directory=$TMPDIR)
     PKGINFOS=$(tempfile --directory=$TMPDIR)
 
-
+    PRITOPROCESS=${#PRIORITY[@]}
+    PRIINPROGRESS=0
     for i in ${PRIORITY[@]}; do
+      PRIPERCBASE=$[$PRIINPROGRESS*10000/$PRITOPROCESS]
+
       DIR="$i"
       PAT=""
       if [[ "$DIR" =~ ^[-_[:alnum:]]+[:] ]] ; then   # was  if echo "$DIR" | grep -q "[a-zA-Z0-9]\+[:]" ; then
@@ -1175,8 +1187,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       else # -- CMD==search
         grep -h ${GREPOPTS} "^$DIR" ${TMPDIR}/pkglist ${TMPDIR}/pkglist-pre|grep -E ${GREPOPTS} "/SLACKPKGPLUS_$SEARCHSTR/|/$SEARCHSTR/|/$SEARCHSTR | [^ /]*$SEARCHSTR[^ /]* " > $PKGINFOS
       fi
-
+      PKGTOPROCESS=$(cat $PKGINFOS|wc -l)
+      PKGINPROGRES=0
       while read PKGDIR PKGBASENAME PKGVER PKGARCH PKGBUILD PKGFULLNAME PKGPATH PKGEXT ; do
+        let PKGINPROGRES++
+
+        printf "%3s%%\b\b\b\b" "$[$[$PRIPERCBASE+$PKGINPROGRES*10000/$PKGTOPROCESS/$PRITOPROCESS]/100]"
 
         # does nothing when the package has been handled ...
         grep ${GREPOPTS} -q "^repo:${PKGDIR}:bname:${PKGBASENAME}:ver:${PKGVER}:fname:${PKGFULLNAME}:" $PKGLIST && continue
@@ -1213,6 +1229,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         echo "repo:${PKGDIR}:bname:${PKGBASENAME}:ver:${PKGVER}:fname:${PKGFULLNAME}:" >> $PKGLIST
 
       done < $PKGINFOS
+      let PRIINPROGRESS++
     done
     rm ${TMPDIR}/waiting
     rm -f $PKGLIST $PKGINFOS
@@ -1242,7 +1259,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     INSTPKGS="$(ls -f $ROOT/var/log/packages/)"
 
+    c=0
+    q=$(echo ${1}|wc -w)
+    echo -n "Preparing list " >&2
     for i in $1; do
+      let c++
+      printf "%10s\b\b\b\b\b\b\b\b\b\b" "[$c/$q]" >&2
       REPO=${i/:*/} #$(echo "$i" | cut -f1 -d":")
       PNAME=${i/*:/} #PNAME=$(echo "$i" | cut -f2- -d":")
 
@@ -1301,6 +1323,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         echo "  $STATUS#    $REPO#    ${RAWNAME}"
       fi
     done|sort
+    echo -en "\r" >&2
     }|column -t -s '#' -o ' '|( [[  "$CMD" == "search" ]]&&grep -E -i --color -e ^ -e "$PATTERN"||cat )
   } # END function searchlistEX()
 
