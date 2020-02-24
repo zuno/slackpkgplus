@@ -2228,7 +2228,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     rm -f ${TMPDIR}/waiting
     
     if $UPDATES ; then
-      echo "News on ChangeLog.txt"
+      echo "Updated packages are available since last check."
       
       printf "\n  [ %-24s ] [ %-20s ]\n" "Repository" "Status"
       
@@ -2244,7 +2244,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         #
       cat ${TMPDIR}/updated-repos.txt > ~/.slackpkg/updated-repos.txt
     else
-      echo "No news is good news"
+      echo "No updated packages since last check."
       # Suppress the "pkglist is older than 24h" notice
       touch $WORKDIR/pkglist
     fi
