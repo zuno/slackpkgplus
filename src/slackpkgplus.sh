@@ -947,7 +947,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ -z "$TOPROCESS" ];then
       case "$CMD" in
         upgrade-all) TOPROCESS=$(comm -1 -2 ${TMPDIR}/lpkg ${TMPDIR}/dpkg | comm -1 -2 - ${TMPDIR}/spkg|wc -l);;
-        install-new) TOPROCESS=$(awk -f /usr/libexec/slackpkg/install-new.awk ${ROOT}/${WORKDIR}/ChangeLog.txt|wc -l);;
+        install-new) TOPROCESS=$[$(awk -f /usr/libexec/slackpkg/install-new.awk ${ROOT}/${WORKDIR}/ChangeLog.txt|sort -u|wc -l)+7];;
         install|upgrade|reinstall)
                      TOPROCESS=0
                      for ARGUMENT in $(echo $INPUTLIST); do
