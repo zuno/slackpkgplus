@@ -546,11 +546,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
     fi
 
-    if echo $URLFILE | grep "^dir:/"|grep -q "/PACKAGES.TXT$";then
+    if echo $URLFILE | grep "dir:/"|grep -q "/PACKAGES.TXT$";then
       touch $2
       return 0
     fi
-    if echo $URLFILE | grep "^dir:/"|grep -q "/MANIFEST.bz2$";then
+    if echo $URLFILE | grep "dir:/"|grep -q "/MANIFEST.bz2$";then
       echo -n|bzip2 -c >$2
       return 0
     fi
@@ -564,7 +564,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       else
         return 1
       fi
+    elif echo $URLFILE|grep -q -E dir:/.*asc$;then
+      return 0
     else
+      URLFILE=${URLFILE/dir:/:}
       $DOWNLOADER $2 $URLFILE
     fi
     if [ $? -ne 0 ];then
@@ -611,7 +614,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ "$CHECKGPG" = "on" ];then
         for PREPO in ${REPOPLUS[*]};do
           URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5.asc
-          if echo $URLFILE | grep -q "^dir:/" ; then
+          if echo $URLFILE | grep -q "dir:/" ; then
             continue
           fi
           if echo $URLFILE | grep -q "^file://" ; then
@@ -687,7 +690,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         BASEDIR=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]%}
         CLOGNAM=$PREPO.txt
 
-        if echo $BASEDIR | grep -q "^dir:/" ; then
+        if echo $BASEDIR | grep -q "dir:/" ; then
           # dir:/ repositories are ignored by slackpkg update
           # but the ChangeLog must exists
           touch ${TMPDIR}/ChangeLogs/$CLOGNAM
@@ -751,6 +754,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         elif echo $URLFILE | grep -q "^dir:/" ; then
           touch ${TMPDIR}/CHECKSUMS.md5-$PREPO
           continue
+        elif echo $URLFILE | grep -q -e "^httpdir://" -e "^httpsdir://" -e "^ftpdir://" ; then
+          if [ "$CACHEUPDATE" == "on" ];then
+            printf "    File: %-20s -> %-20s .. Downloading...\n" "$PREPO" "CHECKSUMS.md5"
+            lftp $(echo ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}|sed 's/dir//') -e "ls;quit" 2>/dev/null|awk '{print $NF}'|egrep '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|sort -rn| \
+              awk '{print "00000000000000000000000000000000  ./"$NF}' > ${TMPDIR}/CHECKSUMS.md5-$PREPO
+          else
+            lftp $(echo ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}|sed 's/dir//') -e "ls;quit" |awk '{print $NF}'|egrep '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|sort -rn| \
+              awk '{print "00000000000000000000000000000000  ./"$NF}' > ${TMPDIR}/CHECKSUMS.md5-$PREPO
+          fi
         else
           $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         fi
@@ -799,7 +811,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
           cp -v $URLFILE $2-tmp-$PREPO 2>/dev/null
-        elif echo $URLFILE |grep -q "^dir:/";then
+        elif echo $URLFILE |grep -q "dir:/";then
           continue
         else
           echo
@@ -901,7 +913,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     ARG=$(echo $1|sed "s|^/*$TEMP/||")
     PREPO=$(echo $ARG | cut -f2 -d/|sed 's/SLACKPKGPLUS_//' )
-    if echo ${MIRRORPLUS[$PREPO]}|grep -q ^dir:/;then
+    if echo ${MIRRORPLUS[$PREPO]}|grep -q dir:/;then
       echo 1
       return
     fi
@@ -1795,7 +1807,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   # Test repositories
   for pp in ${REPOPLUS[*]};do
-    echo "${MIRRORPLUS[$pp]}"|grep -q -e ^http:// -e ^https:// -e ^ftp:// -e ^file:// -e ^dir:/
+    echo "${MIRRORPLUS[$pp]}"|grep -q -e ^http:// -e ^https:// -e ^ftp:// -e ^file:// -e ^dir:/ -e ^httpdir:// -e ^httpsdir:// -e ^ftpdir://
     if [ $? -ne 0 ];then
       echo "Repository '$pp' not configured." >> $TMPDIR/error.log
       echo "Add:" >> $TMPDIR/error.log
