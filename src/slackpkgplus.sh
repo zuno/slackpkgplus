@@ -950,8 +950,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         install-new) TOPROCESS=$[$(awk -f /usr/libexec/slackpkg/install-new.awk ${ROOT}/${WORKDIR}/ChangeLog.txt|sort -u|wc -l)+7];;
         install|upgrade|reinstall)
                      TOPROCESS=0
-                     for ARGUMENT in $(echo $INPUTLIST); do
-                       TOPROCESS=$[$TOPROCESS+$(grep -w -- "${ARGUMENT}" ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u|wc -l)]
+                     for TMPARGUMENT in $(echo $INPUTLIST); do
+                       TOPROCESS=$[$TOPROCESS+$(grep -w -- "${TMPARGUMENT}" ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u|wc -l)]
                      done
                      ;;
       esac
