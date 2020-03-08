@@ -20,11 +20,11 @@
 - Added manpages (italian and english) for slackpkgplus.conf
 
 - Added a 'fatal log' to show some serious error that the users should not
-    ignore. For example a failure installing packages.
+  ignore. For example a failure installing packages.
 
 - Added SBo support. This does not replace sbopkg. It just search in
-   SlackBuilds.org and report the url to download to build and install
-   packages yourself.
+  SlackBuilds.org and report the url to download to build and install
+  packages yourself.
 
 - Added optional script to configure lilo/elilo/initrd after a kernel upgrade
 
