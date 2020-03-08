@@ -1,3 +1,10 @@
+Sun Mar  8 13:58:45 CET 2020
+pkg/slackpkg+-1.7.0d1-noarch-8mt.txz
+  - Extends percentage where possible.
+  - Align check-updates messages with slackpkg 2.84
+  - Catch errors and return exit status: 1 for warning, 2 for fatal
++-------------------------+
+
 Tue Feb 18 08:30:10 CET 2020
 pkg/slackpkg+-1.7.0d1-noarch-7mt.txz
   - Replace SPINNING with PROGRESS status
