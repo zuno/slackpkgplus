@@ -1155,7 +1155,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         # extract the pattern from $i, if and only if "$i" is to the syntax <repo>:<pattern>. Without
         # this, PAT would be set to $DIR when $i is to the syntax <repo>.
         #
-        [[ "$DIR" =~ [:][:alnum:]+ ]] && PAT=${i/*:/} 
+        [[ "$i" =~ [:][[:alnum:]]+ ]] && PAT=${i/*:/}
 
         # when the current priority is of kind <REPO>:<PATTERN>, the loop must be short-circuited
         # when SEARCHSTR does not match PATTERN, otherwise, some packages could be mistakenly
