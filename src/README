@@ -79,6 +79,13 @@ The MIRRORPLUS array defines all mirrors. It accepts these protocols:
    Note that 'slackpkg update' ignores these repositories. Every time you run
    slackpkg, it reads the directory contents.
 
+4) Remote packages directory httpdir/httpsdir/ftpdir not containing metadata:
+
+    MIRRORPLUS['slackpkgbeta']=httpsdir://slackpkg.org/beta/
+
+   All packages must be in a single directory (subdirectory not allowed).
+   'slackpkg update' get the directory index and put it in slackpkg database.
+
 As mirror name, slackpkg+ accepts numbers, letters, minus and underscore, but
 you are encouraged to not use the minus character.
 
@@ -379,6 +386,10 @@ You can:
 
    Note: this function requires lftp and may fail if the server does not support
    Directory Listing or if there is a index.html in the path.
+
+3) configure an httpdir MIRRORPLUS
+   MIRRORPLUS['slackpkgbeta']=httpsdir://slackpkg.org/beta/
+
 
 NOTE: slackpkg+ will skip the gpg and md5 check for remote packages without
 metadata!!

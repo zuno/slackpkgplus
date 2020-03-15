@@ -119,6 +119,10 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+dev/
 #
 # Local packages (you do not need metadata nor 'slackpkg update' command):
 #MIRRORPLUS['myrepo']=dir://repositories/mypackages/
+#
+# Remote packages (you do not need metadata)
+#MIRRORPLUS['slackpkgbeta']=httpsdir://slackpkg.org/beta/
+
 
 # SBo SlackBuilds. Uncomment it to allow slackpkg to search SlackBuilds on SlackBuilds.org
 # This does not repleace sbopkg; slackpkg just report the package, version and url; you must

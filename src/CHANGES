@@ -28,6 +28,9 @@
 
 - Added optional script to configure lilo/elilo/initrd after a kernel upgrade
 
+- Added httpdir/httpsdir/ftpdir repositories. These repositories does not
+  need metadatas (CHECKSUMS.md5 ...), simple a remote directory listing
+
 
 *Improvements
 

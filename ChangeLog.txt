@@ -1,17 +1,23 @@
+Sun Mar 15 21:36:19 CET 2020
+pkg/slackpkg+-1.7.0d1-noarch-10mt.txz: Rebuilt
+  - Small fix in search packages
+  - Added httpdir/httpsdir/ftpsdir repository type. See documentation.
++-------------------------+
+
 Sun Mar  8 17:28:40 CET 2020
-pkg/slackpkg+-1.7.0d1-noarch-9mt.txz
+pkg/slackpkg+-1.7.0d1-noarch-9mt.txz: Rebuilt
   - Regression due percentage improvements
 +-------------------------+
 
 Sun Mar  8 13:58:45 CET 2020
-pkg/slackpkg+-1.7.0d1-noarch-8mt.txz
+pkg/slackpkg+-1.7.0d1-noarch-8mt.txz: Rebuilt
   - Extends percentage where possible.
   - Align check-updates messages with slackpkg 2.84
   - Catch errors and return exit status: 1 for warning, 2 for fatal
 +-------------------------+
 
 Tue Feb 18 08:30:10 CET 2020
-pkg/slackpkg+-1.7.0d1-noarch-7mt.txz
+pkg/slackpkg+-1.7.0d1-noarch-7mt.txz: Rebuilt
   - Replace SPINNING with PROGRESS status
   - Small fix the Cached Downloader output
   - Added USETERSE option to enable --terse on pkgtools
@@ -23,7 +29,7 @@ pkg/slackpkg+-1.7.0d1-noarch-7mt.txz
 +-------------------------+
 
 Thu Jan  3 12:18:57 CET 2019
-pkg/slackpkg+-1.7.0d1-noarch-6mt.txz
+pkg/slackpkg+-1.7.0d1-noarch-6mt.txz: Rebuilt
   - Allow to use the blacklist system from slackpkg 2.84 (still in beta).
     Only impact install/upgrade/remove options, and does not impact
     greylist.
@@ -32,12 +38,12 @@ pkg/slackpkg+-1.7.0d1-noarch-6mt.txz
 +-------------------------+
 
 Fri Jun 15 18:25:33 CEST 2018
-pkg/slackpkg+-1.7.0d1-noarch-5mt.txz
+pkg/slackpkg+-1.7.0d1-noarch-5mt.txz: Rebuilt
   - Fix incompatibility with slackpkg prior 2.83.0-noarch-3
 +-------------------------+
 
 Fri Jun 15 16:09:51 CEST 2018
-pkg/slackpkg+-1.7.0d1-noarch-4mt.txz
+pkg/slackpkg+-1.7.0d1-noarch-4mt.txz: Rebuilt
   - Fix incompatibility with slackpkg-2.83.0-noarch-3
   - Fix setupmultilib script. It did use oldstyle 'multilib:'
   - Fix a regression in TAG PRIORITY
@@ -45,13 +51,13 @@ pkg/slackpkg+-1.7.0d1-noarch-4mt.txz
 +-------------------------+
 
 Thu Apr 26 23:49:04 CEST 2018
-pkg/slackpkg+-1.7.0d1-noarch-3mt.txz
+pkg/slackpkg+-1.7.0d1-noarch-3mt.txz: Rebuilt
   - Do not log 'install.log' and 'fatal.log' when DOWNLOADONLY=on
   - issue with slackpkg-2.83 (development release)
 +-------------------------+
 
 Sat Apr 14 00:09:27 CEST 2018
-pkg/slackpkg+-1.7.0d1-noarch-2mt.txz
+pkg/slackpkg+-1.7.0d1-noarch-2mt.txz: Rebuilt
   - Add a fatal.log for messages that users should not ignore.
     Currently it log if a package fails to install/upgrade/remove.
   - slackpkg upgrade did not work with slackpkg-2.83 (development release)
@@ -60,14 +66,14 @@ pkg/slackpkg+-1.7.0d1-noarch-2mt.txz
 +-------------------------+
 
 Sun Oct  2 13:55:26 CEST 2016
-pkg/slackpkg+-1.7.0d1-noarch-1mt.txz
+pkg/slackpkg+-1.7.0d1-noarch-1mt.txz: Rebuilt
   - Added SBo support. This does not replace sbopkg. It just search in
     SlackBuilds.org and report the url to download to build and install
     packages yourself.
 +-------------------------+
 
 Fri Jul  8 19:18:29 CEST 2016
-pkg/slackpkg+-1.7.0d0-noarch-4mt.txz
+pkg/slackpkg+-1.7.0d0-noarch-4mt.txz: Rebuilt
   - Slackware 14.2 was finally released. Updated repository list.
   - Added manpage for the configuration file (man slackpkgplus.conf)
   - bash_completion is now enabled by default
