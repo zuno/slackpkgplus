@@ -1,7 +1,7 @@
 Sun Mar 15 21:36:19 CET 2020
 pkg/slackpkg+-1.7.0d1-noarch-10mt.txz: Rebuilt
   - Small fix in search packages
-  - Added httpdir/httpsdir/ftpsdir repository type. See documentation.
+  - Added httpdir/httpsdir/ftpdir repository type. See documentation.
 +-------------------------+
 
 Sun Mar  8 17:28:40 CET 2020
