@@ -317,6 +317,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local i
     local q
     local c
+
+    # when using upgrade_pkg the checkmd5 function should not show progress
+    MD5COUNTER=false
     q=$(echo $SHOWLIST|wc -w)
 
     if [ "$DOWNLOAD_ALL" = "on" ]; then
@@ -357,6 +360,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local q
     local c
     
+    MD5COUNTER=false
     q=$(echo $SHOWLIST|wc -w)
     if [ "$DOWNLOAD_ALL" = "on" ]; then
       OLDDEL="$DELALL"
@@ -907,6 +911,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local PREPO
     local ARG
 
+    if $MD5COUNTER && echo $1|egrep -q "\.t.z$";then
+      CHECKING=$(basename $1)
+      qq=$(echo $SHOWLIST|wc -w)
+      cc=$(echo "$SHOWLIST"|grep -n $CHECKING|cut -f1 -d:)
+      echo -n "[$cc/$qq] " >&2
+    fi
     if echo $1|egrep -q "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]";then
       echo 1
       return
@@ -960,7 +970,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       case "$CMD" in
         upgrade-all) TOPROCESS=$(comm -1 -2 ${TMPDIR}/lpkg ${TMPDIR}/dpkg | comm -1 -2 - ${TMPDIR}/spkg|wc -l);;
         install-new) TOPROCESS=$[$(awk -f /usr/libexec/slackpkg/install-new.awk ${ROOT}/${WORKDIR}/ChangeLog.txt|sort -u|wc -l)+7];;
-        install|upgrade|reinstall)
+        install|upgrade|reinstall|download)
                      TOPROCESS=0
                      for TMPARGUMENT in $(echo $INPUTLIST); do
                        TOPROCESS=$[$TOPROCESS+$(grep -w -- "${TMPARGUMENT}" ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u|wc -l)]
@@ -1709,6 +1719,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   ### =========================== MAIN ============================ ###
 
+
+  # upgrade-all donwload packages skipping upgrade_pkg function
+  # so slackpkg+ can show progress using the checkmd5 function
+  MD5COUNTER=true
 
   SPINNING=off
   #if [ "$CMD" == "upgrade-all" ];then SPINNING=off ;fi
