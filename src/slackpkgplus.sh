@@ -330,7 +330,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     for i in $SHOWLIST; do
       PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-      getpkg $i upgradepkg Upgrading
+      getpkg $i upgradepkg Upgrading $REPOPOS $PKGFOUND
       if [ "$DOWNLOADONLY" != "on" ];then
         if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
           FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
@@ -361,7 +361,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         INSTALL_T='reinstalled:'
       fi
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-      getpkg $i installpkg Installing
+      getpkg $i installpkg Installing $REPOPOS
       if [ "$DOWNLOADONLY" != "on" ];then
         if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
           FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
@@ -493,7 +493,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   ##### ====== CORE FUNCTION ====== ######
     # Extends getpkg() original function
     # (rename getpkg -> getpkg_old, then redefine getpkg to call it)
-  eval "$(type getpkg | sed $'1d;2c\\\ngetpkg_old()\n')"
+  eval "$(type getpkg | sed -e $'1d;2c\\\ngetpkg_old()\n' -e 's/Upgrading /Upgrading $5 => [$4]:/' -e 's/Installing /Installing [$4]:/')"
   function getpkg(){
     local c
     local q
