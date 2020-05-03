@@ -94,6 +94,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function install_pkg()
   # function wgetdebug()
   # function cached_downloader()
+  # function getpkg()
   # function getfile()
   # function checkgpg()
   # function checkmd5()
@@ -315,32 +316,20 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Overrides original upgrade_pkg(). Required by the notification mechanism.
   function upgrade_pkg() {
     local i
-    local q
-    local c
-
-    # when using upgrade_pkg the checkmd5 function should not show progress
-    MD5COUNTER=false
-    q=$(echo $SHOWLIST|wc -w)
 
     if [ "$DOWNLOAD_ALL" = "on" ]; then
       OLDDEL="$DELALL"
       DELALL="off"
-      c=1
       for i in $SHOWLIST; do
-        echo -n "[$c/$q]"
-        let c++
         getpkg $i true
       done
       DELALL="$OLDDEL"
     fi
     ls -1 $ROOT/var/log/packages/ > $TMPDIR/tmplist
 
-    c=1
     for i in $SHOWLIST; do
       PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-      echo -n "[$c/$q]"
-      let c++
       getpkg $i upgradepkg Upgrading
       if [ "$DOWNLOADONLY" != "on" ];then
         if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
@@ -357,31 +346,21 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Overrides original install_pkg(). Required by the notification mechanism.
   function install_pkg() {
     local i
-    local q
-    local c
     
-    MD5COUNTER=false
-    q=$(echo $SHOWLIST|wc -w)
     if [ "$DOWNLOAD_ALL" = "on" ]; then
       OLDDEL="$DELALL"
       DELALL="off"
-      c=1
       for i in $SHOWLIST; do
-        echo -n "[$c/$q]"
-        let c++
         getpkg $i true
       done
       DELALL="$OLDDEL"
     fi
-    c=1
     for i in $SHOWLIST; do
       INSTALL_T='installed:  '
       if [ -e $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') ];then
         INSTALL_T='reinstalled:'
       fi
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-      echo -n "[$c/$q]"
-      let c++
       getpkg $i installpkg Installing
       if [ "$DOWNLOADONLY" != "on" ];then
         if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
@@ -512,6 +491,18 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
   ##### ====== CORE FUNCTION ====== ######
+    # Extends getpkg() original function
+    # (rename getpkg -> getpkg_old, then redefine getpkg to call it)
+  eval "$(type getpkg | sed $'1d;2c\\\ngetpkg_old()\n')"
+  function getpkg(){
+    local c
+    local q
+    q=$(echo $SHOWLIST|wc -w)
+    c=$(echo $SHOWLIST|sed 's/ /\n/g'|grep -n $1|cut -f1 -d:)
+    echo -n "[$c/$q]"
+    getpkg_old "$@"
+    return $?
+  } # END function getpkg()
 
     # Override the slackpkg getfile().
     # The new getfile() download all file needed from all defined repositories
@@ -911,12 +902,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local PREPO
     local ARG
 
-    if $MD5COUNTER && echo $1|egrep -q "\.t.z$";then
-      CHECKING=$(basename $1)
-      qq=$(echo $SHOWLIST|wc -w)
-      cc=$[$(echo $SHOWLIST|sed 's/ /\n/g'|grep -n $CHECKING|cut -f1 -d:)+1]
-      [ $cc -le $qq ]&&echo -n "[$cc/$qq] " >&2
-    fi
     if echo $1|egrep -q "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]";then
       echo 1
       return
@@ -1719,10 +1704,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   ### =========================== MAIN ============================ ###
 
-
-  # upgrade-all donwload packages skipping upgrade_pkg function
-  # so slackpkg+ can show progress using the checkmd5 function
-  MD5COUNTER=true
 
   SPINNING=off
   #if [ "$CMD" == "upgrade-all" ];then SPINNING=off ;fi
