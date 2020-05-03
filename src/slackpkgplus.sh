@@ -914,8 +914,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if $MD5COUNTER && echo $1|egrep -q "\.t.z$";then
       CHECKING=$(basename $1)
       qq=$(echo $SHOWLIST|wc -w)
-      cc=$(echo "$SHOWLIST"|grep -n $CHECKING|cut -f1 -d:)
-      echo -n "[$cc/$qq] " >&2
+      cc=$[$(echo $SHOWLIST|sed 's/ /\n/g'|grep -n $CHECKING|cut -f1 -d:)+1]
+      [ $cc -le $qq ]&&echo -n "[$cc/$qq] " >&2
     fi
     if echo $1|egrep -q "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]";then
       echo 1
