@@ -122,8 +122,8 @@ accepts the following kinds of argument:
 4) repository-name, for example
    # slackpkg upgrade alienbob
    upgrades all packages in the alienbob repository, and
-   # slackpkg install ktown
-   installs all packages in the ktown repository
+   # slackpkg install multilib
+   installs all packages in the multilib repository
 
 5) repository-name:package-name, for example
    # slackpkg install slacky:openjdk
@@ -165,16 +165,16 @@ for example:
 <package name> accepts a regular expression, so for example
   PKGS_PRIORITY=( restricted:.* vlc.* )
 means 'all packages containing the "vlc" string'
-  PKGS_PRIORITY=( ktown:.* )
-means 'all packages in repository ktown'
+  PKGS_PRIORITY=( alienbob:.* )
+means 'all packages in repository alienbob'
 
 latest item maybe replaced simply with
-  PKGS_PRIORITY=( ktown )
+  PKGS_PRIORITY=( alienbob )
 
-all packages matched from ktown ovverride all related slackware packages, unless
+all packages matched from alienbob ovverride all related slackware packages, unless
 you do not explicitly exclude it:
-  PKGS_PRIORITY=( patches:harfbuzz slackware64:harfbuzz ktown )
-that means 'all ktown packages except harfbuzz'
+  PKGS_PRIORITY=( patches:harfbuzz slackware64:harfbuzz alienbob )
+that means 'all alienbob packages except harfbuzz'
 
 
 Also you can set TAG_PRIORITY=on to allow slackpkg+ to select repository
@@ -234,78 +234,7 @@ or just re-run
 
 KTOWN (LATEST KDE)
 
-If you want to install the latest KDE 5 packages from AlienBOB's ktown repository
-add 
-  PKGS_PRIORITY=( ktown )
-  MIRRORPLUS['ktown']=http://alien.slackbook.org/ktown/14.2/5/
-to slackpkgplus.conf, then
-# slackpkg update gpg
-# slackpkg update
-
-To install ktown you need some attention, so please refeer to official
-documentation for details:
-http://alien.slackbook.org/ktown/14.2/5/
-http://alien.slackbook.org/ktown/current/5/
-
-At time of writting, latest release are KDE 5_17.11 for slackware 14.2 and KDE 5_18.04
-for slackware current
-
-From official documentation:
---
-If you have Slackware 14.2 or -current's default KDE 4.14.3 installed:
-  # removepkg /var/log/packages/*-4.14.3-*
-  # removepkg amarok
-  # removepkg kscreen
-  # removepkg kactivities
-  # removepkg kde-workspace
-  # removepkg kdeconnect-kde
-  # removepkg kdepim
-  # removepkg kdepimlibs
-  # removepkg kdev-python
-  # removepkg kdevelop-php
-  # removepkg kdevelop-php-docs
-  # removepkg libkscreen
-  # removepkg libmm-qt
-  # removepkg libnm-qt
-  # removepkg plasma-nm
-  # removepkg polkit-kde-agent-1
-  # removepkg polkit-kde-kcmodules-1
-  # removepkg wicd-kde
-  ... or instead of the above, simply run 'slackpkg remove kde'.
----
-
-After that you can run
-
-slackpkg install ktown
-slackpkg upgrade-all
-slackpkg clean-system
-
-if you are upgrading an already installed ktown5, you may also need
-slackpkg reinstall ktown
-BEFORE slackpkg install ktown
-
-
-Note that the packages to remove may change in newer version of ktown,
-so I encourage to read linked documents BEFORE install it.
-
-
-After that, you can keep the ktown KDE up-to-date by launching:
-# slackpkg update
-# slackpkg upgrade-all
-Periodically you should re-run
-# slackpkg install ktown
-to be sure that newer packages are installed, and
-# slackpkg clean-system
-to be sure to clean removed packages.
-
-
-To restore the Slackware KDE, remove all 'ktown' referall in config file, then launch:
-# slackpkg update
-# slackpkg reinstall kde
-# slackpkg install kde
-# slackpkg upgrade-all
-# slackpkg clean-system
-
+KDE 5 is now included in slackware current, so you no longer need it
 
 -----
 

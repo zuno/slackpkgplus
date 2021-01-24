@@ -174,10 +174,10 @@ Also, if a package is also present in the official Slackware repositories, this 
 The variable \fB\%PKGS_PRIORITY\fP is similar to \fB\%REPOPLUS\fP but allows a more widespread choice of the order of research both at the repository level and at individual packet level. Moreover the packages in the repositories configured in this variable can be installed even if present in the official repositories.
 
 .in +4
-PKGS_PRIORITY=( slacky:openjdk ktown multilib )
+PKGS_PRIORITY=( slacky:openjdk multilib )
 .in
 
-In this case \fB\%slackpkg\ upgrade\-all\fP would update the package \fIopenjdk\fP from the repository \fIslacky\fP and all other packages from other reporitories. Another case where you need to use this option are the ktown (kde5 of alienbob) and multilib repositories as they have to overwrite some official Slackware packages (for ktown and multilib please read the documentation carefully). Someone prefer to fully replace the variable \%REPOPLUS with \%PKGS_PRIORITY, but if you do that please you are aware that you could upgrade Slackware official packages with those third-party, so make sure the autority of the source.
+In this case \fB\%slackpkg\ upgrade\-all\fP would update the package \fIopenjdk\fP from the repository \fIslacky\fP and all other packages from other reporitories. Another case where you need to use this option it the multilib repositorie as it need to overwrite some official Slackware packages (for multilib please read the documentation carefully). You can fully replace the variable \%REPOPLUS with \%PKGS_PRIORITY, but if you do that please you are aware that you could upgrade Slackware official packages with those third-party, so make sure the autority of the source.
 
 .TP  5
 \fBTAG_PRIORITY\fP

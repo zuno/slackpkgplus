@@ -1,3 +1,13 @@
+Sun Jan 24 20:19:11 CET 2021
+pkg/slackpkg+-1.7.0d1-noarch-11mt.txz: Rebuilt
+  - Fixed counter on big package lists (thank chrisretusn for reporting)
+  - Added percentage to download process
+  - Improved "Installing..." and "Upgrading..." messages
+  - zlookkernel: select huge or generic kernel according the running
+    kernel instead the vmlinuz link
+  - Removed ktown from default repositories
++-------------------------+
+
 Sun Mar 15 21:36:19 CET 2020
 pkg/slackpkg+-1.7.0d1-noarch-10mt.txz: Rebuilt
   - Small fix in search packages

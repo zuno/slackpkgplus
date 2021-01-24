@@ -1271,7 +1271,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     echo -n "Preparing list " >&2
     for i in $1; do
       let c++
-      printf "%10s\b\b\b\b\b\b\b\b\b\b" "[$c/$q]" >&2
+      printf "%11s\b\b\b\b\b\b\b\b\b\b\b" "[$c/$q]" >&2
       REPO=${i/:*/} #$(echo "$i" | cut -f1 -d":")
       PNAME=${i/*:/} #PNAME=$(echo "$i" | cut -f2- -d":")
 
@@ -1473,7 +1473,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ "$2" = "upgrade" ]; then
         ls -1 $ROOT/var/log/packages/ > $TMPDIR/tmplist
         for i in $1; do
-          printf "%10s\b\b\b\b\b\b\b\b\b\b" "[$c/$q]"
+          printf "%11s\b\b\b\b\b\b\b\b\b\b\b" "[$c/$q]"
           let c++
           TMPONOFF=$ONOFF
           BASENAME=$(cutpkg $i)
