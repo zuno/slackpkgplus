@@ -94,6 +94,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function install_pkg()
   # function wgetdebug()
   # function cached_downloader()
+  # function getpkg()
   # function getfile()
   # function checkgpg()
   # function checkmd5()
@@ -315,30 +316,21 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Overrides original upgrade_pkg(). Required by the notification mechanism.
   function upgrade_pkg() {
     local i
-    local q
-    local c
-    q=$(echo $SHOWLIST|wc -w)
 
     if [ "$DOWNLOAD_ALL" = "on" ]; then
       OLDDEL="$DELALL"
       DELALL="off"
-      c=1
       for i in $SHOWLIST; do
-        echo -n "[$c/$q]"
-        let c++
         getpkg $i true
       done
       DELALL="$OLDDEL"
     fi
     ls -1 $ROOT/var/log/packages/ > $TMPDIR/tmplist
 
-    c=1
     for i in $SHOWLIST; do
       PKGFOUND=$(grep -m1 -e "^$(echo $i|rev|cut -f4- -d-|rev)-[^-]\+-[^-]\+-[^-]\+$" $TMPDIR/tmplist)
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-      echo -n "[$c/$q]"
-      let c++
-      getpkg $i upgradepkg Upgrading
+      getpkg $i upgradepkg Upgrading $REPOPOS $PKGFOUND
       if [ "$DOWNLOADONLY" != "on" ];then
         if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
           FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
@@ -354,31 +346,22 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Overrides original install_pkg(). Required by the notification mechanism.
   function install_pkg() {
     local i
-    local q
-    local c
     
-    q=$(echo $SHOWLIST|wc -w)
     if [ "$DOWNLOAD_ALL" = "on" ]; then
       OLDDEL="$DELALL"
       DELALL="off"
-      c=1
       for i in $SHOWLIST; do
-        echo -n "[$c/$q]"
-        let c++
         getpkg $i true
       done
       DELALL="$OLDDEL"
     fi
-    c=1
     for i in $SHOWLIST; do
       INSTALL_T='installed:  '
       if [ -e $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') ];then
         INSTALL_T='reinstalled:'
       fi
       REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
-      echo -n "[$c/$q]"
-      let c++
-      getpkg $i installpkg Installing
+      getpkg $i installpkg Installing $REPOPOS
       if [ "$DOWNLOADONLY" != "on" ];then
         if [ -e "$ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//')" ];then
           FDATE=$(ls -l --full-time $ROOT/var/log/packages/$(echo $i|sed 's/\.t.z//') |awk '{print $6" "$7}'|sed -r -e 's/\.[0-9]{9}//' -e 's,-,/,' -e 's,-,/,')
@@ -508,6 +491,18 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
   ##### ====== CORE FUNCTION ====== ######
+    # Extends getpkg() original function
+    # (rename getpkg -> getpkg_old, then redefine getpkg to call it)
+  eval "$(type getpkg | sed -e $'1d;2c\\\ngetpkg_old()\n' -e 's/Upgrading /Upgrading $5 => [$4]:/' -e 's/Installing /Installing [$4]:/')"
+  function getpkg(){
+    local c
+    local q
+    q=$(echo $SHOWLIST|wc -w)
+    c=$(echo $SHOWLIST|sed 's/ /\n/g'|grep -n $1|cut -f1 -d:)
+    echo -n "[$c/$q]"
+    getpkg_old "$@"
+    return $?
+  } # END function getpkg()
 
     # Override the slackpkg getfile().
     # The new getfile() download all file needed from all defined repositories
@@ -960,7 +955,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       case "$CMD" in
         upgrade-all) TOPROCESS=$(comm -1 -2 ${TMPDIR}/lpkg ${TMPDIR}/dpkg | comm -1 -2 - ${TMPDIR}/spkg|wc -l);;
         install-new) TOPROCESS=$[$(awk -f /usr/libexec/slackpkg/install-new.awk ${ROOT}/${WORKDIR}/ChangeLog.txt|sort -u|wc -l)+7];;
-        install|upgrade|reinstall)
+        install|upgrade|reinstall|download)
                      TOPROCESS=0
                      for TMPARGUMENT in $(echo $INPUTLIST); do
                        TOPROCESS=$[$TOPROCESS+$(grep -w -- "${TMPARGUMENT}" ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u|wc -l)]
