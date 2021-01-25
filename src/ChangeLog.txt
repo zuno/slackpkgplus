@@ -1,3 +1,9 @@
+Mon Jan 25 16:50:48 CET 2021
+pkg/slackpkg+-1.7.0d1-noarch-12mt.txz: Rebuilt
+  - Other fix for counter on big package lists (thank chrisretusn for reporting)
+  - Reverted zlookkernel. It need more testing.
++-------------------------+
+
 Sun Jan 24 20:19:11 CET 2021
 pkg/slackpkg+-1.7.0d1-noarch-11mt.txz: Rebuilt
   - Fixed counter on big package lists (thank chrisretusn for reporting)
