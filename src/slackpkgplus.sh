@@ -1503,7 +1503,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       else # other than 'upgrade'
 
         for i in $1; do
-          printf "%10s\b\b\b\b\b\b\b\b\b\b" "[$c/$q]"
+          printf "%11s\b\b\b\b\b\b\b\b\b\b" "[$c/$q]"
           let c++
           TMPONOFF=$ONOFF
           REPOPOS=$(grep -m1 " $(echo $i|sed 's/\.t.z//') "  $TMPDIR/pkglist|awk '{print $1}'|sed 's/SLACKPKGPLUS_//')
