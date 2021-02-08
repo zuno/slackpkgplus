@@ -1568,7 +1568,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  if [ ${VERSION:0:4} == "2.84" ];then
+  if [ ${VERSION:0:4} == "2.84" ]||[ ${VERSION:0:4} == "15.0" ];then
     LEGACYBLACKLIST=""
   else
     LEGACYBLACKLIST="-w"
