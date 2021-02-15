@@ -1738,9 +1738,39 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     LEGACYBLACKLIST="-w"
   fi
 
-  SPKGPLUS_VERSION="1.7.0d1"
+  SPKGPLUS_VERSION="1.7.1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
+  if [ ${VERSION:0:4} == "2.82" ];then
+    echo " ! ! ! WARNING ! ! ! "
+    echo " You are using slackpkg+ $SPKGPLUS_VERSION release with Slackware 14.2"
+    echo
+    echo " It no longer supports Slackware 14.2 and should be used with"
+    echo " Slackware current only."
+    echo " Using it with Slackware 14.2 may no work properly"
+    echo " Use slackpkg+ 1.7.0 instead"
+    echo 
+    SLPMIR="$(cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg)"
+    if [ "$SLPMIR" != "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+1.7/" ];then
+      echo " Please replace"
+      cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg
+      echo " with"
+      echo "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+1.7/"
+      echo " then run 'slackpkg update && slackpkg upgrade slackpkg+' to downgrade it"
+      echo
+      echo 
+      echo -n "Do you want continue anyway? (Y/[N]) "
+      read ANSW
+      if [ "$ANSW" != "Y" ];then
+        cleanup
+      fi
+    else
+      echo " run 'slackpkg update && slackpkg upgrade slackpkg+' to downgrade it"
+      echo
+      sleep 5
+    fi
+
+  fi
 
   if [ ! -e "$WORKDIR" ];then
     mkdir -p "$WORKDIR"
