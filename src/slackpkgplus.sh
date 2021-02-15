@@ -1577,6 +1577,57 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   SPKGPLUS_VERSION="1.7.0"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
+  if [ ${VERSION:0:4} == "2.84" ]||[ ${VERSION:0:4} == "15.0" ];then
+    echo " ! ! ! WARNING ! ! ! "
+    echo " You are using slackpkg+ $SPKGPLUS_VERSION release with Slackware 15.0"
+    echo
+    echo " It no longer supports Slackware 15.0 and should be used with"
+    echo " Slackware 14.2 only."
+    echo " Using it with Slackware 15.0 may not work properly"
+    echo " Use slackpkg+ 1.7.1 or development release instead"
+    echo
+    SLPMIR="$(cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg)"
+    if [ "$SLPMIR" != "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+15/" ]&&
+       [ "$SLPMIR" != "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+dev/" ];then
+      echo " Please replace"
+      cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg
+      echo " with"
+      echo "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+15/"
+      echo " then run 'slackpkg update && slackpkg upgrade slackpkg+' to upgrade it"
+      echo
+      echo
+      echo -n "Do you want continue anyway? (Y/[N]) "
+      read ANSW
+      if [ "$ANSW" != "Y" ];then
+        cleanup
+      fi
+    else
+      echo " run 'slackpkg update && slackpkg upgrade slackpkg+' to upgrade it"
+      echo
+      sleep 5
+    fi
+
+  fi
+
+  SLPMIR="$(cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg)"
+  if [ "$SLPMIR" == "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/" ];then
+    echo " ! ! ! WARNING ! ! ! "
+    echo " You are using the link 'http://slakfinder.org/slackpkg+/' to keep"
+    echo " slackpkg+ updated. However slackware 15.0 beta 1 was released and"
+    echo " that link may upgrade slackpkg+ to a newest release that does not"
+    echo " support slackware 14.2."
+    echo
+    echo " Please replace"
+    cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg
+    echo " with"
+    echo "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+1.7/"
+    echo " to be sure that the newest release will not broke your slackpkg+"
+    echo " installation, unless you plan to upgrade to slackware 15.0"
+    echo
+    sleep 3
+  fi
+
+
 
   if [ ! -e "$WORKDIR" ];then
     mkdir -p "$WORKDIR"

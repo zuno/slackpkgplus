@@ -1,3 +1,9 @@
+Mon Feb 15 22:47:43 CET 2021
+pkg/slackpkg+-1.7.0-noarch-12mt.txz: Rebuilt
+  - slackpkg+ 1.7 does not supports slackware 15.0
+  - force to use http://slakfinder.org/slackpkg+1.7/ to update itself
++-------------------------+
+
 Mon Feb  8 19:23:43 CET 2021
 pkg/slackpkg+-1.7.0-noarch-11mt.txz: Rebuilt
   - Allow to use the blacklist system from slackpkg 15.0

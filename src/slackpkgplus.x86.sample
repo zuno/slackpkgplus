@@ -73,9 +73,6 @@ STRICTGPG=on
 # if you have two reporitories to give priority you must set both in the same line
 #PKGS_PRIORITY=( myrepo restricted:vlc )
 #
-# if you want to install 'ktown' repository you must set it here
-#PKGS_PRIORITY=( ktown )
-# and DO NOT MISS to read special instruction on /usr/doc/slackpkg+-*/repositories.txt
 
 # Otherwise you can try to upgrade a package from a repository that contains a package with the
 # same tag of the already installed package. Tipically that means to upgrade a package from the
@@ -101,11 +98,11 @@ REPOPLUS=( slackpkgplus )
 #MIRRORPLUS['restricted']=http://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/14.2/x86/
 #MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware-14.2/
 
-# use this to keep the slackpkg+ package updated to the latest stable release
-MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
+# use this to keep the slackpkg+ package updated
+MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+1.7/
 
-# use the development branch to use the mainline version and help develop by reporting bugs.
-#MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+dev/
+# use this if you are upgrading to slackware 15.0
+#MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+15/
 
 # Local repository:
 #MIRRORPLUS['alienbob']=file://repositories/alien/sbrepos/14.2/x86/
