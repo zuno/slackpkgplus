@@ -1,3 +1,33 @@
+Wed Feb 24 22:07:25 CET 2021
+pkg/slackpkg+-1.7.2-noarch-1mt.txz: Rebuilt
+  It's the time to summarize all changes.
+  As always, a big thanks goes to phenixia2003 and all other contributor
+  Now we can summarise the changes. You can find a full list in the CHANGES
+  documentation file
+  slackpkg+ 1.7.2 adds new features with some new entries in configuration file
+  that you should merge in your old slackpkgplus.conf:
+    SBOURL , USETERSE , PROXY , USEBL (not new but changed the values)
+    also some default values was changed from 1.7 to 1.7.2
+  see README for details.
+  New features:
+  - Now slackpkgplus.conf has a manpage, also available in italian
+  - Now we have a "fatal log". If it occurs please does not ignore it!
+  - Now we can search packages in SBo repository. (does not replace sbopkg)
+  - Now we can use httpdir/httpsdir/ftpdir repositories without metadata
+  - Added an optional zlookkernel script to allow slackpkg to update initrd
+  Improvements:
+  - Quick output for Cached Download for a most clear output.
+  - Improved output for 'slackpkg search'
+  - Replaced Spinning with Percentage
+  - Better output for download/install process
+  - Now cachedupdate support HTTP/2 servers
+  - bash_completion is now enabled by default
+  Note:
+  - slackpkg+ currently does not support $ROOT
+  - slackpkg-15 uses a new blacklist syntax; this works fine with slackpkg+
+    but just for blacklist; don't use it for greylist
++-------------------------+
+
 Mon Feb 15 21:14:31 CET 2021
 pkg/slackpkg+-1.7.1-noarch-1mt.txz: Rebuilt
   - This is a temporary release

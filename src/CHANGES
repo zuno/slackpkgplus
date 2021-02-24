@@ -1,6 +1,6 @@
 = Full Changes list =
 
-== From 1.7 to mainline ==
+== From 1.7 to 1.7.2 ==
 
 *Configuration file:
 
@@ -14,10 +14,12 @@
 
 - Added PROXY to specify a proxy server
 
+- Removed ktown samples since kde5 is in slackware 15.0
 
 *New features:
 
 - Added manpages (italian and english) for slackpkgplus.conf
+  to read the italian manpage be sure to export LANG=it_IT.UTF8
 
 - Added a 'fatal log' to show some serious error that the users should not
   ignore. For example a failure installing packages.
@@ -25,8 +27,6 @@
 - Added SBo support. This does not replace sbopkg. It just search in
   SlackBuilds.org and report the url to download to build and install
   packages yourself.
-
-- Added optional script to configure lilo/elilo/initrd after a kernel upgrade
 
 - Added httpdir/httpsdir/ftpdir repositories. These repositories does not
   need metadatas (CHECKSUMS.md5 ...), simple a remote directory listing
@@ -39,6 +39,10 @@
 - Smaller output for 'slackpkg search'
 
 - Replaced Spinning with Percentage
+
+- Better output for download/install process
+
+- 'slackpkg search' show more info on column Status
 
 
 *BugFixes
@@ -60,27 +64,39 @@
 - 'slackpkg search' did not show duplicated packages (as ffmpeg in alienbob
   and restricted repositories)
 
+- Handle the case where /var/log/packages is a symlink
+
+
 
 *Various
 
 - Suppress wget output in ChangeLog downloading
 
-- Bash completation enabled by default (if you have bash_completation package
-    installed) 
+- Catch errors and return exit status: 1 for warning, 2 for fatal
+     after run slackpkg you can read the exit status with echo $?
+     1 => WARNING! One or more errors occurred while slackpkg was running
+     2 => FATAL! Some operation has failed and need attention
 
-- Works with slackpkg-2.84 (development release).
-     This is not officially released, so not all regressions can be solved.
-     Currently slackpkg+ does not work with slackpkg-2.84 if $ROOT is non-empty.
-     slackpkg 2.84 introduces a new blacklist system. slackpkg+ uses it in
-     install/upgrade/remove options; not 'search' and does not impact greylist.
+- Bash completation enabled by default
+     note that you need to install bash_completation
+        slackpkg install bash_completation
 
+- Works with slackpkg-15
+     Unfortunately it does not work if $ROOT is non-empty
+     Also slackpkg-15 introduces a new blacklist system and seems to work fine
+     but greylist system use the older syntax
+
+- Added zlookkernel.sh
+     It help you to reconfigure initrd. It does support lilo and elilo (EFI)
+     For instructions read notes in the code:
+          /usr/libexec/slackpkg/zlookkernel.sh
 
 == From 1.6 and 1.7 ==
 
 *Configuration file:
 
 - Added SEARCH_CLOG_INPARENT: available 'on'/'off'; default is 'off'
-  Allow/disallow to search ChangeLog.txt in parent url. May be unsafe. 
+  Allow/disallow to search ChangeLog.txt in parent url. May be unsafe.
 
 - Added WW_FILE_SEARCH: available 'on'/'off'; default is 'off'
   Allow you to enable or disable the Whole Word search in 'slackpkg file-search'
@@ -108,7 +124,7 @@
 
 - 'slackpkg info' allows you to see more details about the package.
     By default slackpkg info shows you the slackware metadata and package
-    description. Set DETAILED_INFO to 'basic' and you can also see the 
+    description. Set DETAILED_INFO to 'basic' and you can also see the
     repository and url. Set it to 'filelist' and you will see the full file
     listing in the package. Note that packages as kernel-source or other big
     packages give you a loooong list.
@@ -133,7 +149,7 @@
     Now it gives you a quick output for a most clear output.
     Now you can use it in slackpkg check-updates.
     Now it caches most metadata file.
-    
+
 - Performance:
     slackpkg now is faster when search packages or prepare the package list in
     large install/upgrade
@@ -159,11 +175,11 @@
     Allow to choose the repository as in install/upgrade; this becouse there are
     more than one repository containing packages with identical name (but different
     packages, i.e. chromium for slackware 14.1 and the same version for current).
-   
+
 - dir:/ repositories:
     * dir:/ repositories and inline repositories has most priority
     * slackpkg search does search in dir:/ repositories
-    * now dir:/ allows subdirectories; note that EVERYTIME you run slackpkg, it 
+    * now dir:/ allows subdirectories; note that EVERYTIME you run slackpkg, it
     scan for all subdirectories of any dir:/ repositoies, even if you does not use
     that repository. It uses the 'find' command, so be sure to not select largest
     directories.
@@ -214,132 +230,3 @@
   Copy /usr/src/slackpkg+-*/slackpkg.bash_completation in /etc/bash_completation.d
 
 
-== The track of the 1.7 developments ==
-
-Version 1.7.0rc3 - 03/Jun/2016
-  This could be the last batch of updates before 1.7.0 stable, so please test!
-  - dialog did no more trap develop errors (but if occurs please report it)
-  - givepriority did drop matched package if it is the first in pkglist
-  - Added /usr/src/slackpkg+-*/slackpkg.bash_completation. Edit it for
-    instructions.
-
-Version 1.7.0rc2 - 02/Jun/2016
-  - ChangeLog did not skipped for dir:/ repositories
-  - ChangeLog did not show correctly certain slackware changelog
-  - dir:/ repositories does not need STRICTGPG nor GPG key; however remember
-    that if .asc file exists a key must be manually imported
-  - Removed makeinstlog.sh since it was bugged and no longer supported
-  - Repositories in default configuration file are bumped to 14.2
-  - Full 1.7.0 changes tracked in CHANGES file
-  - Added /usr/libexec/slackpkg/zchangelog.sh tool. Edit it to see instructions.
-
-Version 1.7.0rc1 - 19/May/2016
-  - WW_FILE_SEARCH did affect file search AND package search
-  - fixed warning in update when one repository does not have the changelog
-  - ignore the package extension in package selection
-  - fixed a regression in dir: repository
-
-Version 1.7.b4.3 - 02/May/2016
-  - Optimized code for generating ChangeLogs. (phenixia2003)
-
-Version 1.7.b4.2 - 18/Apr/2016
-  - Improved cached downloader with specifics output for ChangeLogs
-  - Fixed a bug in TAG_PRIORITY when the package is not installed
-  - Improved performance in upgrade by skipping priority check for
-    not installed packages
-
-Version 1.7.b4.1 - 15/Apr/2016
-  - slackpkg allow ChangeLog for third-party repositories too.
-  - Reduced verbosity in cached downloader == most clear output.
-
-Version 1.7.b4 - 14/Mar/2016
-  - slackpkg search now search in dir:// repositories too.
-  - subdirectory allowed in dir:// repositories.
-  - slackpkg search honour correctly the '+' character
-  - Added 'ChangeLog' dialog box to show the changelog of selected packages
-    (thanks to phenixia2003)
-
-Version 1.7.b3 - 27/Feb/2016
-  - Added WW_FILE_SEARCH to file-search whole-words o not (thanks to yars068)
-  - Colorized the slackpkg search results
-  - Added DETAILED_INFO to allow slackpkg info to show many details on the
-    package
-  - slackpkg reinstall fixed; also now allow to choose the repository as in 
-    install/upgrade; this becouse there more than one repository containing 
-    identicals packages.
-  - dir:// repositories and inline repositories has most priority
-
-Version 1.7.b2 - 29/Jan/2016
-  - Avoid slackpkg to corrupt the slackware database if there are some manual
-    upgrade in progress.
-  - Fixed a regression in TAG_PRIORITY.
-  - Added spinning in check-updates.
-  - Fixed bad trap CTRL+C when spinning is on.
-  - Fixed a regression in SENSITIVE_SEARCH.
-  - Cached Download works with check-updates too.
-  - check-updates shows downloader output if VERBOSE=3
-
-Version 1.7.b1 - 18/Jan/2016
-  Well, I think that we can mark that version as Beta.  It does not contains
-  new features, but it was done a large work of bugfixes and improvements.
-  A special thanks is for phenixia2003 and yars068 for code contributing and
-  for many other for ideas and testing. It's the time for the tests, to find
-  for bugs or someother improvement.
-  - Improved greylist. Now it allow to match the name in installed packages,
-    so it also impact remove and clean-system actions.
-  - Improved performance searching packages and preparing the package list in
-    large install/upgrade.
-  - Improved 'slackpkg search' that now shows all packages matching from all
-    repositories, not just that in priority; it will mark as 'masked' the
-    packages that would not selected in install/upgrade mode. Also always show
-    repository source for official packages.
-  - Quick output for Cached Download..
-  - Does not show notices to remember to run 'slackpkg update' when running
-    slackpkg check-updates.
-  - Fixed Download Only when upgrade base packages (aaa_base, pkgtools...).
-  - Fixed a bug in slackpkg upgrade when used with $ROOT.
-  - Repositories now can contains letters, numbers, minus and underscore
-  - Fixed a bug on x86 hosts when a repository contains also x86_64 packages
-  - Some fix in Strict GPG Check.
-
-Version 1.7.a6 - 17/Jan/2016
-  - 'slackpkg search' if finds more duplicated packages with different
-    versions from many repository, now show all, marking it as "masked" the
-    packages that will not be installed due the priority
-  - Fixed a regression that drop PKGS_PRIORITY function in slackpkg upgrade
-
-Version 1.7.a5 - 16/Jan/2016
-  - Improved greylist. Also, now it allow to match the name in installed packages
-  - Fixed download GPG-KEY; it did not show the correct repository for gpg key
-  - Fixed previous patch for $ROOT problem (did broke 'slackpkg search command')
-
-Version 1.7.a4 - 12/Jan/2016
-  - Improved performance
-  - Fixed search that may fails to detect repository in certain conditions
-  - slackpkg search shows the repository name for the official repository
-  - Fixed a bug in gpg check when a repository name contains a '-' character
-  - Fixed a bug in slackpkg upgrade when used with $ROOT
-
-Version 1.7.a3 - 10/Jan/2015
-  - Do not show notices when running slackpkg update or slackpkg check-updates
-    (thanks to yars068)
-  - Fixed a bug on x86 hosts when a repository contains also x86_64 packages
-
-Version 1.7.a2 - 06/Jan/2015
-  - Remember user to (re)run 'slackpkg update gpg'
-  - Fixed Download Only when upgrade base packages (aaa_base, pkgtools...)
-  - Quick output on Cached Download
-
-Version 1.7.a1 - 04/Jan/2016
-  It's the time for a stable version of slackpkg+. Currently it is just a
-  development version to fix older feature and add/test new. I'll need more
-  test possible to make it bugfree ;).
-  - Code reordering; now slackpkg+ is only slackpkgplus.sh
-  - BugFix: slackpkg did give 'grep: write error' when running with "sudo su -".
-  - Added repositories; improved checkrepos.sh
-  - Strict GPG Check: Packages and metadata in one repository should be signed
-    with just the root GPG-KEY. This improve security. Some repository might
-    want to contains heterogeneous package. In this case, set STRICTGPG=off.
-    See README.
-  - New repository for slackpkg+ development version
- 

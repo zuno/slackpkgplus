@@ -1,6 +1,6 @@
 Supported Repositories:
 
-> slackpkgplus:  http://slakfinder.org/slackpkg+{,dev,1.7}/
+> slackpkgplus:  http://slakfinder.org/slackpkg+{,dev,1.7,15}/
 > multilib:      https://bear.alienbase.nl/mirrors/people/alien/multilib/{14.2,current}/
 > alienbob:      https://bear.alienbase.nl/mirrors/people/alien/sbrepos/{14.2,current}/{x86,x86_64}/
 > ktown:         https://bear.alienbase.nl/mirrors/alien-kde/{14.2,current}/5/{x86,x86_64}/
@@ -11,7 +11,7 @@ Supported Repositories:
 > mles:          https://slackware.uk/microlinux/server-{14.2}-{32,64}bit/
 > msb:           https://slackware.uk/msb/{14.2,current}/{1.18,1.24,latest}/{x86,x86_64}/
 > csb:           https://slackware.uk/csb/{14.2,current}/{x86,x86_64}/
-> slackers:      http://slack.conraid.net/repository/slackware64-current{-testing,-extra}/
+> slackers:      https://slack.conraid.net/repository/slackware64-current{-testing,-extra}/
 > studioware:    https://slackware.uk/studioware/{14.2}
 > slackonly:     https://packages.slackonly.com/pub/packages/{14.2,current}-{x86,x86_64}/
 > rlworkman:     https://rlworkman.net/pkgs/{14.2,current}/
@@ -32,6 +32,14 @@ See /usr/doc/slackpkg+-*/repositories.lst for an expanded list.
 
 
 Some specific notes:
+
+* slackpkgplus:
+    This is the official repository to keep slackpkg+ updated. We have 4 branch:
+      /slackpkg+1.7/ -> the latest release working with slackware 14.2 (only)
+      /slackpkg+15/  -> the latest stable release working with slackware 15
+      /slackpkg+dev/ -> the development release; please consider to test it and report bugs
+      /slackpkg+/    -> currently an alias for /slackpkg+1.7/ 
+                        will change to an alias for /slackpkg+15/ when slackware 15.0 will be released
 
 * multilib:
     Please, run /usr/doc/slackpkg+-*/setupmultilib.sh to setup it.

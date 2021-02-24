@@ -63,6 +63,7 @@ The MIRRORPLUS array defines all mirrors. It accepts these protocols:
 
    The mirror must contains all metadata files (CHECKSUMS.md5 ...)
    You must run 'slackpkg update' after adding/removing a repository.
+   You may also need 'slackpkg update gpg'
 
 2) Local mirror: for example,
 
@@ -177,7 +178,7 @@ you do not explicitly exclude it:
 that means 'all alienbob packages except harfbuzz'
 
 
-Also you can set TAG_PRIORITY=on to allow slackpkg+ to select repository
+Also you can set TAG_PRIORITY=on to allow slackpkg+ to try select repository
 from where the package was previously installed.
 This method is based from tag of the installed package.
 slackpkg+ search a package with the same tag in all repositories and use it.
@@ -211,7 +212,7 @@ To install multilib manually, launch:
 After that, you can keep multilib up-to-date by launching:
 # slackpkg update
 # slackpkg upgrade-all
-periodically lauch
+periodically launch:
 # slackpkg install multilib
 to check for new multilib packages availability
 
@@ -311,7 +312,7 @@ You can:
 
 2) install/upgrade/reinstall all packages in a single remote directory (but not
    in a subtree) even if the site owner does not create metadata:
-   # slackpkg install http://site/path/
+   # slackpkg install http://www.slakfinder.org/slackpkg+/pkg/
 
    Note: this function requires lftp and may fail if the server does not support
    Directory Listing or if there is a index.html in the path.

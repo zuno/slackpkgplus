@@ -6,8 +6,6 @@
 declare -A MIRRORPLUS
 declare -A NOTIFYMSG
 
-CONF=${CONF:-/etc/slackpkg} # needed if you're running slackpkg 2.28.0-12
-
   # regular expression used to distinguish the 3rd party repositories from the standard slackware directories.
   #
 SLACKDIR_REGEXP="^((slackware)|(slackware64)|(extra)|(pasture)|(patches)|(testing))$"
@@ -128,12 +126,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if ! $USEBLACKLIST ;then
       >${TMPDIR}/blacklist
     fi
-    if $MLREPO_SELELECTED && grep -q "^aaa_elflibs$" ${TMPDIR}/blacklist && ! grep -q "^aaa_elflibs-compat32$" ${TMPDIR}/blacklist ; then
-      sed -i --expression "s/^aaa_elflibs/#aaa_elflibs/" ${TMPDIR}/blacklist
-      grep -vE $LEGACYBLACKLIST -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus | grep -v "[ ]aaa_elflibs[ ]" >${TMPDIR}/blacklist.tmp
-    else
-      grep -vE $LEGACYBLACKLIST -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus >${TMPDIR}/blacklist.tmp
-    fi
+    grep -vE -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus >${TMPDIR}/blacklist.tmp
     if [ "$(head -1 ${TMPDIR}/blacklist.tmp|awk '{print $1}')" != "local" ];then
       cat ${TMPDIR}/pkglist-pre
     fi
@@ -954,7 +947,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ -z "$TOPROCESS" ];then
       case "$CMD" in
         upgrade-all) TOPROCESS=$(comm -1 -2 ${TMPDIR}/lpkg ${TMPDIR}/dpkg | comm -1 -2 - ${TMPDIR}/spkg|wc -l);;
-        install-new) TOPROCESS=$[$(awk -f /usr/libexec/slackpkg/install-new.awk ${ROOT}/${WORKDIR}/ChangeLog.txt|sort -u|wc -l)+7];;
+        install-new) TOPROCESS=$[$(awk -f /usr/libexec/slackpkg/install-new.awk ${WORKDIR}/ChangeLog.txt|sort -u|wc -l)+7];;
         install|upgrade|reinstall|download)
                      TOPROCESS=0
                      for TMPARGUMENT in $(echo $INPUTLIST); do
@@ -1719,6 +1712,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     VERBOSE=1
   fi
 
+  if [ ! -z "$ROOT" ];then
+    echo "! ! ! FATAL ! ! !"
+    echo
+    echo "slackpkg+ does not support installation via \$ROOT"
+    echo
+    echo "please unset it"
+    cleanup
+  fi
 
   if [ "$CMD" == "upgrade" -o "$CMD" == "upgrade-all" ]&&ls $ROOT/var/log/packages/*:* >/dev/null 2>&1;then
     echo "FATAL! There is some problem in packages database"
@@ -1732,13 +1733,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  if [ ${VERSION:0:4} == "2.84" ]||[ ${VERSION:0:4} == "15.0" ];then
-    LEGACYBLACKLIST=""
-  else
-    LEGACYBLACKLIST="-w"
-  fi
-
-  SPKGPLUS_VERSION="1.7.1"
+  SPKGPLUS_VERSION="1.7.2"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   if [ ${VERSION:0:4} == "2.82" ];then
