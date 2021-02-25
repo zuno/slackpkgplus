@@ -1,3 +1,8 @@
+Thu Feb 25 12:56:55 CET 2021
+pkg/slackpkg+-1.7.2-noarch-2mt.txz: Rebuilt
+  - Solved bad progress bar in download/upgrade process
++-------------------------+
+
 Wed Feb 24 22:07:25 CET 2021
 pkg/slackpkg+-1.7.2-noarch-1mt.txz: Rebuilt
   It's the time to summarize all changes.

@@ -491,7 +491,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local c
     local q
     q=$(echo $SHOWLIST|wc -w)
-    c=$(echo $SHOWLIST|sed 's/ /\n/g'|grep -n $1|cut -f1 -d:)
+    c=$(echo $SHOWLIST|sed 's/ /\n/g'|grep -n ^$1|cut -f1 -d:)
     echo -n "[$c/$q]"
     getpkg_old "$@"
     return $?
