@@ -212,7 +212,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     echo
     rm -f /var/lock/slackpkg.$$
-    if [ $VERBOSE -lt 3 ];then
+    if [ $VERBOSE -lt 3 -a -z "$DEBUG" ];then
       rm -rf $TMPDIR
     fi
     exit $retval
@@ -501,24 +501,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # The new getfile() download all file needed from all defined repositories
     # then merge all in a format slackpkg-compatible
   function getfile(){
-    if [ "$DOWNLOADCHANGELOG" = "force" -a $(basename $1) = "CHECKSUMS.md5.asc" ];then
-      echo "force to download ChangeLog"
-      DOWNLOADCHANGELOG=no
-      getfile "$(echo "$1"|sed 's/CHECKSUMS.md5.asc$/ChangeLog.txt/')" "$(echo "$2"|sed 's/CHECKSUMS.md5.asc$/ChangeLog.txt/')"
-      >$TMPDIR/changelogdownloaded
-      echo "PGP" >$TMPDIR/CHECKSUMS.md5.asc
-      return
-    fi
     local URLFILE
     URLFILE=$1
 
-    if [ $(basename $1) = "ChangeLog.txt" ];then
-      DOWNLOADCHANGELOG=no
-      if [ -e $TMPDIR/changelogdownloaded ];then
+    if [ $(basename $1) = "CHECKSUMS.md5.asc" ];then
+      if [ -e $TMPDIR/signaturedownloaded ];then
         echo "                Done."
         return
       fi
-      rm -f $TMPDIR/CHECKSUMS.md5.asc
+      echo "                Signatures"
+    fi
+    if [ $(basename $1) = "ChangeLog.txt" ];then
       echo "                ChangeLogs"
     fi
 
@@ -598,67 +591,43 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
     fi
 
-    if [ $(basename $1) = "CHECKSUMS.md5.asc" ];then
-      if [ "$CHECKGPG" = "on" ];then
-        for PREPO in ${REPOPLUS[*]};do
-          URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5.asc
-          if echo $URLFILE | grep -q "dir:/" ; then
-            continue
-          fi
-          if echo $URLFILE | grep -q "^file://" ; then
-            URLFILE=${URLFILE:6}
-            cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc 2>/dev/null
-          else
-            $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc $URLFILE
-            if [ $? -ne 0 ];then
-              $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc `echo $URLFILE|sed 's/\.asc$/.gz.asc/'`
-              if [ $? -eq 0 ];then
-                $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz `echo $URLFILE|sed 's/\.asc$/.gz/'`
-                if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz) -eq 1 ];then
-                  echo
-                  echo "                   !!! N O T I C E !!!"
-                  echo "    Repository '$PREPO' does support signature checking for"
-                  echo "    CHECKSUMS.md5 file, so the repository authenticity is guaranteed,"
-                  echo "    but you MAY need to temporarily disable gpg check when you"
-                  echo "    install the packages using:"
-                  echo "    'slackpkg -checkgpg=off install packge'"
-                  echo "    The package authenticity remains guaranteed."
-                  echo
-                  zcat ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz > ${TMPDIR}/CHECKSUMS.md5-$PREPO
-                  sleep 5
-                  continue
-                fi
-              fi
-            fi
-          fi
-          if [ $? -eq 0 ];then
-            if [ $(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO) -ne 1 ];then
-              echo
-              echo "                        !!! F A T A L !!!"
-              echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5 signature check"
-              echo "    The file may be corrupted or the gpg key may be not valid."
-              echo "    Remember to import keys by launching 'slackpkg update gpg'."
-              echo
-              sleep 5
-              echo "Repository '$PREPO' FAILS the CHECKSUMS.md5 signature check." >> $TMPDIR/error.log
-              echo "Try to run 'slackpkg update gpg'" >> $TMPDIR/error.log
-              echo >> $TMPDIR/error.log
-              echo > ${TMPDIR}/CHECKSUMS.md5-$PREPO
-            fi
-          else
-            echo
-            echo "                   !!! W A R N I N G !!!"
-            echo "    Repository '$PREPO' does NOT support signature checking"
-            echo "    You SHOULD disable GPG check by setting 'CHECKGPG=off'"
-            echo "    in /etc/slackpkg/slackpkg.conf or use slackpkg with"
-            echo "    '-checkgpg=off' : 'slackpkg -checkgpg=off install packge'"
-            echo
-            sleep 5
-          fi
-        done
-      else
-        checkgpg ${TMPDIR}/CHECKSUMS.md5 >/dev/null
-      fi
+    if [ $(basename $1) = "CHECKSUMS.md5.asc" -a ! -e $TMPDIR/signaturedownloaded ];then
+      cp ${TMPDIR}/CHECKSUMS.md5.asc ${TMPDIR}/CHECKSUMS.md5-slackware.asc
+      for PREPO in ${REPOPLUS[*]};do
+        URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5.asc
+        if echo $URLFILE | grep -q "dir:/" ; then
+          continue
+        fi
+        echo -n "SLACKPKGPLUS_$PREPO[MD5] " >> ${TMPDIR}/CHECKSUMS.md5.asc
+        if echo $URLFILE | grep -q "^file://" ; then
+          URLFILE=${URLFILE:6}
+          cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc 2>/dev/null
+          md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
+          continue
+        fi
+        $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc $URLFILE
+        if [ $? -eq 0 ];then
+          md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
+          continue
+        fi
+        $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc `echo $URLFILE|sed 's/\.asc$/.gz.asc/'`
+        if [ $? -eq 0 ];then
+          md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
+          continue
+        fi
+        $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz `echo $URLFILE|sed 's/\.asc$/.gz/'`
+        if [ $? -eq 0 ];then
+          md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
+          continue
+        fi
+        $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO `echo $URLFILE|sed 's/\.asc$//'`
+        if [ $? -eq 0 ];then
+          md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
+          continue
+        fi
+        echo "invalid" >> ${TMPDIR}/CHECKSUMS.md5.asc
+      done
+      touch $TMPDIR/signaturedownloaded
     fi
     if [ $(basename $1) = "ChangeLog.txt" ];then
 
@@ -732,9 +701,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       for PREPO in slackware ${REPOPLUS[*]} ; do
         grep -inE "$CLOG_PKGREGEX" ${TMPDIR}/ChangeLogs/$PREPO.txt > ${TMPDIR}/ChangeLogs/$PREPO.idx
       done
-
+    fi
+    if [ $(basename $1) = "CHECKSUMS.md5" ];then
       for PREPO in ${REPOPLUS[*]};do
-        # Not all repositories have the ChangeLog.txt, so I use md5 of CHECKSUMS.md5 instead
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
@@ -752,7 +721,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               awk '{print "00000000000000000000000000000000  ./"$NF}' > ${TMPDIR}/CHECKSUMS.md5-$PREPO
           fi
         else
-          $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
+	  if [ -e ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc ];then
+            $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5.gz
+	    zcat ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz >${TMPDIR}/CHECKSUMS.md5-$PREPO
+	  else
+            $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
+	  fi
         fi
         if [ ! -s ${TMPDIR}/CHECKSUMS.md5-$PREPO ];then
           echo
@@ -766,11 +740,31 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
           PRIORITY=( $(echo ${PRIORITY[*]}" "|sed "s/SLACKPKGPLUS_$PREPO / /") )
           REPOPLUS=( $(echo " "${REPOPLUS[*]}" "|sed "s/ $PREPO / /") )
-        else
-          echo "SLACKPKGPLUS_$PREPO[MD5]" $(md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}') >>$2
         fi
 
       done
+      if [ "$TAG_PRIORITY" == "on" ];then
+        for PREPO in ${PRIORITY[*]};do
+          grep " \./$PREPO/" ${TMPDIR}/CHECKSUMS.md5 >> ${TMPDIR}/CHECKSUMS.md5-merged
+        done
+      else
+	cp ${TMPDIR}/CHECKSUMS.md5 ${TMPDIR}/CHECKSUMS.md5-merged
+      fi
+      X86_64=$(ls $ROOT/var/log/packages/aaa_base*x86_64* 2>/dev/null|head -1)
+      for PREPO in ${REPOPLUS[*]};do
+        if [ -z "$X86_64" ];then
+          FILTEREXCLUDE="-(x86_64|arm)-"
+        elif [ "$ALLOW32BIT" == "on" ];then
+          FILTEREXCLUDE="-(arm)-"
+        else
+          FILTEREXCLUDE="-(x86|i[3456]86|arm)-"
+        fi
+        egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "$FILTEREXCLUDE" |sed -r -e "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5-merged
+        #egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "$FILTEREXCLUDE" |sed -r -e "s# \./# ./SLACKPKGPLUS_$PREPO/#" -e 's#^(.*)/([^/]+)$#\2 \1/\2#'|sort -rn|cut -f2- -d" " >> ${TMPDIR}/CHECKSUMS.md5
+      done
+      if [ "$CHECKGPG" != "on" ];then
+	mv ${TMPDIR}/CHECKSUMS.md5-merged ${TMPDIR}/CHECKSUMS.md5
+      fi
     fi
     if [ $(basename $1) = "GPG-KEY" ];then
       mkdir -p ${WORKDIR}/gpg
@@ -830,10 +824,47 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   function checkgpg() {
     local FILENAME
     local REPO
+    local PREPO
 
     if echo $1|egrep -q "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]";then
       echo 1
       return
+    fi
+    if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
+      for PREPO in ${REPOPLUS[*]};do
+	if [ -e ${TMPDIR}/CHECKSUMS.md5-$PREPO ];then
+	  if [ "$(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO)" == "0" ];then
+	    echo >&2
+	    echo "                        !!! F A T A L !!!" >&2
+	    echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5.gz signature check" >&2
+	    echo "    The file may be corrupted or the gpg key may be not valid." >&2
+	    echo "    Remember to import keys by launching 'slackpkg update gpg'." >&2
+	    echo >&2
+	    sleep 5
+	    echo "Repository '$PREPO' FAILS the CHECKSUMS.md5 signature check." >> $TMPDIR/error.log
+	    echo "Try to run 'slackpkg update gpg' or disable the gpg check" >> $TMPDIR/error.log
+	    echo >> $TMPDIR/error.log
+	    echo 0
+	    return
+	  fi
+	fi
+	if [ -e ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz ];then
+	  if [ "$(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz)" == "0" ];then
+	    echo >&2
+	    echo "                        !!! F A T A L !!!" >&2
+	    echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5 signature check" >&2
+	    echo "    The file may be corrupted or the gpg key may be not valid." >&2
+	    echo "    Remember to import keys by launching 'slackpkg update gpg'." >&2
+	    echo >&2
+	    sleep 5
+	    echo "Repository '$PREPO' FAILS the CHECKSUMS.md5.gz signature check." >> $TMPDIR/error.log
+	    echo "Try to run 'slackpkg update gpg' or disable the gpg check" >> $TMPDIR/error.log
+	    echo >> $TMPDIR/error.log
+	    echo 0
+	    return
+	  fi
+	fi
+      done
     fi
     if [ -e "${1}.asc" ];then
 
@@ -854,9 +885,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                --verify ${1}.asc ${1} 2>/dev/null && echo "1" || echo "0"
         else
           echo "No matching GPG-KEY for repository '$REPO' checking $FILENAME" >&2
-          echo "Try to run 'slackpkg update gpg' or 'slackpkg -checkgpg=off $CMD ...'" >&2
+          echo "Try to run 'slackpkg update gpg' or disable gpg check" >&2
           echo "No matching GPG-KEY for repository '$REPO' checking $FILENAME" >>$TMPDIR/error.log
-          echo "Try to run 'slackpkg update gpg' or 'slackpkg -checkgpg=off $CMD ...'" >>$TMPDIR/error.log
+          echo "Try to run 'slackpkg update gpg' or disable gpg check" >>$TMPDIR/error.log
           echo 0
         fi
       else
@@ -866,24 +897,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo 1
     fi
     if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
-      if [ "$TAG_PRIORITY" == "on" ];then
-        mv ${TMPDIR}/CHECKSUMS.md5 ${TMPDIR}/CHECKSUMS.md5-old
-        for PREPO in ${PRIORITY[*]};do
-          grep " \./$PREPO/" ${TMPDIR}/CHECKSUMS.md5-old >> ${TMPDIR}/CHECKSUMS.md5
-        done
-      fi
-      X86_64=$(ls $ROOT/var/log/packages/aaa_base*x86_64* 2>/dev/null|head -1)
-      for PREPO in ${REPOPLUS[*]};do
-        if [ -z "$X86_64" ];then
-          FILTEREXCLUDE="-(x86_64|arm)-"
-        elif [ "$ALLOW32BIT" == "on" ];then
-          FILTEREXCLUDE="-(arm)-"
-        else
-          FILTEREXCLUDE="-(x86|i[3456]86|arm)-"
-        fi
-        egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "$FILTEREXCLUDE" |sed -r -e "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5
-        #egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "$FILTEREXCLUDE" |sed -r -e "s# \./# ./SLACKPKGPLUS_$PREPO/#" -e 's#^(.*)/([^/]+)$#\2 \1/\2#'|sort -rn|cut -f2- -d" " >> ${TMPDIR}/CHECKSUMS.md5
-      done
+      mv ${TMPDIR}/CHECKSUMS.md5-merged ${TMPDIR}/CHECKSUMS.md5
     fi
   } # END function checkgpg()
 
@@ -1733,7 +1747,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  SPKGPLUS_VERSION="1.7.2"
+  SPKGPLUS_VERSION="1.7.3"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   if [ ${VERSION:0:4} == "2.82" ];then
@@ -1779,7 +1793,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # answer to "Do you really want to download all other files"
     # if there are new changes
     ANSWER="Y"
-    DOWNLOADCHANGELOG=force
   fi
 
   if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&& ! ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1;then
@@ -2216,34 +2229,34 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ $ERR -ne 0 ]; then
     
         # -- Note:
-        #     checkchangelog() download the ChangeLog.txt and stores it
+        #     checkchangelog() download the CHECKSUMS.md5.asc and stores it
         #     in ${TMPDIR}
 
-        # extract the slackpkgplus repositories md5 from the ChangeLog.txt
+        # extract the slackpkgplus repositories md5 from the CHECKSUMS.md5.asc
         # files (in ${WORKDIR} and ${TMPDIR} to identify updates in Slackware
         # repository.
         #
-      grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt > ${TMPDIR}/ChangeLog.old
-      grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/ChangeLog.txt > ${TMPDIR}/ChangeLog.new
+      grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/CHECKSUMS.md5.asc > ${TMPDIR}/CHECKSUMS.md5.asc.old
+      grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/CHECKSUMS.md5.asc > ${TMPDIR}/CHECKSUMS.md5.asc.new
       
-      if [ "$(md5sum ${TMPDIR}/ChangeLog.old | cut -f1 -d' ')" != "$(md5sum ${TMPDIR}/ChangeLog.new | cut -f1 -d' ')" ] ; then
+      if ! diff --brief ${TMPDIR}/CHECKSUMS.md5.asc.old ${TMPDIR}/CHECKSUMS.md5.asc.new >/dev/null ; then
               echo "slackware" > ${TMPDIR}/updated-repos.txt
       fi
       
         # -- get the list of the repositories configured before this call to check-updates
         #
-      grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt | sed 's/^SLACKPKGPLUS_//; s/\[MD5\]//' | cut -f1 -d" "> ${TMPDIR}/selected.3pr
+      grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/CHECKSUMS.md5.asc | sed 's/^SLACKPKGPLUS_//; s/\[MD5\]//' | cut -f1 -d" "> ${TMPDIR}/selected.3pr
 
         # create pseudo changelogs for the selected 3rd party repositories
         #
-      grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/ChangeLog.txt | sort  > "${TMPDIR}/3rp-ChangeLog.old"
-      grep "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/ChangeLog.txt | sort > "${TMPDIR}/3rp-ChangeLog.new"
+      grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/CHECKSUMS.md5.asc | sort  > "${TMPDIR}/3rp-CHECKSUMS.old"
+      grep "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/CHECKSUMS.md5.asc | sort > "${TMPDIR}/3rp-CHECKSUMS.new"
       
-        # from the pseudo changelogs, find the updated 3rd party repositories and add them
+        # from the pseudo checksums, find the updated 3rd party repositories and add them
         # to the updates report file
         #
-      comm -1 -3  "${TMPDIR}/3rp-ChangeLog.old" \
-                  "${TMPDIR}/3rp-ChangeLog.new" \
+      comm -1 -3  "${TMPDIR}/3rp-CHECKSUMS.old" \
+                  "${TMPDIR}/3rp-CHECKSUMS.new" \
               | sed -e "s/^SLACKPKGPLUS_//" -e "s/\[MD5\]//" \
               | cut -f1 -d" " | grep -f ${TMPDIR}/selected.3pr >> "${TMPDIR}/updated-repos.txt"
 
@@ -2260,7 +2273,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     rm -f ${TMPDIR}/waiting
     
     if $UPDATES ; then
-      echo "Updated packages are available since last check."
+      echo "Slackpkg: Updated packages are available since last check." >&2
       
       printf "\n  [ %-24s ] [ %-20s ]\n" "Repository" "Status"
       
@@ -2276,7 +2289,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         #
       cat ${TMPDIR}/updated-repos.txt > ~/.slackpkg/updated-repos.txt
     else
-      echo "No updated packages since last check."
+      echo "Slackpkg: No updated packages since last check."
       # Suppress the "pkglist is older than 24h" notice
       touch $WORKDIR/pkglist
     fi
