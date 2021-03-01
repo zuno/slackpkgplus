@@ -1,3 +1,15 @@
+Mon Mar  1 20:40:19 CET 2021
+pkg/slackpkg+-1.7.3-noarch-1mt.txz: Rebuilt
+  Starting from 1.7.1, slackpkg+ no longer supports Slackware 14.2 (i.e.
+  slackpkg-15.0). It advice you to downgrade to 1.7.0. Now we can fix some
+  things that can break the backward compatibility.
+  - from 2.84.0_beta1: Use CHECKSUMS.md5.asc to determine ChangeLog newness
+  - from 2.84.0_beta11: check-updates change the messages and print the
+    "no updates" in stdout and "updates available" in stderr. If you are
+    using automatic scripts be sure to fix it.
+  - now both work properly with slackpkg+
++-------------------------+
+
 Thu Feb 25 12:56:55 CET 2021
 pkg/slackpkg+-1.7.2-noarch-2mt.txz: Rebuilt
   - Solved bad progress bar in download/upgrade process
