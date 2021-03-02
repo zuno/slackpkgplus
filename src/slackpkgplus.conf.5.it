@@ -3,7 +3,7 @@
 .\" Questa manpage è scritta modificando quella di slackpkg.conf
 .\"
 .\"*******************************************************************
-.TH SLACKPKGPLUS.CONF 5 "Febbraio 2020" slackpkg+\-1.8.0 ""
+.TH SLACKPKGPLUS.CONF 5 "Febbraio 2021" slackpkg+\-1.8.0 ""
 .SH NOME
 \fBslackpkgplus.conf\fP \- Configurazione per slackpkg+
 
@@ -116,7 +116,13 @@ Seguono le differenti impostazioni disponibili:
 \*3
 .in
 
-Ad ogni modifica della configurazione è necessario o comunque opportuno rilanciare \fB\%slackpkg\ update\fP
+
+\fBPlugins\fP
+.br
+In questa sezione vengono messe le impostazioni per abilitare, disabilitare o configurare i plugin aggiuntivi. Per conoscere le variabili disponibili vedi la documentazione all'interno del plugin stesso (v. sezione FILES in questa man page).
+
+
+Ad ogni modifica della configurazione è necessario o comunque opportuno rilanciare \fB\%slackpkg\ update\fP.
 
 Di seguito i dettagli delle singole impostazioni.
 
@@ -461,7 +467,7 @@ Vedi la documentazione e il file \fB\%notifymsg.conf\fP per i dettagli.
 .br
 Il file di configurazione principale dove sono presenti tutti i parametri di cui sopra.
 .br
-Ad ogni modifica è opportuno rilanciare \fB%slackpkg\ update\fP
+Ad ogni modifica è opportuno rilanciare \fB\%slackpkg\ update\fP.
 
 .TP  5
 \fB/etc/slackpkg/greylist\fP
@@ -484,7 +490,7 @@ Il changelog di slackpkg+
 
 \fBCHANGES\fP:
 .in +5
-L'elenco cumulativo completo dei cambiamenti da slackpkg+ 1.6 a 1.7; leggilo per avere una descrizione delle nuove funzionalità introdotte.
+L'elenco cumulativo completo dei cambiamenti da una release stabile all'altra; leggilo per avere una descrizione delle nuove funzionalità introdotte.
 .in
 
 \fBREADME\fP:
@@ -519,9 +525,7 @@ Lo SlackBuild di slackpkg+. Da usare solo per consultazione; il lancio fuori del
 
 \fBslackpkg.bash_completion\fP:
 .in +5
-Se hai il pacchetto \fB\%bash_completion\fP preso dal repository \fBextra\fP di slackware puoi copiare questo file nella directory
-\fB\%/etc/bash\-completion\fP
-per utilizzare la funzione l'autocompletamento di bash con slackpkg (effettua anche le ricerche nel pkglist). E' in fase sperimentale.
+Se hai il pacchetto \fB\%bash-completion\fP preso dal repository \fBextra\fP di slackware avrai automaticamente attiva la funzione di autocompletamento di bash con slackpkg (effettua anche le ricerche nel pkglist).
 .in
 
 \fBslackpkgplus.x86.sample\fP:
@@ -535,13 +539,16 @@ Il file di configurazione di esempio per le architetture a 64bit.
 .in
 
 .TP  5
-\fB/usr/libexec/slackpkg/zchangelog.sh\fP
+\fB/usr/libexec/slackpkg/functions.d/zchangelog.sh\fP
 .br
-Questo script popola un changelog globale \fB\%/var/lib/slackpkg/RepoChangeLog.txt\fP ad ogni \fB\%slackpkg\ update\fP con l'elenco di tutte le modifiche rilevate. E' disabilitato per default. Per abilitarlo lanciare il seguente come root (aprite il file stesso per ulteriori dettagli)
+Questo plugin popola un changelog globale \fB\%/var/lib/slackpkg/RepoChangeLog.txt\fP ad ogni \fB\%slackpkg\ update\fP con l'elenco di tutte le modifiche rilevate. Leggi le note all'interno del file. E' disabilitato per default. Per abilitarlo metti \fB\%PLUGIN_ZCHANGELOG=\fP\fIenable\fP in configurazione; puoi stampare l'output a schermo aggiungendo l'impostazione \fB\%PLUGIN_ZCHANGELOG_SHOW=\fP\fIon\fP in configurazione.
+Leggi le note all'interno del file per ulteriori dettagli.
 
-#\ cd\ /usr/libexec/slackpkg/functions.d
+.TP  5
+\fB/usr/libexec/slackpkg/functions.d/zlookkerne.sh\fP
 .br
-#\ ln\ -sf\ ../zchangelog.sh\ .
+Questo plugin aggiunge la possibilità di ricostruire l'initrd e di lanciare lilo o EFI lilo ogni volta che viene aggiornato il kernel. Notare che slackpkg-15.0 ha rimosso il lancio automatico di lilo ma da solamente un messaggio di avvertimento. E' disabilitato per default. Per abilitarlo metti \fB\%PLUGIN_ZLOOKKERNEL=\fP\fIenable\fP in configurazione.
+Leggi le note all'interno del file per ulteriori dettagli.
 
 .SH NOTE
 .TP  5

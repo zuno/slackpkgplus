@@ -1,3 +1,14 @@
+Tue Mar  2 17:31:29 CET 2021
+pkg/slackpkg+-1.7.4-noarch-1mt.txz: Rebuilt
+  This release does not introduce feature on the core; just add a section to
+  configuration file to enable some currently hidden feature.
+  - Added plugin section. Now we can enable or disable sperimental plugin
+    from configuration file. Currently we have two plugins.
+  - ZLookKernel: help you to rebuild the initrd and install lilo or EFI elilo
+  - ZChangeLog: generate a changelog for all repository at every 'update'
+    process
++-------------------------+
+
 Mon Mar  1 20:40:19 CET 2021
 pkg/slackpkg+-1.7.3-noarch-1mt.txz: Rebuilt
   Starting from 1.7.1, slackpkg+ no longer supports Slackware 14.2 (i.e.

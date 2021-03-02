@@ -1,6 +1,6 @@
 = Full Changes list =
 
-== From 1.7 to 1.7.2 ==
+== From 1.7 to 1.7.4 ==
 
 *Configuration file:
 
@@ -15,6 +15,11 @@
 - Added PROXY to specify a proxy server
 
 - Removed ktown samples since kde5 is in slackware 15.0
+
+- Added plugins section to configure the extra-tools in slackpkg+
+  Currently zlookkernel and zchangelog
+  Note that some plugin may be experimental
+
 
 *New features:
 
@@ -44,6 +49,11 @@
 
 - 'slackpkg search' show more info on column Status
 
+- set PLUGIN_ZCHANGELOG=enable to enable zchangelog.sh plugin
+  set PLUGIN_ZCHANGELOG_SHOW=on to print changelog on stdout
+  For details read notes in the code:
+    /usr/libexec/slackpkg/functions.d/zchangelog.sh
+
 
 *BugFixes
 
@@ -67,7 +77,6 @@
 - Handle the case where /var/log/packages is a symlink
 
 
-
 *Various
 
 - Suppress wget output in ChangeLog downloading
@@ -88,8 +97,9 @@
 
 - Added zlookkernel.sh
      It help you to reconfigure initrd. It does support lilo and elilo (EFI)
+     set PLUGIN_ZLOOKKERNEL=enable to use it
      For instructions read notes in the code:
-          /usr/libexec/slackpkg/zlookkernel.sh
+          /usr/libexec/slackpkg/functions.d/zlookkernel.sh
 
 == From 1.6 and 1.7 ==
 

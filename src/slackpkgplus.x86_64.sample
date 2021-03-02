@@ -138,12 +138,30 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+15/
 # Remote packages (you do not need metadata)
 #MIRRORPLUS['slackpkgbeta']=httpsdir://slackpkg.org/beta/
 
+
 # SBo SlackBuilds. Uncomment it to allow slackpkg to search SlackBuilds on SlackBuilds.org
 # This does not repleace sbopkg; slackpkg just report the package, version and url; you must
 # download and build it yourself or via sbopkg.
 #SBOURL=https://www.slackbuilds.org/slackbuilds/14.2/
 
+
+# Plugin section:
+# Here you can enable some optional feature. Please read documentation before enable it.
+#
+# ZLookKernel can help you to rebuild initrd and reistall lilo/elilo. This feature was
+# removed in slackpkg-15.0. 'enable' this setting to enable it.
+# read /usr/libexec/slackpkg/functions.d/zlookkernel.sh for more information
+#PLUGIN_ZLOOKKERNEL=disable
+#
+# ZChangeLog track all repository changes everytime you run 'slackpkg update'
+# It write the changelog at /var/lib/slackpkg/RepoChangeLog.txt
+# 'enable' this setting to enable it. Also set 'PLUGIN_ZCHANGELOGS_SHOW=on' to print
+# the changes in standard output at the end of 'update' process.
+# read /usr/libexec/slackpkg/functions.d/zchangelog.sh for more information
+#PLUGIN_ZCHANGELOG=disable
+#PLUGIN_ZCHANGELOG_SHOW=off
+#
+
 #
 # Supported Repositories (see /usr/doc/slackpkg+-* for details and notes):
 #
-

@@ -1,9 +1,9 @@
 .\"*******************************************************************
 .\"
-.\" Questa manpage è scritta modificando quella di slackpkg.conf
+.\" This manpage was written modifying the slackpkg.conf manpage
 .\"
 .\"*******************************************************************
-.TH SLACKPKGPLUS.CONF 5 "Febbraio 2020" slackpkg+\-1.8.0 ""
+.TH SLACKPKGPLUS.CONF 5 "Febrary 2021" slackpkg+\-1.8.0 ""
 .SH NOME
 \fBslackpkgplus.conf\fP \- Configuration file for slackpkg+
 
@@ -116,7 +116,12 @@ Here is the list of available settings:
 \*3
 .in
 
-For each configuration change is necessary or otherwise appropriate to re-run \fB\%slackpkg\ update\fP
+
+\fBPlugins\fP
+.br
+In this section you can put the settings to enable, disable or configure the extra plugins. To know the available variable read the documentation inside the plugin (see FILES section in that man page).
+
+For each configuration change is necessary or otherwise appropriate to re-run \fB\%slackpkg\ update\fP.
 
 Here are the details for each setting.
 
@@ -221,7 +226,7 @@ This setting is ignored (or partially ignored if it is set to \fI3\fP if you are
 .TP  5
 \fBUSETERSE\fP
 .br
-Set this variable ti \fIon\P to use the TERSE option of installpkg(8), upgradepkg(8), removepkg(8). Install displaying only a single description line to stdout instead full description and coplete filelist.
+Set this variable to \fIon\fP to use the TERSE option of installpkg(8), upgradepkg(8), removepkg(8). Install displaying only a single description line to stdout instead full description and coplete filelist.
 
 .TP  5
 \fBPROXY\fP
@@ -369,7 +374,7 @@ Setting \fBGREYLIST\fP=\fIoff\fP in the configuration, this feature is disabled.
 .TP  5
 \fBSENSITIVE_SEARCH\fP
 .br
-In \fBslackpkg\ search\fP the search is in "case sensitive" mode that respecting differences between upper and lower case, so \fB\%slackpkg\ search\ mplayer\fP is not the same as \fB\%slackpkg\ search\ MPlayer\fP. The same is true for the \fB\%file\ -search\fP.
+In \fBslackpkg\ search\fP the search is in "case sensitive" mode that respecting differences between upper and lower case, so \fB\%slackpkg\ search\ mplayer\fP is not the same as \fB\%slackpkg\ search\ MPlayer\fP. The same is true for the \fB\%file\-search\fP.
 
 Setting \fB\%SENSITIVE_SEARCH\fP=\fIoff\fP will be possible to search in "case insensitive" that is, without making differences between upper and lower case.
 
@@ -464,7 +469,7 @@ See the documentation and the file \fB\%notifymsg.conf\fP for details.
 .br
 The main configuration file where there are all the parameters above.
 .br
-For any change you have to re-run \fB%slackpkg\ update\fP
+For any change you have to re-run \fB\%slackpkg\ update\fP.
 
 .TP  5
 \fB/etc/slackpkg/greylist\fP
@@ -488,7 +493,7 @@ The slackpkg+ changelog.
 
 \fBCHANGES\fP:
 .in +5
-The complete list of changes from slackpkg+ 1.6 to 1.7; read it to get a description of the new features introduced.
+The complete list of changes from two stable release; read it to get a description of the new features introduced.
 .in
 
 \fBREADME\fP:
@@ -523,9 +528,7 @@ The SlackBuild of slackpkg+. Only to be used for consultation; being thrown out 
 
 \fBslackpkg.bash_completion\fP:
 .in +5
-If you have the \fB\%bash_completion\fP taken from the repository \fBextra\fP slackware you can copy this file in the directory
-\fB\%/etc/bash\-completion\fP
-to use the bash autocompletion function with slackpkg (also queries the pkglist). It's in the experimental stage.
+If you have the \fB\%bash-completion\fP taken from the repository \fBextra\fP slackware you will automatically have the bash autocompletion function with slackpkg (also queries the pkglist).
 .in
 
 \fBslackpkgplus.x86.sample\fP:
@@ -539,13 +542,16 @@ The sample configuration file for 64bit architectures.
 .in
 
 .TP  5
-\fB/usr/libexec/slackpkg/zchangelog.sh\fP
+\fB/usr/libexec/slackpkg/functions.d/zchangelog.sh\fP
 .br
-This script populates a global changelog \fB\%/var/lib/slackpkg/RepoChangeLog.txt\fP to each \fB\%slackpkg\ update\fP with a list of all tracked changes. It is disabled by default. To enable it, run the following as root (open the same file for more details)
+This plugin populates a global changelog \fB\%/var/lib/slackpkg/RepoChangeLog.txt\fP to each \fB\%slackpkg\ update\fP with a list of all tracked changes. Read the note into the file. It is disabled by default. To enable it, put \fB\%PLUGIN_ZCHANGELOG=\fP\fIenable\fP in configuration; to view the output on screen put also the PLUGIN_ZCHANGELOG_SHOW=on setting in configuration.
+Please, read the note into the file for more informations.
 
-#\ cd\ /usr/libexec/slackpkg/functions.d
+.TP  5
+\fB/usr/libexec/slackpkg/functions.d/zlookkerne.sh\fP
 .br
-#\ ln\ -sf\ ../zchangelog.sh\ .
+Questo plugin add the ability to rebuild the initrd and to run lilo or EFI lilo everytime you upgrade the kernel. Note that slackpkg-15.0 removed the automatic run of lilo replacing it with a simple advice message. It is disabled by default. To enable it put \fB\%PLUGIN_ZLOOKKERNEL=\fP\fIenable\fP in configuration.
+Please, read the note into the file for more informations.
 
 .SH NOTES
 .TP  5

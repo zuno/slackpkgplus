@@ -593,6 +593,25 @@ repository name with "slackpkg install/upgrade repository:package".
 
 -----
 
+PLUGINS
+
+In the slackpkg+ packages there are some optional plugin. Some of that may be
+sperimental, so it is not included by default in slackpkg+ core. You may
+enable it by setting the PLUGIN_* variable to 'enabled'. Open the plugin file
+for further defail about the plugin.
+
+ - /usr/libexec/slackpkg/functions.d/zlookkernel.sh
+     to allow slackpkg to rebuild your initrd and install lilo.
+     enable it with PLUGIN_ZLOOKKERNEL=enable
+
+- /usr/libexec/slackpkg/functions.d/zchangelog.sh
+     to allow slackpkg to create a global changelog in
+     /var/lib/slackpkg/RepoChangeLog.txt
+     enable it with PLUGIN_ZCHANGELOG=disable
+     set PLUGIN_ZCHANGELOG_SHOW=on to view it in standard output too
+
+-----
+
 FURTHER INFORMATION
 
 The AlienBOB article about slackpkg+:

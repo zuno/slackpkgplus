@@ -4,19 +4,32 @@
 # It track all repositories changes in /var/lib/slackpkg/RepoChangeLog.txt
 # everytime you run 'slackpkg update' so you will have a global changelog.
 #
+# example:
+#   Wed Feb 24 22:17:41 CET 2021
+#   ----------------------------------
+#   Added:  testing
+#
+#   Upgraded:  alienbob      ::  chromium-88.0.4324.190-x86_64-1alien.txz
+#   Added:     extra         ::  php8-8.0.2-x86_64-1.txz
+#   Upgraded:  slackpkgplus  ::  slackpkg+-1.7.2-noarch-1mt.txz
+#   Upgraded:  slackware64   ::  Cython-0.29.22-x86_64-1.txz
+#   Upgraded:  slackware64   ::  autoconf-archive-2021.02.19-noarch-1.txz
+#   Rebuilt:   slackware64   ::  bind-9.16.11-x86_64-3.txz
+#   Upgraded:  slackware64   ::  bluedevil-5.21.1-x86_64-1.txz
+
+#
 # WARNING: This tool is in an embrional state. However it does not affect
 #          the correct slackpkg+ working. But you need to install it manually
 #          if you want use it.
 #
-# To install it run (as root):
-# $ ln -sf /usr/libexec/slackpkg/zchangelog.sh /usr/libexec/slackpkg/functions.d/
+# To use it put PLUGIN_ZCHANGELOG=enable
+# in /etc/slackpkg/slackpkgplus.conf
 #
-# To uninstall it run (as root):
-# $ rm /usr/libexec/slackpkg/functions.d/zchangelog.sh
+# After run 'slackpkg update' ZChangeLog cat print the changes in output
+# if you set 'PLUGIN_ZCHANGELOG_SHOW=on' to slackpkgplus.conf
 #
-# By default after run 'slackpkg update' ZChangeLog print the changes in
-# output. If you dislike it add 'SHOW_ZCHANGELOGS=no' to slackpkgplus.conf
-#
+
+if [ "$PLUGIN_ZCHANGELOG" == "enable" ];then
 
 test -n "$(declare -f cleanup)" # || return
 eval "${_/cleanup/cleanup_orig}"
@@ -65,7 +78,7 @@ function cleanup(){
       if ! tail -1 $TMPDIR/RepoChangeLog.txt|grep -q -- --------- ;then
         echo >> $TMPDIR/RepoChangeLog.txt
         echo "==================================" >> $TMPDIR/RepoChangeLog.txt
-        if [ "$SHOW_ZCHANGELOGS" != "no" ];then
+        if [ "$PLUGIN_ZCHANGELOG_SHOW" == "on" ];then
           cat $TMPDIR/RepoChangeLog.txt
         fi
         cat $WORKDIR/RepoChangeLog.txt >> $TMPDIR/RepoChangeLog.txt
@@ -77,3 +90,4 @@ function cleanup(){
   cleanup_orig
 }
 
+fi

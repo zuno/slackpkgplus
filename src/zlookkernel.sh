@@ -1,15 +1,22 @@
 ### Note about ZLookKernel ##
 #
+# slackpkg-15 removed the ability to run lilo after a kernel upgrade since
+# lilo.conf may contains an initrd. Now slackpkg just advice you:
+#    Your kernel image was updated.  Be sure to handle any needed updates
+#    to your bootloader.
 #
-# After a kernel update, it try to rebuild the initrd - if any - and try to
-# reinstall lilo/elilo
+# This plugin try to rebuild the initrd - if any - and try to reinstall lilo
 #
-# To install it run (as root):
-# $ ln -sf /usr/libexec/slackpkg/zlookkernel.sh /usr/libexec/slackpkg/functions.d/
+# Also it supports EFI elilo.
 #
-# To uninstall it run (as root):
-# $ rm /usr/libexec/slackpkg/functions.d/zlookkernel.sh
+# Warning: it works with some common configuration, and may fail with other
+# so user it at your own risk. Before reboot please verify.
 #
+# To use it put PLUGIN_ZLOOKKERNEL=enable
+# in /etc/slackpkg/slackpkgplus.conf
+#
+
+if [ "$PLUGIN_ZLOOKKERNEL" == "enable" ];then
 
 lookkernel() {
   NEWKERNELMD5=$(md5sum /boot/vmlinuz 2>/dev/null)
@@ -77,3 +84,5 @@ lookkernel() {
     fi
   fi
 }
+
+fi
