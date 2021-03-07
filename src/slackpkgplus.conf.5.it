@@ -547,7 +547,7 @@ Leggi le note all'interno del file per ulteriori dettagli.
 .TP  5
 \fB/usr/libexec/slackpkg/functions.d/zlookkerne.sh\fP
 .br
-Questo plugin aggiunge la possibilità di ricostruire l'initrd e di lanciare lilo o EFI lilo ogni volta che viene aggiornato il kernel. Notare che slackpkg-15.0 ha rimosso il lancio automatico di lilo ma da solamente un messaggio di avvertimento. E' disabilitato per default. Per abilitarlo metti \fB\%PLUGIN_ZLOOKKERNEL=\fP\fIenable\fP in configurazione.
+Questo plugin aggiunge la possibilità di ricostruire l'initrd e di lanciare lilo o EFI lilo ogni volta che viene aggiornato il kernel. Notare che slackpkg-15.0 ha rimosso il lancio automatico di lilo ma da solamente un messaggio di avvertimento. E' disabilitato per default. Per abilitarlo metti \fB\%PLUGIN_ZLOOKKERNEL=\fP\fIenable\fP in configurazione. Inoltre puoi aggiungere \fB\%PLUGIN_ZLOOKKERNEL_PROMPT=\fP\fIon\fP per non chiedere conferma ad ogni passo, e \fBPLUGIN_ZLOOKKERNEL_IMAGE=\fP\fI/boot/vmlinuz-generic\fP per scegliere di monitorare questo invece di vmlinuz. Assicurarsi di configurare initrd in lilo.
 Leggi le note all'interno del file per ulteriori dettagli.
 
 .SH NOTE

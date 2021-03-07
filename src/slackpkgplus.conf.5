@@ -550,7 +550,7 @@ Please, read the note into the file for more informations.
 .TP  5
 \fB/usr/libexec/slackpkg/functions.d/zlookkerne.sh\fP
 .br
-Questo plugin add the ability to rebuild the initrd and to run lilo or EFI lilo everytime you upgrade the kernel. Note that slackpkg-15.0 removed the automatic run of lilo replacing it with a simple advice message. It is disabled by default. To enable it put \fB\%PLUGIN_ZLOOKKERNEL=\fP\fIenable\fP in configuration.
+Questo plugin add the ability to rebuild the initrd and to run lilo or EFI lilo everytime you upgrade the kernel. Note that slackpkg-15.0 removed the automatic run of lilo replacing it with a simple advice message. It is disabled by default. To enable it put \fB\%PLUGIN_ZLOOKKERNEL=\fP\fIenable\fP in configuration. Also you can add \fB\%PLUGIN_ZLOOKKERNEL_PROMPT=\fP\fIon\fP to avoid to ask confirm to every step, and \fBPLUGIN_ZLOOKKERNEL_IMAGE=\fP\fI/boot/vmlinuz-generic\fP to monitor it instead vmlinuz.
 Please, read the note into the file for more informations.
 
 .SH NOTES

@@ -601,8 +601,13 @@ enable it by setting the PLUGIN_* variable to 'enabled'. Open the plugin file
 for further defail about the plugin.
 
  - /usr/libexec/slackpkg/functions.d/zlookkernel.sh
-     to allow slackpkg to rebuild your initrd and install lilo.
+     to allow slackpkg to rebuild your initrd and install lilo or elilo.
      enable it with PLUGIN_ZLOOKKERNEL=enable
+     set PLUGIN_ZLOOKKERNEL_PROMPT=off to avoid confirmation at every step
+     set PLUGIN_ZLOOKKERNEL_IMAGE=/boot/vmlinuz-generic to monitor it instead
+     standard vmlinuz image
+     You can also run the plugin directly from cmdline to force rebuild
+     bootloader
 
 - /usr/libexec/slackpkg/functions.d/zchangelog.sh
      to allow slackpkg to create a global changelog in

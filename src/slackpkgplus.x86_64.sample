@@ -151,7 +151,12 @@ MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+15/
 # ZLookKernel can help you to rebuild initrd and reistall lilo/elilo. This feature was
 # removed in slackpkg-15.0. 'enable' this setting to enable it.
 # read /usr/libexec/slackpkg/functions.d/zlookkernel.sh for more information
+# It will ask confirmations at every step, unless you will set 'PLUGIN_ZLOOKKERNEL_PROMPT=off'
+# It will manage /boot/vmlinuz by default; if you use kernel generic, please set
+# the PLUGIN_ZLOOKKERNEL_IMAGE=/boot/vmlinuz-generic to manage it
 #PLUGIN_ZLOOKKERNEL=disable
+#PLUGIN_ZLOOKKERNEL_PROMPT=on
+#PLUGIN_ZLOOKKERNEL_IMAGE=/boot/vmlinuz
 #
 # ZChangeLog track all repository changes everytime you run 'slackpkg update'
 # It write the changelog at /var/lib/slackpkg/RepoChangeLog.txt

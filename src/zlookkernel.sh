@@ -6,8 +6,37 @@
 #    to your bootloader.
 #
 # This plugin try to rebuild the initrd - if any - and try to reinstall lilo
+# Note: it works with common configurations. Custom configurations may
+#       fails, so use it carefully.
 #
 # Also it supports EFI elilo.
+#
+# by default it manage the /boot/vmlinuz image. You have to configure it
+# according your lilo/elilo configuration.
+#
+# It does:
+# - check for vmlinuz modifications
+# - detect for existant /boot/initrd.gz
+# - try to rebuild it by running latest command /boot/initrd-tree/command_line
+# - detect the bootloader:
+#   - elilo: try to detect which file to copy (vmlinuz, vmlinuz-generic,
+#            vmlinuz-huge, initrd.gz) according to /boot/efi/EFI/Slackware/elilo.conf
+#   - lilo: run 'lilo -v'
+#   - grub: advice that slackpkg does not suppport it
+#   - none: advice that no bootloader was found
+#
+# If you are switching from kernel huge to kernel generic be sure to run
+#
+# cd / ; /var/lib/pkgtools/setup/setup.01.mkinitrd
+#
+# and to configure your lilo.conf
+#
+# image = /boot/vmlinuz-generic
+#   initrd = /boot/initrd.gz
+#   root = /dev/xxxxx
+#   label = generic
+#   read-only
+
 #
 # Warning: it works with some common configuration, and may fail with other
 # so user it at your own risk. Before reboot please verify.
@@ -15,13 +44,31 @@
 # To use it put PLUGIN_ZLOOKKERNEL=enable
 # in /etc/slackpkg/slackpkgplus.conf
 #
+# set PLUGIN_ZLOOKKERNEL_PROMPT=off
+# to avoid it ask all confirmations
+#
+# set PLUGIN_ZLOOKKERNEL_IMAGE=/boot/vmlinuz-generic
+# to manage the generic kernel image instead /boot/vmlinuz
+#
+#
+#
+# You can also run it from cmdline to force rebuild the bootloader:
+# /usr/libexec/slackpkg/functions.d/zlookkernel.sh
 
-if [ "$PLUGIN_ZLOOKKERNEL" == "enable" ];then
+if [ "$(basename $0)" == "zlookkernel.sh" ];then
+  PLUGIN_ZLOOKKERNEL=force
+fi
+
+if [ "$PLUGIN_ZLOOKKERNEL" == "enable" ]||[ "$PLUGIN_ZLOOKKERNEL" == "force" ];then
+
+[ -z "$PLUGIN_ZLOOKKERNEL_IMAGE" ]&&PLUGIN_ZLOOKKERNEL_IMAGE=/boot/vmlinuz
+
+ORIKERNELMD5=$(md5sum $PLUGIN_ZLOOKKERNEL_IMAGE 2>/dev/null;ls -Lli $PLUGIN_ZLOOKKERNEL_IMAGE 2>/dev/null; ls -li $PLUGIN_ZLOOKKERNEL_IMAGE 2>/dev/null)
 
 lookkernel() {
-  NEWKERNELMD5=$(md5sum /boot/vmlinuz 2>/dev/null)
-  if [ "$KERNELMD5" != "$NEWKERNELMD5" ]; then
-    KERNEL=$(readlink /boot/vmlinuz | sed 's/.*-\([1-9]\)/\1/')
+  NEWKERNELMD5=$(md5sum $PLUGIN_ZLOOKKERNEL_IMAGE ; ls -Lli $PLUGIN_ZLOOKKERNEL_IMAGE ; ls -li $PLUGIN_ZLOOKKERNEL_IMAGE)
+  if [ "$ORIKERNELMD5" != "$NEWKERNELMD5" ]; then
+    KERNEL=$(readlink $PLUGIN_ZLOOKKERNEL_IMAGE | sed 's/.*-\([1-9]\)/\1/')
     echo -e "\nYour kernel image was updated (found $KERNEL). You have to rebuild the bootloader.\nDo you want slackpkg to do it? (Y/n)"
     answer
     if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
@@ -35,7 +82,7 @@ lookkernel() {
           MKINITRD=$(sed -e "s/ *-k *[^ ]\+//g" -e "s/ *$/ -k $KERNEL/" /boot/initrd-tree/command_line)
           echo "  $MKINITRD"
           echo "Do you want continue? (Y/n)"
-          answer
+          [ "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
           if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
             $MKINITRD
             if [ ! -d "/boot/initrd-tree/lib/modules/$KERNEL" ];then
@@ -50,10 +97,10 @@ lookkernel() {
       if [ -e /boot/efi/EFI/Slackware/elilo.conf ];then
         echo -e "\nFound elilo. Copying files to EFI partition"
         COPYDONE=""
-        for tocopy in vmlinuz vmlinuz-generic vmlinuz-huge `basename $INITRD`;do
+        for tocopy in vmlinuz vmlinuz-generic vmlinuz-huge `basename $PLUGIN_ZLOOKKERNEL_IMAGE` `basename $INITRD`;do
           if [ -e /boot/$tocopy ]&&[ -e /boot/efi/EFI/Slackware/$tocopy ]&&grep -E -q "= *$tocopy *$" /boot/efi/EFI/Slackware/elilo.conf ;then
             echo "Do you want to copy $tocopy to EFI partition? (Y/n)"
-            answer
+	    [ "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
             if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
               cp -v /boot/$tocopy /boot/efi/EFI/Slackware/$tocopy && COPYDONE="$COPYDONE $tocopy"
               touch -r /boot/$tocopy /boot/efi/EFI/Slackware/$tocopy
@@ -66,10 +113,10 @@ lookkernel() {
         fi
       elif [ -x /sbin/lilo ]&&[ -e /etc/lilo.conf ]; then
         echo -e "\nFound lilo. Do you want to run now: /sbin/lilo ? (Y/n)"
-        answer
+	[ "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
         if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
           if ! /sbin/lilo -t ;then
-            echo "You need to fix your lilo configuration. Then press return to continue."
+            echo "You need to fix your lilo configuration NOW. Then press return to continue."
             read
           fi
           /sbin/lilo -v
@@ -84,5 +131,13 @@ lookkernel() {
     fi
   fi
 }
+
+if [ "$PLUGIN_ZLOOKKERNEL" == "force" ];then
+  ORIKERNELMD5=""
+  function answer(){
+    read ANSWER
+  }
+  lookkernel
+fi
 
 fi
