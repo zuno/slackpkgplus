@@ -1,3 +1,16 @@
+Mon Mar  8 21:45:32 CET 2021
+pkg/slackpkg+-1.7.4-noarch-2mt.txz: Rebuilt
+  - doinst.sh does remove CHECKSUMS.md5 instead pkglist
+  - fix slackbuild
+  - shorter pause after some warning
+  - suppress some check-updates warning when run as non-root user
+  - Improved ZLookKernel:
+      Monitor other than vmlinuz (i.e. vmlinuz-generic)
+      Run it from cmdline directly
+      Configure it to ask less confirmation
+      Better documentation (open the zlookkernel.sh to read it)
++-------------------------+
+
 Tue Mar  2 17:31:29 CET 2021
 pkg/slackpkg+-1.7.4-noarch-1mt.txz: Rebuilt
   This release does not introduce feature on the core; just add a section to
