@@ -4,7 +4,7 @@ set -e
 
 TXZ=$(head -2 ChangeLog.txt|cut -f1 -d:|cut -f2 -d/|tail -1)
 VERSION=$(echo $TXZ|cut -f2 -d-)
-BUILD=$(echo $TXZ|cut -f4 -d-|sed 's/.txz//')
+BUILD=$(echo $TXZ|cut -f4 -d-|sed 's/.txz//')$TAG
 
 CWD=`pwd`
 TMP=${TMP:-/tmp}
@@ -18,7 +18,7 @@ if [ repositories.txt -nt repositories.lst ];then
   sleep 5
 fi
 
-INST=$(ls /var/log/packages/slackpkg+-$VERSION-noarch-* 2>/dev/null|true)
+INST=$(ls /var/log/packages/slackpkg+-$VERSION-noarch-* 2>/dev/null||true)
 if [ ! -z "$INST" ];then
   BINST=$(echo $INST|sed 's/.*-//')
   NBUILD=$(echo $BUILD|egrep -o [0-9])
@@ -86,7 +86,7 @@ chmod +x usr/libexec/slackpkg/functions.d/zlookkernel.sh
 chmod +x usr/doc/slackpkg+-$VERSION/setupmultilib.sh
 
 
-makepkg -l y -c y $OUTPUT/$TXZ
+makepkg -l y -c y $OUTPUT/slackpkg+-$VERSION-noarch-$BUILD.txz
 
 
 

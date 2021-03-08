@@ -38,7 +38,7 @@ copy_config_file
 config etc/slackpkg/slackpkgplus.conf.new
 config etc/slackpkg/greylist.new
 config etc/slackpkg/notifymsg.conf.new
-rm -f var/lib/slackpkg/pkglist
+rm -f var/lib/slackpkg/CHECKSUMS.md5*
 
 echo
 echo
