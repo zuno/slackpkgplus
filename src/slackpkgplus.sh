@@ -566,7 +566,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           echo "    'slackpkg file-search' will not work on that"
           echo "    repository"
           echo
-          sleep 3
         fi
       fi
     fi
@@ -811,7 +810,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           echo "    in /etc/slackpkg/slackpkg.conf or use slackpkg with"
           echo "    '-checkgpg=off' : 'slackpkg -checkgpg=off install packge'"
           echo
-          sleep 5
+          sleep 3
         fi
         rm $2-tmp-$PREPO
         echo
@@ -1855,7 +1854,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo
       echo "NOTICE: pkglist is older than 24h; you are encouraged to re-run 'slackpkg update'"
       echo
-      sleep 1
     fi
   fi
   if [ "$CMD" != "update" -a "$CMD" != "check-updates" ];then
@@ -1863,7 +1861,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo
       echo "NOTICE: remember to re-run 'slackpkg update' after modifying slackpkgplus.conf"
       echo
-      sleep 5
     fi
   fi
 
@@ -2291,7 +2288,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     else
       echo "Slackpkg: No updated packages since last check."
       # Suppress the "pkglist is older than 24h" notice
-      touch $WORKDIR/pkglist
+      touch $WORKDIR/pkglist 2>/dev/null
     fi
 
     cleanup
