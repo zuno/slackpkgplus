@@ -144,7 +144,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Get the current exit-code so that we can check if cleanup is
     # called in response of a CTRL+C (ie. $?=130) or not.
     local lEcode=$?
-    local retval=0
+    local retval=${PENDING_UPDATES:-0}
 
     if [ "$CMD" == "info" ];then
       DETAILED_INFO=${DETAILED_INFO:-none}
@@ -2269,6 +2269,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     
     if $UPDATES ; then
       echo "Slackpkg: Updated packages are available since last check." >&2
+      PENDING_UPDATES=1
       
       printf "\n  [ %-24s ] [ %-20s ]\n" "Repository" "Status"
       
