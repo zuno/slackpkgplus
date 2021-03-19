@@ -120,17 +120,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # be applied too.
     #
   function applyblacklist() {
-    # -- This is to prevent silent exclusion of multilib package
-    #    aaa_elflibs-compat32 when /etc/slackpkg/blacklist contains the
-    #    pattern aaa_elflibs.
     if ! $USEBLACKLIST ;then
       >${TMPDIR}/blacklist
     fi
-    grep -vE -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus >${TMPDIR}/blacklist.tmp
-    if [ "$(head -1 ${TMPDIR}/blacklist.tmp|awk '{print $1}')" != "local" ];then
+    cat > ${TMPDIR}/inblacklist
+    grep -vE -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus ${TMPDIR}/inblacklist >${TMPDIR}/outblacklist
+    if [ "$(head -1 ${TMPDIR}/outblacklist|awk '{print $1}')" != "local" ];then
       cat ${TMPDIR}/pkglist-pre
     fi
-    cat ${TMPDIR}/blacklist.tmp
+    cat ${TMPDIR}/outblacklist
     cat $TMPDIR/greylist.* >$TMPDIR/greylist
     grep -qvEw -f $TMPDIR/greylist $TMPDIR/pkglist-pre >$TMPDIR/unchecklist
 
