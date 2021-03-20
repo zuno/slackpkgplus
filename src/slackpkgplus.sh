@@ -107,6 +107,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   ##### ===== BLACKLIST FUNCTIONS === #####
 
+    # Patching makelist() original function to accept pkglist-pre
+  eval "$(type makelist | sed -e $'1d;2c\\\nmakelist()\n' -e 's,cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,')"
+
     # Adds the pattern given by $(1) into the internal blacklist
     # ${TMPDIR}/blacklist.slackpkgplus
     #
@@ -125,9 +128,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     cat > ${TMPDIR}/inblacklist
     grep -vE -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus ${TMPDIR}/inblacklist >${TMPDIR}/outblacklist
-    if [ "$(head -1 ${TMPDIR}/outblacklist|awk '{print $1}')" != "local" ];then
-      cat ${TMPDIR}/pkglist-pre
-    fi
     cat ${TMPDIR}/outblacklist
     cat $TMPDIR/greylist.* >$TMPDIR/greylist
     grep -qvEw -f $TMPDIR/greylist $TMPDIR/pkglist-pre >$TMPDIR/unchecklist
