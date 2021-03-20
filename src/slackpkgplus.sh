@@ -2074,10 +2074,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
         if $MLREPO_SELELECTED ; then
           if [ "$CMD" == "install" ] ; then
-            internal_blacklist "glibc-debug"
+            internal_blacklist "glibc-debug" # glibc-debug no longer exists but this not hurt
           elif [ "$CMD" == "remove" ] ; then
-            internal_blacklist "glibc"
-            internal_blacklist "gcc"
+            internal_blacklist ".*_multilib-x86_64-.*" # slackpkg upgrade-all will remove it
           fi
         fi
 
