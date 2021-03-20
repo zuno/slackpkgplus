@@ -5,6 +5,7 @@ set -e
 TXZ=$(head -2 ChangeLog.txt|cut -f1 -d:|cut -f2 -d/|tail -1)
 VERSION=$(echo $TXZ|cut -f2 -d-)
 BUILD=$(echo $TXZ|cut -f4 -d-|sed 's/.txz//')$TAG
+echo "Building $TXZ"
 
 CWD=`pwd`
 TMP=${TMP:-/tmp}
@@ -21,8 +22,8 @@ fi
 INST=$(ls /var/log/packages/slackpkg+-$VERSION-noarch-* 2>/dev/null||true)
 if [ ! -z "$INST" ];then
   BINST=$(echo $INST|sed 's/.*-//')
-  NBUILD=$(echo $BUILD|egrep -o [0-9])
-  NBINST=$(echo $BINST|egrep -o [0-9])
+  NBUILD=$(echo $BUILD|sed "s/$TAG.*//")
+  NBINST=$(echo $BINST|sed "s/$TAG.*//")
   if [ "$BINST" == "$BUILD" ];then
     echo "WARNING: $INST seems to be installed"
     echo "         remember to change \$VERSION or \$BUILD"
