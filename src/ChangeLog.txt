@@ -1,3 +1,10 @@
+Sat Mar 20 23:01:33 CET 2021
+pkg/slackpkg+-1.7.4-noarch-3mt.txz: Rebuilt
+  - Fix exit code for check-updates (slackpkg 15.0.1); now it return 1 if
+    there are updates available
+  - Fix an incompatibility with dir:// repository and slackpkg 15.0.1
++-------------------------+
+
 Mon Mar  8 21:45:32 CET 2021
 pkg/slackpkg+-1.7.4-noarch-2mt.txz: Rebuilt
   - doinst.sh does remove CHECKSUMS.md5 instead pkglist
