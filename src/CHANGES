@@ -1,6 +1,6 @@
 = Full Changes list =
 
-== From 1.7 to 1.7.4 ==
+== From 1.7 to 1.7.5 ==
 
 *Configuration file:
 
@@ -11,6 +11,8 @@
 - Added SBOURL to configure the SlackBuild.org repository (search only)
 
 - Added USETERSE to use the --terse mode for pkgtools
+
+- Added TERSESEARCH to show a compact output in search function
 
 - Added PROXY to specify a proxy server
 

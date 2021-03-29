@@ -108,6 +108,7 @@ Here is the list of available settings:
 .ds 1 SHOWORDER\t\t\t\tstring\t\tpackage\tno
 .ds 2 DETAILED_INFO\t\t\tstring\t\tnone\t\tyes
 .ds 3 ENABLENOTIFY\t\t\ton/off\t\toff\t\tno
+.ds 4 TERSESEARCH\t\t\t\ton/off/tiny\t\ton\t\tyes
 .in +2
 \*1
 .br
@@ -461,6 +462,20 @@ Some packages require some post-installation activities to be done manually; for
 Setting \fB\%ENABLENOTIFY\fP=\fIon\fP you enable a notification system but it must be configured appropriately.
 
 See the documentation and the file \fB\%notifymsg.conf\fP for details.
+
+.TP  5
+\fBTERSESEARCH\fP
+.br
+Show a terse output for \fB\%slackpkg\ search\fP.
+.br
+Replace first column with sometime shorter and colorized. Available value are:
+.br
+\fIoff\fP\ )\ No modifications
+.br
+\fIon\fP\ \ )\ [unin] uninstalled, [inst] installed, [upgr] upgrade, [mask] uninstalled/masked
+.br
+\fItiny\fP)\ [-] uninstalled, [I] installed, [U] upgrade, [M] uninstalled/masked
+.br
 
 .SH FILES
 

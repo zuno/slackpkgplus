@@ -108,6 +108,7 @@ Seguono le differenti impostazioni disponibili:
 .ds 1 SHOWORDER\t\t\t\tstringa\t\tpackage\tno
 .ds 2 DETAILED_INFO\t\t\tstringa\t\tnone\t\tsi
 .ds 3 ENABLENOTIFY\t\t\ton/off\t\toff\t\tno
+.ds 4 TERSESEARCH\t\t\t\ton/off/tiny\t\ton\t\tyes
 .in +2
 \*1
 .br
@@ -459,6 +460,20 @@ Alcuni pacchetti richiedono alcune attività di post-installazione da fare manual
 Impostando \fB\%ENABLENOTIFY\fP=\fIon\fP si abilita un sistema di notifiche che però va configurato opportunamente.
 
 Vedi la documentazione e il file \fB\%notifymsg.conf\fP per i dettagli.
+
+.TP  5
+\fBTERSESEARCH\fP
+.br
+Imposta un output più pulito per \fB\%slackpkg\ search\fP.
+.br
+Mette nella prima colonna sigle più corte e colorate. I valori possibili sono:
+.br
+\fIoff\fP\ )\ Nessuna modifica
+.br
+\fIon\fP\ \ )\ [unin] uninstalled, [inst] installed, [upgr] upgrade, [mask] uninstalled/masked
+.br
+\fItiny\fP)\ [-] uninstalled, [I] installed, [U] upgrade, [M] uninstalled/masked
+.br
 
 .SH FILES
 

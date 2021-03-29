@@ -1,3 +1,9 @@
+Mon Mar 29 21:19:36 CEST 2021
+pkg/slackpkg+-1.7.5-noarch-1mt.txz: Rebuilt
+  - Added TERSESEARCH to show a compact output in search function (thanks to
+    edrozenberg)
++-------------------------+
+
 Sat Mar 20 23:01:33 CET 2021
 pkg/slackpkg+-1.7.4-noarch-3mt.txz: Rebuilt
   - Fix exit code for check-updates (slackpkg 15.0.1); now it return 1 if
