@@ -32,9 +32,28 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTDETAILED_INFO=$DETAILED_INFO
   EXTWW_FILE_SEARCH=$WW_FILE_SEARCH
   EXTUSETERSE=$USETERSE
+  EXTTERSESEARCH=$TERSESEARCH
   EXTPROXY=$PROXY
 
+  # Color escape codes
+  c_blk='\033[1;30m'
+  c_red='\033[1;31m'
+  c_grn='\033[1;32m'
+  c_yel='\033[1;33m'
+  c_blu='\033[1;34m'
+  c_mag='\033[1;35m'
+  c_cyn='\033[1;36m'
+  c_gry='\033[1;90m'
+  c_wht='\033[1;67m'
+  c_hid='\033[8m'
+  c_off='\033[0m'
+
   . $CONF/slackpkgplus.conf
+
+  c_upgr="${c_upgr:-$c_red}"
+  c_inst="${c_inst:-$c_grn}"
+  c_mask="${c_mask:-$c_gry}"
+  c_unin="${c_unin:-$c_blu}"
 
   GREYLIST=${EXTGREYLIST:-$GREYLIST}
   ALLOW32BIT=${EXTALLOW32BIT:-$ALLOW32BIT}
@@ -51,6 +70,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   DETAILED_INFO=${EXTDETAILED_INFO:-$DETAILED_INFO}
   WW_FILE_SEARCH=${EXTWW_FILE_SEARCH:-$WW_FILE_SEARCH}
   USETERSE=${EXTUSETERSE:-$USETERSE}
+  TERSESEARCH=${EXTTERSESEARCH:-$TERSESEARCH}
   PROXY=${EXTPROXY:-$PROXY}
 
   if [ "$PROXY" == "off" ];then
@@ -1266,7 +1286,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local PNAME
 
     {
-    echo "[ Status#] [ Repository#] [ Package# ]"
+    [ "$TERSESEARCH" == "off" ] && echo "[ Status#] [ Repository#] [ Package# ]"
 
     INSTPKGS="$(ls -f $ROOT/var/log/packages/)"
 
@@ -1315,8 +1335,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
             # If installed is it uptodate?
             if [ "${CINSTPKG}" = "${RAWNAME}" ]; then
-              STATUS="installed"
-              echo "  $STATUS#    $REPO#    $CINSTPKG"
+	      if [ "$TERSESEARCH" == "off" ];then
+		echo "  installed#    $REPO#    $CINSTPKG"
+	      elif [ "$TERSESEARCH" == "tiny" ];then
+		echo -e "[${c_inst}I${c_off}]#$REPO#:#$CINSTPKG"
+	      else
+		echo -e "[${c_inst}inst${c_off}]#$REPO#:#$CINSTPKG"
+	      fi
             else
 
               INSTPKG_REPO=$(grep -m 1 " $CINSTPKG " ${WORKDIR}/pkglist | cut -f1 -d" " | sed "s/SLACKPKGPLUS_//")
@@ -1325,13 +1350,25 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                 CINSTPKG="$INSTPKG_REPO:$CINSTPKG"
               fi
 
-              STATUS="upgrade"
-              echo "  $STATUS#    $REPO#    $CINSTPKG --> ${RAWNAME}"
+	      if [ "$TERSESEARCH" == "off" ];then
+		echo "  upgrade#    $REPO#    $CINSTPKG --> ${RAWNAME}"
+	      elif [ "$TERSESEARCH" == "tiny" ];then
+		echo -e "[${c_upgr}U${c_off}]#$REPO#:#$CINSTPKG --> ${RAWNAME}"
+	      else
+		echo -e "[${c_upgr}upgr${c_off}]#$REPO#:#$CINSTPKG --> ${RAWNAME}"
+	      fi
+
             fi
           fi
         done
       else
-        echo "  $STATUS#    $REPO#    ${RAWNAME}"
+	if [ "$TERSESEARCH" == "off" ];then
+	  echo "  $STATUS#    $REPO#    ${RAWNAME}"
+	elif [ "$TERSESEARCH" == "tiny" ];then
+	  echo -e "[$(echo $STATUS|sed -e "s/uninstalled(masked)/\\${c_mask}M\\${c_off}/" -e "s/uninstalled/\\${c_unin}-\\${c_off}/")]#$REPO#:#${RAWNAME}"
+	else
+	  echo -e "[$(echo $STATUS|sed -e "s/uninstalled(masked)/\\${c_mask}mask\\${c_off}/" -e "s/uninstalled/\\${c_unin}unin\\${c_off}/")]#$REPO#:#${RAWNAME}"
+	fi
       fi
     done|sort
     echo -en "\r" >&2
