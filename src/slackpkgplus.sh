@@ -1139,13 +1139,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     SEARCHSTR=$@
 
-    grep -vE "(^#|^[[:blank:]]*$)" ${CONF}/blacklist > ${TMPDIR}/blacklist
-    if echo $CMD | grep -q install ; then
-      ( cd $ROOT/ ; ls -1 ./var/log/packages/* ) | awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
-    else
-      ( cd $ROOT/ ; ls -1 ./var/log/packages/* ) | awk -f /usr/libexec/slackpkg/pkglist.awk | applyblacklist > ${TMPDIR}/tmplist
-    fi
-    cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
+    printf "%s\n" $ROOT/var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
+    sed -i 's/^^/:/' $TMPDIR/blacklist
+    cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist
 
     touch ${TMPDIR}/waiting
     echo -n "Looking for $PATTERN in package list. Please wait... "
@@ -1265,7 +1261,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     rm ${TMPDIR}/waiting
     rm -f $PKGLIST $PKGINFOS
 
-    LIST=$(echo -e $LIST | tr \  "\n" | uniq )
+    LIST=$( printf "%s\n" $LIST | applyblacklist | sort | uniq )
 
     echo -e "DONE\n"
   } # END function searchPackages()
@@ -1985,6 +1981,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       )
     fi
   done
+
+  if [ -e $TMPDIR/blacklist ];then
+    sed -i 's/^/^/' $TMPDIR/blacklist
+  fi
 
   touch ${TMPDIR}/priority.filters
 
