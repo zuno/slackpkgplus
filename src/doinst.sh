@@ -38,12 +38,4 @@ copy_config_file
 config etc/slackpkg/slackpkgplus.conf.new
 config etc/slackpkg/greylist.new
 config etc/slackpkg/notifymsg.conf.new
-rm -f var/lib/slackpkg/CHECKSUMS.md5*
-
-echo
-echo
-echo "Please, read the README file before using slackpkg+"
-echo
-echo "Now you must rerun 'slackpkg update'"
-echo
 
