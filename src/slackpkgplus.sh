@@ -17,6 +17,7 @@ CLOG_SEPREGEX="^[+][-]+[+][ ]*$"
 
 if [ -e $CONF/slackpkgplus.conf ];then
   # You can override GREYLIST WGETOPTS SLACKPKGPLUS VERBOSE USEBL ALLOW32BIT SENSITIVE_SEARCH from command-line
+  EXTLEGACYBL=$LEGACYBL
   EXTGREYLIST=$GREYLIST
   EXTALLOW32BIT=$ALLOW32BIT
   EXTSLACKPKGPLUS=$SLACKPKGPLUS
@@ -55,6 +56,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   c_mask="${c_mask:-$c_gry}"
   c_unin="${c_unin:-$c_blu}"
 
+  LEGACYBL=${EXTLEGACYBL:-$LEGACYBL}
   GREYLIST=${EXTGREYLIST:-$GREYLIST}
   ALLOW32BIT=${EXTALLOW32BIT:-$ALLOW32BIT}
   SLACKPKGPLUS=${EXTSLACKPKGPLUS:-$SLACKPKGPLUS}
@@ -128,7 +130,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   ##### ===== BLACKLIST FUNCTIONS === #####
 
     # Patching makelist() original function to accept pkglist-pre
-  eval "$(type makelist | sed -e $'1d;2c\\\nmakelist()\n' -e 's,cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,')"
+  eval "$(type makelist | sed -e $'1d;2c\\\nmakelist()\n' -e 's,cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist,')"
 
     # Adds the pattern given by $(1) into the internal blacklist
     # ${TMPDIR}/blacklist.slackpkgplus
@@ -147,7 +149,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       >${TMPDIR}/blacklist
     fi
     cat > ${TMPDIR}/inblacklist
-    grep -vE -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus ${TMPDIR}/inblacklist >${TMPDIR}/outblacklist
+    grep -vE ${BLKLOPT} -f ${TMPDIR}/blacklist -f ${TMPDIR}/blacklist.slackpkgplus ${TMPDIR}/inblacklist >${TMPDIR}/outblacklist
     cat ${TMPDIR}/outblacklist
     cat $TMPDIR/greylist.* >$TMPDIR/greylist
     grep -qvEw -f $TMPDIR/greylist $TMPDIR/pkglist-pre >$TMPDIR/unchecklist
@@ -1141,7 +1143,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     printf "%s\n" $ROOT/var/log/packages/* | awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
     sed -i 's/^^/:/' $TMPDIR/blacklist
-    cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist
+    cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
 
     touch ${TMPDIR}/waiting
     echo -n "Looking for $PATTERN in package list. Please wait... "
@@ -1984,6 +1986,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   if [ -e $TMPDIR/blacklist ];then
     sed -i 's/^/^/' $TMPDIR/blacklist
+  fi
+  if [ "$LEGACYBL" == "on" ];then
+    BLKLOPT=-w
+    grep -vE "(^#|^[[:blank:]]*$)" ${CONF}/blacklist > ${TMPDIR}/blacklist
   fi
 
   touch ${TMPDIR}/priority.filters
