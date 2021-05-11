@@ -506,7 +506,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   ##### ====== CORE FUNCTION ====== ######
     # Extends getpkg() original function
     # (rename getpkg -> getpkg_old, then redefine getpkg to call it)
-  eval "$(type getpkg | sed -e $'1d;2c\\\ngetpkg_old()\n' -e 's/Upgrading /Upgrading $5 => [$4]:/' -e 's/Installing /Installing [$4]:/')"
+  eval "$(type getpkg | sed -e $'1d;2c\\\ngetpkg_old()\n' -e 's/Upgrading /Upgrading $5 => [$4]:/' -e 's/Installing /Installing [$4]:/' -e 's/nPackage/tPackage/g')"
   function getpkg(){
     local c
     local q
@@ -1724,7 +1724,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         cleanup
       else
         SHOWLIST="$1"
-        continue
       fi
     } # END function showlist()
 
@@ -1779,7 +1778,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  SPKGPLUS_VERSION="1.7.5"
+  SPKGPLUS_VERSION="1.7.6"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   if [ ${VERSION:0:4} == "2.82" ];then

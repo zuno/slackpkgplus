@@ -1,3 +1,10 @@
+Wed May 12 00:02:47 CEST 2021
+pkg/slackpkg+-1.7.6-noarch-1mt.txz: Upgrade
+  - Added LEGACYBL to allow slackpkg+ to use the previous blacklist system
+  - Fix 'continue' error message with -dialog=off
+  - Print "Package:" on the same line of progress counter in downloading
++-------------------------+
+
 Mon May  3 10:05:41 CEST 2021
 pkg/slackpkg+-1.7.5-noarch-2mt.txz: Rebuilt
   - Not really need to rerun slackpkg update.
@@ -5,7 +12,7 @@ pkg/slackpkg+-1.7.5-noarch-2mt.txz: Rebuilt
 +-------------------------+
 
 Mon Mar 29 21:19:36 CEST 2021
-pkg/slackpkg+-1.7.5-noarch-1mt.txz: Rebuilt
+pkg/slackpkg+-1.7.5-noarch-1mt.txz: Upgrade
   - Added TERSESEARCH to show a compact output in search function (thanks to
     edrozenberg)
 +-------------------------+
@@ -31,7 +38,7 @@ pkg/slackpkg+-1.7.4-noarch-2mt.txz: Rebuilt
 +-------------------------+
 
 Tue Mar  2 17:31:29 CET 2021
-pkg/slackpkg+-1.7.4-noarch-1mt.txz: Rebuilt
+pkg/slackpkg+-1.7.4-noarch-1mt.txz: Upgrade
   This release does not introduce feature on the core; just add a section to
   configuration file to enable some currently hidden feature.
   - Added plugin section. Now we can enable or disable sperimental plugin
@@ -42,7 +49,7 @@ pkg/slackpkg+-1.7.4-noarch-1mt.txz: Rebuilt
 +-------------------------+
 
 Mon Mar  1 20:40:19 CET 2021
-pkg/slackpkg+-1.7.3-noarch-1mt.txz: Rebuilt
+pkg/slackpkg+-1.7.3-noarch-1mt.txz: Upgrade
   Starting from 1.7.1, slackpkg+ no longer supports Slackware 14.2 (i.e.
   slackpkg-15.0). It advice you to downgrade to 1.7.0. Now we can fix some
   things that can break the backward compatibility.
@@ -59,7 +66,7 @@ pkg/slackpkg+-1.7.2-noarch-2mt.txz: Rebuilt
 +-------------------------+
 
 Wed Feb 24 22:07:25 CET 2021
-pkg/slackpkg+-1.7.2-noarch-1mt.txz: Rebuilt
+pkg/slackpkg+-1.7.2-noarch-1mt.txz: Upgrade
   It's the time to summarize all changes.
   As always, a big thanks goes to phenixia2003 and all other contributor
   Now we can summarise the changes. You can find a full list in the CHANGES
@@ -89,7 +96,7 @@ pkg/slackpkg+-1.7.2-noarch-1mt.txz: Rebuilt
 +-------------------------+
 
 Mon Feb 15 21:14:31 CET 2021
-pkg/slackpkg+-1.7.1-noarch-1mt.txz: Rebuilt
+pkg/slackpkg+-1.7.1-noarch-1mt.txz: Upgrade
   - This is a temporary release
   - Slackpkg+ devel no longer supports slackware 14.2
 +-------------------------+
@@ -183,7 +190,7 @@ pkg/slackpkg+-1.7.0d1-noarch-2mt.txz: Rebuilt
 +-------------------------+
 
 Sun Oct  2 13:55:26 CEST 2016
-pkg/slackpkg+-1.7.0d1-noarch-1mt.txz: Rebuilt
+pkg/slackpkg+-1.7.0d1-noarch-1mt.txz: Upgrade
   - Added SBo support. This does not replace sbopkg. It just search in
     SlackBuilds.org and report the url to download to build and install
     packages yourself.
