@@ -460,6 +460,34 @@ Do not forget to install the multilibs.
 
 -----
 
+BLACKLIST
+
+Slackpkg+ uses the same slackpkg system. See /etc/slackpkg/blacklist for details.
+Starting from slackpkg 15, the new system was improved. To blacklist a package
+you have to put its entire name, so 'kernel' does not blacklist 'kernel-modules',
+or a regular expression to match it, as 'kernel-.*'. Also you can blacklist an
+entire package series specifing  the entire name followed by /, as 'kde/'.
+In this way you are more sure to exclude exactly the packages you want.
+
+However this may be inefficient with third party repository.
+You can set LEGACYBL=on to allow slackpkg+ to use the previous (14.2) blacklist system.
+It apply a regex to the entire pkglist row with 'grep -wE'. A row is similar to
+
+SLACKPKGPLUS_slackpkgplus slackpkg+ 1.7.5 noarch 2mt slackpkg+-1.7.5-noarch-2mt ./SLACKPKGPLUS_slackpkgplus/pkg txz
+
+consider that to avoid false positive.
+Test your blacklist file with the command:
+$ grep -wE -f <(grep -v ^$ /etc/slackpkg/blacklist) /var/lib/slackpkg/pkglist
+
+You can use USEBL=off to totally disable blacklist.
+
+Also you can use both settings as temporary from cmdlisne
+
+USEBL=off slackpkg search kernel
+LEGACYBL=on slackpkg search kernel
+
+-----
+
 GREYLIST
 
 Sometime you may want that slackpkg+ does not install some package in the upgrade-all

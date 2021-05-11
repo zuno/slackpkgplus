@@ -3,9 +3,9 @@
 #
 # You can greylist using regular expressions.
 #
-# Don't use *full* regex here, because all of the following
-# will be checked for the regex: series, name, version, arch,
-# build, fullname and repository name.
+# Note that the regex will be applied with the command 'grep -wE'
+# at the entire pkglist row
+# SLACKPKGPLUS_slackpkgplus slackpkg+ 1.7.5 noarch 2mt slackpkg+-1.7.5-noarch-2mt ./SLACKPKGPLUS_slackpkgplus/pkg txz
 #
 # Also you may want to greylist ALL slackpkgplus repository;
 # useful if you want to run slackpkg install alienbob and select

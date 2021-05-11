@@ -37,6 +37,12 @@ ALLOW32BIT=off
 # 'USEBL=off slackpkg upgrade-all'
 USEBL=on
 
+# Enable (on) / Disable (off) the legacy blacklist system ignoring the improvement
+# from slackpkg 15. Some improvement are not useful with thirdy party repositories
+# Note that the legacy system does apply it as regex to the entire pkglist row
+# repository, name, version, arch, build, fullname, series/path, extension.
+LEGACYBL=off
+
 # Add custom option to 'wget'.
 # You can solve the repository indisponibility issue by set a timeout here
 WGETOPTS="--timeout=20 --tries=2"
