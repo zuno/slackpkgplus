@@ -85,10 +85,11 @@ Seguono le differenti impostazioni disponibili:
 \fBImpostazioni di ricerca\fP
 .ds 1 ALLOW32BIT\t\t\ton/off\t\toff\t\tsi
 .ds 2 USEBL\t\t\t\ton/off\t\ton\t\tsi
-.ds 3 GREYLIST\t\t\t\ton/off\t\ton\t\tsi
-.ds 4 SENSITIVE_SEARCH\t\ton/off\t\ton\t\tsi
-.ds 5 WW_FILE_SEARCH\t\t\ton/off\t\ton\t\tsi
-.ds 6 SBOURL\t\t\t\tstringa\t\t-\t\tno
+.ds 3 LEGACYBL\t\t\t\ton/off\t\toff\t\tsi
+.ds 4 GREYLIST\t\t\t\ton/off\t\ton\t\tsi
+.ds 5 SENSITIVE_SEARCH\t\ton/off\t\ton\t\tsi
+.ds 6 WW_FILE_SEARCH\t\t\ton/off\t\ton\t\tsi
+.ds 7 SBOURL\t\t\t\tstringa\t\t-\t\tno
 .in +2
 \*1
 .br
@@ -101,6 +102,8 @@ Seguono le differenti impostazioni disponibili:
 \*5
 .br
 \*6
+.br
+\*7
 .in
 
 
@@ -360,6 +363,15 @@ Per esempio in slackpkg si possono blacklistare i pacchetti di internazionalizza
 .in +4
 USEBL=off slackpkg install kde-l10n-it
 .in
+
+.TP  5
+\fBLEGACYBL\fP
+.br
+Slackpkg 15.0.2 introduce un nuovo sistema di blacklist che potrebbe non funzionare correttamente con i repository di terze parti.
+
+Impostando \fBLEGACYBL\fP=\fIon\fP, slackpkg+ utilizzerà il sistema di blacklist di Slackware 14.2
+
+Questa vecchia sintassi effettua \fBgrep\ \-wE\fP in pkglist della regex specificate.
 
 .TP  5
 \fBGREYLIST\fP
