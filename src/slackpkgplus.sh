@@ -561,7 +561,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if echo $URLFILE | grep -q "^file://" ; then
       URLFILE=${URLFILE:6}
       if [ -f $URLFILE ];then
-        cp -v $URLFILE $2
+        echo -e "\tLinking $URLFILE"
+        ln -s $URLFILE $2
       else
         return 1
       fi
@@ -611,7 +612,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     if [ $(basename $1) = "CHECKSUMS.md5.asc" -a ! -e $TMPDIR/signaturedownloaded ];then
-      cp ${TMPDIR}/CHECKSUMS.md5.asc ${TMPDIR}/CHECKSUMS.md5-slackware.asc
+      mv ${TMPDIR}/CHECKSUMS.md5.asc ${TMPDIR}/CHECKSUMS.md5-slackware.asc
+      cp ${TMPDIR}/CHECKSUMS.md5-slackware.asc ${TMPDIR}/CHECKSUMS.md5.asc
       for PREPO in ${REPOPLUS[*]};do
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5.asc
         if echo $URLFILE | grep -q "dir:/" ; then
@@ -620,7 +622,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         echo -n "SLACKPKGPLUS_$PREPO[MD5] " >> ${TMPDIR}/CHECKSUMS.md5.asc
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc 2>/dev/null
+          echo -e "\tLinking $URLFILE"
+          ln -s $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
           md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
           continue
         fi
@@ -687,7 +690,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
           if echo $URLFILE | grep -q "^file://" ; then
             URLFILE=${URLFILE:6}
-            cp -v $URLFILE ${TMPDIR}/$CLOGNAM 2>/dev/null
+            echo -e "\tLinking $URLFILE"
+            ln -s $URLFILE ${TMPDIR}/$CLOGNAM
           else
             if [ $VERBOSE -gt 2 ];then
               $DOWNLOADER ${TMPDIR}/$CLOGNAM $URLFILE
@@ -726,7 +730,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          cp -v $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO 2>/dev/null
+          echo -e "\tLinking $URLFILE"
+          ln -s $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO
         elif echo $URLFILE | grep -q "^dir:/" ; then
           touch ${TMPDIR}/CHECKSUMS.md5-$PREPO
           continue
@@ -811,7 +816,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          cp -v $URLFILE $2-tmp-$PREPO 2>/dev/null
+          echo -e "\tLinking $URLFILE"
+          ln -s $URLFILE $2-tmp-$PREPO
         elif echo $URLFILE |grep -q "dir:/";then
           continue
         else
