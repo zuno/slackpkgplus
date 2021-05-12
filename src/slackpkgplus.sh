@@ -564,7 +564,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         echo -e "\tLinking $URLFILE"
         ln -s $URLFILE $2
       else
-        return 1
+        echo -e "\tNot found $URLFILE"
+        false
       fi
     elif echo $URLFILE|grep -q -E dir:/.*asc$;then
       return 0
