@@ -1826,6 +1826,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     touch $WORKDIR/install.log
   fi
 
+  if [ -e $TEMP ];then
+    # clean cache from packages without gpg signature
+    find $TEMP ! -type d|sort|tac|awk '{if($1~/\.asc$/)f[$1]++;if($1~/\.t.z$/ && !f[$1".asc"])print $1}' |xargs -r rm -f
+  fi
+
   if [ "$CMD" == "update" -o "$CMD" == "check-updates" ];then
     # answer to "Do you really want to download all other files"
     # if there are new changes
