@@ -746,12 +746,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               awk '{print "00000000000000000000000000000000  ./"$NF}' > ${TMPDIR}/CHECKSUMS.md5-$PREPO
           fi
         else
-	  if [ -e ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc ];then
+          if [ -e ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc ];then
             $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5.gz
-	    zcat ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz >${TMPDIR}/CHECKSUMS.md5-$PREPO
-	  else
+            zcat ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz >${TMPDIR}/CHECKSUMS.md5-$PREPO
+          else
             $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
-	  fi
+          fi
         fi
         if [ ! -s ${TMPDIR}/CHECKSUMS.md5-$PREPO ];then
           echo
@@ -773,7 +773,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           grep " \./$PREPO/" ${TMPDIR}/CHECKSUMS.md5 >> ${TMPDIR}/CHECKSUMS.md5-merged
         done
       else
-	cp ${TMPDIR}/CHECKSUMS.md5 ${TMPDIR}/CHECKSUMS.md5-merged
+        cp ${TMPDIR}/CHECKSUMS.md5 ${TMPDIR}/CHECKSUMS.md5-merged
       fi
       X86_64=$(ls $ROOT/var/log/packages/aaa_base*x86_64* 2>/dev/null|head -1)
       for PREPO in ${REPOPLUS[*]};do
@@ -788,7 +788,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         #egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "$FILTEREXCLUDE" |sed -r -e "s# \./# ./SLACKPKGPLUS_$PREPO/#" -e 's#^(.*)/([^/]+)$#\2 \1/\2#'|sort -rn|cut -f2- -d" " >> ${TMPDIR}/CHECKSUMS.md5
       done
       if [ "$CHECKGPG" != "on" ];then
-	mv ${TMPDIR}/CHECKSUMS.md5-merged ${TMPDIR}/CHECKSUMS.md5
+        mv ${TMPDIR}/CHECKSUMS.md5-merged ${TMPDIR}/CHECKSUMS.md5
       fi
     fi
     if [ $(basename $1) = "GPG-KEY" ];then
@@ -858,38 +858,38 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     if [ "$(basename $1)" == "CHECKSUMS.md5" ];then
       for PREPO in ${REPOPLUS[*]};do
-	if [ -e ${TMPDIR}/CHECKSUMS.md5-$PREPO ];then
-	  if [ "$(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO)" == "0" ];then
-	    echo >&2
-	    echo "                        !!! F A T A L !!!" >&2
-	    echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5.gz signature check" >&2
-	    echo "    The file may be corrupted or the gpg key may be not valid." >&2
-	    echo "    Remember to import keys by launching 'slackpkg update gpg'." >&2
-	    echo >&2
-	    sleep 5
-	    echo "Repository '$PREPO' FAILS the CHECKSUMS.md5 signature check." >> $TMPDIR/error.log
-	    echo "Try to run 'slackpkg update gpg' or disable the gpg check" >> $TMPDIR/error.log
-	    echo >> $TMPDIR/error.log
-	    echo 0
-	    return
-	  fi
-	fi
-	if [ -e ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz ];then
-	  if [ "$(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz)" == "0" ];then
-	    echo >&2
-	    echo "                        !!! F A T A L !!!" >&2
-	    echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5 signature check" >&2
-	    echo "    The file may be corrupted or the gpg key may be not valid." >&2
-	    echo "    Remember to import keys by launching 'slackpkg update gpg'." >&2
-	    echo >&2
-	    sleep 5
-	    echo "Repository '$PREPO' FAILS the CHECKSUMS.md5.gz signature check." >> $TMPDIR/error.log
-	    echo "Try to run 'slackpkg update gpg' or disable the gpg check" >> $TMPDIR/error.log
-	    echo >> $TMPDIR/error.log
-	    echo 0
-	    return
-	  fi
-	fi
+        if [ -e ${TMPDIR}/CHECKSUMS.md5-$PREPO ];then
+          if [ "$(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO)" == "0" ];then
+            echo >&2
+            echo "                        !!! F A T A L !!!" >&2
+            echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5.gz signature check" >&2
+            echo "    The file may be corrupted or the gpg key may be not valid." >&2
+            echo "    Remember to import keys by launching 'slackpkg update gpg'." >&2
+            echo >&2
+            sleep 5
+            echo "Repository '$PREPO' FAILS the CHECKSUMS.md5 signature check." >> $TMPDIR/error.log
+            echo "Try to run 'slackpkg update gpg' or disable the gpg check" >> $TMPDIR/error.log
+            echo >> $TMPDIR/error.log
+            echo 0
+            return
+          fi
+        fi
+        if [ -e ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz ];then
+          if [ "$(checkgpg ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz)" == "0" ];then
+            echo >&2
+            echo "                        !!! F A T A L !!!" >&2
+            echo "    Repository '$PREPO' FAILS the CHECKSUMS.md5 signature check" >&2
+            echo "    The file may be corrupted or the gpg key may be not valid." >&2
+            echo "    Remember to import keys by launching 'slackpkg update gpg'." >&2
+            echo >&2
+            sleep 5
+            echo "Repository '$PREPO' FAILS the CHECKSUMS.md5.gz signature check." >> $TMPDIR/error.log
+            echo "Try to run 'slackpkg update gpg' or disable the gpg check" >> $TMPDIR/error.log
+            echo >> $TMPDIR/error.log
+            echo 0
+            return
+          fi
+        fi
       done
     fi
     if [ -e "${1}.asc" ];then
@@ -1340,13 +1340,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
             # If installed is it uptodate?
             if [ "${CINSTPKG}" = "${RAWNAME}" ]; then
-	      if [ "$TERSESEARCH" == "off" ];then
-		echo "  installed#    $REPO#    $CINSTPKG"
-	      elif [ "$TERSESEARCH" == "tiny" ];then
-		echo -e "[${c_inst}I${c_off}]#$REPO#:#$CINSTPKG"
-	      else
-		echo -e "[${c_inst}inst${c_off}]#$REPO#:#$CINSTPKG"
-	      fi
+              if [ "$TERSESEARCH" == "off" ];then
+                echo "  installed#    $REPO#    $CINSTPKG"
+              elif [ "$TERSESEARCH" == "tiny" ];then
+                echo -e "[${c_inst}I${c_off}]#$REPO#:#$CINSTPKG"
+              else
+                echo -e "[${c_inst}inst${c_off}]#$REPO#:#$CINSTPKG"
+              fi
             else
 
               INSTPKG_REPO=$(grep -m 1 " $CINSTPKG " ${WORKDIR}/pkglist | cut -f1 -d" " | sed "s/SLACKPKGPLUS_//")
@@ -1355,25 +1355,25 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                 CINSTPKG="$INSTPKG_REPO:$CINSTPKG"
               fi
 
-	      if [ "$TERSESEARCH" == "off" ];then
-		echo "  upgrade#    $REPO#    $CINSTPKG --> ${RAWNAME}"
-	      elif [ "$TERSESEARCH" == "tiny" ];then
-		echo -e "[${c_upgr}U${c_off}]#$REPO#:#$CINSTPKG --> ${RAWNAME}"
-	      else
-		echo -e "[${c_upgr}upgr${c_off}]#$REPO#:#$CINSTPKG --> ${RAWNAME}"
-	      fi
+              if [ "$TERSESEARCH" == "off" ];then
+                echo "  upgrade#    $REPO#    $CINSTPKG --> ${RAWNAME}"
+              elif [ "$TERSESEARCH" == "tiny" ];then
+                echo -e "[${c_upgr}U${c_off}]#$REPO#:#$CINSTPKG --> ${RAWNAME}"
+              else
+                echo -e "[${c_upgr}upgr${c_off}]#$REPO#:#$CINSTPKG --> ${RAWNAME}"
+              fi
 
             fi
           fi
         done
       else
-	if [ "$TERSESEARCH" == "off" ];then
-	  echo "  $STATUS#    $REPO#    ${RAWNAME}"
-	elif [ "$TERSESEARCH" == "tiny" ];then
-	  echo -e "[$(echo $STATUS|sed -e "s/uninstalled(masked)/\\${c_mask}M\\${c_off}/" -e "s/uninstalled/\\${c_unin}-\\${c_off}/")]#$REPO#:#${RAWNAME}"
-	else
-	  echo -e "[$(echo $STATUS|sed -e "s/uninstalled(masked)/\\${c_mask}mask\\${c_off}/" -e "s/uninstalled/\\${c_unin}unin\\${c_off}/")]#$REPO#:#${RAWNAME}"
-	fi
+        if [ "$TERSESEARCH" == "off" ];then
+          echo "  $STATUS#    $REPO#    ${RAWNAME}"
+        elif [ "$TERSESEARCH" == "tiny" ];then
+          echo -e "[$(echo $STATUS|sed -e "s/uninstalled(masked)/\\${c_mask}M\\${c_off}/" -e "s/uninstalled/\\${c_unin}-\\${c_off}/")]#$REPO#:#${RAWNAME}"
+        else
+          echo -e "[$(echo $STATUS|sed -e "s/uninstalled(masked)/\\${c_mask}mask\\${c_off}/" -e "s/uninstalled/\\${c_unin}unin\\${c_off}/")]#$REPO#:#${RAWNAME}"
+        fi
       fi
     done|sort
     echo -en "\r" >&2
