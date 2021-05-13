@@ -1,3 +1,10 @@
+Thu May 13 22:37:45 CEST 2021
+pkg/slackpkg+-1.7.6-noarch-2mt.txz: Rebuilt
+  - link instead copy for local repositories (thanks to zdolar)
+  - WGETOPTS="-q" works with links too (use it with USETERSE=on)
+  - zlookkernel did not honor PLUGIN_ZLOOKKERNEL_PROMPT=off correctly
++-------------------------+
+
 Wed May 12 00:02:47 CEST 2021
 pkg/slackpkg+-1.7.6-noarch-1mt.txz: Upgrade
   - Added LEGACYBL to allow slackpkg+ to use the previous blacklist system

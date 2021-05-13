@@ -70,7 +70,7 @@ lookkernel() {
   if [ "$ORIKERNELMD5" != "$NEWKERNELMD5" ]; then
     KERNEL=$(readlink $PLUGIN_ZLOOKKERNEL_IMAGE | sed 's/.*-\([1-9]\)/\1/')
     echo -e "\nYour kernel image was updated (found $KERNEL). You have to rebuild the bootloader.\nDo you want slackpkg to do it? (Y/n)"
-    answer
+    [ ! "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
     if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
       INITRD=/boot/initrd.gz
       if [ -e /boot/initrd-tree/command_line ];then
@@ -82,7 +82,7 @@ lookkernel() {
           MKINITRD=$(sed -e "s/ *-k *[^ ]\+//g" -e "s/ *$/ -k $KERNEL/" /boot/initrd-tree/command_line)
           echo "  $MKINITRD"
           echo "Do you want continue? (Y/n)"
-          [ "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
+          [ ! "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
           if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
             $MKINITRD
             if [ ! -d "/boot/initrd-tree/lib/modules/$KERNEL" ];then
@@ -100,7 +100,7 @@ lookkernel() {
         for tocopy in vmlinuz vmlinuz-generic vmlinuz-huge `basename $PLUGIN_ZLOOKKERNEL_IMAGE` `basename $INITRD`;do
           if [ -e /boot/$tocopy ]&&[ -e /boot/efi/EFI/Slackware/$tocopy ]&&grep -E -q "= *$tocopy *$" /boot/efi/EFI/Slackware/elilo.conf ;then
             echo "Do you want to copy $tocopy to EFI partition? (Y/n)"
-            [ "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
+            [ ! "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
             if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
               cp -v /boot/$tocopy /boot/efi/EFI/Slackware/$tocopy && COPYDONE="$COPYDONE $tocopy"
               touch -r /boot/$tocopy /boot/efi/EFI/Slackware/$tocopy
@@ -113,7 +113,7 @@ lookkernel() {
         fi
       elif [ -x /sbin/lilo ]&&[ -e /etc/lilo.conf ]; then
         echo -e "\nFound lilo. Do you want to run now: /sbin/lilo ? (Y/n)"
-        [ "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
+        [ ! "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
         if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
           if ! /sbin/lilo -t ;then
             echo "You need to fix your lilo configuration NOW. Then press return to continue."

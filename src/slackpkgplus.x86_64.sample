@@ -45,6 +45,7 @@ LEGACYBL=off
 
 # Add custom option to 'wget'.
 # You can solve the repository indisponibility issue by set a timeout here
+# Also add "-q" for super terse output (useful with USETERSE=on)
 WGETOPTS="--timeout=20 --tries=2"
 
 # If you want replace wget with another downloader search DOWNLOADCMD in documentation

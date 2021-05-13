@@ -561,7 +561,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if echo $URLFILE | grep -q "^file://" ; then
       URLFILE=${URLFILE:6}
       if [ -f $URLFILE ];then
-        echo -e "\tLinking $URLFILE"
+        [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
         ln -s $URLFILE $2
       else
         echo -e "\tNot found $URLFILE"
@@ -623,7 +623,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         echo -n "SLACKPKGPLUS_$PREPO[MD5] " >> ${TMPDIR}/CHECKSUMS.md5.asc
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          echo -e "\tLinking $URLFILE"
+          [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
           ln -s $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
           md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
           continue
@@ -691,7 +691,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
           if echo $URLFILE | grep -q "^file://" ; then
             URLFILE=${URLFILE:6}
-            echo -e "\tLinking $URLFILE"
+            [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
             ln -s $URLFILE ${TMPDIR}/$CLOGNAM
           else
             if [ $VERBOSE -gt 2 ];then
@@ -731,7 +731,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          echo -e "\tLinking $URLFILE"
+          [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
           ln -s $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO
         elif echo $URLFILE | grep -q "^dir:/" ; then
           touch ${TMPDIR}/CHECKSUMS.md5-$PREPO
@@ -817,7 +817,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          echo -e "\tLinking $URLFILE"
+          [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
           ln -s $URLFILE $2-tmp-$PREPO
         elif echo $URLFILE |grep -q "dir:/";then
           continue
