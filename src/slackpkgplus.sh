@@ -564,8 +564,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
         ln -s $URLFILE $2
       else
-        echo -e "\tNot found $URLFILE"
-        false
+        return 1
       fi
     elif echo $URLFILE|grep -q -E dir:/.*asc$;then
       return 0
@@ -623,9 +622,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         echo -n "SLACKPKGPLUS_$PREPO[MD5] " >> ${TMPDIR}/CHECKSUMS.md5.asc
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
-          ln -s $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
-          md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
+          if [ -f $URLFILE ];then
+            [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
+            ln -s $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc
+            md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
+          else
+            echo -e "\tNot found $URLFILE"
+            echo "invalid" >> ${TMPDIR}/CHECKSUMS.md5.asc
+            false
+          fi
           continue
         fi
         $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc $URLFILE
@@ -691,8 +696,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
           if echo $URLFILE | grep -q "^file://" ; then
             URLFILE=${URLFILE:6}
-            [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
-            ln -s $URLFILE ${TMPDIR}/$CLOGNAM
+            if [ -e $URLFILE ];then
+              [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
+              ln -s $URLFILE ${TMPDIR}/$CLOGNAM
+            fi
           else
             if [ $VERBOSE -gt 2 ];then
               $DOWNLOADER ${TMPDIR}/$CLOGNAM $URLFILE
@@ -731,8 +738,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
-          ln -s $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO
+          if [ -f $URLFILE ];then
+            [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
+            ln -s $URLFILE ${TMPDIR}/CHECKSUMS.md5-$PREPO
+          else
+            echo -e "\tNot found $URLFILE"
+            false
+          fi
         elif echo $URLFILE | grep -q "^dir:/" ; then
           touch ${TMPDIR}/CHECKSUMS.md5-$PREPO
           continue
@@ -817,8 +829,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}GPG-KEY
         if echo $URLFILE | grep -q "^file://" ; then
           URLFILE=${URLFILE:6}
-          [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
-          ln -s $URLFILE $2-tmp-$PREPO
+          if [ -f $URLFILE ];then
+            [[ "$FLAG" == "-q" || ! "$WGETOPTS" =~ -q ]]&&echo -e "\tLinking $URLFILE"
+            ln -s $URLFILE $2-tmp-$PREPO
+          else
+            echo -e "\tNot found $URLFILE"
+            false
+          fi
         elif echo $URLFILE |grep -q "dir:/";then
           continue
         else
