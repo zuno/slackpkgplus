@@ -482,7 +482,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         rm -f $CACHEDIR/$CACHEFILE $CACHEDIR/$CACHEFILE.head 2>/dev/null
       fi
       echo -n " Downloading... "
-      [ $VERBOSE -gt 1 ]&&echo
+      [[ "$WGETOPTS $FLAG" =~ -q ]]||echo
       $CACHEDOWNLOADER $1 $SRCURL
       ERR=$?
       echo
@@ -1976,7 +1976,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       FLAG=""
       if [ "$CMD" = "update" ];then
         [ $VERBOSE -lt 2 ]&&FLAG="-nv"
-        [ "$CACHEUPDATE" = "on" ]&&FLAG="-q"
+        [ $VERBOSE -lt 2 ]&&[ "$CACHEUPDATE" = "on" ]&&FLAG="-q"
       else
         [ $VERBOSE -lt 1 ]&&FLAG="-nv"
       fi
