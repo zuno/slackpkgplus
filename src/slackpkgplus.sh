@@ -517,6 +517,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     return $?
   } # END function getpkg()
 
+    # Override the get_gpg_key to rollback slackpkg 15.0.5 gpg-key import method
+  function get_gpg_key(){
+    getfile ${SOURCE}GPG-KEY $TMPDIR/gpgkey
+  }
+
     # Override the slackpkg getfile().
     # The new getfile() download all file needed from all defined repositories
     # then merge all in a format slackpkg-compatible
