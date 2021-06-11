@@ -92,9 +92,7 @@
      1 => WARNING! One or more errors occurred while slackpkg was running
      2 => FATAL! Some operation has failed and need attention
 
-- Bash completation enabled by default
-     note that you need to install bash_completation
-        slackpkg install bash_completation
+- Bash completation removed (already included in slackpkg)
 
 - Works with slackpkg-15
      Unfortunately it does not work if $ROOT is non-empty

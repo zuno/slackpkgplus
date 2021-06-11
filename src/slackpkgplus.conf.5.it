@@ -550,11 +550,6 @@ Script utilizzabile per configurare slackpkg+ per installare le multilib di alie
 Lo SlackBuild di slackpkg+. Da usare solo per consultazione; il lancio fuori della directory dei sorgenti fallirà.
 .in
 
-\fBslackpkg.bash_completion\fP:
-.in +5
-Se hai il pacchetto \fB\%bash-completion\fP preso dal repository \fBextra\fP di slackware avrai automaticamente attiva la funzione di autocompletamento di bash con slackpkg (effettua anche le ricerche nel pkglist).
-.in
-
 \fBslackpkgplus.x86.sample\fP:
 .in +5
 Il file di configurazione di esempio per le architetture a 32bit.
