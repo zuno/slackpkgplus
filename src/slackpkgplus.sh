@@ -452,7 +452,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       GPG-KEY) TOCACHE=0 ; CURREPO=${1/*gpgkey-tmp-/};;
       FILELIST.TXT) TOCACHE=1 ;;
       SLACKBUILDS.TXT.gz) TOCACHE=1 ; CURREPO=SBo ;;
-      slackbuilds-current-*.tar.gz) TOCACHE=0 ; CURREPO=SBo ;;
+      slackbuilds-current-*.tar.gz) TOCACHE=0 ; CURREPO=SBo-cur ;;
     esac
     if [ -z "$CURREPO" ]; then
       CURREPO=slackware
@@ -598,7 +598,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     if [ $(basename $1) = "FILELIST.TXT" ];then
-      if echo "$SBOURL"|grep -q SLACKBUILDS.TXT.gz ;then
+      if [ ! -z "$SBOURL" ];then
         SBOURL=${SBOURL%/}/
         $DOWNLOADER $TMPDIR/SLACKBUILDS.TXT.gz ${SBOURL}SLACKBUILDS.TXT.gz
         zcat $TMPDIR/SLACKBUILDS.TXT.gz |awk '{
@@ -608,12 +608,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                                                 if($1=="")            print name,version,location
                                               }' > $WORKDIR/sbolist
       fi
-      if echo "$SBOURL"|grep -q ponce;then
-        SBOURL=${SBOURL%/}/
-        SBOtag=$(basename $(curl -s $SBOURL|grep "/slackbuilds/tag/?h=" |head -1|grep -oE "href='[^']+'"|cut -f2 -d"'"|grep tar.gz))
-        SBOlast=$(cat $WORKDIR/sbolist.tag 2>/dev/null)
+      if [ ! -z "$SBOCUR" ];then
+        SBOCUR=${SBOCUR%/}/
+        SBOtag=$(basename $(curl -s $SBOCUR|grep "/slackbuilds/tag/?h=" |head -1|grep -oE "href='[^']+'"|cut -f2 -d"'"|grep tar.gz))
+        SBOlast=$(cat $WORKDIR/sbolistcur.tag 2>/dev/null)
         if echo $SBOtag|grep -q slackbuilds-current-.*tar.gz && [ "$SBOtag" != "$SBOlast" ];then
-          $DOWNLOADER $TMPDIR/$SBOtag ${SBOURL}snapshot/$SBOtag
+          $DOWNLOADER $TMPDIR/$SBOtag ${SBOCUR}snapshot/$SBOtag
           (
             cd $TMPDIR
             tar xf $TMPDIR/*$SBOtag
@@ -621,8 +621,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             find . -name \*.info|while read SBOinfo;do
               source $SBOinfo
               echo $PRGNAM $VERSION $(dirname $SBOinfo)
-            done > $WORKDIR/sbolist
-            echo $SBOtag > $WORKDIR/sbolist.tag
+            done > $WORKDIR/sbolistcur
+            echo $SBOtag > $WORKDIR/sbolistcur.tag
           )
         fi
       fi
@@ -2270,7 +2270,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           searchlistEX "$LIST"
           echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"
         fi
-        if echo "$SBOURL"|grep -q SLACKBUILDS.TXT.gz ;then
+        if [ ! -z "$SBOURL" ];then
           SBORESULT="$(grep -E -i "^[^ ]*$PATTERN" $WORKDIR/sbolist 2>/dev/null|sed -e 's/ /-/' -e "s#\./#$SBOURL#" -e 's/$/.tar.gz/')"
           if [ ! -z "$SBORESULT" ];then
             echo
@@ -2280,11 +2280,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             echo
           fi
         fi
-        if echo "$SBOURL"|grep -q ponce;then
-          SBORESULT="$(grep -E -i "^[^ ]*$PATTERN" $WORKDIR/sbolist 2>/dev/null|sed -e 's/ /-/' -e "s#\./#${SBOURL}plain/#" -e 's#$#/#')"
+        if [ ! -z "$SBOCUR" ];then
+          SBORESULT="$(grep -E -i "^[^ ]*$PATTERN" $WORKDIR/sbolistcur 2>/dev/null|sed -e 's/ /-/' -e "s#\./#${SBOCUR}plain/#" -e 's#$#/#')"
           if [ ! -z "$SBORESULT" ];then
             echo
-            echo "Also found in SBo (download it with 'wget -r -np'):"
+            echo "Also found in SBo-current (download it with 'wget -r -np'):"
             echo
             echo -e "[package] [url]\n$SBORESULT"|column -t|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "$PATTERN" -e ^
             echo
