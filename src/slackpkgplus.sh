@@ -4,6 +4,7 @@
 # A special thanks to all packagers that make slackpkg+ useful
 
 declare -A MIRRORPLUS
+declare -A SBO
 declare -A NOTIFYMSG
 
   # regular expression used to distinguish the 3rd party repositories from the standard slackware directories.
@@ -130,7 +131,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   ##### ===== BLACKLIST FUNCTIONS === #####
 
     # Patching makelist() original function to accept pkglist-pre
-  eval "$(type makelist | sed -e $'1d;2c\\\nmakelist()\n' -e 's,cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist,')"
+  eval "$(type makelist | sed -e $'1d;2c\\\nmakelist()\n' \
+                              -e 's,cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist,' \
+                              -e 's/\(LIST.*pkglist\)\(.*--output-delimiter=.\)/\1 |grep -w -- \"${ARGUMENT}\"\2/'
+
+         )"
 
     # Adds the pattern given by $(1) into the internal blacklist
     # ${TMPDIR}/blacklist.slackpkgplus
@@ -174,6 +179,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     rm -f ${TMPDIR}/waiting
     if [ "$CMD" == "update" ];then
+      if [ -e $TMPDIR/pkglist.sbo ];then
+        cat $TMPDIR/pkglist.sbo >> $WORKDIR/pkglist
+      fi
       if [ "$ANSWER" != "Y" ] && [ "$ANSWER" != "y" ]; then
         touch $WORKDIR/pkglist
       fi
@@ -530,6 +538,48 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local URLFILE
     URLFILE=$1
 
+    if echo $URLFILE|grep -q /SBO_;then
+      local PRGNAM
+      local DESTFILE=$2
+      local NAMEPKG
+      if echo $URLFILE|grep -q "\.\.asc$";then return 0;fi
+      PREPO=$(echo $URLFILE|sed -r 's#^.*/SBO_([^/]+)/.*$#\1#')
+      if [ "$PREPO" == "current" ];then
+        SBO['current']=${SBO['current']}plain/
+      fi
+      NAMEPKG=$(basename $URLFILE .)
+      PRGNAM=$(echo $NAMEPKG|sed "s#-[^-]*-sbo-$PREPO\$##")
+      URLFILE=$(dirname $URLFILE)
+      URLFILE=$(echo $URLFILE|sed "s#^.*/SBO_$PREPO/#${SBO[$PREPO]}#")
+      DESTFILE=$(dirname $DESTFILE)
+      if [ "$PREPO" == "current" ];then
+        rm -rf ${DESTFILE}
+        mkdir -p ${DESTFILE}
+        (
+          cd ${DESTFILE}
+          wget -r -np $WGETOPTS -nv -nH $WGETOPTS $URLFILE/
+          mv slackbuilds/plain/*/$PRGNAM $NAMEPKG
+          rm -f $NAMEPKG/index.html
+          rm -f robots.txt
+          rm -rf slackbuilds/
+          echo "Downloaded in $(readlink -f ${DESTFILE})"
+        )
+      else
+        rm -rf ${DESTFILE}
+        mkdir ${DESTFILE}
+        wget $WGETOPTS -nv ${URLFILE}.tar.gz -O ${DESTFILE}/${PRGNAM}.tar.gz
+        (
+          cd $DESTFILE
+          tar xf ${PRGNAM}.tar.gz
+          mv ${PRGNAM} ${NAMEPKG}
+          rm -f ${PRGNAM}.tar.gz
+          echo "Downloaded in $(readlink -f ${DESTFILE})"
+        )
+      fi
+      return 0
+
+    fi
+
     if [ $(basename $1) = "CHECKSUMS.md5.asc" ];then
       if [ -e $TMPDIR/signaturedownloaded ];then
         echo "                Done."
@@ -598,34 +648,38 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     if [ $(basename $1) = "FILELIST.TXT" ];then
-      if [ ! -z "$SBOURL" ];then
-        SBOURL=${SBOURL%/}/
-        $DOWNLOADER $TMPDIR/SLACKBUILDS.TXT.gz ${SBOURL}SLACKBUILDS.TXT.gz
-        zcat $TMPDIR/SLACKBUILDS.TXT.gz |awk '{
-                                                if($2=="NAME:")       name=$3
-                                                if($2=="LOCATION:")   location=$3
-                                                if($2=="VERSION:")    version=$3
-                                                if($1=="")            print name,version,location
-                                              }' > $WORKDIR/sbolist
-      fi
-      if [ ! -z "$SBOCUR" ];then
-        SBOCUR=${SBOCUR%/}/
-        SBOtag=$(basename $(curl -s $SBOCUR|grep "/slackbuilds/tag/?h=" |head -1|grep -oE "href='[^']+'"|cut -f2 -d"'"|grep tar.gz))
-        SBOlast=$(cat $WORKDIR/sbolistcur.tag 2>/dev/null)
-        if echo $SBOtag|grep -q slackbuilds-current-.*tar.gz && [ "$SBOtag" != "$SBOlast" ];then
-          $DOWNLOADER $TMPDIR/$SBOtag ${SBOCUR}snapshot/$SBOtag
-          (
-            cd $TMPDIR
-            tar xf $TMPDIR/*$SBOtag
-            cd slackbuilds-current*/
-            find . -name \*.info|while read SBOinfo;do
-              source $SBOinfo
-              echo $PRGNAM $VERSION $(dirname $SBOinfo)
-            done > $WORKDIR/sbolistcur
-            echo $SBOtag > $WORKDIR/sbolistcur.tag
-          )
+      touch $TMPDIR/pkglist.sbo
+      for SBOKEY in ${!SBO[*]};do
+        SBOURL=${SBO[$SBOKEY]}
+        if [ "$SBOKEY" == "current" ];then
+          SBOURL=${SBOURL%/}/
+          SBOtag=$(basename $(curl -s $SBOURL|grep "/slackbuilds/tag/?h=" |head -1|grep -oE "href='[^']+'"|cut -f2 -d"'"|grep tar.gz))
+          SBOlast=$(cat $WORKDIR/sbolist_${SBOKEY}.tag 2>/dev/null)
+          if echo $SBOtag|grep -q slackbuilds-current-.*tar.gz && [ "$SBOtag" != "$SBOlast" ];then
+            $DOWNLOADER $TMPDIR/$SBOtag ${SBOURL}snapshot/$SBOtag
+            (
+              cd $TMPDIR
+              tar xf $TMPDIR/*$SBOtag
+              cd slackbuilds-current*/
+              find . -name \*.info|while read SBOinfo;do
+                source $SBOinfo
+                echo $PRGNAM $VERSION $(dirname $SBOinfo)
+              done > $WORKDIR/sbolist_${SBOKEY}
+              echo $SBOtag > $WORKDIR/sbolist_${SBOKEY}.tag
+            )
+          fi
+        else
+          SBOURL=${SBOURL%/}/
+          $DOWNLOADER $TMPDIR/SLACKBUILDS.TXT.gz ${SBOURL}SLACKBUILDS.TXT.gz
+          zcat $TMPDIR/SLACKBUILDS.TXT.gz |awk '{
+                                                  if($2=="NAME:")       name=$3
+                                                  if($2=="LOCATION:")   location=$3
+                                                  if($2=="VERSION:")    version=$3
+                                                  if($1=="")            print name,version,location
+                                                }' > $WORKDIR/sbolist_${SBOKEY}
         fi
-      fi
+        cat $WORKDIR/sbolist_${SBOKEY}|awk '{print "SBO_'$SBOKEY' "$1" "$2" sbo '$SBOKEY' "$1"-"$2"-sbo-'$SBOKEY' "$3}'|sed "s,\./,./SBO_$SBOKEY/," >> $TMPDIR/pkglist.sbo
+      done
     fi
 
     if [ $(basename $1) = "MANIFEST.bz2" ];then
@@ -893,7 +947,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local REPO
     local PREPO
 
-    if echo $1|egrep -q "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]";then
+    if echo $1|egrep -q -e "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]" -e "/SBO_";then
       echo 1
       return
     fi
@@ -976,7 +1030,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local PREPO
     local ARG
 
-    if echo $1|egrep -q "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]";then
+    if echo $1|egrep -q -e "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]" -e "/SBO_";then
       echo 1
       return
     fi
@@ -1996,6 +2050,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   #
   echo -n "" > ${TMPDIR}/blacklist.slackpkgplus
 
+  if [ "$CMD" != "download" ];then
+    internal_blacklist "^SBO_"
+  fi
 
   if [ ! -z "$DOWNLOADCMD" ];then
     DOWNLOADER="$DOWNLOADCMD"
@@ -2270,28 +2327,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           searchlistEX "$LIST"
           echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"
         fi
-        if [ ! -z "$SBOURL" ];then
-          SBORESULT="$(grep -E -i "^[^ ]*$PATTERN" $WORKDIR/sbolist 2>/dev/null|sed -e 's/ /-/' -e "s#\./#$SBOURL#" -e 's/$/.tar.gz/')"
-          if [ ! -z "$SBORESULT" ];then
+        SBORESULT="$(grep -E -i "^SBO_[^ ]* [^ ]*$PATTERN" $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+        if [ ! -z "$SBORESULT" ];then
             echo
-            echo "Also found in SBo:"
+            echo "Also found in SBo (download it with 'slackpkg download <package>'):"
             echo
-            echo -e "[package] [url]\n$SBORESULT"|column -t|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "$PATTERN" -e ^
+            echo -e "[package]\n$SBORESULT"|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "$PATTERN" -e ^
             echo
-          fi
         fi
-        if [ ! -z "$SBOCUR" ];then
-          SBORESULT="$(grep -E -i "^[^ ]*$PATTERN" $WORKDIR/sbolistcur 2>/dev/null|sed -e 's/ /-/' -e "s#\./#${SBOCUR}plain/#" -e 's#$#/#')"
-          if [ ! -z "$SBORESULT" ];then
-            echo
-            echo "Also found in SBo-current (download it with 'wget -r -np'):"
-            echo
-            echo -e "[package] [url]\n$SBORESULT"|column -t|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "$PATTERN" -e ^
-            echo
-          fi
-        fi
-
-
       ;;
 
       file-search)
