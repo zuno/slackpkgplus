@@ -130,7 +130,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   ##### ===== BLACKLIST FUNCTIONS === #####
 
     # Patching makelist() original function to accept pkglist-pre
-  eval "$(type makelist | sed -e $'1d;2c\\\nmakelist()\n' -e 's,cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist,')"
+  eval "$(type makelist | sed -e $'1d;2c\\\nmakelist()\n' \
+                              -e 's,cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist,' \
+                              -e 's/\(LIST.*pkglist\)\(.*--output-delimiter=.\)/\1 |grep -w -- \"${ARGUMENT}\"\2/'
+
+         )"
 
     # Adds the pattern given by $(1) into the internal blacklist
     # ${TMPDIR}/blacklist.slackpkgplus
