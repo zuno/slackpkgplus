@@ -1,3 +1,10 @@
+Sun Jul  4 19:57:22 CEST 2021
+pkg/slackpkg+-1.7.6-noarch-8mt.txz: Rebuilt
+  - slackpkg update now force to download all metadata if conf file
+    change (thanks to chrisretusn)
+  - 'slackpkg download <full-package-name>' works
++-------------------------+
+
 Fri Jun 11 16:25:43 CEST 2021
 pkg/slackpkg+-1.7.6-noarch-7mt.txz: Rebuilt
   - Removed bash completion file (already included in slackpkg)
