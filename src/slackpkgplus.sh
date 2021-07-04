@@ -1854,12 +1854,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     find $TEMP ! -type d|sort|tac|awk '{if($1~/\.asc$/)f[$1]++;if($1~/\.t.z$/ && !f[$1".asc"])print $1}' |xargs -r rm -f
   fi
 
-  if [ "$CMD" == "update" -o "$CMD" == "check-updates" ];then
-    # answer to "Do you really want to download all other files"
-    # if there are new changes
-    ANSWER="Y"
-  fi
-
   if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&& ! ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1;then
     echo "FATAL! No Slackware GPG-KEY imported."
     if [ -e "$WORKDIR/ChangeLog.txt" ];then
@@ -1922,8 +1916,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo
     fi
   fi
+  if [ "$CMD" == "update" ];then
+    if [ $CONF/slackpkgplus.conf -nt $WORKDIR/CHECKSUMS.md5.asc ];then
+      BATCH=on
+      DEFAULT_ANSWER=Y
+    fi
+  fi
   if [ "$CMD" != "update" -a "$CMD" != "check-updates" ];then
-    if [ $CONF/slackpkgplus.conf -nt $WORKDIR/pkglist ];then
+    if [ $CONF/slackpkgplus.conf -nt $WORKDIR/CHECKSUMS.md5.asc ];then
       echo
       echo "NOTICE: remember to re-run 'slackpkg update' after modifying slackpkgplus.conf"
       echo
