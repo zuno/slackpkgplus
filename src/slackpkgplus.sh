@@ -1824,11 +1824,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     echo " Use slackpkg+ 1.7.0 instead"
     echo 
     SLPMIR="$(cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg)"
-    if [ "$SLPMIR" != "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+1.7/" ];then
+    if [ "$SLPMIR" != "MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+1.7/" ];then
       echo " Please replace"
       cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg
       echo " with"
-      echo "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+1.7/"
+      echo "MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+1.7/"
       echo " then run 'slackpkg update && slackpkg upgrade slackpkg+' to downgrade it"
       echo
       echo 

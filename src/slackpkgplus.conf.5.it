@@ -145,7 +145,7 @@ E' possibile specificare più di un repository aggiungendo multiple righe.
 Ogni repository ha un nome che va specificato tra parentesi quadre.
 
 .in +4
-MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
+MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+/
 .in
 
 E' possibile specificare repository remoti in http/https/ftp o repository locali (con o senza metadati).

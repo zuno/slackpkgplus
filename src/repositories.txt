@@ -1,10 +1,10 @@
 Supported Repositories:
 
-> slackpkgplus:  http://slakfinder.org/slackpkg+{,dev,1.7,15}/
-> multilib:      https://bear.alienbase.nl/mirrors/people/alien/multilib/{14.2,current}/
-> alienbob:      https://bear.alienbase.nl/mirrors/people/alien/sbrepos/{14.2,current}/{x86,x86_64}/
-> ktown:         https://bear.alienbase.nl/mirrors/alien-kde/{14.2,current}/5/{x86,x86_64}/
-> restricted:    https://bear.alienbase.nl/mirrors/people/alien/restricted_sbrepos/{14.2,current}/{x86,x86_64}/
+> slackpkgplus:  https://slakfinder.org/slackpkg+{,dev,1.7,15}/
+> multilib:      https://slackware.nl/people/alien/multilib/{14.2,current}/
+> alienbob:      https://slackware.nl/people/alien/sbrepos/{14.2,current}/{x86,x86_64}/
+> ktown:         https://slackware.nl/alien-kde/{14.2,current}/5/{x86,x86_64}/
+> restricted:    https://slackware.nl/people/alien/restricted_sbrepos/{14.2,current}/{x86,x86_64}/
 > slacky:        https://slacky.eu/repository/slackware{,64}-{14.2}/
 > mleddesktop:   https://slackware.uk/microlinux/desktop-{14.2}-{32,64}bit/
 > mledextras:    https://slackware.uk/microlinux/extras-{14.2}-{32,64}bit/
