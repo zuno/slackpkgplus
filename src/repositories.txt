@@ -58,4 +58,4 @@ Please read /usr/doc/slackpkg+-*/README for more details
 
 
 Slackware repositories:
-http://mirrors.slackware.com/slackware/slackware{,64}-{14.2,current}
+https://mirrors.slackware.com/slackware/slackware{,64}-{14.2,current}
