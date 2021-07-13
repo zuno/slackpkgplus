@@ -308,11 +308,11 @@ You can:
    For example, you may use this function to install a snapshot of slackpkg+
    (that is not available with 'slackpkg upgrade slackpkg+' because it is a beta
    version):
-   # slackpkg upgrade http://www.slakfinder.org/slackpkg+/pkg/slackpkg+-1.7.0-noarch-1mt.txz
+   # slackpkg upgrade https://slakfinder.org/slackpkg+/pkg/slackpkg+-1.7.0-noarch-1mt.txz
 
 2) install/upgrade/reinstall all packages in a single remote directory (but not
    in a subtree) even if the site owner does not create metadata:
-   # slackpkg install http://www.slakfinder.org/slackpkg+/pkg/
+   # slackpkg install https://slakfinder.org/slackpkg+/pkg/
 
    Note: this function requires lftp and may fail if the server does not support
    Directory Listing or if there is a index.html in the path.
@@ -412,9 +412,9 @@ Some repository does not have the ChangeLog.txt in the main url but has it
 in a parent url.
 
 For example the alienbob multilib repository:
-  http://bear.alienbase.nl/mirrors/people/alien/multilib/14.1/
+  https://slackware.nl/people/alien/multilib/current/
 has not the ChangeLog.txt in tree, but it is placed in parent directory:
-  http://bear.alienbase.nl/mirrors/people/alien/multilib/ChangeLog.txt
+  https://slackware.nl/people/alien/multilib/current/ChangeLog.txt
 
 Be sure to set SEARCH_CLOG_INPARENT to 'on' to search it in parent.
 Note that ascend out of main url sometime may be unsafe; so if it does not
@@ -535,12 +535,18 @@ Note that a short pattern may match many many packages.
 
 -----
 
-SBOURL
+SBO
 
-'slackpkg search' allow you to search packages in SlackBuilds.org.
+'slackpkg search' allow you to search packages in SlackBuilds.org 14.2 and
+current.
 Note that slackpkg+ does not replace sbopkg or other similar tools.
 slackpkg+ show you the url of the SlackBuild, then you have to manually
 download, build and install it, or use sbopkg to do that.
+Note that slackpkg+ does not replace sbopkg o similar tools, but is only
+useful to know if a package is present on SBo.
+The user can download it via 'slackpkg download <package>', then build it,
+or he can use sbopkg instead.
+
 
 -----
 

@@ -1,6 +1,6 @@
 = Full Changes list =
 
-== From 1.7 to 1.7.6 ==
+== From 1.7 to 1.7.7 ==
 
 *Configuration file:
 
@@ -8,7 +8,8 @@
 
 - Changed some default settings in sample configuration file
 
-- Added SBOURL to configure the SlackBuild.org repository (search only)
+- Added SBO to configure the SlackBuild.org repository (search and download).
+  Please do not touch the default values.
 
 - Added USETERSE to use the --terse mode for pkgtools
 
@@ -33,8 +34,9 @@
   ignore. For example a failure installing packages.
 
 - Added SBo support. This does not replace sbopkg. It just search in
-  SlackBuilds.org and report the url to download to build and install
-  packages yourself.
+  SlackBuilds.org and report the presence of the package; he can download
+  if via 'slackpkg download <package>', then build and install
+  packages himself.
 
 - Added httpdir/httpsdir/ftpdir repositories. These repositories does not
   need metadatas (CHECKSUMS.md5 ...), simple a remote directory listing
@@ -59,6 +61,7 @@
   set PLUGIN_ZCHANGELOG_SHOW=on to print changelog on stdout
   For details read notes in the code:
     /usr/libexec/slackpkg/functions.d/zchangelog.sh
+  It does not support SBo repositories
 
 
 *BugFixes

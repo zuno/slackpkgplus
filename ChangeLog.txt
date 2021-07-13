@@ -1,3 +1,27 @@
+Fri Jul  9 00:47:35 CEST 2021
+pkg/slackpkg+-1.7.7-noarch-1mt.txz:
+  - Added support for SBo-current repository (by cgit ponce)
+  - slackpkg download <package> can download SBo scripts
+  - Replaced SBOURL with array SBO to allow multiple repository. please
+    do not change the default value.
++-------------------------+
+
+Sun Jul  4 23:51:46 CEST 2021
+pkg/slackpkg+-1.7.6-noarch-9mt.txz: Rebuilt
+  - Just updated repositories in documentation and in sample config
+    file. Note that some repository now force ssl, and bear.alienbase.ln
+    moved to slackware.nl and www.slakfinder.org moved to slakfinder.org.
+    If not explicitly put it in configuration files, the cached downloader
+    may not work properly. So it's important update slackpkgplus.conf
++-------------------------+
+
+Sun Jul  4 19:57:22 CEST 2021
+pkg/slackpkg+-1.7.6-noarch-8mt.txz: Rebuilt
+  - slackpkg update now force to download all metadata if conf file
+    change (thanks to chrisretusn)
+  - 'slackpkg download <full-package-name>' works
++-------------------------+
+
 Fri Jun 11 16:25:43 CEST 2021
 pkg/slackpkg+-1.7.6-noarch-7mt.txz: Rebuilt
   - Removed bash completion file (already included in slackpkg)

@@ -34,7 +34,7 @@ Here is the list of available settings:
 
 \fBMain settings\fP
 .ds 1 SLACKPKGPLUS\t\t\ton/off\t\ton\t\tyes
-.ds 2 MIRRORPLUS\t\t\tstring\t\t-\t\tno
+.ds 2 MIRRORPLUS[]\t\t\tstrings\t\t-\t\tno
 .ds 3 REPOPLUS\t\t\t\tlist\t\t\t-\t\tno
 .ds 4 PKGS_PRIORITY\t\t\tlist\t\t\t-\t\tno
 .ds 5 TAG_PRIORITY\t\t\ton/off\t\toff\t\tyes
@@ -54,7 +54,7 @@ Here is the list of available settings:
 \fBDownload settings\fP
 .ds 1 VERBOSE\t\t\t\t0,1,2,3\t\t1\t\tyes
 .ds 2 USETERSE\t\t\t\ton/off\t\toff\t\tyes
-.ds 3 PROXY\t\t\t\tstrings\t\t-\t\tyes
+.ds 3 PROXY\t\t\t\tstring\t\t-\t\tyes
 .ds 4 WGETOPTS\t\t\t\tstring\t\t-\t\tyes
 .ds 5 DOWNLOADCMD\t\t\tstring\t\twget\t\tyes
 .ds 6 DOWNLOADONLY\t\t\ton/off\t\toff\t\tyes
@@ -89,7 +89,7 @@ Here is the list of available settings:
 .ds 4 GREYLIST\t\t\t\ton/off\t\ton\t\tyes
 .ds 5 SENSITIVE_SEARCH\t\ton/off\t\ton\t\tyes
 .ds 6 WW_FILE_SEARCH\t\t\ton/off\t\ton\t\tyes
-.ds 7 SBOURL\t\t\t\tstring\t\t-\t\tno
+.ds 7 SBO[]\t\t\t\tstrings\t\t-\t\tno
 .in +2
 \*1
 .br
@@ -144,7 +144,7 @@ You can specify more than one repository by adding multiple lines.
 Each repository has a name that have must be specified in square brackets.
 
 .in +4
-MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/
+MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+/
 .in
 
 You can specify remote repositories in http/https/ftp or local repositories (with or without metadata).
@@ -404,13 +404,13 @@ Setting \fB\%WW_FILE_SEARCH\fP=\fIoff\fP command \fB\%file-search\fP will also l
 Note that the search for too short strings can pull out hundreds and hundreds of results and take a long time.
 
 .TP  5
-\fBSBOURL\fP
+\fBSBO\fP
 .br
-The \fB\%slackpkg\ search\fP command allow you to search packages in the SlackBuilds.org repository.
+The \fB\%slackpkg\ search\fP command allow you to search packages in the SlackBuilds.org repositories for 14.2 and current
 
-\fB\%SBOURL\fP contains the url of SlackBuilds.org repository. It it is not set, the search will be skipped.
+\fB\%SBO\fP contains the urls of SlackBuilds.org repository. It it is not set, the search will be skipped.
 
-Note that slackpkg+ does not replace \fB\%sbopkg\fP o similar tools, but is only useful to know if a package is present on SBo. slackpkg+ show you the url, so the user can manually download and compile it, or he can use sbopkg instead.
+Note that slackpkg+ does not replace \fB\%sbopkg\fP o similar tools, but is only useful to know if a package is present on SBo. The user can download it via \fB\%slackpkg\ download\ <package>\fP, then build it, or he can use sbopkg instead.
 
 
 .TP  5

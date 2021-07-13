@@ -653,7 +653,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         SBOURL=${SBO[$SBOKEY]}
         if [ "$SBOKEY" == "current" ];then
           SBOURL=${SBOURL%/}/
-          SBOtag=$(basename $(curl -s $SBOURL|grep "/slackbuilds/tag/?h=" |head -1|grep -oE "href='[^']+'"|cut -f2 -d"'"|grep tar.gz))
+          SBOtag=$(basename $(curl --max-time 10 --location -s $SBOURL|grep "/slackbuilds/tag/?h=" |head -1|grep -oE "href='[^']+'"|cut -f2 -d"'"|grep tar.gz))
           SBOlast=$(cat $WORKDIR/sbolist_${SBOKEY}.tag 2>/dev/null)
           if echo $SBOtag|grep -q slackbuilds-current-.*tar.gz && [ "$SBOtag" != "$SBOlast" ];then
             $DOWNLOADER $TMPDIR/$SBOtag ${SBOURL}snapshot/$SBOtag
@@ -1880,7 +1880,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  SPKGPLUS_VERSION="1.7.6"
+  SPKGPLUS_VERSION="1.7.7"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   if [ ${VERSION:0:4} == "2.82" ];then
@@ -1893,11 +1893,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     echo " Use slackpkg+ 1.7.0 instead"
     echo 
     SLPMIR="$(cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg)"
-    if [ "$SLPMIR" != "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+1.7/" ];then
+    if [ "$SLPMIR" != "MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+1.7/" ];then
       echo " Please replace"
       cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg
       echo " with"
-      echo "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+1.7/"
+      echo "MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+1.7/"
       echo " then run 'slackpkg update && slackpkg upgrade slackpkg+' to downgrade it"
       echo
       echo 
@@ -1926,12 +1926,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # clean cache from packages without gpg signature
     find $TEMP ! -type d|sort|tac|awk '{if($1~/\.asc$/)f[$1]++;if($1~/\.t.z$/ && !f[$1".asc"])print $1}' |xargs -r rm -f
   fi
-
-#  if [ "$CMD" == "update" -o "$CMD" == "check-updates" ];then
-#    # answer to "Do you really want to download all other files"
-#    # if there are new changes
-#    ANSWER="Y"
-#  fi
 
   if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&& ! ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1;then
     echo "FATAL! No Slackware GPG-KEY imported."
