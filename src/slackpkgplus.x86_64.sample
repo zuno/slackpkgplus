@@ -150,9 +150,10 @@ MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+15/
 
 
 # SBo SlackBuilds. Uncomment it to allow slackpkg to search SlackBuilds on SlackBuilds.org
-# This does not repleace sbopkg; slackpkg just report the package, version and url; you must
-# download and build it yourself or via sbopkg.
-#SBOURL=https://www.slackbuilds.org/slackbuilds/14.2/
+# This does not repleace sbopkg; slackpkg just report the package, version and url; you may
+# download it via 'slackpkg download <packagename>' and build it yourself or via sbopkg.
+#SBO['14.2']=https://www.slackbuilds.org/slackbuilds/14.2/
+#SBO['current']=https://cgit.ponce.cc/slackbuilds/
 
 
 # Plugin section:

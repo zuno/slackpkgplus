@@ -34,7 +34,7 @@ Seguono le differenti impostazioni disponibili:
 
 \fBImpostazioni principali\fP
 .ds 1 SLACKPKGPLUS\t\t\ton/off\t\ton\t\tsi
-.ds 2 MIRRORPLUS\t\t\tstringa\t\t-\t\tno
+.ds 2 MIRRORPLUS[]\t\t\tstringhe\t\t-\t\tno
 .ds 3 REPOPLUS\t\t\t\telenco\t\t-\t\tno
 .ds 4 PKGS_PRIORITY\t\t\telenco\t\t-\t\tno
 .ds 5 TAG_PRIORITY\t\t\ton/off\t\toff\t\tsi
@@ -54,7 +54,7 @@ Seguono le differenti impostazioni disponibili:
 \fBImpostazioni di download\fP
 .ds 1 VERBOSE\t\t\t\t0,1,2,3\t\t1\t\tsi
 .ds 2 USETERSE\t\t\t\ton/off\t\toff\t\tsi
-.ds 3 PROXY\t\t\t\tstrings\t\t-\t\tsi
+.ds 3 PROXY\t\t\t\tstringa\t\t-\t\tsi
 .ds 4 WGETOPTS\t\t\t\tstringa\t\t-\t\tsi
 .ds 5 DOWNLOADCMD\t\t\tstringa\t\twget\t\tsi
 .ds 6 DOWNLOADONLY\t\t\ton/off\t\toff\t\tsi
@@ -89,7 +89,7 @@ Seguono le differenti impostazioni disponibili:
 .ds 4 GREYLIST\t\t\t\ton/off\t\ton\t\tsi
 .ds 5 SENSITIVE_SEARCH\t\ton/off\t\ton\t\tsi
 .ds 6 WW_FILE_SEARCH\t\t\ton/off\t\ton\t\tsi
-.ds 7 SBOURL\t\t\t\tstringa\t\t-\t\tno
+.ds 7 SBO[]\t\t\t\tstringhe\t\t-\t\tno
 .in +2
 \*1
 .br
@@ -404,11 +404,11 @@ Nota che la ricerca per stringhe troppo corte può tirare fuori centinaia e centi
 .TP  5
 \fBSBOURL\fP
 .br
-Il comando \fB\%slackpkg\ search\fP consente di effettuare la ricerca anche nel repository di SlackBuilds.org.
+Il comando \fB\%slackpkg\ search\fP consente di effettuare la ricerca anche nei repository di SlackBuilds.org 14.2 e current.
 
-\fB\%SBOURL\fP contiene l'indirizzo del repository di SlackBuilds.org. Se non viene settata la ricerca non verrà effettuata.
+\fB\%SBO\fP contiene gli indirizzi dei repository di SlackBuilds.org. Se non viene settata la ricerca non verrà effettuata.
 
-Nota che slackpkg+ non sostituisce \fB\%sbopkg\fP o altri tool, ma serve solo per sapere se un pacchetto è presente o meno su SBo. slackpkg+ mostra l'url, poi l'utente dovrà scaricarlo e compilarlo manualmente oppure affidarsi a sbopkg.
+Nota che slackpkg+ non sostituisce \fB\%sbopkg\fP o altri tool, ma serve solo per sapere se un pacchetto è presente o meno su SBo. L'utente potrà scaricarlo via \fB\%slackpkg\ download\ <package>\fP, poi compilarlo manualmente oppure affidarsi a sbopkg.
 
 
 .TP  5

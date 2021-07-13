@@ -535,12 +535,18 @@ Note that a short pattern may match many many packages.
 
 -----
 
-SBOURL
+SBO
 
-'slackpkg search' allow you to search packages in SlackBuilds.org.
+'slackpkg search' allow you to search packages in SlackBuilds.org 14.2 and
+current.
 Note that slackpkg+ does not replace sbopkg or other similar tools.
 slackpkg+ show you the url of the SlackBuild, then you have to manually
 download, build and install it, or use sbopkg to do that.
+Note that slackpkg+ does not replace sbopkg o similar tools, but is only
+useful to know if a package is present on SBo.
+The user can download it via 'slackpkg download <package>', then build it,
+or he can use sbopkg instead.
+
 
 -----
 

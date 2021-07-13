@@ -35,7 +35,7 @@ test -n "$(declare -f cleanup)" # || return
 eval "${_/cleanup/cleanup_orig}"
 
 function pkglistdiff (){
-  diff $WORKDIR/pkglist.copy $WORKDIR/pkglist|
+  diff $WORKDIR/pkglist.copy $WORKDIR/pkglist|grep -v " SBO_"|
     grep -e "^>" -e "^<"|
     sed 's/SLACKPKGPLUS_//'|
     sort -k2|
@@ -49,8 +49,8 @@ function makepkglog(){
   if [ -z "$TMPDIR" ];then TMPDIR=/tmp;fi
   if [ -z "$WORKDIR" ];then WORKDIR=/var/lib/slackpkg;fi
   IGNORE="$( (
-    cat $WORKDIR/pkglist.copy|awk '{print $1}'|sort -u|sed 's/SLACKPKGPLUS_//'|sed 's/^/Removed /'
-    cat $WORKDIR/pkglist     |awk '{print $1}'|sort -u|sed 's/SLACKPKGPLUS_//'|sed 's/^/Added /'
+    cat $WORKDIR/pkglist.copy|grep -v ^SBO_|awk '{print $1}'|sort -u|sed 's/SLACKPKGPLUS_//'|sed 's/^/Removed /'
+    cat $WORKDIR/pkglist     |grep -v ^SBO_|awk '{print $1}'|sort -u|sed 's/SLACKPKGPLUS_//'|sed 's/^/Added /'
     )|sort -k2|uniq -f1 -u)"
   echo "$IGNORE"|awk '{print $1": "$2}'|column -t |sort -k2|grep ...&&echo
   echo "$IGNORE"|awk '{print " "$2" "}'|grep ... >$TMPDIR/ignorerepos
@@ -84,7 +84,7 @@ function cleanup(){
         cat $WORKDIR/RepoChangeLog.txt >> $TMPDIR/RepoChangeLog.txt
         cp $TMPDIR/RepoChangeLog.txt $WORKDIR/RepoChangeLog.txt
       fi
-      cp $WORKDIR/pkglist $WORKDIR/pkglist.copy
+      cat $WORKDIR/pkglist|grep -v ^SBO_ > $WORKDIR/pkglist.copy
     fi
   fi
   cleanup_orig
