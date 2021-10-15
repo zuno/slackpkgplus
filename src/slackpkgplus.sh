@@ -537,6 +537,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   function getfile(){
     local URLFILE
     URLFILE=$1
+    PREPO=slackware
+    if [ $(basename $1) = "PACKAGES.TXT" ];then
+      PREPO=$(echo $1|awk -F/ '{print $(NF-1)}')
+    fi
 
     if echo $URLFILE|grep -q /SBO_;then
       local PRGNAM
@@ -687,6 +691,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ ! -s $2 ];then
         echo -n|bzip2 -c >$2
       fi
+    fi
+
+    if [ $(basename $1) = "PACKAGES.TXT" ];then
+      sed -i -e "1i===== START REPO: $PREPO : URL:$1  =====" -e "\$a===== END REPO: $PREPO =====" $2
     fi
 
     if [ $(basename $1) = "CHECKSUMS.md5.asc" -a ! -e $TMPDIR/signaturedownloaded ];then
@@ -1787,6 +1795,40 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       if [ -z "$SHOWLIST" ]; then
         echo "No packages selected for $2, exiting."
         cleanup
+      fi
+      if [ "$2" != "remove" -a "$CHECKDISKSPACE" == "on" ];then
+        COUNTLIST=$(echo $SHOWLIST|wc -w)
+        compressed=0
+        uncompressed=0
+        n=0
+        for i in $SHOWLIST;do
+          let n++
+          r=$(cat $TMPDIR/dialog.tmp|grep ^$i|cut -f2 -d'"')
+          read c u <<<$(echo $(sed -e "1,/START REPO: $r :/d" -e "1,/ $i$/d" -e '/^$/Q' -e '/[^0-9][^ ][^K]$/d' -e 's/ K$//' $WORKDIR/PACKAGES.TXT|grep compressed|sort|awk '{print $NF}'))
+          [ "$c" ]&&let compressed+=$c
+          [ "$u" ]&&let uncompressed+=$u
+          echo -en "Total space required to download $n/$COUNTLIST packages: $[$compressed/1024] MB \r"
+        done
+        available=$(df $TEMP|grep -v ^Filesystem|tail -1|awk '{print $4}')
+        echo "Total space required to download: $[$compressed/1024] MB; Available: $[$available/1024] MB"
+        if [ $available -gt $compressed ];then
+          echo "No sufficient space to download packages. Do you want to continue anyway? (y/N)"
+          answer
+          if [ "$ANSWER" != "Y" ] && [ "$ANSWER" != "y" ]; then
+            cleanup
+          fi
+        fi
+        if [ "$2" == "install" ];then
+          available=$(df $ROOT/usr|grep -v ^Filesystem|tail -1|awk '{print $4}')
+          echo "Total space required to install: $[$uncompressed/1024] MB; Available: $[$available/1024] MB"
+          if [ $available -lt $compressed ];then
+            echo "No sufficient space to install packages. Do you want to continue anyway? (y/N)"
+            answer
+            if [ "$ANSWER" != "Y" ] && [ "$ANSWER" != "y" ]; then
+              cleanup
+            fi
+          fi
+        fi
       fi
     } # END function showlist()
 
