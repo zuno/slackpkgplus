@@ -1811,7 +1811,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         done
         available=$(df $TEMP|grep -v ^Filesystem|tail -1|awk '{print $4}')
         echo "Total space required to download: $[$compressed/1024] MB; Available: $[$available/1024] MB"
-        if [ $available -gt $compressed ];then
+        if [ $available -lt $compressed ];then
           echo "No sufficient space to download packages. Do you want to continue anyway? (y/N)"
           answer
           if [ "$ANSWER" != "Y" ] && [ "$ANSWER" != "y" ]; then
