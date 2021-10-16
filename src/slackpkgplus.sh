@@ -1810,7 +1810,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           echo -en "Total space required to download $n/$COUNTLIST packages: $[$compressed/1024] MB \r"
         done
         available=$(df $TEMP|grep -v ^Filesystem|tail -1|awk '{print $4}')
-        echo "Total space required to download: $[$compressed/1024] MB; Available: $[$available/1024] MB"
+        [ $compressed -lt 1024 ]&&toprint="$compressed KB"||toprint="$[$compressed/1024] MB"
+        echo "Total space required to download: $toprint; Available: $[$available/1024] MB"
         if [ $available -lt $compressed ];then
           echo "No sufficient space to download packages. Do you want to continue anyway? (y/N)"
           answer
@@ -1820,7 +1821,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         fi
         if [ "$2" == "install" ];then
           available=$(df $ROOT/usr|grep -v ^Filesystem|tail -1|awk '{print $4}')
-          echo "Total space required to install: $[$uncompressed/1024] MB; Available: $[$available/1024] MB"
+          [ $uncompressed -lt 1024 ]&&toprint="$uncompressed KB"||toprint="$[$uncompressed/1024] MB"
+          echo "Total space required to install: $toprint; Available: $[$available/1024] MB"
           if [ $available -lt $compressed ];then
             echo "No sufficient space to install packages. Do you want to continue anyway? (y/N)"
             answer
