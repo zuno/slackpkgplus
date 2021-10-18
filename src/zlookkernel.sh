@@ -68,7 +68,7 @@ ORIKERNELMD5=$(md5sum $PLUGIN_ZLOOKKERNEL_IMAGE 2>/dev/null;ls -Lli $PLUGIN_ZLOO
 lookkernel() {
   NEWKERNELMD5=$(md5sum $PLUGIN_ZLOOKKERNEL_IMAGE ; ls -Lli $PLUGIN_ZLOOKKERNEL_IMAGE ; ls -li $PLUGIN_ZLOOKKERNEL_IMAGE)
   if [ "$ORIKERNELMD5" != "$NEWKERNELMD5" ]; then
-    KERNEL=$(readlink $PLUGIN_ZLOOKKERNEL_IMAGE | sed 's/.*-\([1-9]\)/\1/')
+    KERNEL=$(readlink -f $PLUGIN_ZLOOKKERNEL_IMAGE | sed 's/.*-\([1-9]\)/\1/')
     echo -e "\nYour kernel image was updated (found $KERNEL). You have to rebuild the bootloader.\nDo you want slackpkg to do it? (Y/n)"
     [ ! "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
     if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
