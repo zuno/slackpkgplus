@@ -1,3 +1,11 @@
+Sat Oct 16 15:39:45 CEST 2021
+pkg/slackpkg+-1.7.8-noarch-1mt.txz:
+  - New feature: CHECKDISKSPACE=on in configuration enable checking
+    diskspace before download and install packages
+  - Fixed an issue on zlookkernel when /boot/vmlinuz is a symlink to another
+    symlink
++-------------------------+
+
 Fri Jul  9 00:47:35 CEST 2021
 pkg/slackpkg+-1.7.7-noarch-1mt.txz:
   - Added support for SBo-current repository (by cgit ponce)
