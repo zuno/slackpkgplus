@@ -1,6 +1,6 @@
 = Full Changes list =
 
-== From 1.7 to 1.7.7 ==
+== From 1.7 to 1.7.8 ==
 
 *Configuration file:
 
@@ -25,6 +25,9 @@
 
 - Added LEGACYBL to allow slackpkg+ to use blacklist syntax from slackware 14.2
 
+- Added CHECKDISKSPACE to allow to check diskspace before download and install
+  packages
+
 *New features:
 
 - Added manpages (italian and english) for slackpkgplus.conf
@@ -44,6 +47,9 @@
 - Allow slackpkg+ to use the blacklist system from slackware 14.2; the new
   blacklist system from slackware 15.0 may not work properly with third party
   repositories
+
+- Added check diskspace before download and install packages
+
 
 *Improvements
 

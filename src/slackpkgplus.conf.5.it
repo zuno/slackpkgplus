@@ -57,10 +57,11 @@ Seguono le differenti impostazioni disponibili:
 .ds 3 PROXY\t\t\t\tstringa\t\t-\t\tsi
 .ds 4 WGETOPTS\t\t\t\tstringa\t\t-\t\tsi
 .ds 5 DOWNLOADCMD\t\t\tstringa\t\twget\t\tsi
-.ds 6 DOWNLOADONLY\t\t\ton/off\t\toff\t\tsi
-.ds 7 CACHEUPDATE\t\t\ton/off\t\toff\t\tsi
-.ds 8 SEARCH_CLOG_INPARENT\ton/off\t\toff\t\tno
-.ds 9 STRICTGPG\t\t\t\ton/off\t\ton\t\tsi
+.ds 6 CHECKDISKSPACE\t\t\ton/off\t\toff\t\tno
+.ds 7 DOWNLOADONLY\t\t\ton/off\t\toff\t\tsi
+.ds 8 CACHEUPDATE\t\t\ton/off\t\toff\t\tsi
+.ds 9 SEARCH_CLOG_INPARENT\ton/off\t\toff\t\tno
+.ds 10 STRICTGPG\t\t\t\ton/off\t\ton\t\tsi
 .in +2
 \*1
 .br
@@ -79,6 +80,8 @@ Seguono le differenti impostazioni disponibili:
 \*8
 .br
 \*9
+.in
+\*10
 .in
 
 
@@ -275,6 +278,11 @@ DOWNLOADCMD="curl -v -o"
 .in
 
 Per i dettagli vedere la documentazione.
+
+.TP  5
+\fBCHECKDISKSPACE\fP
+.br
+Permette a \%slackpkg+  di controllare lo spazio libero su disco per scaricare i pacchetti. Inoltre controlla se c'è spazio sufficiente anche per l'installazione, esclusivamente per i comandi install/install\-new.
 
 .TP  5
 \fBDOWNLOADONLY\fP

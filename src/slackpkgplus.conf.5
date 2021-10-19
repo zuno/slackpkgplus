@@ -57,10 +57,11 @@ Here is the list of available settings:
 .ds 3 PROXY\t\t\t\tstring\t\t-\t\tyes
 .ds 4 WGETOPTS\t\t\t\tstring\t\t-\t\tyes
 .ds 5 DOWNLOADCMD\t\t\tstring\t\twget\t\tyes
-.ds 6 DOWNLOADONLY\t\t\ton/off\t\toff\t\tyes
-.ds 7 CACHEUPDATE\t\t\ton/off\t\toff\t\tyes
-.ds 8 SEARCH_CLOG_INPARENT\ton/off\t\toff\t\tno
-.ds 9 STRICTGPG\t\t\t\ton/off\t\ton\t\tyes
+.ds 6 CHECKDISKSPACE\t\t\ton/off\t\toff\t\tno
+.ds 7 DOWNLOADONLY\t\t\ton/off\t\toff\t\tyes
+.ds 8 CACHEUPDATE\t\t\ton/off\t\toff\t\tyes
+.ds 9 SEARCH_CLOG_INPARENT\ton/off\t\toff\t\tno
+.ds 10 STRICTGPG\t\t\t\ton/off\t\ton\t\tyes
 .in +2
 \*1
 .br
@@ -79,6 +80,8 @@ Here is the list of available settings:
 \*8
 .br
 \*9
+.br
+\*10
 .in
 
 
@@ -277,6 +280,11 @@ DOWNLOADCMD="curl -v -o"
 .in
 
 For details see the documentation.
+
+.TP  5
+\fBCHECKDISKSPACE\fP
+.br
+Allow \%slackpkg+ to check needed diskspace to download packages. Also it check needed space to install it in install/install\-new process.
 
 .TP  5
 \fBDOWNLOADONLY\fP

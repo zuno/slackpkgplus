@@ -381,6 +381,21 @@ DOWNLOADCMD="aria2c --all-proxy=someproxy:8080 -x 16 -s 16 --auto-file-renaming=
 
 -----
 
+CHECKDISKSPACE Option
+
+When you set this option to 'on' slackpkg will check for free space on disk
+to download and install (not for upgrade) packages.
+Note:
+    to download it will check $TEMP path (/var/cache/packages by default)
+    to install (and only install, not for upgrade) it will check $ROOT/usr
+    filesystem since MOST (not ALL) files are there.
+
+If there is not space available it will prompt for a confirmation to continue
+If there is space available it just report the required space.
+Default is 'off'
+
+-----
+
 CACHEUPDATE Option
 
 By default 'slackpkg update' download all metadata files (CHECKSUMS.md5, PACKAGES.TXT,

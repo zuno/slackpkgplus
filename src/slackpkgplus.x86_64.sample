@@ -52,6 +52,9 @@ WGETOPTS="--timeout=20 --tries=2"
 # at /usr/doc/slackpkg+-*/README
 #DOWNLOADCMD="wget -O"
 
+# Enable (on) / Disable (off) checking disk space to download and install packages. Default to "off"
+#CHECKDISKSPACE=on
+
 # Defines if the changelog of any 3rd party repository must be searched in parent URL when not found in base URL.
 # Can be set to "on" or "off" (default)
 SEARCH_CLOG_INPARENT=on
