@@ -1,6 +1,6 @@
 = Full Changes list =
 
-== From 1.7 to 1.7.8 ==
+== From 1.7 to 1.7.9 ==
 
 *Configuration file:
 
@@ -49,6 +49,15 @@
   repositories
 
 - Added check diskspace before download and install packages
+
+- Added new exit codes according to slackpkg-15.0.8 and one specific for slackpkg+
+      0 Successful Slackpkg execution.
+      1 Something wrong happened.
+      2 Something fatal happened, please do not ignore it. (not available in slackpkg)
+      20 No package found to be downloaded, installed, reinstalled, upgraded
+         or removed.
+      50 Slackpkg itself was upgraded and you need to re-run it.
+      100 There are pending updates.
 
 
 *Improvements

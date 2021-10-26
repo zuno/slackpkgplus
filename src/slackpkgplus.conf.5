@@ -52,17 +52,19 @@ Here is the list of available settings:
 
 
 \fBDownload settings\fP
-.ds 1 VERBOSE\t\t\t\t0,1,2,3\t\t1\t\tyes
-.ds 2 USETERSE\t\t\t\ton/off\t\toff\t\tyes
-.ds 3 PROXY\t\t\t\tstring\t\t-\t\tyes
-.ds 4 WGETOPTS\t\t\t\tstring\t\t-\t\tyes
-.ds 5 DOWNLOADCMD\t\t\tstring\t\twget\t\tyes
-.ds 6 CHECKDISKSPACE\t\t\ton/off\t\toff\t\tno
-.ds 7 DOWNLOADONLY\t\t\ton/off\t\toff\t\tyes
-.ds 8 CACHEUPDATE\t\t\ton/off\t\toff\t\tyes
-.ds 9 SEARCH_CLOG_INPARENT\ton/off\t\toff\t\tno
-.ds 10 STRICTGPG\t\t\t\ton/off\t\ton\t\tyes
+.ds 0 VERBOSE\t\t\t\t0,1,2,3\t\t1\t\tyes
+.ds 1 USETERSE\t\t\t\ton/off\t\toff\t\tyes
+.ds 2 PROXY\t\t\t\tstring\t\t-\t\tyes
+.ds 3 WGETOPTS\t\t\t\tstring\t\t-\t\tyes
+.ds 4 DOWNLOADCMD\t\t\tstring\t\twget\t\tyes
+.ds 5 CHECKDISKSPACE\t\t\ton/off\t\toff\t\tno
+.ds 6 DOWNLOADONLY\t\t\ton/off\t\toff\t\tyes
+.ds 7 CACHEUPDATE\t\t\ton/off\t\toff\t\tyes
+.ds 8 SEARCH_CLOG_INPARENT\ton/off\t\toff\t\tno
+.ds 9 STRICTGPG\t\t\t\ton/off\t\ton\t\tyes
 .in +2
+\*0
+.br
 \*1
 .br
 \*2
@@ -80,8 +82,6 @@ Here is the list of available settings:
 \*8
 .br
 \*9
-.br
-\*10
 .in
 
 
@@ -496,6 +496,22 @@ Replace first column with sometime shorter and colorized. Available value are:
 .br
 \fItiny\fP)\ [-] uninstalled, [I] installed, [U] upgrade, [M] uninstalled/masked
 .br
+
+.SH EXIT STATUS
+.P
+.IP "\fB0\fP" 5
+Successful slackpkg execution.
+.IP "\fB1\fP" 5
+Something wrong happened.
+.IP "\fB2\fP" 5
+Something fatal happened (please do not ignore it).
+.IP "\fB20\fP" 5
+No package found to be downloaded, installed, reinstalled, upgraded, or
+removed.
+.IP "\fB50\fP" 5
+Slackpkg itself was upgraded and you need to re-run it.
+.IP "\fB100\fP" 5
+There are pending updates.
 
 .SH FILES
 

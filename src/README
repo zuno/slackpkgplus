@@ -21,8 +21,8 @@ for any damage that may be caused to your computer.
 
 CONFIGURATION
 
-see man slackpkgplus.conf. If you are italian export LANG=it_IT.UTF8 to see
-the italian manpage.
+see man slackpkgplus.conf. If you are italian export LANG=it_IT@euro to see
+the italian manpage and set ISO8859-15 charset for the console.
 
 For the basic configuration:
 
@@ -354,6 +354,9 @@ configuration file.
 As workaround you can add the options WGETOPTS="--timeout=5 --tries=1"
 in slackpkgplus.conf
 
+You also add "-q" to WGETOPTS for a silent output in conjuction of
+VERBOSE=0 and USETERSE=on
+
 -----
 
 DOWNLOADCMD Option
@@ -373,11 +376,8 @@ DOWNLOADCMD="curl -o"
 you can add other options BEFORE the last '-o' switch:
 DOWNLOADCMD="curl -v -o"
 
-If you want use a multi-connection (parallel) download, you can install aria2
-(http://aria2.sourceforge.net/) and set
-DOWNLOADCMD="aria2c -x 16 -s 16 --auto-file-renaming=false --allow-overwrite=true -d / -o"
-if you have proxy add
-DOWNLOADCMD="aria2c --all-proxy=someproxy:8080 -x 16 -s 16 --auto-file-renaming=false --allow-overwrite=true -d / -o"
+If you want use a multi-connection (parallel) download, you can use wget2
+DOWNLOADCMD="wget2 --progress=bar -O"
 
 -----
 
@@ -616,6 +616,24 @@ slackpkgplus.conf.
 
 -----
 
+CLEAN OUTPUT
+
+slackpkg tipically has a large amount of output that can make it few readable.
+slackpkg+ added a series of features that can do a lite output.
+
+VERBOSE: affect wget output and some other things; '2' is the default value
+  for slackpkg; it make wget to print download bar both in download packages
+  and metadata download; '1' means download bar only in download packages so
+  you have a cleaner output updating metadata; '0' means no download bar, and
+  you will see only the url&path of file.
+WGETOPTS: adding '-q' it will suppress the url&path too.
+USETERSE: setting it to 'on' the slackware pkgtools just print one line in
+  installing/upgrading packages
+TERSESEARCH: set it to 'on' or 'tiny' to have a most compact output for
+  slackpkg search
+
+-----
+
 INSTALL LOG
 
 Slackpkg+ logs all install/remove/upgrade/reinstall actions in /var/lib/slackpkg/install.log
@@ -628,6 +646,8 @@ CHECK-UPDATE IMPROVEMENT
 the command "slackpkg check-updates" reports the repositories which have been changed since
 the last update. For more details and some suggests how to use it in crontab see:
 http://www.linuxquestions.org/questions/showthread.php?p=5146591
+
+also "slackpkg check-updates" give you an exit code 50 if there are available updates.
 
 -----
 

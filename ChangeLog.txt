@@ -1,3 +1,16 @@
+Tue Oct 26 10:10:23 CEST 2021
+pkg/slackpkg+-1.7.9-noarch-1mt.txz:
+  - According to slackpkg 15.0.8 new exit codes was added in slackpkg+ too:
+      0 Successful Slackpkg execution.
+      1 Something wrong happened.
+      2 Something fatal happened. (not available in slackpkg)
+      20 No package found to be downloaded, installed, reinstalled, upgraded
+         or removed.
+      50 Slackpkg itself was upgraded and you need to re-run it.
+      100 There are pending updates.
+    Please: do not ignore the fatal output!
++-------------------------+
+
 Sat Oct 16 15:39:45 CEST 2021
 pkg/slackpkg+-1.7.8-noarch-1mt.txz:
   - New feature: CHECKDISKSPACE=on in configuration enable checking

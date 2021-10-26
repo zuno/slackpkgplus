@@ -42,7 +42,7 @@ WGETOPTS="--timeout=20 --tries=2"
 
 # If you want replace wget with another downloader search DOWNLOADCMD in documentation
 # at /usr/doc/slackpkg+-*/README
-#DOWNLOADCMD="wget -O"
+#DOWNLOADCMD="wget2 --progress=bar -O"
 
 # Enable (on) / Disable (off) checking disk space to download and install packages. Default to "off"
 #CHECKDISKSPACE=on
@@ -68,7 +68,7 @@ GREYLIST=on
 # Defines if commands 'search' and 'file-search' are case-sensitive (on) or not (off). Default to "on"
 SENSITIVE_SEARCH=off
 
-# Defines if command 'file-search' does search Wole Word (on) of accept partial words (off). Note that
+# Defines if command 'file-search' does search Whole Word (on) of accept partial words (off). Note that
 # you may obtains many many results searching a short partial word
 WW_FILE_SEARCH=off
 
