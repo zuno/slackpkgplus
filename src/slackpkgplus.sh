@@ -239,6 +239,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo
       echo "=============================================================================="
     fi
+    [ ! -e $WORKDIR/pkglist ]&&touch $WORKDIR/pkglist
+    [ ! -e $WORKDIR/CHECKSUMS.md5 ]&&touch $WORKDIR/CHECKSUMS.md5
     echo
     rm -f /var/lock/slackpkg.$$
     if [ $VERBOSE -lt 3 -a -z "$DEBUG" ];then
@@ -701,6 +703,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ $(basename $1) = "CHECKSUMS.md5.asc" -a ! -e $TMPDIR/signaturedownloaded ];then
       mv ${TMPDIR}/CHECKSUMS.md5.asc ${TMPDIR}/CHECKSUMS.md5-slackware.asc
       cp ${TMPDIR}/CHECKSUMS.md5-slackware.asc ${TMPDIR}/CHECKSUMS.md5.asc
+      echo "slackpkgplus repositories" >>${TMPDIR}/CHECKSUMS.md5.asc
       for PREPO in ${REPOPLUS[*]};do
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5.asc
         if echo $URLFILE | grep -q "dir:/" ; then
@@ -1925,7 +1928,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  SPKGPLUS_VERSION="1.7.9"
+  SPKGPLUS_VERSION="1.7.10"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   if [ ${VERSION:0:4} == "2.82" ];then
@@ -1961,6 +1964,18 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   if [ ! -e "$WORKDIR" ];then
     mkdir -p "$WORKDIR"
+  fi
+
+  if ! grep -q "slackpkgplus repositories" $WORKDIR/CHECKSUMS.md5.asc 2>/dev/null &&
+       [ "$CMD" != "update" ] && [ "$CMD" != "new-config" ] && [ "$CMD" != "help" ];then
+    echo "======================================================"
+    echo "We need to force 'slackpkg update' to enable slackpkg+"
+    echo "Then you can rerun '$CMD' command                     "
+    echo "======================================================"
+    echo
+    echo "slackpkg forced to rebuild pkglist database" >> $TMPDIR/info.log
+    echo "Please may try 'slackpkg $CMD $INPUTLIST' now" >> $TMPDIR/info.log
+    CMD="update"
   fi
 
   if [ ! -e $WORKDIR/install.log ];then
