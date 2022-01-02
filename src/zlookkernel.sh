@@ -122,14 +122,14 @@ lookkernel() {
           /sbin/lilo -v
         fi
       elif [ -e /boot/grub ]&&[ -x /usr/sbin/grub-install ]; then
-	echo -e "\nFound grub. Do you want to run now: /usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg ? (Y/n)"
+        echo -e "\nFound grub. Do you want to run now: /usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg ? (Y/n)"
         [ ! "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
         if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
-	  if ! /usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg ;then
+          if ! /usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg ;then
             echo "You need to fix your grub configuration NOW. Then press return to continue."
             read
           fi
-	fi
+        fi
       else
         echo -e "\nWARNING! slackpkg can't found your bootloader configuration. You have to fix it yourself\n"
         echo "  slackpkg can't found your bootloader configuration. You have to fix it yourself" >>$TMPDIR/error.log
