@@ -22,7 +22,7 @@
 #   - elilo: try to detect which file to copy (vmlinuz, vmlinuz-generic,
 #            vmlinuz-huge, initrd.gz) according to /boot/efi/EFI/Slackware/elilo.conf
 #   - lilo: run 'lilo -v'
-#   - grub: advice that slackpkg does not suppport it
+#   - grub: run 'grub-mkconfig -o /boot/grub/grub.cfg'
 #   - none: advice that no bootloader was found
 #
 # If you are switching from kernel huge to kernel generic be sure to run
@@ -121,9 +121,15 @@ lookkernel() {
           fi
           /sbin/lilo -v
         fi
-      elif [ -e /boot/grub ]&&[ -x /usr/sbin/grub-install ];then
-        echo -e "\nWARNING! Grub found but not supported by slackpkg. You have to fix it yourself\n"
-        echo "  Grub found but not supported by slackpkg. You have to fix it yourself" >>$TMPDIR/error.log
+      elif [ -e /boot/grub ]&&[ -x /usr/sbin/grub-install ]; then
+	echo -e "\nFound grub. Do you want to run now: /sbin/grub-mkconfig -o /boot/grub/grub.cfg ? (Y/n)"
+        [ ! "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
+        if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
+	  if ! /usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg ;then
+            echo "You need to fix your grub configuration NOW. Then press return to continue."
+            read
+          fi
+	fi
       else
         echo -e "\nWARNING! slackpkg can't found your bootloader configuration. You have to fix it yourself\n"
         echo "  slackpkg can't found your bootloader configuration. You have to fix it yourself" >>$TMPDIR/error.log
