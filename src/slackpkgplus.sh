@@ -1079,6 +1079,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     #
   function givepriority() {
     local DIR
+    local ORIARGUMENT=$ARGUMENT
     local ARGUMENT=$1
     local PKGDATA
     local CPRIORITY
@@ -1090,6 +1091,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     unset PKGDATA
     unset LINEIDX
     unset PKGINFOS
+
+    [[ "${ORIARGUMENT%,*},*" == "${ORIARGUMENT}" ]]&&[[ "${ARGUMENT}" != "${ORIARGUMENT%,*}" ]]&&return
+    ARGUMENT="${ARGUMENT%,*}"
 
     if [ -z "$TOPROCESS" ];then
       case "$CMD" in
@@ -2186,6 +2190,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     PRIORITYLIST_SX=""
 
     for pref in $INPUTLIST ; do
+      pref=${pref/%,/,*}
       PRIORITY_FILTER_RULE=""
 
       # You can specify 'slackpkg install .' that is an alias of 'slackpkg install dir:./'
