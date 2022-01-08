@@ -1090,7 +1090,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     unset LINEIDX
     unset PKGINFOS
 
-    [[ "${ORIARGUMENT%,*},*" == "${ORIARGUMENT}" ]]&&[[ "${ARGUMENT}" != "${ORIARGUMENT%,*}" ]]&&return
+    [[ "${ORIARGUMENT}" =~ ,\*?$ ]]&&[[ "${ARGUMENT}" != "${ORIARGUMENT%,*}" ]]&&return
     ARGUMENT="${ARGUMENT%,*}"
 
     if [ -z "$TOPROCESS" ];then
@@ -1330,8 +1330,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           }' l_dir=${DIR} > $PKGINFOS
 
       else # -- CMD==search
-        if [[ "${SEARCHSTR}" =~ .*,$ ]];then
-          grep -h ${GREPOPTS} "^$DIR" ${TMPDIR}/pkglist ${TMPDIR}/pkglist-pre|grep -E ${GREPOPTS} "^[^ ]* ${SEARCHSTR%,} " > $PKGINFOS
+        if [[ "${SEARCHSTR}" =~ ,\*?$ ]];then
+          grep -h ${GREPOPTS} "^$DIR" ${TMPDIR}/pkglist ${TMPDIR}/pkglist-pre|grep -E ${GREPOPTS} "^[^ ]* ${SEARCHSTR%,*} " > $PKGINFOS
         else
           grep -h ${GREPOPTS} "^$DIR" ${TMPDIR}/pkglist ${TMPDIR}/pkglist-pre|grep -E ${GREPOPTS} "/SLACKPKGPLUS_$SEARCHSTR/|/$SEARCHSTR/|/$SEARCHSTR | [^ /]*$SEARCHSTR[^ /]* " > $PKGINFOS
         fi
@@ -1490,7 +1490,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
     done|sort
     echo -en "\r" >&2
-    }|column -t -s '#' -o ' '|( [[  "$CMD" == "search" ]]&&grep -E -i --color -e ^ -e "${PATTERN%,}"||cat )
+    }|column -t -s '#' -o ' '|( [[  "$CMD" == "search" ]]&&grep -E -i --color -e ^ -e "${PATTERN%,*}"||cat )
   } # END function searchlistEX()
 
     # Show detailed info for slackpkg info
@@ -2388,8 +2388,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           searchlistEX "$LIST"
           echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"
         fi
-        if [[ "${PATTERN}" =~ .*,$ ]];then
-          SBORESULT="$(grep -E -i "^SBO_[^ ]* ${PATTERN/,/} " $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+        if [[ "${PATTERN}" =~ ,\*?$ ]];then
+          SBORESULT="$(grep -E -i "^SBO_[^ ]* ${PATTERN%,*} " $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
         else
           SBORESULT="$(grep -E -i "^SBO_[^ ]* [^ ]*${PATTERN}" $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
         fi
@@ -2397,7 +2397,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             echo
             echo "Also found in SBo (download it with 'slackpkg download <package>'):"
             echo
-            echo -e "[package]\n$SBORESULT"|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "${PATTERN%,}" -e ^
+            echo -e "[package]\n$SBORESULT"|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "${PATTERN%,*}" -e ^
             echo
         fi
       ;;
@@ -2520,7 +2520,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     echo -n "Looking for $(echo $INPUTLIST | tr -d '\\') in package list. Please wait... "
     for ARGUMENT in $(echo $INPUTLIST); do
-      if [[ "$ARGUMENT" =~ , ]];then
+      if [[ "$ARGUMENT" =~ ,\*?$ ]];then
         for i in $(grep " ${ARGUMENT%,*} " ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u); do
           LIST="$LIST $(grep " ${i} " ${TMPDIR}/pkglist |grep " ${ARGUMENT%,*} " | cut -f6,8 -d\  --output-delimiter=.)"
         done
