@@ -2390,7 +2390,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           searchlistEX "$LIST"
           echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"
         fi
-        SBORESULT="$(grep -E -i "^SBO_[^ ]* [^ ]*${PATTERN/,/ }" $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+        if [[ "${PATTERN}" =~ .*,$ ]];then
+          SBORESULT="$(grep -E -i "^SBO_[^ ]* ${PATTERN/,/} " $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+        else
+          SBORESULT="$(grep -E -i "^SBO_[^ ]* [^ ]*${PATTERN}" $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+        fi
         if [ ! -z "$SBORESULT" ];then
             echo
             echo "Also found in SBo (download it with 'slackpkg download <package>'):"
