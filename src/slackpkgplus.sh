@@ -1332,7 +1332,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           }' l_dir=${DIR} > $PKGINFOS
 
       else # -- CMD==search
-        grep -h ${GREPOPTS} "^$DIR" ${TMPDIR}/pkglist ${TMPDIR}/pkglist-pre|grep -E ${GREPOPTS} "/SLACKPKGPLUS_$SEARCHSTR/|/$SEARCHSTR/|/$SEARCHSTR | [^ /]*$SEARCHSTR[^ /]* " > $PKGINFOS
+        if [[ "${SEARCHSTR}" =~ .*,$ ]];then
+          grep -h ${GREPOPTS} "^$DIR" ${TMPDIR}/pkglist ${TMPDIR}/pkglist-pre|grep -E ${GREPOPTS} "^[^ ]* ${SEARCHSTR%,} " > $PKGINFOS
+        else
+          grep -h ${GREPOPTS} "^$DIR" ${TMPDIR}/pkglist ${TMPDIR}/pkglist-pre|grep -E ${GREPOPTS} "/SLACKPKGPLUS_$SEARCHSTR/|/$SEARCHSTR/|/$SEARCHSTR | [^ /]*$SEARCHSTR[^ /]* " > $PKGINFOS
+        fi
       fi
       PKGTOPROCESS=$(cat $PKGINFOS|wc -l)
       PKGINPROGRES=0
@@ -1488,7 +1492,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
     done|sort
     echo -en "\r" >&2
-    }|column -t -s '#' -o ' '|( [[  "$CMD" == "search" ]]&&grep -E -i --color -e ^ -e "$PATTERN"||cat )
+    }|column -t -s '#' -o ' '|( [[  "$CMD" == "search" ]]&&grep -E -i --color -e ^ -e "${PATTERN%,}"||cat )
   } # END function searchlistEX()
 
     # Show detailed info for slackpkg info
@@ -2386,12 +2390,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           searchlistEX "$LIST"
           echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"
         fi
-        SBORESULT="$(grep -E -i "^SBO_[^ ]* [^ ]*$PATTERN" $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+        SBORESULT="$(grep -E -i "^SBO_[^ ]* [^ ]*${PATTERN/,/ }" $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
         if [ ! -z "$SBORESULT" ];then
             echo
             echo "Also found in SBo (download it with 'slackpkg download <package>'):"
             echo
-            echo -e "[package]\n$SBORESULT"|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "$PATTERN" -e ^
+            echo -e "[package]\n$SBORESULT"|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "${PATTERN%,}" -e ^
             echo
         fi
       ;;
