@@ -133,8 +133,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Patching makelist() original function to accept pkglist-pre
   eval "$(type makelist | sed -e $'1d;2c\\\nmakelist()\n' \
                               -e 's,cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist,' \
-                              -e 's/\(LIST.*pkglist\)\(.*--output-delimiter=.\)/\1 |grep -w -- \"${ARGUMENT}\"\2/'
-
          )"
 
     # Adds the pattern given by $(1) into the internal blacklist
@@ -2513,6 +2511,38 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     cleanup
   fi # "$CMD" == "check-updates"
+
+  if [ "$CMD" == "download" ];then
+    printf "%s\n" $ROOT/var/log/packages/* |
+      awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
+
+    cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
+
+    echo -n "Looking for $(echo $INPUTLIST | tr -d '\\') in package list. Please wait... "
+    for ARGUMENT in $(echo $INPUTLIST); do
+      if [[ "$ARGUMENT" =~ , ]];then
+        for i in $(grep " ${ARGUMENT%,*} " ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u); do
+          LIST="$LIST $(grep " ${i} " ${TMPDIR}/pkglist |grep " ${ARGUMENT%,*} " | cut -f6,8 -d\  --output-delimiter=.)"
+        done
+      else
+        for i in $(grep -w -- "${ARGUMENT}" ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u); do
+          LIST="$LIST $(grep " ${i} " ${TMPDIR}/pkglist |grep -w -- "${ARGUMENT}" | cut -f6,8 -d\  --output-delimiter=.)"
+        done
+      fi
+      LIST="$(echo -e $LIST | sort -u)"
+    done
+    DELALL="off"
+    if ! [ "$LIST" = "" ]; then
+      showlist "$LIST" $CMD
+      for i in $SHOWLIST; do
+        getpkg $i true
+      done
+    else
+      echo -e "No packages match the pattern for download."
+      EXIT_CODE=20
+    fi
+    cleanup
+  fi
 
 fi
 
