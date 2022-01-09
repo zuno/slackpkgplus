@@ -2531,6 +2531,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
       LIST="$(echo -e $LIST | sort -u)"
     done
+    echo -e "DONE\n"
     DELALL="off"
     if ! [ "$LIST" = "" ]; then
       showlist "$LIST" $CMD
