@@ -132,6 +132,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     # Patching makelist() original function to accept pkglist-pre
   eval "$(type makelist | sed -e $'1d;2c\\\nmakelist()\n' \
+                              -e "/in package list/s/tr -d '\\\\\\\\'/tr -d '\\\\\\\\*'/" \
                               -e 's,cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist,' \
          )"
 
@@ -1262,7 +1263,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
 
     touch ${TMPDIR}/waiting
-    echo -n "Looking for $PATTERN in package list. Please wait... "
+    echo -n "Looking for $PATTERN in package list. Please wait... "|tr -d '\\*'
     [ "$SPINNING" = "off" ] || spinning ${TMPDIR}/waiting &
 
     [ "$SENSITIVE_SEARCH" = "off" ] && GREPOPTS="--ignore-case"
@@ -2192,7 +2193,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     PRIORITYLIST_SX=""
 
     for pref in $INPUTLIST ; do
-      pref=${pref/%,/,*}
+      [[ "$pref" =~ , ]]&&{ pref="${pref/\*}" ; pref="${pref/,},*" ; }
       PRIORITY_FILTER_RULE=""
 
       # You can specify 'slackpkg install .' that is an alias of 'slackpkg install dir:./'
@@ -2377,6 +2378,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   if [ "$CMD" == "search" ] || [ "$CMD" == "file-search" ] ; then
     PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g' -e 's/^\///')
+    [[ "$PATTERN" =~ , ]]&&{ PATTERN="${PATTERN/\*}" ; PATTERN="${PATTERN/,}," ; }
     searchPackages $PATTERN
 
     case $CMD in
@@ -2388,7 +2390,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           searchlistEX "$LIST"
           echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"
         fi
-        if [[ "${PATTERN}" =~ ,\*?$ ]];then
+        if [[ "${PATTERN}" =~ , ]];then
           SBORESULT="$(grep -E -i "^SBO_[^ ]* ${PATTERN%,*} " $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
         else
           SBORESULT="$(grep -E -i "^SBO_[^ ]* [^ ]*${PATTERN}" $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
@@ -2518,9 +2520,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
 
-    echo -n "Looking for $(echo $INPUTLIST | tr -d '\\') in package list. Please wait... "
+    echo -n "Looking for $(echo $INPUTLIST | tr -d '\\*') in package list. Please wait... "
     for ARGUMENT in $(echo $INPUTLIST); do
-      if [[ "$ARGUMENT" =~ ,\*?$ ]];then
+      if [[ "$ARGUMENT" =~ , ]];then
+        ARGUMENT=${ARGUMENT/\*} ; ARGUMENT=${ARGUMENT/,}
         for i in $(grep " ${ARGUMENT%,*} " ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u); do
           LIST="$LIST $(grep " ${i} " ${TMPDIR}/pkglist |grep " ${ARGUMENT%,*} " | cut -f6,8 -d\  --output-delimiter=.)"
         done
