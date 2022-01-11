@@ -1,3 +1,16 @@
+Tue Jan 11 19:24:04 CET 2022
+pkg/slackpkg+-1.7.11-noarch-1mt.txz:
+  - zlookkernel.sh also supports grub (thanks to RezaT4795)
+  - repositories.lst updated
+  - Added "comma" syntax. Now you can add a comma (,) at start or at end
+    of packagename to match the exact name, so "libreoffice," does match
+    the "libreoffice" package and not the libreoffice-dict-* ecc. for ex:
+       slackpkg upgrade libreoffice,
+       slackpkg install alienbob:libreoffice,
+       slackpkg download libreoffice,
+       slackpkg search libreoffice,
++-------------------------+
+
 Sun Dec 19 23:40:59 CET 2021
 pkg/slackpkg+-1.7.10-noarch-1mt.txz:
   - According to slackpkg 15.0.9, automatically rebuild package lists if

@@ -1,6 +1,6 @@
 = Full Changes list =
 
-== From 1.7 to 1.7.10 ==
+== From 1.7 to 1.7.11 ==
 
 *Configuration file:
 
@@ -29,6 +29,21 @@
   packages
 
 *New features:
+
+- Added "comma" syntax. Now you can select an exact package name adding a comma (,)
+  at the end of the package name
+       slackpkg upgrade libreoffice,
+       slackpkg install alienbob:libreoffice,
+       slackpkg download libreoffice,
+       slackpkg search libreoffice,
+  without comma slackpkg shows libreoffice libreoffice-dict-* libreoffice-l10n-*
+  that means up to 500 packages that you have to deselect. With the comma
+  slackpkg shows the libreoffice package only.
+  You can also add it at the start of name
+    slackpkg install alienbob:libreoffice,
+    slackpkg install alienbob:,libreoffice
+    slackpkg install ,alienbob:libreoffice
+  are all equivalent
 
 - Added manpages (italian and english) for slackpkgplus.conf
   to read the italian manpage be sure to export LANG=it_IT@euro and use the
@@ -128,7 +143,7 @@
      but greylist system use the older syntax
 
 - Added zlookkernel.sh
-     It help you to reconfigure initrd. It does support lilo and elilo (EFI)
+     It help you to reconfigure initrd. It does support lilo , elilo (EFI) and grub
      set PLUGIN_ZLOOKKERNEL=enable to use it
      For instructions read notes in the code:
           /usr/libexec/slackpkg/functions.d/zlookkernel.sh

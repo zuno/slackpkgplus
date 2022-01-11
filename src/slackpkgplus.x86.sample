@@ -148,7 +148,7 @@ MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+15/
 # Plugin section:
 # Here you can enable some optional feature. Please read documentation before enable it.
 #
-# ZLookKernel can help you to rebuild initrd and reinstall lilo/elilo. This feature was
+# ZLookKernel can help you to rebuild initrd and reinstall lilo/elilo/grub. This feature was
 # removed in slackpkg-15.0. 'enable' this setting to enable it.
 # read /usr/libexec/slackpkg/functions.d/zlookkernel.sh for more information
 # It will ask confirmations at every step, unless you will set 'PLUGIN_ZLOOKKERNEL_PROMPT=off'
