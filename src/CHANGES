@@ -127,6 +127,9 @@
 
 *Various
 
+- No longer need to run 'slackpkg update gpg' everytime a repository is added or
+  renamed, unless STRICTGPG=off
+
 - Suppress wget output in ChangeLog downloading
 
 - Catch errors and return exit status: 1 for warning, 2 for fatal

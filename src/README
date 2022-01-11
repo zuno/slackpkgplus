@@ -143,6 +143,18 @@ accepts the following kinds of argument:
    Note: 'slackpkg install .' is an alias of 'slackpkg install dir:./', but
    'slackpkg install ./' is NOT the same alias; see FILE in man slackpkg
 
+8) "comma syntax". Add a comma to the package name in any command to match
+   exact package name instead word match. For example, searching for
+   "libreoffice" match "libreoffice" "libreoffice-dict-it" etc. Up to 500
+   packages that you need to deselect if you just want to install libreoffice
+       slackpkg upgrade libreoffice,
+       slackpkg install alienbob:libreoffice,
+       slackpkg download libreoffice,
+       slackpkg search libreoffice,
+   you can also put the comma at the start of the packagename
+       slackpkg reinstall ,libreoffice
+       slackpkg install ,libreoffice{,-dict-it,-l10n-it}
+
 -----
 
 
@@ -610,9 +622,8 @@ To use a similar repository you may set STRICTGPG=off
 Note that sometime you may need to import manually the GPG-KEY with the command
 # gpg --import GPG-KEY
 
-Note: after upgrading from slackpkg+ < 1.7, you must run slackpkg update gpg.
-Also you need it everytime you add or _rename_ a reporitory in
-slackpkgplus.conf.
+Note: If you add a repository you may need to run 'slackpkg update gpg' if
+STRICTGPG is set to off.
 
 -----
 

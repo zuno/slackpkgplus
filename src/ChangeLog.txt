@@ -1,3 +1,10 @@
+Tue Jan 11 21:42:33 CET 2022
+pkg/slackpkg+-1.7.11-noarch-2mt.txz:
+  - Automatically download gpg key if needed if STRICTGPG=on.
+    If STRICTGPG=off you need to manually run slackpkg update gpg every
+    time you add a new repository.
++-------------------------+
+
 Tue Jan 11 19:24:04 CET 2022
 pkg/slackpkg+-1.7.11-noarch-1mt.txz:
   - zlookkernel.sh also supports grub (thanks to RezaT4795)

@@ -1994,14 +1994,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     find $TEMP ! -type d|sort|tac|awk '{if($1~/\.asc$/)f[$1]++;if($1~/\.t.z$/ && !f[$1".asc"])print $1}' |xargs -r rm -f
   fi
 
-  if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&& ! ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1;then
-    echo "FATAL! No Slackware GPG-KEY imported."
-    if [ -e "$WORKDIR/ChangeLog.txt" ];then
-      echo "If you are upgrading from an older release of slackpkg+, all keys must to be reimported."
-    fi
-    echo "Please run"
-    echo "  # slackpkg update gpg"
-    cleanup
+  #if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&&[ "$STRICTGPG" = "on" ] && ! ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1;then
+  if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&&[ "$STRICTGPG" = "on" ];then
+    ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1 || GPGFIRSTTIME=0
+    for PREPO in "${!MIRRORPLUS[@]}" ; do
+      if ! echo "${MIRRORPLUS[$PREPO]}"|grep -q -e "^httpdir://" -e "^httpsdir://" -e "^ftpdir://" 2>/dev/null ; then
+        ls -l $WORKDIR/gpg/GPG-KEY-${PREPO}.gpg >/dev/null 2>&1 || GPGFIRSTTIME=0
+      fi
+    done
   fi
 
     # Ensure each repository url has a trailing slash...
