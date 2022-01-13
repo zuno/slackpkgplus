@@ -1935,7 +1935,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  SPKGPLUS_VERSION="1.7.11"
+  SPKGPLUS_VERSION="1.8.rc1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   if [ ${VERSION:0:4} == "2.82" ];then
@@ -1998,7 +1998,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&&[ "$STRICTGPG" = "on" ];then
     ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1 || GPGFIRSTTIME=0
     for PREPO in "${!MIRRORPLUS[@]}" ; do
-      if ! echo "${MIRRORPLUS[$PREPO]}"|grep -q -e "^httpdir://" -e "^httpsdir://" -e "^ftpdir://" 2>/dev/null ; then
+      if ! echo "${MIRRORPLUS[$PREPO]}"|grep -q -e "^dir:/" -e "^httpdir://" -e "^httpsdir://" -e "^ftpdir://" 2>/dev/null ; then
         ls -l $WORKDIR/gpg/GPG-KEY-${PREPO}.gpg >/dev/null 2>&1 || GPGFIRSTTIME=0
       fi
     done

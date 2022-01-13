@@ -1,3 +1,12 @@
+Thu Jan 13 10:48:24 CET 2022
+pkg/slackpkg+-1.8.rc1-noarch-1mt.txz:
+  Slackware 15.0 rc3 has been released, declared as 99% freezed. 
+  Slackpkg too has had many changes, fix and improvement, and it's the
+  time for slackpkg+ 1.8 to be declared ready. See the CHANGES in 
+  documentation for all improvements.
+  - Regression on (not-needed) gpg key check on dir:/ repository
++-------------------------+
+
 Tue Jan 11 21:42:33 CET 2022
 pkg/slackpkg+-1.7.11-noarch-2mt.txz:
   - Automatically download gpg key if needed if STRICTGPG=on.
