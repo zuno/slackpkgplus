@@ -1973,6 +1973,57 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     mkdir -p "$WORKDIR"
   fi
 
+  if [ -e ${WORKDIR}/current ]&&[ "$MIRROR_VERSION" != "current" ];then
+    echo "WARNING: ${WORKDIR}/current does exists and you have
+          not selected slackware current repository.
+
+          This may be you have an older version o slackpkg.
+          You can continue anyway"|tee -a $TMPDIR/info.log
+    echo
+  fi
+  if [ "${SLACKWARE_VERSION:0:2}" == "14" ]&&[ "$MIRROR_VERSION" == "15.0" ];then
+    echo "WARNING: You have selected a mirror for Slackware 15.0 and you are running
+          slackware $SLACKWARE_VERSION; if you are upgrading slackware be
+          sure to run following steps:
+          # slackpkg update
+          # slackpkg install-new
+          # slackpkg upgrade
+          # slackpkg clean-system
+
+          This message will disappear when the upgrade will finish"|tee -a $TMPDIR/info.log
+    echo
+  elif [ "${MIRROR_VERSION:0:2}" == "14" ];then
+    echo "FATAL: You have selected a mirror for Slackware $MIRROR_VERSION!
+          If this is an error please correct your slackpkg configuration.
+          If you really wants to install Slackware $MIRROR_VERSION be sure
+          to downgrade slackpkg+ to 1.7.0 since $SPKGPLUS_VERSION does not
+          support Slackware $MIRROR_VERSION!"|tee -a $TMPDIR/fatal.log
+    echo
+    EXIT_CODE=1
+    cleanup
+  elif [ ! -e ${WORKDIR}/current ]&&[ -e ${WORKDIR}/currentplus ];then
+    echo "WARNING: You have changed the mirror from Slackware current to $MIRROR_VERSION;
+          You are running Slackware $SLACKWARE_VERSION; if you are upgrading slackware be
+          sure to run following steps:
+          # slackpkg update
+          # slackpkg install-new
+          # slackpkg upgrade
+          # slackpkg clean-system
+
+          If this is an error please fix the configuration."|tee -a $TMPDIR/info.log
+    echo
+  elif [ -e ${WORKDIR}/current ]&&[ ! -e ${WORKDIR}/currentplus ];then
+    echo "INFO: You have changed the mirror to Slackware current;
+          You are running Slackware $SLACKWARE_VERSION; if you are upgrading slackware be
+          sure to run following steps:
+          # slackpkg update
+          # slackpkg install-new
+          # slackpkg upgrade
+          # slackpkg clean-system"|tee -a $TMPDIR/info.log
+    echo
+  fi
+  [ ! -e ${WORKDIR}/current ] && rm -f ${WORKDIR}/currentplus 2>/dev/null ||touch ${WORKDIR}/currentplus 2>/dev/null
+
   if ! grep -q "slackpkgplus repositories" $WORKDIR/CHECKSUMS.md5.asc 2>/dev/null &&
        [ "$CMD" != "update" ] && [ "$CMD" != "new-config" ] && [ "$CMD" != "help" ];then
     echo "======================================================"
