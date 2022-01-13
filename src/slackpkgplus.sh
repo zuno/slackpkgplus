@@ -173,6 +173,16 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local retval=${EXIT_CODE:-0}
     [ ! -z "$PENDING_UPDATES" ]&&retval=$PENDING_UPDATES
 
+    if ! ls -L /usr/bin/vi >/dev/null 2>&1 && [ ! -z "$LINKVI" ];then
+      echo "
+      An update has removed or damaged your VI symbolic link so you may be not
+      able to use VI (vim, elvis, nvi,...)
+      You need to manually run '/var/lib/pkgtools/setup/setup.vi-ex' to choose
+      your default VI editor or create the link yourself.
+      This may happen when you upgrade from slackware 14.2 to slackware 15.0
+      " >> $TMPDIR/info.log
+    fi
+
     if [ "$CMD" == "info" ];then
       DETAILED_INFO=${DETAILED_INFO:-none}
       [[ "$DETAILED_INFO" != "none" ]]&&more_info
@@ -1969,6 +1979,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   fi
 
+  LINKVI=$(ls -L /usr/bin/vi 2>/dev/null)
+
   if [ ! -e "$WORKDIR" ];then
     mkdir -p "$WORKDIR"
   fi
@@ -1992,6 +2004,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
           This message will disappear when the upgrade will finish"|tee -a $TMPDIR/info.log
     echo
+    sleep 5
   elif [ "${MIRROR_VERSION:0:2}" == "14" ];then
     echo "FATAL: You have selected a mirror for Slackware $MIRROR_VERSION!
           If this is an error please correct your slackpkg configuration.
@@ -2012,6 +2025,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
           If this is an error please fix the configuration."|tee -a $TMPDIR/info.log
     echo
+    sleep 5
   elif [ -e ${WORKDIR}/current ]&&[ ! -e ${WORKDIR}/currentplus ];then
     echo "INFO: You have changed the mirror to Slackware current;
           You are running Slackware $SLACKWARE_VERSION; if you are upgrading slackware be
@@ -2021,6 +2035,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           # slackpkg upgrade
           # slackpkg clean-system"|tee -a $TMPDIR/info.log
     echo
+    sleep 5
   fi
   [ ! -e ${WORKDIR}/current ] && rm -f ${WORKDIR}/currentplus 2>/dev/null ||touch ${WORKDIR}/currentplus 2>/dev/null
 
