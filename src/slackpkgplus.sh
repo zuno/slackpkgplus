@@ -1584,13 +1584,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     echo " It no longer supports Slackware 15.0 and should be used with"
     echo " Slackware 14.2 only."
     echo " Using it with Slackware 15.0 may not work properly"
-    echo " Use slackpkg+ 1.7.1 or development release instead"
+    echo " Use slackpkg+ 1.8 or development release instead"
     echo
-    SLPMIR="$(cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg)"
-    if [ "$SLPMIR" != "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+15/" ]&&
-       [ "$SLPMIR" != "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+dev/" ];then
+    SLPMIR="$(cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkgplus)"
+    if ! echo "$SLPMIR" |grep -q -e "slakfinder.org/slackpkg+15/" -e "slakfinder.org/slackpkg+dev/";then
       echo " Please replace"
-      cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg
+      cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkgplus
       echo " with"
       echo "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+15/"
       echo " then run 'slackpkg update && slackpkg upgrade slackpkg+' to upgrade it"
@@ -1609,11 +1608,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   fi
 
-  SLPMIR="$(cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg)"
-  if [ "$SLPMIR" == "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+/" ];then
-    echo " ! ! ! WARNING ! ! ! "
+  SLPMIR="$(cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkgplus)"
+  if echo "$SLPMIR" |grep -q slakfinder.org/slackpkg+/;then
+    echo " ! ! ! FATAL ! ! ! "
     echo " You are using the link 'http://slakfinder.org/slackpkg+/' to keep"
-    echo " slackpkg+ updated. However slackware 15.0 beta 1 was released and"
+    echo " slackpkg+ updated. This url is no longer supported."
     echo " that link may upgrade slackpkg+ to a newest release that does not"
     echo " support slackware 14.2."
     echo
@@ -1621,10 +1620,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg
     echo " with"
     echo "MIRRORPLUS['slackpkgplus']=http://slakfinder.org/slackpkg+1.7/"
-    echo " to be sure that the newest release will not broke your slackpkg+"
-    echo " installation, unless you plan to upgrade to slackware 15.0"
     echo
-    sleep 3
+    cleanup
   fi
 
 
