@@ -121,7 +121,7 @@ lookkernel() {
           fi
           /sbin/lilo -v
         fi
-      elif [ -e /boot/grub ]&&[ -x /usr/sbin/grub-install ]; then
+      elif [ -e /boot/grub/grub.cfg ]&&[ -x /usr/sbin/grub-install ]; then
         echo -e "\nFound grub. Do you want to run now: /usr/sbin/grub-mkconfig -o /boot/grub/grub.cfg ? (Y/n)"
         [ ! "$PLUGIN_ZLOOKKERNEL_PROMPT" == "off" ] && answer
         if [ "$ANSWER" != "n" ] && [ "$ANSWER" != "N" ]; then
