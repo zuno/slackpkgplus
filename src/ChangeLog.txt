@@ -1,5 +1,5 @@
 Thu Jan 13 10:48:24 CET 2022
-pkg/slackpkg+-1.8.rc1-noarch-1mt.txz:
+pkg/slackpkg+-1.8.rc1-noarch-1mt.txz: Upgrade
   Slackware 15.0 rc3 has been released, declared as 99% freezed. 
   Slackpkg too has had many changes, fix and improvement, and it's the
   time for slackpkg+ 1.8 to be declared ready. See the CHANGES in 
@@ -8,14 +8,14 @@ pkg/slackpkg+-1.8.rc1-noarch-1mt.txz:
 +-------------------------+
 
 Tue Jan 11 21:42:33 CET 2022
-pkg/slackpkg+-1.7.11-noarch-2mt.txz:
+pkg/slackpkg+-1.7.11-noarch-2mt.txz: Rebuilt
   - Automatically download gpg key if needed if STRICTGPG=on.
     If STRICTGPG=off you need to manually run slackpkg update gpg every
     time you add a new repository.
 +-------------------------+
 
 Tue Jan 11 19:24:04 CET 2022
-pkg/slackpkg+-1.7.11-noarch-1mt.txz:
+pkg/slackpkg+-1.7.11-noarch-1mt.txz: Upgrade
   - zlookkernel.sh also supports grub (thanks to RezaT4795)
   - repositories.lst updated
   - Added "comma" syntax. Now you can add a comma (,) at start or at end
@@ -28,13 +28,13 @@ pkg/slackpkg+-1.7.11-noarch-1mt.txz:
 +-------------------------+
 
 Sun Dec 19 23:40:59 CET 2021
-pkg/slackpkg+-1.7.10-noarch-1mt.txz:
+pkg/slackpkg+-1.7.10-noarch-1mt.txz: Upgrade
   - According to slackpkg 15.0.9, automatically rebuild package lists if
     missing or not build by slackpkg+
 +-------------------------+
 
 Tue Oct 26 10:10:23 CEST 2021
-pkg/slackpkg+-1.7.9-noarch-1mt.txz:
+pkg/slackpkg+-1.7.9-noarch-1mt.txz: Upgrade
   - According to slackpkg 15.0.8 new exit codes was added in slackpkg+ too:
       0 Successful Slackpkg execution.
       1 Something wrong happened.
@@ -47,7 +47,7 @@ pkg/slackpkg+-1.7.9-noarch-1mt.txz:
 +-------------------------+
 
 Sat Oct 16 15:39:45 CEST 2021
-pkg/slackpkg+-1.7.8-noarch-1mt.txz:
+pkg/slackpkg+-1.7.8-noarch-1mt.txz: Upgrade
   - New feature: CHECKDISKSPACE=on in configuration enable checking
     diskspace before download and install packages
   - Fixed an issue on zlookkernel when /boot/vmlinuz is a symlink to another
@@ -55,7 +55,7 @@ pkg/slackpkg+-1.7.8-noarch-1mt.txz:
 +-------------------------+
 
 Fri Jul  9 00:47:35 CEST 2021
-pkg/slackpkg+-1.7.7-noarch-1mt.txz:
+pkg/slackpkg+-1.7.7-noarch-1mt.txz: Upgrade
   - Added support for SBo-current repository (by cgit ponce)
   - slackpkg download <package> can download SBo scripts
   - Replaced SBOURL with array SBO to allow multiple repository. please
