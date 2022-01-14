@@ -1,3 +1,15 @@
+Fri Jan 14 20:49:06 CET 2022
+pkg/slackpkg+-1.8.rc1-noarch-2mt.txz: Upgrade
+  - Advice to run /var/lib/pkgtools/setup/setup.vi-ex if some upgrade
+    delete the /usr/bin/vi link (may happens upgrading from 14.2 to 15.0)
+  - Protect from slackware downgrades in case of wrong slackware mirror
+    selected.
+  - Report in /var/run/needs_restarting if some upgrade needs a reboot
+    (from a non-release feature of slackpkg)
+  - zlookkernel.sh does not try to configure grub, just re-configure if
+    it is already configure
++-------------------------+
+
 Thu Jan 13 10:48:24 CET 2022
 pkg/slackpkg+-1.8.rc1-noarch-1mt.txz: Upgrade
   Slackware 15.0 rc3 has been released, declared as 99% freezed. 
