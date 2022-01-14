@@ -107,6 +107,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function internal_blacklist()
   # function applyblacklist()
   # function cleanup()
+  # function needs_restarting()
   # function handle_event()
   # function remove_pkg()
   # function installpkg() // if DOWNLOADONLY=on override /sbin/installpkg
@@ -182,6 +183,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       This may happen when you upgrade from slackware 14.2 to slackware 15.0
       " >> $TMPDIR/info.log
     fi
+    needs_restarting
 
     if [ "$CMD" == "info" ];then
       DETAILED_INFO=${DETAILED_INFO:-none}
@@ -257,6 +259,39 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     exit $retval
   } # END function cleanup()
+
+    # From slackpkg (with some improving)
+    #
+    # Checks if a critical package were upgraded by Slackpkg.
+    # The /var/run/needs_restarting file contains the list of upgraded
+    # packages.
+    #
+    # The file only is created if /var/run filesystem type is tmpfs so
+    # the reboot will clean it
+  function needs_restarting() {
+    NEED_RESTART="$(
+      find $ROOT/var/log/packages/ -cnewer $TMPDIR/timestamp -type f \( \
+        -name "kernel-generic-[0-9]*" -o \
+        -name "kernel-huge-[0-9]*" -o \
+        -name "openssl-solibs-[0-9]*" -o \
+        -name "openssl-[0-9]*" -o \
+        -name "glibc-[0-9]*" -o \
+        -name "aaa_glibc-solibs-[0-9]*" -o \
+        -name "eudev-[0-9]*" -o \
+        -name "rzip-[0-9]*" -o \
+        -name "elogind-[0-9]*" -o \
+        -name "dbus-[0-9]*" \) | \
+      awk -F/ '{ print $NF }'
+    )"
+    if [ ! -z "$NEED_RESTART" ];then
+      echo "NOTE: Some installed or upgraded package may need reboot: " >> $TMPDIR/info.log
+      echo "$NEED_RESTART"|sed 's/^/           /'                       >> $TMPDIR/info.log
+      if [ "$(stat -f -c %T /var/run/)" = "tmpfs" ]; then
+        echo "$NEED_RESTART" >> $ROOT/var/run/needs_restarting
+        echo "See /var/run/needs_restarting for details"                >> $TMPDIR/info.log
+      fi
+    fi
+  }
 
     # -- handle the event $1 that occured on packages $SHOWLIST
     #
