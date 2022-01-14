@@ -148,13 +148,13 @@ E' possibile specificare più di un repository aggiungendo multiple righe.
 Ogni repository ha un nome che va specificato tra parentesi quadre.
 
 .in +4
-MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+/
+MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+15/
 .in
 
 E' possibile specificare repository remoti in http/https/ftp o repository locali (con o senza metadati).
 Per dettagli sui tipi di repository fare riferimento alla documentazione.
 
-Ogni volta che si aggiunge un nuovo repository o che viene rinominato è necessario lanciare il comando \fB\%slackpkg\ update\ gpg\fP per scaricare/confermare la chiave GPG.
+Ogni volta che si aggiunge un nuovo repository potrebbe essere necessario lanciare il comando \fB\%slackpkg\ update\ gpg\fP per scaricare la chiave GPG.
 
 .TP  5
 \fBREPOPLUS\fP
