@@ -278,7 +278,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         -name "glibc-[0-9]*" -o \
         -name "aaa_glibc-solibs-[0-9]*" -o \
         -name "eudev-[0-9]*" -o \
-        -name "rzip-[0-9]*" -o \
         -name "elogind-[0-9]*" -o \
         -name "dbus-[0-9]*" \) | \
       awk -F/ '{ print $NF }'
