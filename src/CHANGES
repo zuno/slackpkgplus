@@ -84,6 +84,9 @@
   slackpkg will generate the pkglist skipping slackpkg+ then slackpkg+ will 
   regenerate pkglist skipping slackpkg :)
 
+- Create a /var/run/needs_restarting with the list of upgraded packages that may need
+  reboot (proposed by piterpunk on github for slackpkg)
+
 *Improvements
 
 - Improved checkrepos.sh
@@ -102,6 +105,10 @@
     /usr/libexec/slackpkg/functions.d/zchangelog.sh
   It does not support SBo repositories
 
+- Prevents from slackware downgrade caused by mirror misconfiguration.
+
+- Advice to run /var/lib/pkgtools/setup/setup.vi-ex if some upgrade removes
+  /usr/bin/vi
 
 *BugFixes
 
