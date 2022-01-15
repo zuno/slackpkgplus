@@ -1991,7 +1991,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  SPKGPLUS_VERSION="1.8.rc1"
+  SPKGPLUS_VERSION="1.8.rc2"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   if [ ${VERSION:0:4} == "2.82" ];then
@@ -2085,6 +2085,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   fi
   [ ! -e ${WORKDIR}/current ] && rm -f ${WORKDIR}/currentplus 2>/dev/null ||touch ${WORKDIR}/currentplus 2>/dev/null
 
+  [ ! -s $WORKDIR/pkglist ] && rm -f $WORKDIR/CHECKSUMS.md5.asc
   if ! grep -q "slackpkgplus repositories" $WORKDIR/CHECKSUMS.md5.asc 2>/dev/null &&
        [ "$CMD" != "update" ] && [ "$CMD" != "new-config" ] && [ "$CMD" != "help" ];then
     echo "======================================================"

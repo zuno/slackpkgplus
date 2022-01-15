@@ -40,7 +40,8 @@ config etc/slackpkg/greylist.new
 config etc/slackpkg/notifymsg.conf.new
 
 if [ -d var/lib/slackpkg ];then
+  WORKDIR=var/lib/slackpkg
   [ ! -e $WORKDIR/pkglist ]&&touch $WORKDIR/pkglist
-  [ ! -e $WORKDIR/current ]&&touch $WORKDIR/currentplus
+  [   -e $WORKDIR/current ]&&touch $WORKDIR/currentplus
   [ ! -e $WORKDIR/CHECKSUMS.md5 ]&&touch $WORKDIR/CHECKSUMS.md5
 fi

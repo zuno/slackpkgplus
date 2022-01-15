@@ -1,3 +1,11 @@
+Sun Jan 16 00:05:32 CET 2022
+pkg/slackpkg+-1.8.rc2-noarch-1mt.txz: Upgrade
+  - Fixed an advice at first 1.8 install
+  - Fixed slackpkg info for sbo packages
+  - Avoid slackpkg runs update before load slackpkg+ code
+  - Fixed automatic rebuild pkglist
++-------------------------+
+
 Fri Jan 14 20:49:06 CET 2022
 pkg/slackpkg+-1.8.rc1-noarch-2mt.txz: Upgrade
   - Advice to run /var/lib/pkgtools/setup/setup.vi-ex if some upgrade
