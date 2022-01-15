@@ -1545,20 +1545,32 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cat $WORKDIR/pkglist|grep -E "^[^ ]* $NAME "|while read repository name version arch tag namepkg fullpath ext;do
       echo "Package:    $namepkg"
       echo "Repository: ${repository/SLACKPKGPLUS_/}"
-      echo "Path:       ${fullpath/\/SLACKPKGPLUS_${repository/SLACKPKGPLUS_/}/}/$namepkg.$ext"
-      URLFILE=${SOURCE}${fullpath}/${namepkg}.${ext}
-      if echo $URLFILE|grep -q /SLACKPKGPLUS_;then
-        PREPO=$(echo $URLFILE|sed -r 's#^.*/SLACKPKGPLUS_([^/]+)/.*$#\1#')
-        URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
-      fi
-      echo "Url:        ${URLFILE/.\//}"
-      if [ "$DETAILED_INFO" == "filelist" ];then
-        FILELIST="$(zgrep ^${fullpath/\/${repository}/}/$namepkg.$ext $WORKDIR/$repository-filelist.gz 2>/dev/null)"
-        if [ -z "$FILELIST" ];then
-          echo "Filelist:   no file list available"
+      if echo $repository|grep -q SBO_;then
+        fullpath=${fullpath/*$repository\//}
+        if [ "$repository" == "SBO_current" ];then
+          fullpath="plain/$fullpath/"
         else
-          echo "Filelist:"
-          echo "$FILELIST"|sed "s/ /\n/g"|tail +2|sed 's/^/  /'
+          fullpath="$fullpath/"
+        fi
+        URLFILE=${SBO[${repository/SBO_}]%/}/$fullpath
+        echo "Path:       ${fullpath}"
+        echo "Url:        ${URLFILE}"
+      else
+        echo "Path:       ${fullpath/\/SLACKPKGPLUS_${repository/SLACKPKGPLUS_/}/}/$namepkg.$ext"
+        URLFILE=${SOURCE}${fullpath}/${namepkg}.${ext}
+        if echo $URLFILE|grep -q /SLACKPKGPLUS_;then
+          PREPO=$(echo $URLFILE|sed -r 's#^.*/SLACKPKGPLUS_([^/]+)/.*$#\1#')
+          URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
+        fi
+        echo "Url:        ${URLFILE/.\//}"
+        if [ "$DETAILED_INFO" == "filelist" ];then
+          FILELIST="$(zgrep ^${fullpath/\/${repository}/}/$namepkg.$ext $WORKDIR/$repository-filelist.gz 2>/dev/null)"
+          if [ -z "$FILELIST" ];then
+            echo "Filelist:   no file list available"
+          else
+            echo "Filelist:"
+            echo "$FILELIST"|sed "s/ /\n/g"|tail +2|sed 's/^/  /'
+          fi
         fi
       fi
       echo
