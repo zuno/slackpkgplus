@@ -1553,7 +1553,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           fullpath="$fullpath/"
         fi
         URLFILE=${SBO[${repository/SBO_}]%/}/$fullpath
-        echo "Path:       ${fullpath}"
+        echo "Path:       ./${fullpath}"
         echo "Url:        ${URLFILE}"
       else
         echo "Path:       ${fullpath/\/SLACKPKGPLUS_${repository/SLACKPKGPLUS_/}/}/$namepkg.$ext"
