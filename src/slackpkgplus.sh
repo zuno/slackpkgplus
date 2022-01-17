@@ -2249,7 +2249,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     CACHEDOWNLOADER=$DOWNLOADER
     CACHEDIR=$WORKDIR/cache
     mkdir -p $CACHEDIR
-    find $CACHEDIR -mtime +30 -exec rm -f {} \;
+    find $CACHEDIR -mtime +30 -type f -exec rm -f {} \;
     DOWNLOADER="cached_downloader"
   fi
 
