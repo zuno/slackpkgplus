@@ -2039,13 +2039,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           You can continue anyway"|tee -a $TMPDIR/info.log
     echo
   fi
+  if echo "${!MIRRORPLUS[@]}"|grep -wq multilib;then
+    MULTILIB_ACTION="
+          # slackpkg install multilib"
+  fi
   if [ "${SLACKWARE_VERSION:0:2}" == "14" ]&&[ "$MIRROR_VERSION" == "15.0" ];then
     echo "WARNING: You have selected a mirror for Slackware 15.0 and you are running
           slackware $SLACKWARE_VERSION; if you are upgrading slackware be
           sure to run following steps:
           # slackpkg update
-          # slackpkg install-new
-          # slackpkg upgrade
+          # slackpkg install-new$MULTILIB_ACTION
+          # slackpkg upgrade-all
           # slackpkg clean-system
 
           This message will disappear when the upgrade will finish"|tee -a $TMPDIR/info.log
@@ -2065,8 +2069,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           You are running Slackware $SLACKWARE_VERSION; if you are upgrading slackware be
           sure to run following steps:
           # slackpkg update
-          # slackpkg install-new
-          # slackpkg upgrade
+          # slackpkg install-new$MULTILIB_ACTION
+          # slackpkg upgrade-all
           # slackpkg clean-system
 
           If this is an error please fix the configuration."|tee -a $TMPDIR/info.log
@@ -2077,7 +2081,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           You are running Slackware $SLACKWARE_VERSION; if you are upgrading slackware be
           sure to run following steps:
           # slackpkg update
-          # slackpkg install-new
+          # slackpkg install-new$MULTILIB_ACTION
           # slackpkg upgrade
           # slackpkg clean-system"|tee -a $TMPDIR/info.log
     echo
@@ -2088,10 +2092,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   [ ! -s $WORKDIR/pkglist ] && rm -f $WORKDIR/CHECKSUMS.md5.asc
   if ! grep -q "slackpkgplus repositories" $WORKDIR/CHECKSUMS.md5.asc 2>/dev/null &&
        [ "$CMD" != "update" ] && [ "$CMD" != "new-config" ] && [ "$CMD" != "help" ];then
-    echo "======================================================"
-    echo "We need to force 'slackpkg update' to enable slackpkg+"
-    echo "Then you can rerun '$CMD' command                     "
-    echo "======================================================"
+    echo "========================================================="
+    echo "slackpkg was upgrades or slackpkg+ was temporary disabled"
+    echo "We need to force 'slackpkg update' to re-enable slackpkg+"
+    echo "Then you can re-run '$CMD' command                       "
+    echo "========================================================="
     echo
     echo "slackpkg forced to rebuild pkglist database" >> $TMPDIR/info.log
     echo "Please may try 'slackpkg $CMD $INPUTLIST' now" >> $TMPDIR/info.log
