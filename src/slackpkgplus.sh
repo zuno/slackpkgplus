@@ -2107,7 +2107,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     touch $WORKDIR/install.log
   fi
 
-  if [ -e $TEMP ];then
+  if [ -e $TEMP ]&&[ -z "$PURGECACHE" ];then
     # clean cache from packages without gpg signature
     find $TEMP ! -type d|sort|tac|awk '{if($1~/\.asc$/)f[$1]++;if($1~/\.t.z$/ && !f[$1".asc"])print $1}' |xargs -r rm -f
   fi
