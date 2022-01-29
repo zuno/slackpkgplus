@@ -39,8 +39,10 @@ Some specific notes:
       /slackpkg+1.8/ -> the newest release working with slackware 15.0 and current
       /slackpkg+15/  -> the latest stable release working with slackware 15
       /slackpkg+dev/ -> the development release; please consider to test it and report bugs
-      /slackpkg+/    -> currently an alias for /slackpkg+1.7/ 
-                        will change to an alias for /slackpkg+15/ when slackware 15.0 will be released
+      /slackpkg+/    -> Dynamic repository. Try to detect which slackware release you are using
+                        then redirect to /slackpkg+1.7/ if you are using 14.2, or show a release
+                        compatible with the slackware-stable at the moment.
+                        You should not use that repository
 
 * multilib:
     Please, run /usr/doc/slackpkg+-*/setupmultilib.sh to setup it.

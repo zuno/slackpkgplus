@@ -1,3 +1,14 @@
+Sat Jan 29 16:42:01 CET 2022
+pkg/slackpkg+-1.8.rc3-noarch-1mt.txz: Upgrade
+  - Give a chance to disable the packages cache purge.
+  - some cosmetic report (thx to marav)
+  - small issue trying to clean cache directory
+  - A minor in slackpkg info on sbo packages
+  - Generated 1.8 branch on github and slakfinder repositories
+  - New repository /slackpkg+1.8/ and a dynamic repository /slackpkg+/
+    that automatically select a release for slackware 14.2 o 15.0
++-------------------------+
+
 Sun Jan 16 00:05:32 CET 2022
 pkg/slackpkg+-1.8.rc2-noarch-1mt.txz: Upgrade
   - Fixed an advice at first 1.8 install
