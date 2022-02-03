@@ -28,13 +28,13 @@ Or:
  check if the expanded repository exists.
 
  Example:
-  http://slackware.osuosl.org/slackware{,64}-{12.2,14.1,current}/
+  http://slackware.osuosl.org/slackware{,64}-{12.2,15.0,current}/
  will be expanded as
   http://slackware.osuosl.org/slackware-12.2/
-  http://slackware.osuosl.org/slackware-14.1/
+  http://slackware.osuosl.org/slackware-15.0/
   http://slackware.osuosl.org/slackware-current/
   http://slackware.osuosl.org/slackware64-12.2/
-  http://slackware.osuosl.org/slackware64-14.1/
+  http://slackware.osuosl.org/slackware64-15.0/
   http://slackware.osuosl.org/slackware64-current/
  Next, when the script will validate the repositories, it will
  remove slackware64-12.2 that does NOT exists.

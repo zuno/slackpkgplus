@@ -15,13 +15,13 @@ if [ $ISX64 -ne 1 ];then
   echo "Slackware multilib's are supported only from slackware x86_64!"
   exit 1
 fi
-SVER=$(grep -v ^\# $CONF/mirrors|sed -r 's,^.*/slackware64-(current|14.2|14.1|14.0)/,\1,'|head -1)
+SVER=$(grep -v ^\# $CONF/mirrors|sed -r 's,^.*/slackware64-(current|15.0)/,\1,'|head -1)
 if [ -z "$SVER" ];then
   echo "I can't detect your Slackware version."
-  echo "Which Slackware version are you running? (current/14.2/14.1/14.0)"
+  echo "Which Slackware version are you running? (current/15.0)"
   read $SVER
 fi
-if ! echo $SVER|egrep -q '^(current|14.2|14.1|14.0|13.37|13.0)$';then
+if ! echo $SVER|egrep -q '^(current|15.0)$';then
   echo "Invalid Slackware version ($SVER)"
   exit 1
 fi

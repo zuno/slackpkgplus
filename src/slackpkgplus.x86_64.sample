@@ -131,10 +131,10 @@ REPOPLUS=( slackpkgplus )
 #           some repositories as salixos, have a partial GPG support;
 #           for that repositories you may need to run slackpkg with 'slackpkg -checkgpg=off ...'
 
-# Slackware current - x86_64
-#MIRRORPLUS['multilib']=https://slackware.nl/people/alien/multilib/current/
-#MIRRORPLUS['alienbob']=https://slackware.nl/people/alien/sbrepos/current/x86_64
-#MIRRORPLUS['restricted']=https://slackware.nl/people/alien/restricted_sbrepos/current/x86_64
+# Slackware 15.0 - x86_64
+#MIRRORPLUS['multilib']=https://slackware.nl/people/alien/multilib/15.0/
+#MIRRORPLUS['alienbob']=https://slackware.nl/people/alien/sbrepos/15.0/x86_64
+#MIRRORPLUS['restricted']=https://slackware.nl/people/alien/restricted_sbrepos/15.0/x86_64
 
 # use this to keep the slackpkg+ package updated to the latest stable release
 MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+15/
@@ -144,7 +144,7 @@ MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+15/
 
 
 # Local repository:
-#MIRRORPLUS['alienbob']=file://repositories/alien/sbrepos/current/x86/
+#MIRRORPLUS['alienbob']=file://repositories/alien/sbrepos/15.0/x86/
 #
 # Local packages (you do not need metadata nor 'slackpkg update' command):
 #MIRRORPLUS['myrepo']=dir://repositories/mypackages/

@@ -9,7 +9,7 @@ Supported Repositories:
 > mleddesktop:   https://slackware.uk/microlinux/desktop-{14.2,15.0}-{32,64}bit/
 > mledextras:    https://slackware.uk/microlinux/extras-{14.2,15.0}-{32,64}bit/
 > mles:          https://slackware.uk/microlinux/server-{14.2,15.0}-{32,64}bit/
-> msb:           https://slackware.uk/msb/{14.2,15.0,current}/{1.18,1.24,latest}/{x86,x86_64}/
+> msb:           https://slackware.uk/msb/{14.2,15.0,current}/{1.18,1.26,latest}/{x86,x86_64}/
 > csb:           https://slackware.uk/csb/{14.2,15.0,current}/{x86,x86_64}/
 > slackers:      https://slack.conraid.net/repository/slackware64-current{-testing,-extra}/
 > studioware:    https://slackware.uk/studioware/{14.2,15.0}
@@ -61,4 +61,4 @@ Please read /usr/doc/slackpkg+-*/README for more details
 
 
 Slackware repositories:
-https://mirrors.slackware.com/slackware/slackware{,64}-{14.2,15.0,current}
+https://ftp.osuosl.org/pub/slackware/slackware{,64}-{14.2,15.0,current}/

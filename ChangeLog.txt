@@ -1,3 +1,19 @@
+Thu Feb  3 11:18:01 CET 2022
+pkg/slackpkg+-1.8.0-noarch-1mt.txz: Upgrade
+  Hello, World! Slackware 15.0 was finally released so slackpkg+ has
+  been adapted, so we can release Slackpkg+ 1.8.0 final release. Also
+  some third party repositories are ready. A notice: starting from now
+  /slackpkg+/ official repository will contain slackpkg+ 1.8 (an alias
+  o /slackpkg+15/ repository, unless you are using wget/curl/lftp from
+  slackware 14.2; in this case the site automatically show slackpkg+1.7.
+  You can put https://slakfinder.org/slackpkg+/ for historical reason
+  in slackpkgplus.conf, but you are encouraged to use
+  https://slakfinder.org/slackpkg+15/ or /slackpkg+dev/ instead it.
+  I thank everyone for contributing by reporting bugs or new proposal.
+  Special thanks to those who maintain the repositories, that make
+  slackpkg+ useful.
++-------------------------+
+
 Sat Jan 29 16:42:01 CET 2022
 pkg/slackpkg+-1.8.rc3-noarch-1mt.txz: Upgrade
   - Give a chance to disable the packages cache purge.
