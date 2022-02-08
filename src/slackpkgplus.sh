@@ -698,6 +698,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     if [ $(basename $1) = "FILELIST.TXT" ];then
+      [ ! -s $TMPDIR/FILELIST.TXT ]&&echo  > $TMPDIR/FILELIST.TXT
       touch $TMPDIR/pkglist.sbo
       for SBOKEY in ${!SBO[*]};do
         SBOURL=${SBO[$SBOKEY]}
@@ -740,10 +741,20 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     if [ $(basename $1) = "PACKAGES.TXT" ];then
-      sed -i -e "1i===== START REPO: $PREPO : URL:$1  =====" -e "\$a===== END REPO: $PREPO =====" $2
+      [ ! -s $2 ]&&echo > $2
+      sed -i -e "1i===== START REPO: $PREPO : URL:$URLFILE  =====" -e "\$a===== END REPO: $PREPO =====" $2
     fi
 
     if [ $(basename $1) = "CHECKSUMS.md5.asc" -a ! -e $TMPDIR/signaturedownloaded ];then
+      if ! grep -q PGP ${TMPDIR}/CHECKSUMS.md5.asc 2>/dev/null;then
+          echo >&2
+          echo "                        !!! F A T A L !!!" >&2
+          echo "    Official Slackware Repository FAILS the CHECKSUMS.md5.asc download" |tee -a $TMPDIR/fatal.log >&2
+          echo "    The repository may be invalid and the process will be ABORTED."     |tee -a $TMPDIR/fatal.log >&2
+          echo "    Please check your mirror and try again."                            |tee -a $TMPDIR/fatal.log >&2
+          echo >&2
+          echo "invalid" > ${TMPDIR}/CHECKSUMS.md5.asc
+      fi
       mv ${TMPDIR}/CHECKSUMS.md5.asc ${TMPDIR}/CHECKSUMS.md5-slackware.asc
       cp ${TMPDIR}/CHECKSUMS.md5-slackware.asc ${TMPDIR}/CHECKSUMS.md5.asc
       echo "slackpkgplus repositories" >>${TMPDIR}/CHECKSUMS.md5.asc
@@ -799,6 +810,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       #
       # see http://www.linuxquestions.org/questions/slackware-14/slackpkg-vs-third-party-package-repository-4175427364/page35.html#post5537830
 
+      if ! grep -q "[a-z]" ${TMPDIR}/ChangeLog.txt 2>/dev/null;then
+          echo >&2
+          echo "                        !!! F A T A L !!!" >&2
+          echo "    Official Slackware Repository FAILS the ChangeLog.txt download"     |tee -a $TMPDIR/fatal.log >&2
+          echo "    The repository may be invalid and the process will be ABORTED."     |tee -a $TMPDIR/fatal.log >&2
+          echo "    Please check your mirror and try again."                            |tee -a $TMPDIR/fatal.log >&2
+          echo >&2
+          echo "invalid" > ${TMPDIR}/ChangeLog.txt
+      fi
       mkdir ${TMPDIR}/ChangeLogs
 
       # Copy slackware ChangeLog.txt into directory dedicated to changelogs...
@@ -867,6 +887,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       done
     fi
     if [ $(basename $1) = "CHECKSUMS.md5" ];then
+      if ! grep -q "[a-z]" ${TMPDIR}/CHECKSUMS.md5 2>/dev/null;then
+          echo >&2
+          echo "                        !!! F A T A L !!!" >&2
+          echo "    Official Slackware Repository FAILS the CHECKSUMS.md5 download"     |tee -a $TMPDIR/fatal.log >&2
+          echo "    The repository may be invalid and the process will be ABORTED."     |tee -a $TMPDIR/fatal.log >&2
+          echo "    Please check your mirror and try again."                            |tee -a $TMPDIR/fatal.log >&2
+          echo >&2
+          echo "invalid" > ${TMPDIR}/CHECKSUMS.md5
+      fi
       for PREPO in ${REPOPLUS[*]};do
         URLFILE=${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}CHECKSUMS.md5
         if echo $URLFILE | grep -q "^file://" ; then
