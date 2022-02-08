@@ -2071,6 +2071,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   if echo "${!MIRRORPLUS[@]}"|grep -wq multilib;then
     MULTILIB_ACTION="
           # slackpkg install multilib"
+    MULTILIB_VERSION=$(echo ${MIRRORPLUS['multilib']}|sed -r -e 's,/+$,,' -e 's,.*/,,')
+    if [ "$MULTILIB_VERSION" != "$MIRROR_VERSION" ];then
+      echo "WARNING:    You have selected a mirror for Slackware $MIRROR_VERSION and a multilib
+            repository for Slackware $MULTILIB_VERSION. This may damage your system.
+            Please fix the configuration."|tee -a $TMPDIR/error.log
+      echo
+      sleep 5
+    fi
   fi
   if [ "${SLACKWARE_VERSION:0:2}" == "14" ]&&[ "$MIRROR_VERSION" == "15.0" ];then
     echo "WARNING: You have selected a mirror for Slackware 15.0 and you are running
@@ -2085,7 +2093,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     echo
     sleep 5
   elif [ "${MIRROR_VERSION:0:2}" == "14" ];then
-    echo "FATAL: You have selected a mirror for Slackware $MIRROR_VERSION!
+    echo "FATAL:   You have selected a mirror for Slackware $MIRROR_VERSION!
           If this is an error please correct your slackpkg configuration.
           If you really wants to install Slackware $MIRROR_VERSION be sure
           to downgrade slackpkg+ to 1.7.0 since $SPKGPLUS_VERSION does not
@@ -2106,7 +2114,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     echo
     sleep 5
   elif [ -e ${WORKDIR}/current ]&&[ ! -e ${WORKDIR}/currentplus ];then
-    echo "INFO: You have changed the mirror to Slackware current;
+    echo "INFO:    You have changed the mirror to Slackware current;
           You are running Slackware $SLACKWARE_VERSION; if you are upgrading slackware be
           sure to run following steps:
           # slackpkg update
