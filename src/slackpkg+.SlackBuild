@@ -58,6 +58,7 @@ mkdir -p usr/libexec/slackpkg/functions.d/
 mkdir -p usr/doc/slackpkg+-$VERSION/
 mkdir -p usr/man/man5
 mkdir -p usr/man/it/man5
+mkdir -p usr/man/fr/man5
 mkdir -p install/
 
 cp $CWD/slackpkgplus.sh usr/libexec/slackpkg/functions.d/
@@ -76,6 +77,7 @@ cp $CWD/greylist etc/slackpkg/greylist.new
 cp $CWD/slack-desc install/
 gzip -9c $CWD/slackpkgplus.conf.5 > usr/man/man5/slackpkgplus.conf.5.gz
 gzip -9c $CWD/slackpkgplus.conf.5.it > usr/man/it/man5/slackpkgplus.conf.5.gz
+gzip -9c $CWD/slackpkgplus.conf.5.fr > usr/man/fr/man5/slackpkgplus.conf.5.gz
 cat $CWD/doinst.sh|sed "s/SLPVERSION/$VERSION/" > install/doinst.sh
 cat $CWD/notifymsg.conf > etc/slackpkg/notifymsg.conf.new
 

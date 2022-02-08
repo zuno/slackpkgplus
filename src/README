@@ -21,8 +21,9 @@ for any damage that may be caused to your computer.
 
 CONFIGURATION
 
-see man slackpkgplus.conf. If you are italian export LANG=it_IT@euro to see
-the italian manpage and set ISO8859-15 charset for the console.
+see man slackpkgplus.conf. If you are italian or french, please export LANG=it_IT@euro
+or LANG=fr_FR@euro to see the italian or french manpage and set ISO8859-15 charset for
+the console.
 
 For the basic configuration:
 

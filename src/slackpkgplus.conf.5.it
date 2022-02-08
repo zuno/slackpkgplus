@@ -366,10 +366,10 @@ Slackpkg+ onora il file \fBblacklist\fP di \%slackpkg. Se tuttavia lo si vuole d
 
 L'uso tipico di questa impostazione è da linea di comando per disattivarlo temporaneamente.
 
-Per esempio in slackpkg si possono blacklistare i pacchetti di internazionalizzazione mettendo \fBl10n\fP nel file blacklist per evitare di installare i pacchetti di 100 lingue diverse. Quando si vuole installare il pacchetto di kde in italiano si può lanciare:
+Per esempio in slackpkg si possono blacklistare i pacchetti di internazionalizzazione mettendo \fBl10n\fP nel file blacklist per evitare di installare i pacchetti di 100 lingue diverse. Quando si vuole installare il pacchetto di Libreoffice in italiano si può lanciare:
 
 .in +4
-USEBL=off slackpkg install kde-l10n-it
+USEBL=off slackpkg install libreoffice-l10n-it
 .in
 
 .TP  5

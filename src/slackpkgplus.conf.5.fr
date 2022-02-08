@@ -1,0 +1,635 @@
+.\"*******************************************************************
+.\"
+.\" Cette page de manuel a été écrite en modifiant la page de manuel slackpkg.conf
+.\"
+.\"*******************************************************************
+.TH SLACKPKGPLUS.CONF 5 "Febrary 2021" slackpkg+\-1.8.0 ""
+.SH NOME
+\fBslackpkgplus.conf \fP \- Fichier de configuration de slackpkg+.
+
+.SH DESCRIPTION
+
+Le fichier \fBslackpkgplus.conf\fP contient la configuration \fB\%slackpkg+\fP, un \%plugin pour \%slackpkg qui permet l'ajout de dépôts tiers dans \fB\%slackpkg\fP(5).
+
+Le fichier \%slackpkgplus.conf est une séquence de variables de script shell (également appelées "paramètres"), et chaque variable contrôle un aspect de \%slackpkg+.
+Les commentaires commencent par le caractère \fB#\fP et se terminent à la fin de la ligne, et les commentaires peuvent apparaître n'importe où dans le fichier \%slackpkgplus.conf.
+Si une variable apparaît plus d'une fois dans le fichier, slackpkg utilisera la valeur définie en dernier.
+
+De nombreuses variables peuvent être remplacées à partir de la ligne de commande en les écrivant AVANT la commande.
+Si vous devez remplacer la valeur de \fB\%VARIABLE\fP, écrivez \fB\%VARIABLE=\fP\fIvalue\fP sur la ligne de commande, juste avant \fB\%slackpkg\fP.
+Plusieurs variables peuvent être remplacées.
+
+.in +4
+DOWNLOADONLY=on\ slackpkg\ upgrade-all
+.in
+
+Chaque paramètre a une valeur par défaut qui est utilisée si la variable n'est pas présente dans le fichier ou est commentée. Elle ne correspond pas nécessairement à la valeur définie dans le modèle de fichier de configuration.
+
+Voici la liste des paramètres disponibles :
+
+.ds 0 VARIABLE\t\t\t\tvalues\t\tdefault\tcan override
+.in +2
+\*0
+.in
+
+\fBParamètres principaux\fP
+.ds 1 SLACKPKGPLUS\t\t\ton/off\t\ton\t\tyes
+.ds 2 MIRRORPLUS[]\t\t\tstrings\t\t-\t\tno
+.ds 3 REPOPLUS\t\t\t\tlist\t\t\t-\t\tno
+.ds 4 PKGS_PRIORITY\t\t\tlist\t\t\t-\t\tno
+.ds 5 TAG_PRIORITY\t\t\ton/off\t\toff\t\tyes
+.in +2
+\*1
+.br
+\*2
+.br
+\*3
+.br
+\*4
+.br
+\*5
+.in
+
+
+\fBParamètres de téléchargement\fP
+.ds 0 VERBOSE\t\t\t\t0,1,2,3\t\t1\t\tyes
+.ds 1 USETERSE\t\t\t\ton/off\t\toff\t\tyes
+.ds 2 PROXY\t\t\t\tstring\t\t-\t\tyes
+.ds 3 WGETOPTS\t\t\t\tstring\t\t-\t\tyes
+.ds 4 DOWNLOADCMD\t\t\tstring\t\twget\t\tyes
+.ds 5 CHECKDISKSPACE\t\t\ton/off\t\toff\t\tno
+.ds 6 DOWNLOADONLY\t\t\ton/off\t\toff\t\tyes
+.ds 7 CACHEUPDATE\t\t\ton/off\t\toff\t\tyes
+.ds 8 SEARCH_CLOG_INPARENT\ton/off\t\toff\t\tno
+.ds 9 STRICTGPG\t\t\t\ton/off\t\ton\t\tyes
+.in +2
+\*0
+.br
+\*1
+.br
+\*2
+.br
+\*3
+.br
+\*4
+.br
+\*5
+.br
+\*6
+.br
+\*7
+.br
+\*8
+.br
+\*9
+.in
+
+
+\fBParamètres de recherche\fP
+.ds 1 ALLOW32BIT\t\t\ton/off\t\toff\t\tyes
+.ds 2 USEBL\t\t\t\toff/on\t\ton\t\tyes
+.ds 3 LEGACYBL\t\t\t\toff/on\t\toff\t\tyes
+.ds 4 GREYLIST\t\t\t\ton/off\t\ton\t\tyes
+.ds 5 SENSITIVE_SEARCH\t\ton/off\t\ton\t\tyes
+.ds 6 WW_FILE_SEARCH\t\t\ton/off\t\ton\t\tyes
+.ds 7 SBO[]\t\t\t\tstrings\t\t-\t\tno
+.in +2
+\*1
+.br
+\*2
+.br
+\*3
+.br
+\*4
+.br
+\*5
+.br
+\*6
+.br
+\*7
+.in
+
+
+\fBParamètres d'affichage\fP
+.ds 1 SHOWORDER\t\t\t\tstring\t\tpackage\tno
+.ds 2 DETAILED_INFO\t\t\tstring\t\tnone\t\tyes
+.ds 3 ENABLENOTIFY\t\t\ton/off\t\toff\t\tno
+.ds 4 TERSESEARCH\t\t\t\ton/off/tiny\t\ton\t\tyes
+.in +2
+\*1
+.br
+\*2
+.br
+\*3
+.in
+
+
+\fBPlugins\fP
+.br
+Dans cette section vous pouvez mettre les paramètres pour activer, désactiver ou configurer les plugins supplémentaires. Pour connaître les variables disponibles, lisez la documentation du plugin (voir la section FILES de cette page de manuel).
+
+Pour chaque changement de configuration, il est nécessaire ou approprié de réexécuter \fB\%slackpkg\ update\fP.
+
+Voici les détails de chaque configuration.
+
+.TP 5
+\fBSLACKPKGPLUS\fP
+.br
+Activer/désactiver la fonction Slackpkg+.
+Si vous souhaitez désactiver le logiciel slackpkg+ sans le désinstaller, réglez cette variale sur \fBoff\fP.
+
+.TP 5
+\fBMIRRORPLUS\fP
+.br
+C'est la principale (et la seule vraiment nécessaire) variable de configuration à définir pour \%slackpkg+.
+Elle est utilisée pour spécifier les dépôts à partir desquels installer les paquets tiers.
+Vous pouvez spécifier plus d'un dépôt en ajoutant plusieurs lignes.
+Chaque dépôt a un nom qui doit être spécifié entre crochets.
+
+.in +4
+MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+15/
+.in
+
+Vous pouvez spécifier des référentiels distants en http/https/ftp ou des référentiels locaux (avec ou sans métadonnées).
+Pour plus de détails sur les types de référentiel, reportez-vous à la documentation.
+
+Chaque fois que vous ajoutez un nouveau référentiel, vous devrez peut-être lancer la commande \fB\%slackpkg\ update\ gpg\fP pour télécharger la clé GPG.
+
+.TP 5
+\fBREPOPLUS\fP
+.br
+L'ajout d'un plus grand nombre de dépôts tiers a pour conséquence qu'un même logiciel peut se trouver dans plus d'une source, avec le même nom de paquet, mais construit de manière différente, avec des options différentes et une version différente.
+Dans la sélection du paquet, au moment de l'installation, slackpkg ne peut en montrer qu'un seul.
+
+La variable \fB\%REPOPLUS\fP permet de spécifier l'ordre de recherche dans les référentiels. Exemple :
+
+.in +4
+REPOPLUS=(\ slackpkgplus\ alienbob\ slacky\ )
+.in
+
+Dans ce cas, en lançant \fB\%slackpkg\ install\ openjdk\fP, le paquet sera pris dans le référentiel de \fI\%alienbob\fP, s'il est présent, sinon cherchez dans \fI\%slacky\fP.
+Par exemple, si vous voulez plus tard mettre à jour le paquet à partir du dépôt slacky, lancez explicitement :
+
+.in +4
+slackpkg\ upgrade\ slacky:openjdk
+.in
+
+.TP 5
+\fBPKGS_PRIORITY\fP
+.br
+Le paramètre précédent présente certaines limites.
+.br
+Dans le dernier exemple, le paquetage openjdk slacky a remplacé le paquetage openjdk alienbob. Cependant, après avoir lancé la commande \fB\%slackpkg\_ upgrade\-all\fP, le paquetage du dépôt alienbob sera réinstallé.
+
+De même, si un paquet est également présent dans les dépôts officiels de Slackware, ce paquet ne peut pas être installé.
+
+La variable \fB\%PKGS_PRIORITY\fP est similaire à \fB\%REPOPLUS\fP mais permet un choix plus étendu de l'ordre de recherche tant au niveau du dépôt qu'au niveau des paquets individuels. De plus, les paquets des référentiels configurés dans cette variable peuvent être installés même s'ils sont présents dans les référentiels officiels.
+
+.in +4
+PKGS_PRIORITY=( slacky:openjdk multilib )
+.in
+
+Dans ce cas, \fB\%slackpkg\ upgrade\-all\fP mettrait à jour le paquet \fIopenjdk\fP du dépôt \fIslacky\fP et tous les autres paquets des autres dépôts. Un autre cas où vous devez utiliser cette option est le dépôt multilib car il doit écraser certains paquets officiels de Slackware (pour multilib, veuillez lire attentivement la documentation). Vous pouvez remplacer complètement la variable \%REPOPLUS par \%PKGS_PRIORITY, mais si vous faites cela, vous devez être conscient que vous pourriez mettre à jour les paquets officiels de Slackware avec ces paquets tiers, donc assurez-vous de l'autorité de la source.
+
+.TP 5
+\fBTAG_PRIORITY\fP
+.br
+Lorsque vous installez de nombreux paquets à partir de plusieurs dépôts en les forçant depuis la ligne de commande comme expliqué ci-dessus, il n'est pas toujours facile de maintenir une bonne \fB\%PKGS_PRIORITY\fP.
+
+Dans ce cas, il faut utiliser la variable \fB\%TAG_PRIORITY\fP.
+
+En fixant cette variable à \fBon\fP, la logique de calcul de la priorité pour la mise à niveau des paquets change, et le dépôt est calculé en essayant de maintenir - si possible - le \fBtag\fP du paquet actuellement installé.
+.br
+L'idée est que l'openjdk du paquet slacky est \%openjdk\-7u40_b60\-x86_64\-1\fBsl\fP. txz, et à chaque mise à jour, le tag restera toujours \fBsl\fP, alors que celui d'alienbob sera toujours \fBalien\fP et il est très difficile (même si ce n'est pas impossible) de trouver le paquet openjdk avec le tag \fBsl\fP dans un autre dépôt (à moins qu'il ne soit pas copié depuis le dépôt source et pas repackagé par le propriétaire du dépôt de destination).
+.br
+Ainsi, selon toute probabilité, le paquet sera mis à jour avec un paquet écrit par le même auteur que le paquet actuellement installé.
+
+Notez que si l'auteur du paquet actuellement installé le supprime de son dépôt et que le paquet est également présent dans un autre dépôt, le paquet sera mis à jour avec ce dernier, même si l'étiquette est différente.
+Nous recommandons donc de toujours faire attention aux sources à partir desquelles il est proposé de mettre à jour les paquets.
+
+Ce paramètre est désactivé par défaut.
+
+.TP 5
+\fBVERBOSE\fP
+.br
+Cette variable spécifie le niveau de détail de la sortie de \%\fBwget\fP(1) (qui est le téléchargeur utilisé par défaut, sauf indication contraire).
+La version originale de \%slackpkg ny default lance un wget classique avec des options par défaut qui affiche alors la barre de défilement.
+.br
+Lors du téléchargement des référentiels de métadonnées avec \fB\%slackpkg\ update\fP, la version originale doit télécharger quelques fichiers, tandis que \%\fBslackpkg+\fP en télécharge beaucoup, ce qui peut rendre la sortie difficile à lire.
+
+Avec ce paramètre, vous pouvez spécifier le nombre de sorties que wget doit afficher. Les valeurs possibles sont : \fI0\fP,\fI1\fP,\fI2\fP,\fI3\fP :
+
+.br
+\fI0\fP)\ Dans le téléchargement des métadonnées et le téléchargement des paquets, wget ne montre pas la barre de défilement mais juste l'url téléchargée \%\fB\fP(wget\ \-nv)
+.br
+\fI1\fP)\ Dans le téléchargement des métadonnées, la barre de défilement ne s'affiche pas alors que dans le téléchargement des paquets, elle s'affiche (par défaut dans \fB\%slackpkg+\fP)
+.br
+\fi2\fP)\ Dans le téléchargement des métadonnées et le téléchargement des paquets, wget affiche la barre de défilement (par défaut dans l'original \fB\%slackpkg\fP)
+.br
+\fI3\fP)\ Sortie wget étendue et plus d'autres options de signalement des erreurs ; de plus, les fichiers temporaires ne sont pas supprimés à la fin du processus. À utiliser en cas de dépannage et lorsque vous signalez un bogue aux développeurs.
+
+Ce paramètre est ignoré (ou partiellement ignoré s'il est défini sur \fI3\fP) si vous utilisez un autre téléchargeur avec le paramètre \fB\%DOWNLOADCMD\fP (voir ci-dessous).
+
+.TP 5
+\fBUSETERSE\fP
+.br
+Donnez à cette variable la valeur \fIon\fP pour utiliser l'option TERSE de installpkg(8), upgradepkg(8), removepkg(8). L'installation n'affiche qu'une seule ligne de description sur stdout au lieu de la description complète et de la liste des fichiers coplete.
+
+.TP 5
+\fBPROXY\fP
+.br
+Utilisation du proxy si nécessaire
+
+.in +4
+PROXY=192.168.0.1:3128
+.in
+
+S'il est vide, utilisez les paramètres du système (variables d'environnement http_proxy et https_proxy). Définissez-le à \fIoff\fP pour désactiver le proxy.
+
+
+.TP 5
+\fBWGETOPTS\fP
+.br
+Vous pouvez spécifier ici des options supplémentaires pour wget. Voici un exemple typique
+
+.in +4
+WGETOPTS="--timeout=20 --tries=2"
+.in
+
+De cette façon, si un dépôt ne répond pas tout de suite en raison de problèmes temporaires, une autre tentative est faite, mais si elle échoue toujours, aucune autre tentative n'est faite à l'infini (par défaut, wget fait 20 tentatives).
+.br
+Reportez-vous à la documentation de \fB\%wget\fP(1) pour connaître toutes les options disponibles.
+
+Ce paramètre est ignoré si vous utilisez un autre téléchargeur avec la variable \fB\%DOWNLOADCMD\fP (voir ci-dessous).
+
+.TP 5
+\fBDOWNLOADCMD\fP
+.br
+Dans le cas où vous voulez utiliser un téléchargeur à la place de wget (par exemple \fBcurl\fP(1) ou \fBaria2\fP qui est un outil de téléchargement parallèle pour accélérer le téléchargement) vous pouvez le spécifier dans cette variable.
+
+En valeur nous considérons que est appelé avec :
+
+.in +4
+\fB$DOWNLOADCMD\fP \fIdestinationfile\fP \fIurl\fP
+.in
+
+Par exemple :
+
+.in +4
+DOWNLOADCMD="curl -v -o"
+.in
+
+Pour plus de détails, voir la documentation.
+
+.TP 5
+\fBCHECKDISKSPACE\fP
+.br
+Permet à \%slackpkg+ de vérifier l'espace disque nécessaire pour télécharger les paquets. Il le vérifie également pendant le processus install/install\-new.
+
+.TP 5
+\fBDOWNLOADONLY\fP
+.br
+Dans le téléchargement des paquets, avec cette variable, vous pouvez spécifier de ne pas les installer, mais seulement de les télécharger. Ils seront laissés dans le cache du paquet.
+Il peut être utile par exemple, dans le cas d'une mise à jour importante, de tout télécharger la nuit et de les installer dans la journée.
+.br
+Dans la version originale de Slackpkg, vous pouvez utiliser \fB\%slackpkg\ download\fP mais cette fonctionnalité n'est pas complètement implémentée dans \%slackpkg+.
+
+L'utilisation typique de ce paramètre n'est pas définie dans le fichier de configuration mais en effectuant un écrasement depuis la ligne de commande :
+
+.in +4
+DOWNLOADONLY=on slackpkg upgrade\-all
+.in
+
+Pour plus de détails, voir la documentation.
+
+.TP 5
+\fBCACHEUPDATE\fP
+.br
+À chaque \fB\%mise à jour de slackpkg\fP (même avec \%slackpkg+), téléchargez à chaque fois toutes les métadonnées (ChangeLog.txt, CHECKSUMS.md5 ...). Ceci, surtout dans les grands dépôts, peut prendre beaucoup de temps.
+Très souvent (surtout lorsque de nombreux dépôts sont configurés), il y a un retéléchargement de nombreuses fois des métadonnées qui n'ont pas changé, avec une consommation inutile de bande passante et de temps.
+
+En réglant \fBCACHEUPDATE\fP sur \fIon\fP, un système de cache est activé. Les fichiers temporaires ne sont pas supprimés après le téléchargement, comme c'est le cas habituellement, mais sont stockés dans un cache local. La prochaine mise à jour vérifie si le fichier a été modifié (uniquement en téléchargeant l'en-tête http) et n'est téléchargé que si c'est le cas.
+.br
+Cela accélère considérablement le processus de mise à jour.
+
+En plus de mettre cela à \fIon\fP, il sera extrait d'une sortie très minimale et concise qui met immédiatement en évidence ce qui se passe et s'il y a des erreurs de téléchargement. La sortie de wget (ou du téléchargeur défini à partir de DOWNLOADCMD) est masquée, sauf si vous définissez VERBOSE=3.
+
+Ce paramètre est désactivé par défaut.
+
+.TP 5
+\fBSEARCH_CLOG_INPARENT\fP
+.br
+À partir de slackpkg+ 1.7, la boîte de dialogue de sélection des paquets peut afficher le journal des modifications du paquet (si disponible).
+.br
+Le ChangeLog.txt est recherché dans la racine principale du référentiel, mais certains référentiels ne l'ont pas à cette position mais dans le répertoire précédent (parent).
+.br
+slackpkg+ est capable de chercher dans ces urls, mais la recherche hors de l'url principale cause parfois des problèmes.
+
+En définissant \fB\%SEARCH CLOG_INPARENT\fP=\fIoff\fP le fichier \fB\%ChangeLog.txt\fP sera recherché uniquement dans l'url principale où se trouvent également les métadonnées.
+
+.TP 5
+\fBSTRICTGPG\fP
+.br
+Presque tous les dépôts tiers possèdent une clé GPG, il est donc presque toujours possible d'installer des paquets sans désactiver le \%checkgpg à partir du fichier \%\fBslackpkg.conf\fP ou de la ligne de commande \%(\fB\-checkgpg\fP=\fIoff\fP).
+.br
+La norme pour les dépôts officiels (ceux de slackware) est que tous les paquets sont tous signés avec le \fB\%GPG-KEY\fP dans la racine du dépôt.
+.br
+Lo slackpkg originale verifica che la chiave sia quella giusta con l'opzione \fB\%SLACKKEY\fP in \fB\%slackpkg.conf\fP
+
+Le slackpkg officiel vérifie que la clé est la bonne avec l'option \fB\%SLACKKEY\fP dans \fB\%slackpkg.conf\fP
+
+Sur slackpkg+, ce contrôle n'existe pas et techniquement, le propriétaire du dépôt tiers peut copier les paquets et les signatures du dépôt officiel ou d'un autre dépôt et les mettre dans son dépôt.
+.br
+À partir de slackpkg+ 1.7, un contrôle GPG "strict" est effectué, de sorte que les paquets publiés doivent être signés avec sa propre clé GPG. Cela augmente la sécurité du dépôt.
+.br
+Pour cette raison, il est important que chaque fois que vous ajoutez un dépôt ou que vous le renommez, vous relanciez la mise à jour \fB\%slackpkg\ gpg\fP pour relire leurs propres clés de dépôt.
+
+Cependant, certains référentiels - pour leur structure - ne peuvent pas répondre à cette exigence.
+
+La définition de \fBSTRICTGP\fP=\fIoff\fP réinitialise le comportement classique de \%slackpkg+\ 1.6 et antérieur concernant la vérification du GPG.
+.br
+Utilisez ce paramètre consciemment et en suivant les instructions que le propriétaire du référentiel fournit généralement dans ces cas.
+
+
+.TP 5
+\fBALLOW32BIT\fP
+.br
+Normalement, sur un système 64 bits, vous ne devriez installer que des paquets 64 bits et noarch. Si un référentiel contient également des paquets 32 bits, ceux-ci ne seront pas indexés (et donc trouvés lors des recherches et des installations). Cependant, quelqu'un peut vouloir installer également les paquets 32 bits sur un système 64 bits.
+
+En définissant \fB\%ALLOW32BIT\fP=\fIon\fP, les paquets 32 bits seront traités de la même manière que ceux 64 bits. Notez que si un référentiel contient, pour le même paquet, la version 32 bits et la version 64 bits, il n'est pas possible de prévoir quel paquet sera affiché.
+
+Évidemment, cette variable n'est disponible que pour les systèmes 64 bits. Sur les systèmes 32 bits, elle est automatiquement exclue de l'indexation des paquets 64 bits s'il y en a.
+
+Le paramètre est \fIoff\fP par défaut. Si vous le définissez à \fIon\fP, n'oubliez pas d'installer multilib à partir de alienbob ou équivalent pour assurer les dépendances 32bit appropriées pour les paquets que vous voulez installer.
+
+.TP 5
+\fBUSEBL\fP
+.br
+Slackpkg honore la \fBblacklist\fP du \%slackpkg classique. Toutefois, si vous souhaitez désactiver cette variable, réglez-la sur \fIoff\fP.
+
+L'utilisation typique de ce paramètre se fait à partir de la ligne de commande pour la désactiver.
+
+Par exemple, dans slackpkg, vous pouvez mettre sur liste noire les paquets d'internationalisation en mettant \fBl10n\fP dans les fichiers de liste noire pour éviter d'installer les 100 paquets de langues différentes. Lorsque vous voulez installer les paquets français de Libreoffice, vous pouvez exécuter :
+
+.in +4
+USEBL=off slackpkg install libreoffice-l10n-fr
+.in
+
+.TP 5
+\fBLEGACYBL\fP
+.br
+Slackpkg 15.0.2 introduit un nouveau système de liste noire qui peut ne pas fonctionner correctement avec les dépôts de tiers.
+
+Si vous définissez \fBLEGACYBL\fP=\fIon\fP, slackpkg+ ramènera la syntaxe de la liste noire à celle de Slackware 14.2.
+
+Cette ancienne syntaxe fait \fBgrep\ \-wE\fP dans la pkglist de la regex spécifiée.
+
+.TP 5
+\fBGREYLIST\fP
+.br
+Pour éviter de devoir désactiver temporairement la liste noire pour installer/mettre à niveau le paquet \%libreoffice-l10n-fr comme ci-dessus, \%slackpkg+ fournit un système de \fBgreylisting\fP.
+
+En remplissant le fichier \fBgreylist\fP (voir ci-dessous la section \fBFILES\fP), les paquets qui correspondent seront affichés dans la boîte de dialogue mais désactivés par défaut afin que l'utilisateur n'ait pas à désactiver tous les paquets non nécessaires à chaque fois.
+
+En définissant \fBGREYLIST\fP=\fIoff\fP dans la configuration, cette fonctionnalité est désactivée.
+
+.TP 5
+\fBSENSITIVE_SEARCH\fP
+.br
+Dans la recherche \fBslackpkg\fP la recherche est en mode "sensible à la casse" qui respecte les différences entre les majuscules et les minuscules, ainsi \fB\%slackpkg\ search\ mplayer\fP n'est pas la même chose que \fB\%slackpkg\ search\ MPlayer\fP. Il en va de même pour le paramètre \fB\%file\-search\fP.
+
+En définissant \fB\%SENSITIVE_SEARCH\fP=\fIoff\fP, il sera possible d'effectuer une recherche en "insensible à la casse", c'est-à-dire sans faire de différence entre les majuscules et les minuscules.
+
+Notez que cette option n'affecte pas le comportement de \fB\%slackpkg\ install\fP ou \fB\%upgrade\fP et autres, pour lesquels le paquet doit être saisi exactement comme il est, avec les majuscules et les minuscules correctes.
+
+.TP 5
+\fBWW_FILE_SEARCH\fP
+.br
+\fBWW\fP signifie "mot entier".
+La commande \fB\%slackpkg\ file-search\fP recherche par défaut les fichiers en mode Mot entier (en utilisant la commande \fB\%grep\ \-w\fP), et \fB\%slackpkg\ files\-search\ libext2\fP ne trouvera aucun résultat.
+
+En définissant la commande \fB\%WW_FILE_SEARCH\fP=\fIoff\fP, \fB\%file-search\fP recherchera également les sous-chaînes, ainsi la commande ci-dessus trouvera le \fB\%e2fsprogs\fP pour la présence du fichier \fB\%libext2fs.a\fP.
+
+Notez que la recherche de chaînes de caractères trop courtes peut sortir des centaines et des centaines de résultats et prendre beaucoup de temps.
+
+.TP 5
+\fBSBO\fP
+.br
+La commande \fB\%slackpkg\ search\fP vous permet de rechercher des paquets dans les dépôts de SlackBuilds.org pour la version 14.2 et les versions actuelles.
+
+\fB\%SBO\fP contient les urls du dépôt de SlackBuilds.org. S'il n'est pas défini, la recherche sera ignorée.
+
+Notez que slackpkg+ ne remplace pas \fB\%sbopkg\fP ou des outils similaires, mais est seulement utile pour savoir si un paquet est présent sur SBo. L'utilisateur peut le télécharger via \fB\%slackpkg\ download\ <package>\fP, puis le construire, ou il peut utiliser sbopkg à la place.
+
+
+.TP 5
+\fBSHOWORDER\fP
+.br
+En général, les paquets de la boîte de dialogue sont classés par ordre alphabétique par \fIpackage\fP.
+.br
+En particulier lors de mises à jour importantes, cela peut rendre difficile la révision de la liste des paquets. Il est parfois préférable de les trier par \fIrepository\fP, afin de voir immédiatement le groupe de paquets qui se trouve dans un dépôt ou l'autre. Pour quelqu'un peut être préférable afin de les montrer comment ils sont distribués dans les répertoires du dépôt (\fIpath\fP), de sorte que - pour le dépôt officiel de slackware - seraient montrés d'abord ceux du groupe de paquets \fB[A]\fP puis ceux du groupe \fB[AP]\fP etc ..... Parfois, cela peut être utile pour trier l'\fItag\fP ou le paquet \fI\%arch\fPitecture.
+
+
+Les valeurs acceptées pour cette option sont
+.ds 1 \fIpackage\fP\t\tOrdre par nom de paquet (par défaut)
+.ds 2 \fIrepository\fP\tOrdre par nom de dépôt
+.ds 3 \fItag\fP\t\tOrdre par étiquette de package
+.ds 4 \fIpath\fP\t\tOrder par emplacement dans le référentiel
+.ds 5 \fIarch\fP\t\t\t Ordre par architecture
+.in +2
+\*1
+.br
+\*2
+.br
+\*3
+.br
+\*4
+.br
+\*5
+.in
+
+.TP 5
+\fBDETAILED_INFO\fP
+.br
+La variable \fB\%slackpkg\ info\fP n'affiche généralement que les métadonnées de base, c'est-à-dire \%NAME \%LOCATION \%SIZE \%DESCRIPTION.
+
+Avec la variable \fBDETAILED_INFO\fP, vous pouvez afficher plus de détails.
+
+Les valeurs acceptées pour cette option sont
+.ds 1 \fInone\fP\t\tAfficher uniquement les métadonnées ci-dessus (par défaut)
+.ds 2 \fIbasic\fP\tAjoute les détails et l'url du référentiel.
+.ds 3 \fIfilelist\fP\tAffiche également la liste complète des fichiers du paquet.
+.in +2
+\*1
+.br
+\*2
+.br
+\*3
+.in
+
+Vous pouvez également utiliser ce paramètre à partir de la ligne de commande.
+Par exemple :
+
+.in +4
+DETAILED_INFO=basic slackpkg info slackpkg
+.br
+DETAILED_INFO=filelist slackpkg info kernel-source|less
+.in
+
+.TP 5
+\fBENABLENOTIFY\fP
+.br
+Certains paquets nécessitent que certaines activités de post-installation soient effectuées manuellement ; par exemple, après la mise à jour du noyau, vous devez recompiler un module du noyau ou un pilote tiers, ou réinstaller certains paquets qui ont pu être écrasés, et très souvent nous oublions ces opérations.
+
+En définissant \fB\%ENABLENOTIFY\fP=\fIon\fP vous activez un système de notification mais il doit être configuré de manière appropriée.
+
+Consultez la documentation et le fichier \fB\%notifymsg.conf\fP pour plus de détails.
+
+.TP 5
+\fBTERSESEARCH\fP
+.br
+Affiche une sortie laconique pour \fB\%slackpkg\ search\fP.
+.br
+Remplace la première colonne par une autre plus courte et colorée. Les valeurs disponibles sont :
+.br
+\fIoff\fP\ )\ Aucune modification
+.br
+\fIon\fP\ \ )\ [unin] désinstallé, [inst] installé, [upgr] mis à jour, [mask] désinstallé/masqué
+.br
+\fItiny\fP)\ [-] désinstallé, [I] installé, [U] mis à jour, [M] désinstallé/masqué
+.br
+
+.SH ÉTAT DE SORTIE
+.P
+.IP "\fB0\fP" 5
+Exécution réussie de slackpkg.
+.IP "\fB1\fP" 5
+Un problème est survenu.
+.IP "\fB2\fP" 5
+Quelque chose de fatal s'est produit (ne l'ignorez pas).
+.IP "\fB20\fP" 5
+Aucun paquet n'a été trouvé pour être téléchargé, installé, réinstallé, mis à niveau ou
+supprimé.
+.IP "\fB50\fP" 5
+Slackpkg lui-même a été mis à niveau et vous devez le ré-exécuter.
+.IP "\fB100\fP" 5
+Il y a des mises à jour en attente.
+
+.SH FILES
+
+.TP 5
+\fB/etc/slackpkg/slacpkgplus.conf\fP
+.br
+Le fichier de configuration principal où il y a tous les paramètres ci-dessus.
+.br
+Pour toute modification, vous devez exécuter à nouveau \fB\%slackpkg\ update\fP.
+
+.TP 5
+\fB/etc/slackpkg/greylist\fP
+.br
+Le fichier de liste grise. Accepte la syntaxe du fichier \fB\%blacklist\fP de slackpkg. Exemples :
+.br
+-\ Activer la liste grise pour tous les paquets tiers ajouter : \%SLACKPKGPLUS_.*
+.br
+-\ Active la liste grise pour tous les paquets d'internationalisation : l10n
+
+
+.TP 5
+\fB/usr/doc/slackpkg+-*/\fP
+.br
+Le répertoire contenant la documentation slackpkg et d'autres choses diverses :
+
+\fBChangeLog.txt\fP :
+.in +5
+Le journal des modifications de slackpkg+.
+.in
+
+\fBCHANGES\fP :
+.in +5
+La liste complète des modifications apportées à la deuxième version stable ; lisez-la pour obtenir une description des nouvelles fonctionnalités introduites.
+.in
+
+\fBREADME\fP :
+.in +5
+La documentation slackpkg+. Lisez-la pour en savoir plus sur l'utilisation de slackpkg+.
+.in
+
+\fBrepositories.txt\fP :
+.in +5
+Une liste sommaire des dépôts. ATTENTION ! Cette liste n'est donnée qu'à titre indicatif et ne constitue pas une liste officielle des dépôts pris en charge.
+.in
+
+\fBrepositories.lst\fP :
+.in +5
+La liste très étendue et vérifiée (avec des scripts automatisés pour vérifier si le dépôt est présent ; ne considérez pas cette liste comme fiable à 100%, faites toujours une vérification personnelle)
+.in
+
+\fBcheckrepos.sh\fP :
+.in +5
+Script utilisé pour générer la liste précédente. Il se connecte à l'url trouvée dans un fichier et vérifie les métadonnées.
+.in
+
+\fBsetupmultilib.sh\fP :
+.in +5
+Scripts utilisés pour configurer slackpkg+ pour installer multilib d'alienbob et pour faire la première installation.
+.in
+
+\fBslackpkg+.SlackBuild\fP :
+.in +5
+Le SlackBuild de slackpkg+. A n'utiliser que pour la consultation ; être jeté hors du répertoire des sources échouera.
+.in
+
+\fBslackpkgplus.x86.sample\fP :
+.in +5
+Le fichier de configuration type pour les architectures 32 bits.
+.in
+
+\fBslackpkgplus.x86_64.sample\fP :
+.in +5
+Fichier de configuration type pour les architectures 64 bits.
+.in
+
+.TP 5
+\fB/usr/libexec/slackpkg/functions.d/zchangelog.sh\fP
+.br
+Ce plugin ajoute un journal de modifications global \fB\%/var/lib/slackpkg/RepoChangeLog.txt\fP à chaque mise à jour \fB\%slackpkg\fP avec une liste de toutes les modifications suivies. Lisez la note dans le fichier. Elle est désactivée par défaut. Pour l'activer, mettez \fB\%PLUGIN_ZCHANGELOG=\fP\fIenable\fP dans la configuration ; pour voir la sortie sur l'écran, mettez également le paramètre PLUGIN_ZCHANGELOG_SHOW=on dans la configuration.
+Veuillez lire la note dans le fichier pour plus d'informations.
+
+
+.TP 5
+\fB/usr/libexec/slackpkg/functions.d/zlookkerne.sh\fP
+.br
+Ce plugin ajoute la possibilité de reconstruire l'initrd et d'exécuter lilo ou EFI lilo chaque fois que vous mettez à jour le noyau. Notez que slackpkg-15.0 a supprimé l'exécution automatique de lilo en le remplaçant par un simple message de conseil. Il est désactivé par défaut. Pour l'activer, mettez \fB\%PLUGIN_ZLOOKKERNEL=\fP\fIenable\fP dans la configuration. Vous pouvez également ajouter \fB\%PLUGIN_ZLOOKKERNEL_PROMPT=\fP\fIon\fP pour éviter de demander confirmation à chaque étape, et \fBPLUGIN_ZLOOKKERNEL_IMAGE=\fP\fI/boot/vmlinuz-generic\fP pour le surveiller à la place de vmlinuz.
+Veuillez lire la note dans le fichier pour plus d'informations.
+
+.SH NOTES
+.TP 5
+\fBResponsabilité\fP
+slackpkg+ est un plugin de slackpkg, mais cela ne signifie pas qu'il peut être considéré comme un outil officiel de slackware, et il n'est pas pris en charge par l'équipe \%slackware.
+
+L'auteur de slackpkg+ n'est en aucun cas lié aux auteurs du dépôt individuel, ni pour le contenu de celui-ci, ni pour le bon fonctionnement de l'hébergement.
+
+Les paquets tiers ne sont pas pris en charge par l'équipe Slackware qui ne garantit donc pas leur fonctionnement et ne sera pas responsable des dommages qui pourraient être causés au système. Soyez sûr de l'autorité des dépôts avant de les utiliser dans \%slackpkg+.
+
+.TP 5
+\fBSupport\fP
+Si vous avez des questions ou si vous trouvez des bogues, vous pouvez les signaler en écrivant à l'auteur : \fB\%zerouno@slacky.it\fP.
+
+Vous pouvez également suivre la discussion officielle en italien sur slacky.eu :
+.br
+\ \ \%http://www.slacky.eu/forum/viewtopic.php?t=34536
+.br
+ou en anglais sur linuxquestions.org :
+.br
+\ \ \%http://www.linuxquestions.org/questions/showthread.php?p=4780861
+
+.TP 5
+\fBRemerciements\fP
+Une grande partie du code de slackpkg+ est écrite par \fIphenixia2003\fP de LinuxQuestions ; il mérite un grand merci. Pour tous les autres contributeurs, cherchez "thank" dans le ChangeLog.
+.br
+Merci également à ceux qui ont testé, rapporté, recommandé ou simplement utilisé slackpkg+.
+.br
+Mais le plus grand merci va à ceux qui compilent les paquets, génèrent et maintiennent le dépôt, sans lesquels slackpkg+ n'aurait aucune raison d'exister.
+
+.SH "VOIR AUSSI"
+\fB\%slackpkg\fP(8) \fB\%pkgtool\fP(8) \fB\%installpkg\fP(8) \fB\%upgradepkg\fP(8) \fB\%removepkg\fP(8) \fB\%slackpkg.conf\fP(5)

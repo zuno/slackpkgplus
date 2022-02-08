@@ -1,5 +1,13 @@
 = Full Changes list =
 
+== From 1.8 to mainline ==
+
+*New features:
+
+- Added french manpage for slackpkgplus.conf
+  to read the french manpage be sure to export LANG=fr_FR@euro and use the
+  ISO8859-15 charset in console.
+
 == From 1.7 to 1.8 ==
 
 *Configuration file:
