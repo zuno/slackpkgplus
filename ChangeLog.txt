@@ -1,3 +1,10 @@
+Wed Feb 16 15:50:11 CET 2022
+pkg/slackpkg+-1.8.0-noarch-2mt.txz: Upgrade
+  - slackpkg update will return exit code 2 on broken slackware mirrors
+  - Advice if you are installing a wrong release of multilibs.
+  - Make difference in switching from current >15.0 or from <15.0 to 15.0
++-------------------------+
+
 Thu Feb  3 11:18:01 CET 2022
 pkg/slackpkg+-1.8.0-noarch-1mt.txz: Upgrade
   Hello, World! Slackware 15.0 was finally released so slackpkg+ has
