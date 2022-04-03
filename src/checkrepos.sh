@@ -120,6 +120,7 @@ for R in $REPOS;do
     fi
     if grep -q -i Last-Modified: CHECKSUMS.md5.R;then
       [ $V ]&&echo -n "($(grep -i Last-Modified: CHECKSUMS.md5.R|tail -1|cut -f2- -d:|sed $'s/\r//') ) "
+      DATE="$(grep -i Last-Modified: CHECKSUMS.md5.R|tail -1|cut -f2- -d:|sed $'s/\r//')"
     fi
     [ $V ]&&echo
     MD5=yes
@@ -143,7 +144,6 @@ for R in $REPOS;do
     fi
     if grep -q -i Last-Modified: PACKAGES.TXT.R;then
       [ $V ]&&echo -n "($(grep -i Last-Modified: PACKAGES.TXT.R|tail -1|cut -f2- -d:|sed $'s/\r//') ) "
-      DATE="$(grep -i Last-Modified: PACKAGES.TXT.R|tail -1|cut -f2- -d:|sed 's/^M//')"
     fi
     [ $V ]&&echo
     PACK=yes

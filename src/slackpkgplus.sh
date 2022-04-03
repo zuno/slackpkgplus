@@ -287,7 +287,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo "$NEED_RESTART"|sed 's/^/           /'                       >> $TMPDIR/info.log
       if [ "$(stat -f -c %T /var/run/)" = "tmpfs" ]; then
         echo "$NEED_RESTART" >> $ROOT/var/run/needs_restarting
-        echo "See /var/run/needs_restarting for details"                >> $TMPDIR/info.log
+        echo "See /var/run/needs_restarting for review this list"       >> $TMPDIR/info.log
       fi
     fi
   }
@@ -1080,7 +1080,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       elif [ ${FILENAME:0:13} == "CHECKSUMS.md5" ];then
         REPO=$(echo $FILENAME|cut -f2- -d-|sed 's/\.gz$//')
       else
-        REPO=$(echo $1|sed -r -e "s,^/*$TEMP,/," -e "s,/\./,/,g" -e "s,//,/,g" -e "s,^/,," -e "s,/.*$,," -e "s,SLACKPKGPLUS_,,")
+        REPO=$(echo $1|sed -e "s,^/*$TEMP,/," -e "s,/\./,/,g" -e "s,//,/,g" -e "s,^/,," -e "s,/.*$,," -e "s,SLACKPKGPLUS_,,")
       fi
 
       if [ "$STRICTGPG" != "off" ] && ! echo ${MIRRORPLUS[$REPO]}|grep -q ^dir:/;then

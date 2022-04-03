@@ -1,77 +1,38 @@
-Tue Feb  8 18:14:41 CET 2022
+Sun Apr  3 20:58:50 CEST 2022
 
 url                                                                      size  date                 gpg
-http://www.slackel.gr/repo/i486/current                                662975  2022/02/06 23:26:31  Dimitris Tzemos (Slackel Creator) <dijemos@gmail.com>
-http://www.slackel.gr/repo/x86_64/current                              702551  2022/02/06 23:24:43  Dimitris Tzemos (Slackel Creator) <dijemos@gmail.com>
-https://alien.slackbook.org/ktown                                        5061  2020/12/08 17:59:06  Eric Hameleers (Alien BOB) <alien@slackware.com>
-https://download.salixos.org/i486/14.2                                 544904  2022/02/08 09:32:33  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-https://download.salixos.org/i486/15.0                                 314058  2022/02/08 08:58:47  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-https://download.salixos.org/i486/extra-14.2                          1922947  2021/12/19 23:34:08  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-https://download.salixos.org/x86_64/14.2                               549967  2022/02/08 09:33:34  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-https://download.salixos.org/x86_64/15.0                               317009  2022/02/08 09:01:43  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-https://download.salixos.org/x86_64/extra-14.2                        1922817  2021/12/19 23:37:03  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
-https://ftp.osuosl.org/pub/slackware/slackware-14.2                    702459  2016/06/29 21:42:35  Slackware Linux Project <security@slackware.com>
-https://ftp.osuosl.org/pub/slackware/slackware-15.0                    861877  2022/02/02 09:23:14  Slackware Linux Project <security@slackware.com>
-https://ftp.osuosl.org/pub/slackware/slackware-current                 861877  2022/02/02 09:23:14  Slackware Linux Project <security@slackware.com>
-https://ftp.osuosl.org/pub/slackware/slackware64-14.2                  704195  2016/06/29 21:49:56  Slackware Linux Project <security@slackware.com>
-https://ftp.osuosl.org/pub/slackware/slackware64-15.0                  864745  2022/02/02 09:25:12  Slackware Linux Project <security@slackware.com>
-https://ftp.osuosl.org/pub/slackware/slackware64-current               864745  2022/02/02 09:25:12  Slackware Linux Project <security@slackware.com>
-https://packages.slackonly.com/pub/packages/14.2-x86                  4525711  2017/08/07 00:38:53  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
-https://packages.slackonly.com/pub/packages/14.2-x86_64               5078675  2020/04/28 00:56:41  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
-https://packages.slackonly.com/pub/packages/current-x86               2795351  2017/05/08 05:25:15  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
-https://packages.slackonly.com/pub/packages/current-x86_64            3215041  2017/09/11 20:00:50  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
-https://rlworkman.net/pkgs/14.2                                         53979  2017/12/22 09:39:05  Robby Workman <rworkman@slackware.com>
-https://rlworkman.net/pkgs/current                                         45  2020/12/28 08:05:02  Robby Workman <rworkman@slackware.com>
-https://slack.conraid.net/repository/slackware64-current-extra             45  2020/12/07 16:24:07  Corrado Franco (Conraid) <conraid@gmail.com>
-https://slack.conraid.net/repository/slackware64-current-testing        13868  2021/09/09 15:31:03  Corrado Franco (Conraid) <conraid@pm.me>
-https://slackware.nl/alien-kde/current/5/x86                              528  2020/12/27 14:41:14  Eric Hameleers (Alien BOB) <alien@slackware.com>
-https://slackware.nl/alien-kde/current/5/x86_64                           530  2020/12/27 14:41:13  Eric Hameleers (Alien BOB) <alien@slackware.com>
-https://slackware.nl/people/alien/multilib/14.2                        150168  2022/02/06 11:40:03  Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-https://slackware.nl/people/alien/multilib/15.0                        199677  2022/02/06 11:40:57  Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-https://slackware.nl/people/alien/multilib/current                     199677  2022/02/06 11:41:51  Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
-https://slackware.nl/people/alien/restricted_sbrepos/14.2/x86            5291  2022/02/02 23:55:36  Eric Hameleers <alien@slackware.com>
-https://slackware.nl/people/alien/restricted_sbrepos/14.2/x86_64         5310  2022/02/02 23:55:31  Eric Hameleers <alien@slackware.com>
+http://www.slackel.gr/repo/i486/current                                712824  2022/04/03 18:55:06  Dimitris Tzemos (Slackel Creator) <dijemos@gmail.com>
+http://www.slackel.gr/repo/x86_64/current                              754115  2022/04/03 18:52:35  Dimitris Tzemos (Slackel Creator) <dijemos@gmail.com>
+https://download.salixos.org/i486/15.0                                 354608  2022/03/31 23:42:08  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
+https://download.salixos.org/i486/extra-15.0                              609  2022/02/13 09:04:59  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
+https://download.salixos.org/x86_64/15.0                               357459  2022/03/31 23:42:35  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
+https://download.salixos.org/x86_64/extra-15.0                            611  2022/02/13 09:05:12  Salix Admin (The Bonsai OS) <salix.admin@gmail.com>
+https://ftp.osuosl.org/pub/slackware/slackware-15.0                    861877  2022/03/31 00:37:36  Slackware Linux Project <security@slackware.com>
+https://ftp.osuosl.org/pub/slackware/slackware-current                 862484  2022/04/02 20:59:29  Slackware Linux Project <security@slackware.com>
+https://ftp.osuosl.org/pub/slackware/slackware64-15.0                  864745  2022/03/31 00:39:43  Slackware Linux Project <security@slackware.com>
+https://ftp.osuosl.org/pub/slackware/slackware64-current               865358  2022/04/02 21:00:04  Slackware Linux Project <security@slackware.com>
+https://packages.slackonly.com/pub/packages/15.0-x86_64               1497358  2022/04/03 01:55:54  Panagiotis Nikolaou (slackware user) <hostmaster@slackonly.com>
+https://slack.conraid.net/repository/slackware64-current               541693  2022/04/02 16:07:00  Corrado Franco (Conraid) <conraid@pm.me>
+https://slackware.nl/people/alien/multilib/15.0                        200478  2022/03/20 12:38:50  Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
+https://slackware.nl/people/alien/multilib/current                     200440  2022/03/20 12:40:25  Eric Hameleers (IBM Linux) <alien@linux.vnet.ibm.com>
 https://slackware.nl/people/alien/restricted_sbrepos/15.0/x86            5820  2022/02/02 23:55:26  Eric Hameleers <alien@slackware.com>
 https://slackware.nl/people/alien/restricted_sbrepos/15.0/x86_64         5841  2022/02/02 23:55:25  Eric Hameleers <alien@slackware.com>
-https://slackware.nl/people/alien/restricted_sbrepos/current/x86         5820  2022/02/02 23:55:21  Eric Hameleers <alien@slackware.com>
-https://slackware.nl/people/alien/restricted_sbrepos/current/x86_64      5841  2022/02/02 23:55:19  Eric Hameleers <alien@slackware.com>
-https://slackware.nl/people/alien/sbrepos/14.2/x86                     221400  2022/02/08 09:02:05  Eric Hameleers <alien@slackware.com>
-https://slackware.nl/people/alien/sbrepos/14.2/x86_64                  223356  2022/02/08 09:00:01  Eric Hameleers <alien@slackware.com>
-https://slackware.nl/people/alien/sbrepos/15.0/x86                     305985  2022/02/08 08:58:18  Eric Hameleers <alien@slackware.com>
-https://slackware.nl/people/alien/sbrepos/15.0/x86_64                  310876  2022/02/08 08:56:47  Eric Hameleers <alien@slackware.com>
-https://slackware.nl/people/alien/sbrepos/current/x86                  305985  2022/02/08 08:55:40  Eric Hameleers <alien@slackware.com>
-https://slackware.nl/people/alien/sbrepos/current/x86_64               310876  2022/02/08 08:54:10  Eric Hameleers <alien@slackware.com>
-https://slackware.uk/csb/14.2/x86                                       29003  2017/12/09 20:21:22  Willy Sudiarto Raharjo <willysr@gmail.com>
-https://slackware.uk/csb/14.2/x86_64                                    28392  2017/12/09 20:21:12  Willy Sudiarto Raharjo <willysr@gmail.com>
-https://slackware.uk/csb/15.0/x86                                       20098  2022/02/05 16:22:01  Willy Sudiarto Raharjo <willysr@sbopkg.org>
-https://slackware.uk/csb/15.0/x86_64                                    20166  2022/02/05 16:22:32  Willy Sudiarto Raharjo <willysr@sbopkg.org>
-https://slackware.uk/csb/current/x86                                    20098  2022/02/05 16:22:01  Willy Sudiarto Raharjo <willysr@sbopkg.org>
-https://slackware.uk/csb/current/x86_64                                 20166  2022/02/05 16:22:32  Willy Sudiarto Raharjo <willysr@sbopkg.org>
-https://slackware.uk/microlinux/desktop-14.2-32bit                     151132  2017/04/27 16:16:44  Niki Kovacs <info@microlinux.fr>
-https://slackware.uk/microlinux/desktop-14.2-64bit                     151985  2017/04/27 16:16:54  Niki Kovacs <info@microlinux.fr>
-https://slackware.uk/microlinux/extras-14.2-32bit                       13626  2017/02/20 19:56:17  Niki Kovacs <info@microlinux.fr>
-https://slackware.uk/microlinux/extras-14.2-64bit                       13696  2017/02/20 19:56:29  Niki Kovacs <info@microlinux.fr>
-https://slackware.uk/microlinux/server-14.2-32bit                       32597  2017/02/03 09:17:01  Niki Kovacs <info@microlinux.fr>
-https://slackware.uk/microlinux/server-14.2-64bit                       32787  2017/02/03 09:17:12  Niki Kovacs <info@microlinux.fr>
-https://slackware.uk/msb/14.2/1.18/x86                                  30258  2018/05/22 17:28:29  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/msb/14.2/1.18/x86_64                               30364  2018/05/22 17:28:40  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/msb/14.2/latest/x86                                30258  2018/05/22 17:28:29  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/msb/14.2/latest/x86_64                             30364  2018/05/22 17:28:40  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/msb/15.0/1.26/x86                                  27691  2022/02/05 03:39:58  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/msb/15.0/1.26/x86_64                               27789  2022/02/05 03:40:09  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/msb/15.0/latest/x86                                27691  2022/02/05 03:39:58  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/msb/15.0/latest/x86_64                             27789  2022/02/05 03:40:09  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/msb/current/1.26/x86                               27691  2022/02/05 03:39:58  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/msb/current/1.26/x86_64                            27789  2022/02/05 03:40:09  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/msb/current/latest/x86                             27691  2022/02/05 03:39:58  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/msb/current/latest/x86_64                          27789  2022/02/05 03:40:09  MATE SlackBuilds <mateslackbuilds@gmail.com>
-https://slackware.uk/slint/i586/slint-14.2                              40483  2022/02/02 19:55:28  Didier Spaier <didier@slint.fr>
-https://slackware.uk/slint/x86_64/slint-14.2.1                         828642  2022/02/02 19:56:27  Didier Spaier <didier@slint.fr>
-https://slackware.uk/studioware/14.2                                   112985  2018/01/13 03:11:17  Studioware <info@studioware.org>
-https://slacky.eu/repository/slackware-14.2                             28134  2020/01/31 01:13:00  Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
-https://slacky.eu/repository/slackware64-14.2                           42698  2020/01/31 05:29:10  Slacky.eu packagers (packages by Slacky.eu) <packages@slacky.it>
-https://slakfinder.org/slackpkg+                                          624  2022/02/03 23:08:27  Matteo Rossini <zerouno@slacky.it>
-https://slakfinder.org/slackpkg+1.7                                        45  2022/01/14 20:00:33  Matteo Rossini <zerouno@slacky.it>
-https://slakfinder.org/slackpkg+1.8                                       624  2022/02/03 23:10:30  Matteo Rossini <zerouno@slacky.it>
-https://slakfinder.org/slackpkg+15                                        624  2022/02/03 23:08:27  Matteo Rossini <zerouno@slacky.it>
-https://slakfinder.org/slackpkg+dev                                       624  2022/02/03 23:06:38  Matteo Rossini <zerouno@slacky.it>
+https://slackware.nl/people/alien/restricted_sbrepos/current/x86         5820  2022/02/02 23:55:22  Eric Hameleers <alien@slackware.com>
+https://slackware.nl/people/alien/restricted_sbrepos/current/x86_64      5841  2022/02/02 23:55:20  Eric Hameleers <alien@slackware.com>
+https://slackware.nl/people/alien/sbrepos/15.0/x86                     305419  2022/04/03 12:26:05  Eric Hameleers <alien@slackware.com>
+https://slackware.nl/people/alien/sbrepos/15.0/x86_64                  310867  2022/04/03 12:24:40  Eric Hameleers <alien@slackware.com>
+https://slackware.nl/people/alien/sbrepos/current/x86                  306369  2022/04/03 12:23:47  Eric Hameleers <alien@slackware.com>
+https://slackware.nl/people/alien/sbrepos/current/x86_64               311819  2022/04/03 12:22:20  Eric Hameleers <alien@slackware.com>
+https://slackware.uk/csb/15.0/x86                                       19160  2022/03/04 08:39:48  Willy Sudiarto Raharjo <willysr@sbopkg.org>
+https://slackware.uk/csb/15.0/x86_64                                    19224  2022/03/04 08:39:57  Willy Sudiarto Raharjo <willysr@sbopkg.org>
+https://slackware.uk/csb/current/x86                                    19160  2022/03/04 08:39:48  Willy Sudiarto Raharjo <willysr@sbopkg.org>
+https://slackware.uk/csb/current/x86_64                                 19224  2022/03/04 08:39:57  Willy Sudiarto Raharjo <willysr@sbopkg.org>
+https://slackware.uk/msb/15.0/latest/x86                                27691  2022/03/26 17:02:25  MATE SlackBuilds <mateslackbuilds@gmail.com>
+https://slackware.uk/msb/15.0/latest/x86_64                             27789  2022/03/26 17:02:37  MATE SlackBuilds <mateslackbuilds@gmail.com>
+https://slackware.uk/msb/current/latest/x86                             27691  2022/03/26 17:02:25  MATE SlackBuilds <mateslackbuilds@gmail.com>
+https://slackware.uk/msb/current/latest/x86_64                          27789  2022/03/26 17:02:37  MATE SlackBuilds <mateslackbuilds@gmail.com>
+https://slackware.uk/slint/x86_64/slint-15.0                           673175  2022/04/03 00:10:59  Didier Spaier <didier@slint.fr>
+https://slakfinder.org/slackpkg+1.7                                       625  2022/02/23 23:49:30  Matteo Rossini <zerouno@slacky.it>
+https://slakfinder.org/slackpkg+1.8                                       624  2022/02/16 15:56:46  Matteo Rossini <zerouno@slacky.it>
+https://slakfinder.org/slackpkg+15                                        624  2022/02/16 15:57:54  Matteo Rossini <zerouno@slacky.it>
+https://slakfinder.org/slackpkg+dev                                       624  2022/02/16 15:55:39  Matteo Rossini <zerouno@slacky.it>

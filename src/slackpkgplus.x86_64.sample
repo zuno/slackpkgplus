@@ -122,7 +122,7 @@ TAG_PRIORITY=off
 
 # List repositories you want to use (defined below)
 # remember to launch 'slackpkg update' if you modify this row.
-#REPOPLUS=( slackpkgplus restricted alienbob slacky )
+#REPOPLUS=( slackpkgplus restricted alienbob )
 REPOPLUS=( slackpkgplus )
 
 
@@ -156,7 +156,7 @@ MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+15/
 # SBo SlackBuilds. Uncomment it to allow slackpkg to search SlackBuilds on SlackBuilds.org
 # This does not replace sbopkg; slackpkg just report the package, version and url; you may
 # download it via 'slackpkg download <packagename>' and build it yourself or via sbopkg.
-#SBO['14.2']=https://www.slackbuilds.org/slackbuilds/14.2/
+#SBO['15.0']=https://www.slackbuilds.org/slackbuilds/15.0/
 #SBO['current']=https://cgit.ponce.cc/slackbuilds/
 
 

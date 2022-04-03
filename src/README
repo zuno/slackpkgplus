@@ -60,7 +60,7 @@ The MIRRORPLUS array defines all mirrors. It accepts these protocols:
 
 1) http/ftp/https: for example,
 
-     MIRRORPLUS['slacky']=http://repository.slacky.eu/slackware64-14.2/
+     MIRRORPLUS['alienbob']=https://slackware.nl/people/alien/sbrepos/15.0/x86_64/
 
    The mirror must contains all metadata files (CHECKSUMS.md5 ...)
    You must run 'slackpkg update' after adding/removing a repository.
@@ -68,7 +68,7 @@ The MIRRORPLUS array defines all mirrors. It accepts these protocols:
 
 2) Local mirror: for example,
 
-     MIRRORPLUS['alienlocal']=file://mirrors/alienbob/x86/14.0/
+     MIRRORPLUS['alienlocal']=file://mirrors/alienbob/x86_64/15.0/
 
    The directory must contains all metadata files (CHECKSUMS.md5 ...)
    You must run 'slackpkg update' after adding/removing a repository.
@@ -83,7 +83,7 @@ The MIRRORPLUS array defines all mirrors. It accepts these protocols:
 
 4) Remote packages directory httpdir/httpsdir/ftpdir not containing metadata:
 
-    MIRRORPLUS['slackpkgbeta']=httpsdir://slackpkg.org/beta/
+    MIRRORPLUS['slackpkgbeta']=httpsdir://slackpkg.org/stable/
 
    All packages must be in a single directory (subdirectory not allowed).
    'slackpkg update' get the directory index and put it in slackpkg database.
@@ -128,7 +128,7 @@ accepts the following kinds of argument:
    installs all packages in the multilib repository
 
 5) repository-name:package-name, for example
-   # slackpkg install slacky:openjdk
+   # slackpkg install alienbob:openjdk
    installs openjdk from slacky even if there is another openjdk in another
    repository
 
@@ -242,13 +242,6 @@ then delete or comment the related MIRRORPLUS line, and finally launch
 or just re-run
 # /usr/doc/slackpkg+-*/setupmultilib.sh
 
-
------
-
-
-KTOWN (LATEST KDE)
-
-KDE 5 is now included in slackware current, so you no longer need it
 
 -----
 
@@ -465,7 +458,7 @@ Also it is good when the 'install-new' give you a large list of packages to inst
 
 You can set DOWNLOANDONLY=on in slackpkgplus.conf to do that or use it in cmdline.
 
-For example, to upgrading from slackware 14.1 to slackware 14.2:
+For example, to upgrading from slackware 15.0 to slackware current:
 # DOWNLOADONLY=on slackpkg install-new
 # DOWNLOADONLY=on slackpkg upgrade-all
 # slackpkg install-new
@@ -565,7 +558,7 @@ Note that a short pattern may match many many packages.
 
 SBO
 
-'slackpkg search' allow you to search packages in SlackBuilds.org 14.2 and
+'slackpkg search' allow you to search packages in SlackBuilds.org 15.0 and
 current.
 Note that slackpkg+ does not replace sbopkg or other similar tools.
 slackpkg+ show you the url of the SlackBuild, then you have to manually
@@ -704,8 +697,9 @@ The AlienBOB article about slackpkg+:
   http://alien.slackbook.org/blog/introducing-slackpkg-an-extension-to-slackpkg-for-3rd-party-repositories/
 
 For questions, suggestions or contributions, you can email me at
-zerouno@slacky.it or use the linuxquestions forum:
-  http://www.linuxquestions.org/questions/showthread.php?p=4940074
+info@slakfinder.org or use the linuxquestions forum:
+  https://www.linuxquestions.org/questions/showthread.php?p=4940074
+  https://www.linuxquestions.org/questions/slackware-14/slackpkg-1-8-a-4175669481/
 
 You can find slackpkg+ on sourceforge:
   https://sourceforge.net/projects/slackpkgplus

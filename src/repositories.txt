@@ -1,24 +1,17 @@
 Supported Repositories:
 
-> slackpkgplus:  https://slakfinder.org/slackpkg+{,dev,1.7,1.8,15}/
-> multilib:      https://slackware.nl/people/alien/multilib/{14.2,15.0,current}/
-> alienbob:      https://slackware.nl/people/alien/sbrepos/{14.2,15.0,current}/{x86,x86_64}/
-> ktown:         https://slackware.nl/alien-kde/{14.2,15.0,current}/5/{x86,x86_64}/
-> restricted:    https://slackware.nl/people/alien/restricted_sbrepos/{14.2,15.0,current}/{x86,x86_64}/
-> slacky:        https://slacky.eu/repository/slackware{,64}-{14.2}/
-> mleddesktop:   https://slackware.uk/microlinux/desktop-{14.2,15.0}-{32,64}bit/
-> mledextras:    https://slackware.uk/microlinux/extras-{14.2,15.0}-{32,64}bit/
-> mles:          https://slackware.uk/microlinux/server-{14.2,15.0}-{32,64}bit/
-> msb:           https://slackware.uk/msb/{14.2,15.0,current}/{1.18,1.26,latest}/{x86,x86_64}/
-> csb:           https://slackware.uk/csb/{14.2,15.0,current}/{x86,x86_64}/
-> slackers:      https://slack.conraid.net/repository/slackware64-current{-testing,-extra}/
-> studioware:    https://slackware.uk/studioware/{14.2,15.0}
-> slackonly:     https://packages.slackonly.com/pub/packages/{14.2,15.0,current}-{x86,x86_64}/
-> rlworkman:     https://rlworkman.net/pkgs/{14.2,15.0,current}/
+> slackpkgplus:  https://slakfinder.org/slackpkg+{dev,1.7,1.8,15}/
+> multilib:      https://slackware.nl/people/alien/multilib/{15.0,current}/
+> alienbob:      https://slackware.nl/people/alien/sbrepos/{15.0,current}/{x86,x86_64}/
+> restricted:    https://slackware.nl/people/alien/restricted_sbrepos/{15.0,current}/{x86,x86_64}/
+> msb:           https://slackware.uk/msb/{15.0,current}/latest/{x86,x86_64}/
+> csb:           https://slackware.uk/csb/{15.0,current}/{x86,x86_64}/
+> slackers:      https://slack.conraid.net/repository/slackware64-current/
+> slackonly:     https://packages.slackonly.com/pub/packages/15.0-x86_64/
 > slackel:       http://www.slackel.gr/repo/{i486,x86_64}/current/
-> slint:         https://slackware.uk/slint/{i586,x86_64}/slint-{15.0,14.2,14.2.1,testing,wip}/
-> salixos:       https://download.salixos.org/{i486,x86_64}/{14.2,15.0}/
-> salixextra:    https://download.salixos.org/{i486,x86_64}/extra-{14.2,15.0}/
+> slint:         https://slackware.uk/slint/x86_64/slint-15.0/
+> salixos:       https://download.salixos.org/{i486,x86_64}/15.0/
+> salixextra:    https://download.salixos.org/{i486,x86_64}/extra-15.0/
 
     salixos partially supports GPG. This repository contains the .asc file
     for CHECKSUMS.md5, so the 'update' process works with CHECKGPG=on and repository authenticity
@@ -49,16 +42,8 @@ Some specific notes:
     Periodically you should run "slackpkg install multilib"
       after run "slackpkg upgrade-all"
 
-* ktown: 
-    You no longer need ktown since it was included on slackware current.
-    However from https://alien.slackbook.org/ktown/ documentation
-          Here, you will find packages and sources for KDE which are
-          either meant for beta testing, or have not yet been added to
-          slackware-current (but could be added in the near future).
-    So please read official documentation before use it.
-
 Please read /usr/doc/slackpkg+-*/README for more details
 
 
 Slackware repositories:
-https://ftp.osuosl.org/pub/slackware/slackware{,64}-{14.2,15.0,current}/
+https://ftp.osuosl.org/pub/slackware/slackware{,64}-{15.0,current}/

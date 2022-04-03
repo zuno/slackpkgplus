@@ -1,3 +1,10 @@
+Sun Apr  3 19:29:38 CEST 2022
+pkg/slackpkg+-1.8.0-noarch-3mt.txz: Upgrade
+  - Manage '+' in $TEMP path
+  - Remove obsolete or broken repositories from list
+  - Add SBo 15.0
++-------------------------+
+
 Wed Feb 16 15:50:11 CET 2022
 pkg/slackpkg+-1.8.0-noarch-2mt.txz: Upgrade
   - slackpkg update will return exit code 2 on broken slackware mirrors

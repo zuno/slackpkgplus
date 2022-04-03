@@ -613,7 +613,7 @@ Les paquets tiers ne sont pas pris en charge par l'équipe Slackware qui ne gara
 
 .TP 5
 \fBSupport\fP
-Si vous avez des questions ou si vous trouvez des bogues, vous pouvez les signaler en écrivant à l'auteur : \fB\%zerouno@slacky.it\fP.
+Si vous avez des questions ou si vous trouvez des bogues, vous pouvez les signaler en écrivant à l'auteur : \fB\%info@slakfinder.org\fP.
 
 Vous pouvez également suivre la discussion officielle en italien sur slacky.eu :
 .br
@@ -621,7 +621,7 @@ Vous pouvez également suivre la discussion officielle en italien sur slacky.eu 
 .br
 ou en anglais sur linuxquestions.org :
 .br
-\ \ \%http://www.linuxquestions.org/questions/showthread.php?p=4780861
+\ \ \%https://www.linuxquestions.org/questions/slackware-14/slackpkg-1-8-a-4175669481/
 
 .TP 5
 \fBRemerciements\fP
