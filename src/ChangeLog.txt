@@ -1,3 +1,8 @@
+Sat May  7 01:06:13 CEST 2022
+pkg/slackpkg+-1.8.0-noarch-5mt.txz: Upgrade
+  - wget2 does not honor WGETOPTS
++-------------------------+
+
 Mon Apr 18 18:19:11 CEST 2022
 pkg/slackpkg+-1.8.0-noarch-4mt.txz: Upgrade
   - Show filename in wget2 instead directory

@@ -453,10 +453,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     WGET2PATH=$(echo "$WGET2CMD"|sed -r "s,.*-O ([^ ]+) .*,\1,")
     WGET2DIR=$(echo "$WGET2PATH"|sed -r "s,/[^/]*$,,")
     WGET2CMD="$(echo "$WGET2CMD"|sed -r "s,$WGET2DIR/,,")"
-    (
-      cd $WGET2DIR
-      /usr/bin/wget2 $WGET2CMD
-    )
+    cd $WGET2DIR
+    /usr/bin/wget2 $WGETOPTS $WGET2CMD
+    cd -
   }
     # Implements an improved wget version for a verbose output
     #
