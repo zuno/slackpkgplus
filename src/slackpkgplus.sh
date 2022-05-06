@@ -455,7 +455,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     WGET2CMD="$(echo "$WGET2CMD"|sed -r "s,$WGET2DIR/,,")"
     cd $WGET2DIR
     /usr/bin/wget2 $WGETOPTS $WGET2CMD
-    cd -
+    cd - >/dev/null
   }
     # Implements an improved wget version for a verbose output
     #

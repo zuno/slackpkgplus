@@ -1,22 +1,28 @@
+Sat May  7 01:31:38 CEST 2022
+pkg/slackpkg+-1.8.0-noarch-6mt.txz: Rebuilt
+  - wget2 did print CWD
+  - fixed typo in documentation
++-------------------------+
+
 Sat May  7 01:06:13 CEST 2022
-pkg/slackpkg+-1.8.0-noarch-5mt.txz: Upgrade
+pkg/slackpkg+-1.8.0-noarch-5mt.txz: Rebuilt
   - wget2 does not honor WGETOPTS
 +-------------------------+
 
 Mon Apr 18 18:19:11 CEST 2022
-pkg/slackpkg+-1.8.0-noarch-4mt.txz: Upgrade
+pkg/slackpkg+-1.8.0-noarch-4mt.txz: Rebuilt
   - Show filename in wget2 instead directory
 +-------------------------+
 
 Sun Apr  3 19:29:38 CEST 2022
-pkg/slackpkg+-1.8.0-noarch-3mt.txz: Upgrade
+pkg/slackpkg+-1.8.0-noarch-3mt.txz: Rebuilt
   - Manage '+' in $TEMP path
   - Remove obsolete or broken repositories from list
   - Add SBo 15.0
 +-------------------------+
 
 Wed Feb 16 15:50:11 CET 2022
-pkg/slackpkg+-1.8.0-noarch-2mt.txz: Upgrade
+pkg/slackpkg+-1.8.0-noarch-2mt.txz: Rebuilt
   - slackpkg update will return exit code 2 on broken slackware mirrors
   - Advice if you are installing a wrong release of multilibs.
   - Make difference in switching from current >15.0 or from <15.0 to 15.0
@@ -58,7 +64,7 @@ pkg/slackpkg+-1.8.rc2-noarch-1mt.txz: Upgrade
 +-------------------------+
 
 Fri Jan 14 20:49:06 CET 2022
-pkg/slackpkg+-1.8.rc1-noarch-2mt.txz: Upgrade
+pkg/slackpkg+-1.8.rc1-noarch-2mt.txz: Rebuilt
   - Advice to run /var/lib/pkgtools/setup/setup.vi-ex if some upgrade
     delete the /usr/bin/vi link (may happens upgrading from 14.2 to 15.0)
   - Protect from slackware downgrades in case of wrong slackware mirror
