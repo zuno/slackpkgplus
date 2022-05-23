@@ -104,8 +104,11 @@ fi
 if [ "$SLACKPKGPLUS" = "on" ];then
 
 
+  ##### ===== BLACKLIST FUNCTIONS === #####
+  # patching makelist()
   # function internal_blacklist()
   # function applyblacklist()
+  ##### ====== INSTALL/POSTINSTALL FUNCTIONS ====== #####
   # function cleanup()
   # function needs_restarting()
   # function handle_event()
@@ -114,19 +117,27 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function upgradepkg() // if DOWNLOADONLY=on override /sbin/upgradepkg
   # function upgrade_pkg()
   # function install_pkg()
+  ##### ====== DOWNLOADERS ====== ######
+  # function wget2() // override /usr/bin/wget2
   # function wgetdebug()
   # function cached_downloader()
+  ##### ====== CORE FUNCTION ====== ######
   # function getpkg()
+  # function get_gpg_key(){
   # function getfile()
   # function checkgpg()
   # function checkmd5()
+  #### ===== PRIORITY AND SEARCH FUNCTIONS ===== #####
   # function givepriority()
   # function searchPackages()
+  #### ===== SHOWLIST FUNCTIONS ====== ######
   # function searchlistEX()
   # function more_info()
   # function showChangeLogInfo()
   # function showlist() // dialog=on
   # function showlist() // dialog=off
+  #### ===== OTHER ====== ######
+  # function debug()
 
 
   ##### ===== BLACKLIST FUNCTIONS === #####
@@ -1986,11 +1997,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   #### ===== END SHOWLIST FUNCTIONS ====== ######
 
+  #### ===== OTHER ====== ######
 
   function debug(){
     echo "DEBUG $(date +%H:%M:%S.%N) (${BASH_LINENO[*]}): $@" >&2
   } # END function debug()
 
+  #### ===== END OTHER ====== ######
 
 
   ### =========================== MAIN ============================ ###
