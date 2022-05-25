@@ -138,6 +138,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function showlist() // dialog=off
   #### ===== OTHER ====== ######
   # function debug()
+  # function updatedeps()
 
 
   ##### ===== BLACKLIST FUNCTIONS === #####
@@ -220,6 +221,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           rm -f ${WORKDIR}/ChangeLogs/*
         fi
         cp ${TMPDIR}/ChangeLogs/* ${WORKDIR}/ChangeLogs
+      fi
+      if [ "$CMD" == "update" ];then
+        updatedeps
       fi
     fi
     [ "$TTYREDIRECTION" ] && exec 1>&3 2>&4
@@ -1614,6 +1618,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
         fi
         echo "Url:        ${URLFILE/.\//}"
+        if ! echo $repository|grep -q ^SBO;then
+          DEPS=$(cat $WORKDIR/deplist|grep ^${repository/SLACKPKGPLUS_/}:$name:$namepkg:)
+          echo "Deps:       $(echo "$DEPS"|cut -f4 -d:|sed 's/,/ /g')"
+          echo "To install:$(echo "$DEPS"|cut -f5 -d:|sed -r -e "s/(^|,)([^,]+)/ ${repository/SLACKPKGPLUS_/}:\2,/g") ${repository/SLACKPKGPLUS_/}:$name,"
+        fi
         if [ "$DETAILED_INFO" == "filelist" ];then
           FILELIST="$(zgrep ^${fullpath/\/${repository}/}/$namepkg.$ext $WORKDIR/$repository-filelist.gz 2>/dev/null)"
           if [ -z "$FILELIST" ];then
@@ -2003,6 +2012,85 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     echo "DEBUG $(date +%H:%M:%S.%N) (${BASH_LINENO[*]}): $@" >&2
   } # END function debug()
 
+  function updatedeps(){
+    cat /var/lib/slackpkg/PACKAGES.TXT|sed 's/ //g'|sed -e $'s/\r//'|awk -F: '{
+              if($1 == "=====STARTREPO"){
+                repo=$2;
+                pname="";
+                sname="";
+                preq="";
+                delete(plist);
+                delete(rlist);
+              }
+
+              if(!$0 && pname){
+                pname="";
+                sname="";
+                preq="";
+              }
+
+              if($1 == "PACKAGENAME"){
+                pname=gensub(/\.t.z$/,"",1,$2);
+                sname=gensub(/-[^-]+-[^-]+-[^-]+\.t.z/,"",1,$2);
+                plist[sname]=pname;
+              }
+
+              if($1 == "PACKAGEREQUIRED"){
+                preq=gensub(/[<=>|]+[^,]*(,|$)/,",","g",$2);
+                rlist[sname]=preq;
+              }
+
+              if($1 == "=====ENDREPO"){
+                delete areq;
+                delete lreq;
+                for (p in plist){
+                  split(rlist[p],reqs,",");
+                  sreq="";
+                  sep="";
+                  for (i in reqs){
+                    r=reqs[i];
+                    if(plist[r]){
+                      areq[p][r]++;
+                      sreq=sreq sep r;
+                      sep=",";
+                    }
+                  }
+                  lreq[p]=sreq;
+                  #print repo":"p":"plist[p]":"sreq;
+                }
+                for (p in plist){
+                  #print repo":"p":"plist[p]":"lreq[p];
+                  delete fsdep;
+                  recdep(p);
+                  fdep="";
+                  ldep="";
+                  sep="";
+                  for (i=length(out);i>0;i--){
+                    fdep=fdep sep out[i-1];
+                    ldep=ldep sep plist[out[i-1]];
+                    sep=",";
+                  }
+                  fsdep[p]=fdep;
+                  if(p)print repo":"p":"plist[p]":"lreq[p]":"fdep;
+                }
+              }
+          }
+          function recdep(pkg,    z,nxt){
+            if(!z){delete out;delete tmp;ind=0}
+            if(pkg in areq){
+              for (nxt in areq[pkg]){
+                #print "-"z":"pkg">"nxt
+                if(!tmp[nxt]++){
+                  out[ind++]=nxt;
+                  recdep(nxt,z+1);
+                }
+              }
+            }
+          }
+        ' > $WORKDIR/deplist
+
+  }
+
   #### ===== END OTHER ====== ######
 
 
@@ -2044,7 +2132,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  SPKGPLUS_VERSION="1.8.0"
+  SPKGPLUS_VERSION="1.9.a1"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   if [ ${VERSION:0:4} == "2.82" ];then
