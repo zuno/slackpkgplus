@@ -159,6 +159,10 @@ MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+15/
 #SBO['15.0']=https://www.slackbuilds.org/slackbuilds/15.0/
 #SBO['current']=https://cgit.ponce.cc/slackbuilds/
 
+# Remote search. Use slakfinder.org service to find packages online
+SLAKFINDER=on
+SLAKFINDER_REPOS="no150,nocur,64150,64cur"     # no=noarch, 64=x86_64; cur=current, 150=15.0
+SLAKFINDER_MAXRES=10
 
 # Plugin section:
 # Here you can enable some optional feature. Please read documentation before enable it.

@@ -1,3 +1,8 @@
+Wed May 25 19:12:05 CEST 2022
+pkg/slackpkg+-1.9.a2-noarch-1mt.txz: Rebuilt
+  - Draft remote search (using slakfinder.org)
++-------------------------+
+
 Mon May 23 13:52:07 CEST 2022
 pkg/slackpkg+-1.9.a1-noarch-1mt.txz: Rebuilt
   - Draft dependency support (in slackpkg info)

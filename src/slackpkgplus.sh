@@ -2132,7 +2132,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  SPKGPLUS_VERSION="1.9.a1"
+  SPKGPLUS_VERSION="1.9.a2"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   if [ ${VERSION:0:4} == "2.82" ];then
@@ -2674,6 +2674,22 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             echo
             echo -e "[package]\n$SBORESULT"|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "${PATTERN%,*}" -e ^
             echo
+        fi
+        if [ "$SLAKFINDER" = "on" ];then
+
+          wsout="$(curl -s -A "slackpkg+/$SPKGPLUS_VERSION" -d "pkg=*$PATTERN*&max=$SLAKFINDER_MAXRES&repo=$SLAKFINDER_REPOS&metadata=true&fields=filename,url,location" https://slakfinder.org/slfcli.php)"
+          count="$(echo "$wsout"|grep ^metadata_count|cut -f2 -d=)"
+          mrows="$(echo "$wsout"|grep ^metadata_rows|cut -f2 -d=)"
+          tsout="$(echo "$wsout"|tail +$[$mrows+2]|awk '{print $1,$2$3"/"$1}'|sed -e 's,\./,,' -e 's/\.t[bjxg]z//'|column -t)"
+
+          if [ $count -gt 0 ];then
+            if [ $count -gt $SLAKFINDER_MAXRES ];then
+              echo "Fount $count online results. Only $SLAKFINDER_MAXRES will be shown."
+            else
+              echo "Found $count online results."
+            fi
+            echo "$tsout"|grep --color $PATTERN
+          fi
         fi
       ;;
 
