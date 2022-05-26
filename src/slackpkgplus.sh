@@ -2675,23 +2675,16 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             echo -e "[package]\n$SBORESULT"|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "${PATTERN%,*}" -e ^
             echo
         fi
-        if [ "$SLAKFINDER" = "on" ];then
-
-          wsout="$(curl -s -A "slackpkg+/$SPKGPLUS_VERSION" -d "pkg=*$PATTERN*&max=$SLAKFINDER_MAXRES&repo=$SLAKFINDER_REPOS&metadata=true&fields=filename,url,location" https://slakfinder.org/slfcli.php)"
-          count="$(echo "$wsout"|grep ^metadata_count|cut -f2 -d=)"
-          mrows="$(echo "$wsout"|grep ^metadata_rows|cut -f2 -d=)"
-          tsout="$(echo "$wsout"|tail +$[$mrows+2]|awk '{print $1,$2$3"/"$1}'|sed -e 's,\./,,' -e 's/\.t[bjxg]z//'|column -t)"
-
-          if [ $count -gt 0 ];then
-            if [ $count -gt $SLAKFINDER_MAXRES ];then
-              echo "Fount $count online results. Only $SLAKFINDER_MAXRES will be shown."
-            else
-              echo "Found $count online results."
-            fi
-            echo "$tsout"|grep --color $PATTERN
-          fi
-        fi
         if [ "$SEARCH_DESCRIPTION" = "on" ];then
+          if [[ "${PATTERN}" =~ , ]];then
+            PATTERN1='\W'"${PATTERN%,*}"'\W'
+            PATTERN2="${PATTERN%,*}"
+            PTGREP="-w"
+          else
+            PATTERN1="${PATTERN}"
+            PATTERN2="${PATTERN}"
+            PTGREP=""
+          fi
           slkdescout="$(
               cat $WORKDIR/PACKAGES.TXT |awk '{
                 IGNORECASE=0;
@@ -2700,7 +2693,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                 if ($0~/^PACKAGE DESCRIPTION:/)   { head="";         d=1; next  }
                 if (!$0 || $0~/=====/)            {                  d=0; next  }
                 if (d)       { head=gensub(/^[^:]+: /,"",1,$0); h=1; d=0; s="+" }
-                if (h && $0~/'$PATTERN'/){
+                if (h && $0~/'$PATTERN1'/){
                       if(s=="+"){
                           print s"\t"repo"\t"pkgnam"\t"gensub(/^[^:]+: [^ ]+ /,"",1,$0)
                         }else{
@@ -2709,12 +2702,48 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                         h=0;
                 }
                 s="-";
-              }' |sort|cut -f2-|sed 's/\.t[tgxj]z\t/\t/' |column -t -s $'\t'
+              }' |sort|cut -f2-|sed $'s/\.t[tgxj]z\t/\t/'
             )"
           if [ ! -z "$slkdescout" ];then
+            count=$(echo "$slkdescout"|wc -l)
             echo
-            echo "Found $(echo "$slkdescout"|wc -l) results in package description"
-            echo "$slkdescout"|grep -i --color -e $PATTERN -e ^
+            if [ $count -gt $SEARCH_DESCRIPTION_LIMITS ];then
+              echo "Found $count results in package description. Only $SEARCH_DESCRIPTION_LIMITS will be shown:"
+            else
+              echo "Found $count results in package description:"
+            fi
+            echo
+            slkdescout=$'[ repository ]\t[ package ]\t[ description ]\n'"$(echo "$slkdescout"|head -$SEARCH_DESCRIPTION_LIMITS|sed -e 's/^/  /' -e $'s/\t/\t  /g')"
+            echo "$slkdescout"|column -t -s $'\t'|grep $PTGREP -i --color -e $PATTERN2 -e ^
+            echo
+          fi
+        fi
+        if [ "$SLAKFINDER" = "on" ];then
+          if [[ "${PATTERN}" =~ , ]];then
+            PATTERN1="${PATTERN%,*}"
+            PATTERN2="${PATTERN%,*}"
+            PTGREP="-w"
+          else
+            PATTERN1="*${PATTERN}*"
+            PATTERN2="${PATTERN}"
+            PTGREP=""
+          fi
+          wsout="$(curl -s -A "slackpkg+/$SPKGPLUS_VERSION" -d "pkg=$PATTERN1&max=$SLAKFINDER_MAXRES&repo=$SLAKFINDER_REPOS&metadata=true&fields=filename,url,location" https://slakfinder.org/slfcli.php)"
+          count="$(echo "$wsout"|grep ^metadata_count|cut -f2 -d=)"
+          mrows="$(echo "$wsout"|grep ^metadata_rows|cut -f2 -d=)"
+          tsout="$(echo "$wsout"|tail +$[$mrows+2]|awk '{print $1"\t"$2$3"/"$1}'|sed -e 's,\./,,' -e $'s/\.t[bjxg]z\t/\t/')"
+          if [ $count -ne 0 ];then
+            echo
+            if [ $count -gt $SLAKFINDER_MAXRES ];then
+              echo "Found $count online results. Only $SLAKFINDER_MAXRES will be shown:"
+            else
+              echo "Found $count online results:"
+            fi
+            echo
+            tsout=$'[ package ]\t[ url ]\n'"$(echo "$tsout"|sed -e 's/^/  /' -e $'s/\t/\t  /g')"
+            #tsout=$'[ package ]\t[ url ]\n'"$(echo "$tsout"|sed 's/^/  /')"
+            echo "$tsout"|column -t -s $'\t'|grep $PTGREP -i --color -e $PATTERN2 -e ^
+            echo
           fi
         fi
       ;;

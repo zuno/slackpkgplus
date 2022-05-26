@@ -1,3 +1,9 @@
+Fri May 27 00:58:20 CEST 2022
+pkg/slackpkg+-1.9.a3-noarch-2mt.txz: Rebuilt
+  - Better output for search
+  - Allow comma-syntax in search url&desc
++-------------------------+
+
 Thu May 26 23:36:40 CEST 2022
 pkg/slackpkg+-1.9.a3-noarch-1mt.txz: Rebuilt
   - Draft search in package description
