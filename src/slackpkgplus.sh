@@ -2132,7 +2132,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  SPKGPLUS_VERSION="1.9.a2"
+  SPKGPLUS_VERSION="1.9.a3"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   if [ ${VERSION:0:4} == "2.82" ];then
@@ -2689,6 +2689,32 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               echo "Found $count online results."
             fi
             echo "$tsout"|grep --color $PATTERN
+          fi
+        fi
+        if [ "$SEARCH_DESCRIPTION" = "on" ];then
+          slkdescout="$(
+              cat $WORKDIR/PACKAGES.TXT |awk '{
+                IGNORECASE=0;
+                if ($0~/ START REPO/)             { repo=$4;              next  }
+                if ($0~/^PACKAGE NAME:/)          { pkgnam=$NF; h=0; d=0; next  }
+                if ($0~/^PACKAGE DESCRIPTION:/)   { head="";         d=1; next  }
+                if (!$0 || $0~/=====/)            {                  d=0; next  }
+                if (d)       { head=gensub(/^[^:]+: /,"",1,$0); h=1; d=0; s="+" }
+                if (h && $0~/'$PATTERN'/){
+                      if(s=="+"){
+                          print s"\t"repo"\t"pkgnam"\t"gensub(/^[^:]+: [^ ]+ /,"",1,$0)
+                        }else{
+                          print s"\t"repo"\t"pkgnam"\t..."gensub(/^[^:]+: /,"",1,$0)"..."
+                        }
+                        h=0;
+                }
+                s="-";
+              }' |sort|cut -f2-|sed 's/\.t[tgxj]z\t/\t/' |column -t -s $'\t'
+            )"
+          if [ ! -z "$slkdescout" ];then
+            echo
+            echo "Found $(echo "$slkdescout"|wc -l) results in package description"
+            echo "$slkdescout"|grep -i --color -e $PATTERN -e ^
           fi
         fi
       ;;
