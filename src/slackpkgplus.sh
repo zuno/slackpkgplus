@@ -104,8 +104,11 @@ fi
 if [ "$SLACKPKGPLUS" = "on" ];then
 
 
+  ##### ===== BLACKLIST FUNCTIONS === #####
+  # patching makelist()
   # function internal_blacklist()
   # function applyblacklist()
+  ##### ====== INSTALL/POSTINSTALL FUNCTIONS ====== #####
   # function cleanup()
   # function needs_restarting()
   # function handle_event()
@@ -114,19 +117,28 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function upgradepkg() // if DOWNLOADONLY=on override /sbin/upgradepkg
   # function upgrade_pkg()
   # function install_pkg()
+  ##### ====== DOWNLOADERS ====== ######
+  # function wget2() // override /usr/bin/wget2
   # function wgetdebug()
   # function cached_downloader()
+  ##### ====== CORE FUNCTION ====== ######
   # function getpkg()
+  # function get_gpg_key(){
   # function getfile()
   # function checkgpg()
   # function checkmd5()
+  #### ===== PRIORITY AND SEARCH FUNCTIONS ===== #####
   # function givepriority()
   # function searchPackages()
+  #### ===== SHOWLIST FUNCTIONS ====== ######
   # function searchlistEX()
   # function more_info()
   # function showChangeLogInfo()
   # function showlist() // dialog=on
   # function showlist() // dialog=off
+  #### ===== OTHER ====== ######
+  # function debug()
+  # function updatedeps()
 
 
   ##### ===== BLACKLIST FUNCTIONS === #####
@@ -209,6 +221,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           rm -f ${WORKDIR}/ChangeLogs/*
         fi
         cp ${TMPDIR}/ChangeLogs/* ${WORKDIR}/ChangeLogs
+      fi
+      if [ "$CMD" == "update" ];then
+        updatedeps
       fi
     fi
     [ "$TTYREDIRECTION" ] && exec 1>&3 2>&4
@@ -1603,6 +1618,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
         fi
         echo "Url:        ${URLFILE/.\//}"
+        if ! echo $repository|grep -q ^SBO;then
+          DEPS=$(cat $WORKDIR/deplist|grep ^${repository/SLACKPKGPLUS_/}:$name:$namepkg:)
+          echo "Deps:       $(echo "$DEPS"|cut -f4 -d:|sed 's/,/ /g')"
+          echo "To install:$(echo "$DEPS"|cut -f5 -d:|sed -r -e "s/(^|,)([^,]+)/ ${repository/SLACKPKGPLUS_/}:\2,/g") ${repository/SLACKPKGPLUS_/}:$name,"
+        fi
         if [ "$DETAILED_INFO" == "filelist" ];then
           FILELIST="$(zgrep ^${fullpath/\/${repository}/}/$namepkg.$ext $WORKDIR/$repository-filelist.gz 2>/dev/null)"
           if [ -z "$FILELIST" ];then
@@ -1986,11 +2006,92 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   #### ===== END SHOWLIST FUNCTIONS ====== ######
 
+  #### ===== OTHER ====== ######
 
   function debug(){
     echo "DEBUG $(date +%H:%M:%S.%N) (${BASH_LINENO[*]}): $@" >&2
   } # END function debug()
 
+  function updatedeps(){
+    cat /var/lib/slackpkg/PACKAGES.TXT|sed 's/ //g'|sed -e $'s/\r//'|awk -F: '{
+              if($1 == "=====STARTREPO"){
+                repo=$2;
+                pname="";
+                sname="";
+                preq="";
+                delete(plist);
+                delete(rlist);
+              }
+
+              if(!$0 && pname){
+                pname="";
+                sname="";
+                preq="";
+              }
+
+              if($1 == "PACKAGENAME"){
+                pname=gensub(/\.t.z$/,"",1,$2);
+                sname=gensub(/-[^-]+-[^-]+-[^-]+\.t.z/,"",1,$2);
+                plist[sname]=pname;
+              }
+
+              if($1 == "PACKAGEREQUIRED"){
+                preq=gensub(/[<=>|]+[^,]*(,|$)/,",","g",$2);
+                rlist[sname]=preq;
+              }
+
+              if($1 == "=====ENDREPO"){
+                delete areq;
+                delete lreq;
+                for (p in plist){
+                  split(rlist[p],reqs,",");
+                  sreq="";
+                  sep="";
+                  for (i in reqs){
+                    r=reqs[i];
+                    if(plist[r]){
+                      areq[p][r]++;
+                      sreq=sreq sep r;
+                      sep=",";
+                    }
+                  }
+                  lreq[p]=sreq;
+                  #print repo":"p":"plist[p]":"sreq;
+                }
+                for (p in plist){
+                  #print repo":"p":"plist[p]":"lreq[p];
+                  delete fsdep;
+                  recdep(p);
+                  fdep="";
+                  ldep="";
+                  sep="";
+                  for (i=length(out);i>0;i--){
+                    fdep=fdep sep out[i-1];
+                    ldep=ldep sep plist[out[i-1]];
+                    sep=",";
+                  }
+                  fsdep[p]=fdep;
+                  if(p)print repo":"p":"plist[p]":"lreq[p]":"fdep;
+                }
+              }
+          }
+          function recdep(pkg,    z,nxt){
+            if(!z){delete out;delete tmp;ind=0}
+            if(pkg in areq){
+              for (nxt in areq[pkg]){
+                #print "-"z":"pkg">"nxt
+                if(!tmp[nxt]++){
+                  out[ind++]=nxt;
+                  recdep(nxt,z+1);
+                }
+              }
+            }
+          }
+        ' > $WORKDIR/deplist
+
+  }
+
+  #### ===== END OTHER ====== ######
 
 
   ### =========================== MAIN ============================ ###
@@ -2031,7 +2132,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     cleanup
   fi
 
-  SPKGPLUS_VERSION="1.8.0"
+  SPKGPLUS_VERSION="1.9.a"
   VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
   
   if [ ${VERSION:0:4} == "2.82" ];then
@@ -2573,6 +2674,77 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             echo
             echo -e "[package]\n$SBORESULT"|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "${PATTERN%,*}" -e ^
             echo
+        fi
+        if [ "$SEARCH_DESCRIPTION" = "on" ];then
+          if [[ "${PATTERN}" =~ , ]];then
+            PATTERN1='\W'"${PATTERN%,*}"'\W'
+            PATTERN2="${PATTERN%,*}"
+            PTGREP="-w"
+          else
+            PATTERN1="${PATTERN}"
+            PATTERN2="${PATTERN}"
+            PTGREP=""
+          fi
+          slkdescout="$(
+              cat $WORKDIR/PACKAGES.TXT |awk '{
+                IGNORECASE=0;
+                if ($0~/ START REPO/)             { repo=$4;              next  }
+                if ($0~/^PACKAGE NAME:/)          { pkgnam=$NF; h=0; d=0; next  }
+                if ($0~/^PACKAGE DESCRIPTION:/)   { head="";         d=1; next  }
+                if (!$0 || $0~/=====/)            {                  d=0; next  }
+                if (d)       { head=gensub(/^[^:]+: /,"",1,$0); h=1; d=0; s="+" }
+                if (h && $0~/'$PATTERN1'/){
+                      if(s=="+"){
+                          print s"\t"repo"\t"pkgnam"\t"gensub(/^[^:]+: [^ ]+ /,"",1,$0)
+                        }else{
+                          print s"\t"repo"\t"pkgnam"\t..."gensub(/^[^:]+: /,"",1,$0)"..."
+                        }
+                        h=0;
+                }
+                s="-";
+              }' |sort|cut -f2-|sed $'s/\.t[tgxj]z\t/\t/'
+            )"
+          if [ ! -z "$slkdescout" ];then
+            count=$(echo "$slkdescout"|wc -l)
+            echo
+            if [ $count -gt $SEARCH_DESCRIPTION_LIMITS ];then
+              echo "Found $count results in package description. Only $SEARCH_DESCRIPTION_LIMITS will be shown:"
+            else
+              echo "Found $count results in package description:"
+            fi
+            echo
+            slkdescout=$'[ repository ]\t[ package ]\t[ description ]\n'"$(echo "$slkdescout"|head -$SEARCH_DESCRIPTION_LIMITS|sed -e 's/^/  /' -e $'s/\t/\t  /g')"
+            echo "$slkdescout"|column -t -s $'\t'|grep $PTGREP -i --color -e $PATTERN2 -e ^
+            echo
+          fi
+        fi
+        if [ "$SLAKFINDER" = "on" ];then
+          if [[ "${PATTERN}" =~ , ]];then
+            PATTERN1="${PATTERN%,*}"
+            PATTERN2="${PATTERN%,*}"
+            PTGREP="-w"
+          else
+            PATTERN1="*${PATTERN}*"
+            PATTERN2="${PATTERN}"
+            PTGREP=""
+          fi
+          wsout="$(curl -s -A "slackpkg+/$SPKGPLUS_VERSION" -d "pkg=$PATTERN1&max=$SLAKFINDER_MAXRES&repo=$SLAKFINDER_REPOS&metadata=true&fields=filename,url,location" https://slakfinder.org/slfcli.php)"
+          count="$(echo "$wsout"|grep ^metadata_count|cut -f2 -d=)"
+          mrows="$(echo "$wsout"|grep ^metadata_rows|cut -f2 -d=)"
+          tsout="$(echo "$wsout"|tail +$[$mrows+2]|awk '{print $1"\t"$2$3"/"$1}'|sed -e 's,\./,,' -e $'s/\.t[bjxg]z\t/\t/')"
+          if [ $count -ne 0 ];then
+            echo
+            if [ $count -gt $SLAKFINDER_MAXRES ];then
+              echo "Found $count online results. Only $SLAKFINDER_MAXRES will be shown:"
+            else
+              echo "Found $count online results:"
+            fi
+            echo
+            tsout=$'[ package ]\t[ url ]\n'"$(echo "$tsout"|sed -e 's/^/  /' -e $'s/\t/\t  /g')"
+            #tsout=$'[ package ]\t[ url ]\n'"$(echo "$tsout"|sed 's/^/  /')"
+            echo "$tsout"|column -t -s $'\t'|grep $PTGREP -i --color -e $PATTERN2 -e ^
+            echo
+          fi
         fi
       ;;
 

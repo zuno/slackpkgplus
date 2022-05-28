@@ -1,3 +1,11 @@
+Sat May 28 13:17:34 CEST 2022
+pkg/slackpkg+-1.9.a-noarch-1mt.txz: Rebuilt
+  - Draft dependency support (in slackpkg info)
+  - Draft search in package description (slack-desc)
+  - Draft remote search (using slakfinder.org)
+  - Allow comma-syntax in remote and description search
++-------------------------+
+
 Sat May  7 01:31:38 CEST 2022
 pkg/slackpkg+-1.8.0-noarch-6mt.txz: Rebuilt
   - wget2 did print CWD

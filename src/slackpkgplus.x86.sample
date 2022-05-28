@@ -20,6 +20,15 @@ USETERSE=on
 #TERSESEARCH=tiny
 TERSESEARCH=on
 
+# Remote search. Use slakfinder.org service to find packages online
+SLAKFINDER=on
+SLAKFINDER_REPOS="no150,nocur,32150,32cur"     # no=noarch, 32=i386; cur=current, 150=15.0
+SLAKFINDER_MAXRES=20
+
+# Search in slack-desc
+SEARCH_DESCRIPTION=on
+SEARCH_DESCRIPTION_LIMITS=50
+
 # Use proxy. Leave commented to use system settings.
 #PROXY=off
 #PROXY=<host>:<port>
