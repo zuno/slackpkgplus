@@ -2656,6 +2656,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     case $CMD in
       search)
+        if [ "$SENSITIVE_SEARCH" = "off" ];then
+          GREPOPTS="--ignore-case"
+          IGNORECASE=0
+        else
+          IGNORECASE=1
+        fi
         if [ "$LIST" = "" ]; then
           echo -e "No package name matches the pattern."
         else
@@ -2664,15 +2670,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"
         fi
         if [[ "${PATTERN}" =~ , ]];then
-          SBORESULT="$(grep -E -i "^SBO_[^ ]* ${PATTERN%,*} " $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+          SBORESULT="$(grep -E $GREPOPTS "^SBO_[^ ]* ${PATTERN%,*} " $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
         else
-          SBORESULT="$(grep -E -i "^SBO_[^ ]* [^ ]*${PATTERN}" $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+          SBORESULT="$(grep -E $GREPOPTS "^SBO_[^ ]* [^ ]*${PATTERN}" $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
         fi
         if [ ! -z "$SBORESULT" ];then
             echo
             echo "Also found in SBo (download it with 'slackpkg download <package>'):"
             echo
-            echo -e "[package]\n$SBORESULT"|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E -i -e "${PATTERN%,*}" -e ^
+            echo -e "[package]\n$SBORESULT"|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E $GREPOPTS -e "${PATTERN%,*}" -e ^
             echo
         fi
         if [ "$SEARCH_DESCRIPTION" = "on" ];then
@@ -2687,7 +2693,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           fi
           slkdescout="$(
               cat $WORKDIR/PACKAGES.TXT |awk '{
-                IGNORECASE=0;
+                IGNORECASE=1-'$IGNORECASE';
                 if ($0~/ START REPO/)             { repo=$4;              next  }
                 if ($0~/^PACKAGE NAME:/)          { pkgnam=$NF; h=0; d=0; next  }
                 if ($0~/^PACKAGE DESCRIPTION:/)   { head="";         d=1; next  }
@@ -2714,7 +2720,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             fi
             echo
             slkdescout=$'[ repository ]\t[ package ]\t[ description ]\n'"$(echo "$slkdescout"|head -$SEARCH_DESCRIPTION_LIMITS|sed -e 's/^/  /' -e $'s/\t/\t  /g')"
-            echo "$slkdescout"|column -t -s $'\t'|grep $PTGREP -i --color -e $PATTERN2 -e ^
+            echo "$slkdescout"|column -t -s $'\t'|grep $GREPOPTS $PTGREP -i --color -e $PATTERN2 -e ^
             echo
           fi
         fi
@@ -2728,12 +2734,25 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             PATTERN2="${PATTERN}"
             PTGREP=""
           fi
-          wsout="$(curl -s -A "slackpkg+/$SPKGPLUS_VERSION" -d "pkg=$PATTERN1&max=$SLAKFINDER_MAXRES&repo=$SLAKFINDER_REPOS&metadata=true&fields=filename,url,location" https://slakfinder.org/slfcli.php)"
+          echo
+          if [ $SLAKFINDER_MAXRES -gt 50 ];then
+            SLAKFINDER_MAXRES=50
+          fi
+          echo -ne "Looking up online results...\r"
+          wsout="$(curl --max-time 10 -k -L -s -A "slackpkg+/$SPKGPLUS_VERSION" -d "pkg=$PATTERN1&max=$SLAKFINDER_MAXRES&repo=$SLAKFINDER_REPOS&metadata=true&fields=filename,url,location&case=$IGNORECASE" https://slakfinder.org/slfcli.php)"
+          echo -ne "                                \r"
           count="$(echo "$wsout"|grep ^metadata_count|cut -f2 -d=)"
+          if [ "$count" == "0" ];then
+            echo "Found 0 online results."
+          fi
+          if [ -z "$count" ];then
+            echo "Error looking up online results!"
+            echo "$wsout"
+            count=0
+          fi
           mrows="$(echo "$wsout"|grep ^metadata_rows|cut -f2 -d=)"
           tsout="$(echo "$wsout"|tail +$[$mrows+2]|awk '{print $1"\t"$2$3"/"$1}'|sed -e 's,\./,,' -e $'s/\.t[bjxg]z\t/\t/')"
           if [ $count -ne 0 ];then
-            echo
             if [ $count -gt $SLAKFINDER_MAXRES ];then
               echo "Found $count online results. Only $SLAKFINDER_MAXRES will be shown:"
             else
@@ -2741,8 +2760,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             fi
             echo
             tsout=$'[ package ]\t[ url ]\n'"$(echo "$tsout"|sed -e 's/^/  /' -e $'s/\t/\t  /g')"
-            #tsout=$'[ package ]\t[ url ]\n'"$(echo "$tsout"|sed 's/^/  /')"
-            echo "$tsout"|column -t -s $'\t'|grep $PTGREP -i --color -e $PATTERN2 -e ^
+            echo "$tsout"|column -t -s $'\t'|grep $GREPOPTS $PTGREP --color -e $PATTERN2 -e ^
             echo
           fi
         fi
