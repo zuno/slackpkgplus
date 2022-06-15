@@ -1,3 +1,10 @@
+Wed Jun 15 23:30:35 CEST 2022
+pkg/slackpkg+-1.9.a-noarch-2mt.txz: Upgrade
+  - Allow option SENSITIVE_SEARCH in sbo, description, remote searches
+  - Manage errors in remote searching
+  - 'slackpkg info' code embedded in slackpkg+ for future improvment
+-+-------------------------+
+
 Sat May 28 13:17:34 CEST 2022
 pkg/slackpkg+-1.9.a-noarch-1mt.txz: Rebuilt
   - Draft dependency support (in slackpkg info)

@@ -197,10 +197,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     needs_restarting
 
-    if [ "$CMD" == "info" ];then
-      DETAILED_INFO=${DETAILED_INFO:-none}
-      [[ "$DETAILED_INFO" != "none" ]]&&more_info
-    fi
     rm -f ${TMPDIR}/waiting
     if [ "$CMD" == "update" ];then
       if [ -e $TMPDIR/pkglist.sbo ];then
@@ -1596,7 +1592,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Show detailed info for slackpkg info
     #
   function more_info(){
+    PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g')
+    NAME=$(cutpkg $PATTERN)
+    awk  "/PACKAGE NAME:.* ${NAME}-[^-]+-(${ARCH}|fw|noarch)-[^-]+/,/^$/ "'{ found=1; print $0 } END {
+            if(found!=1) {print "No packages found! Try:\n\n\tslackpkg search '$PATTERN'\n\nand choose one (and ONLY one package).\n"}
+          }' ${WORKDIR}/PACKAGES.TXT 2>/dev/null
     echo
+
     cat $WORKDIR/pkglist|grep -E "^[^ ]* $NAME "|while read repository name version arch tag namepkg fullpath ext;do
       echo "Package:    $namepkg"
       echo "Repository: ${repository/SLACKPKGPLUS_/}"
@@ -2095,7 +2097,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
   ### =========================== MAIN ============================ ###
-
 
   SPINNING=off
   #if [ "$CMD" == "upgrade-all" ];then SPINNING=off ;fi
@@ -2909,6 +2910,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     cleanup
   fi
+  if [ "$CMD" == "info" ];then
+    more_info
+      cleanup
+  fi
+
 
 fi
 
