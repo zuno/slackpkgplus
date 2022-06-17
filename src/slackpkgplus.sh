@@ -2091,365 +2091,422 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           }
         ' > $WORKDIR/deplist
 
-  }
+  } # END updatedeps()
 
   #### ===== END OTHER ====== ######
 
+  #### ===== PREPARE ======== ######
 
-  ### =========================== MAIN ============================ ###
+  function setup_settings(){
 
-  SPINNING=off
-  #if [ "$CMD" == "upgrade-all" ];then SPINNING=off ;fi
+    # 02. English output for all commands
+    export LC_ALL=C
 
-  export LC_ALL=C
+    # 01. Disable Spinning (use progress)
+    SPINNING=off
 
-  if [ "$DOWNLOADONLY" == "on" ];then
-    DELALL=off
-    DOWNLOAD_ALL=on
-  fi
+    # 03. Avoid to clear package cache at end if DOWNLOADONLY=on
+    if [ "$DOWNLOADONLY" == "on" ];then
+        DELALL=off
+        DOWNLOAD_ALL=on
+    fi
 
-  if [ -z "$VERBOSE" ];then
-    VERBOSE=1
-  fi
+    # 07. slackpkg+ version
+    SPKGPLUS_VERSION="1.9.b1"
+    VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
 
-  if [ ! -z "$ROOT" ];then
-    echo "! ! ! FATAL ! ! !"
-    echo
-    echo "slackpkg+ does not support installation via \$ROOT"
-    echo
-    echo "please unset it"
-    cleanup
-  fi
+    # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
+    LINKVI=$(ls -L /usr/bin/vi 2>/dev/null)
 
-  if [ "$CMD" == "upgrade" -o "$CMD" == "upgrade-all" ]&&ls $ROOT/var/log/packages/*:* >/dev/null 2>&1;then
-    echo "FATAL! There is some problem in packages database"
-    echo "       or maybe an installation or upgrade in progress:"
-    echo
-    echo "   "$(cd $ROOT/var/log/packages/ ; ls *:*)
-    echo
-    echo "       If you continue you may corrupt packages database."
-    echo "       Check or retry later"
-    echo
-    cleanup
-  fi
+    # 04. VERBOSE=1 by default
+    if [ -z "$VERBOSE" ];then
+        VERBOSE=1
+    fi
 
-  SPKGPLUS_VERSION="1.9.a"
-  VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
-  
-  if [ ${VERSION:0:4} == "2.82" ];then
-    echo " ! ! ! WARNING ! ! ! "
-    echo " You are using slackpkg+ $SPKGPLUS_VERSION release with Slackware 14.2"
-    echo
-    echo " It no longer supports Slackware 14.2 and should be used with"
-    echo " Slackware current only."
-    echo " Using it with Slackware 14.2 may no work properly"
-    echo " Use slackpkg+ 1.7.0 instead"
-    echo 
-    SLPMIR="$(cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg)"
-    if [ "$SLPMIR" != "MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+1.7/" ];then
-      echo " Please replace"
-      cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg
-      echo " with"
-      echo "MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+1.7/"
-      echo " then run 'slackpkg update && slackpkg upgrade slackpkg+' to downgrade it"
-      echo
-      echo 
-      echo -n "Do you want continue anyway? (Y/[N]) "
-      read ANSW
-      if [ "$ANSW" != "Y" ];then
+  } #END function setup_settings()
+
+  function setup_checkup(){
+
+    # 10. create $WORKDIR
+    if [ ! -e "$WORKDIR" ];then
+        mkdir -p "$WORKDIR"
+    fi
+
+    # 05. $ROOT not supported
+    if [ ! -z "$ROOT" ];then
+        echo "! ! ! FATAL ! ! !"
+        echo
+        echo "slackpkg+ does not support installation via \$ROOT"
+        echo
+        echo "please unset it"
         cleanup
-      fi
-    else
-      echo " run 'slackpkg update && slackpkg upgrade slackpkg+' to downgrade it"
-      echo
-      sleep 5
     fi
 
-  fi
-
-  LINKVI=$(ls -L /usr/bin/vi 2>/dev/null)
-
-  if [ ! -e "$WORKDIR" ];then
-    mkdir -p "$WORKDIR"
-  fi
-
-  if [ -e ${WORKDIR}/current ]&&[ "$MIRROR_VERSION" != "current" ];then
-    echo "WARNING:  ${WORKDIR}/current does exists and you have
-          not selected slackware current repository.
-
-          This may be you have an older version o slackpkg.
-          You can continue anyway"|tee -a $TMPDIR/info.log
-    echo
-  fi
-  if echo "${!MIRRORPLUS[@]}"|grep -wq multilib;then
-    MULTILIB_ACTION="
-          # slackpkg install multilib"
-    MULTILIB_VERSION=$(echo ${MIRRORPLUS['multilib']}|sed -r -e 's,/+$,,' -e 's,.*/,,')
-    if [ "$MULTILIB_VERSION" != "$MIRROR_VERSION" ];then
-      echo "WARNING:    You have selected a mirror for Slackware $MIRROR_VERSION and a multilib
-            repository for Slackware $MULTILIB_VERSION. This may damage your system.
-            Please fix the configuration."|tee -a $TMPDIR/error.log
-      echo
-      sleep 5
+    # 06. Database problems
+    if [ "$CMD" == "upgrade" -o "$CMD" == "upgrade-all" ]&&ls $ROOT/var/log/packages/*:* >/dev/null 2>&1;then
+        echo "FATAL! There is some problem in packages database"
+        echo "       or maybe an installation or upgrade in progress:"
+        echo
+        echo "   "$(cd $ROOT/var/log/packages/ ; ls *:*)
+        echo
+        echo "       If you continue you may corrupt packages database."
+        echo "       Check or retry later"
+        echo
+        cleanup
     fi
-  fi
-  if [ "${SLACKWARE_VERSION:0:2}" == "14" ]&&[ "$MIRROR_VERSION" == "15.0" ];then
-    echo "WARNING:  You have selected a mirror for Slackware 15.0 and you are running
-          slackware $SLACKWARE_VERSION; if you are upgrading slackware be
-          sure to run following steps:
-          # slackpkg update
-          # slackpkg install-new$MULTILIB_ACTION
-          # slackpkg upgrade-all
-          # slackpkg clean-system
 
-          This message will disappear when the upgrade will finish"|tee -a $TMPDIR/info.log
-    echo
-    sleep 5
-  elif [ "${MIRROR_VERSION:0:2}" == "14" ];then
-    echo "FATAL:    You have selected a mirror for Slackware $MIRROR_VERSION!
-          If this is an error please correct your slackpkg configuration.
-          If you really wants to install Slackware $MIRROR_VERSION be sure
-          to downgrade slackpkg+ to 1.7.0 since $SPKGPLUS_VERSION does not
-          support Slackware $MIRROR_VERSION!"|tee -a $TMPDIR/fatal.log
-    echo
-    EXIT_CODE=1
-    cleanup
-  elif [ ! -e ${WORKDIR}/current ]&&[ -e ${WORKDIR}/currentplus ];then
-    if [ "$SLACKWARE_VERSION" == "15.0+" ];then
-      echo "WARNING:  You have changed the mirror from Slackware current to $MIRROR_VERSION;
-          You are running Slackware $SLACKWARE_VERSION; this means a system DOWNGRADE!
-
-          Be careful! If that's not what you want please check and fix your configuration!
-      "|tee -a $TMPDIR/error.log
-      sleep 5
-    else
-      echo "INFO:     You have changed the mirror from Slackware current to $MIRROR_VERSION;
-          You are running Slackware $SLACKWARE_VERSION; if you are upgrading slackware be
-          sure to run following steps:
-          # slackpkg update
-          # slackpkg install-new$MULTILIB_ACTION
-          # slackpkg upgrade-all
-          # slackpkg clean-system"|tee -a $TMPDIR/info.log
+    # 08. Old slackpkg version
+    if [ ${VERSION:0:4} == "2.82" ];then
+        echo " ! ! ! WARNING ! ! ! "
+        echo " You are using slackpkg+ $SPKGPLUS_VERSION release with Slackware 14.2"
+        echo
+        echo " It no longer supports Slackware 14.2 and should be used with"
+        echo " Slackware current only."
+        echo " Using it with Slackware 14.2 may no work properly"
+        echo " Use slackpkg+ 1.7.0 instead"
+        echo
+        SLPMIR="$(cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg)"
+        if [ "$SLPMIR" != "MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+1.7/" ];then
+            echo " Please replace"
+            cat $CONF/slackpkgplus.conf|grep -E ^MIRRORPLUS.*slackpkg
+            echo " with"
+            echo "MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+1.7/"
+            echo " then run 'slackpkg update && slackpkg upgrade slackpkg+' to downgrade it"
+            echo
+            echo
+            echo -n "Do you want continue anyway? (Y/[N]) "
+            read ANSW
+            if [ "$ANSW" != "Y" ];then
+                cleanup
+            fi
+            else
+            echo " run 'slackpkg update && slackpkg upgrade slackpkg+' to downgrade it"
+            echo
+            sleep 5
+        fi
     fi
-    echo
-  elif [ -e ${WORKDIR}/current ]&&[ ! -e ${WORKDIR}/currentplus ];then
-    echo "INFO:     You have changed the mirror to Slackware current;
-          You are running Slackware $SLACKWARE_VERSION; if you are upgrading slackware be
-          sure to run following steps:
-          # slackpkg update
-          # slackpkg install-new$MULTILIB_ACTION
-          # slackpkg upgrade
-          # slackpkg clean-system"|tee -a $TMPDIR/info.log
-    echo
-    sleep 5
-  fi
-  [ ! -e ${WORKDIR}/current ] && rm -f ${WORKDIR}/currentplus 2>/dev/null ||touch ${WORKDIR}/currentplus 2>/dev/null
 
-  [ ! -s $WORKDIR/pkglist ] && rm -f $WORKDIR/CHECKSUMS.md5.asc
-  if ! grep -q "slackpkgplus repositories" $WORKDIR/CHECKSUMS.md5.asc 2>/dev/null &&
+    # 24. Advicef too old
+    if [ "$CMD" != "update" -a "$CMD" != "check-updates" ];then
+        if [ $[$(date +%s)-$(date -d "$(ls -l --full-time $WORKDIR/pkglist 2>/dev/null|awk '{print $6,$7,$8}')" +%s)] -gt 86400 ];then
+            echo
+            echo "NOTICE: pkglist is older than 24h; you are encouraged to re-run 'slackpkg update'"
+            echo
+        fi
+    fi
+
+
+    # 26. Advice for slackpkgplus.conf modified
+    if [ "$CMD" != "update" -a "$CMD" != "check-updates" ];then
+        if [ $CONF/slackpkgplus.conf -nt $WORKDIR/CHECKSUMS.md5.asc ];then
+            echo
+            echo "NOTICE: remember to re-run 'slackpkg update' after modifying slackpkgplus.conf"
+            echo
+        fi
+    fi
+
+    # 25. slackpkgplus.conf modified. Force to redownload all metadatas
+    if [ "$CMD" == "update" ];then
+        if [ $CONF/slackpkgplus.conf -nt $WORKDIR/CHECKSUMS.md5.asc ];then
+            BATCH=on
+            DEFAULT_ANSWER=Y
+        fi
+    fi
+
+    # 11. slackpkg does not support $WORKDIR/current flag
+    if [ -e ${WORKDIR}/current ]&&[ "$MIRROR_VERSION" != "current" ];then
+        echo "WARNING:  ${WORKDIR}/current does exists and you have
+            not selected slackware current repository.
+
+            This may be you have an older version o slackpkg.
+            You can continue anyway"|tee -a $TMPDIR/info.log
+        echo
+    fi
+
+    # 12. Check multilib version
+    if echo "${!MIRRORPLUS[@]}"|grep -wq multilib;then
+        MULTILIB_ACTION="
+            # slackpkg install multilib"
+        MULTILIB_VERSION=$(echo ${MIRRORPLUS['multilib']}|sed -r -e 's,/+$,,' -e 's,.*/,,')
+        if [ "$MULTILIB_VERSION" != "$MIRROR_VERSION" ];then
+            echo "WARNING:    You have selected a mirror for Slackware $MIRROR_VERSION and a multilib
+                repository for Slackware $MULTILIB_VERSION. This may damage your system.
+                Please fix the configuration."|tee -a $TMPDIR/error.log
+            echo
+            sleep 5
+        fi
+    fi
+
+
+    # 13. Various repository&running version mismatch
+    if [ "${SLACKWARE_VERSION:0:2}" == "14" ]&&[ "$MIRROR_VERSION" == "15.0" ];then
+        echo "WARNING:  You have selected a mirror for Slackware 15.0 and you are running
+            slackware $SLACKWARE_VERSION; if you are upgrading slackware be
+            sure to run following steps:
+            # slackpkg update
+            # slackpkg install-new$MULTILIB_ACTION
+            # slackpkg upgrade-all
+            # slackpkg clean-system
+
+            This message will disappear when the upgrade will finish"|tee -a $TMPDIR/info.log
+        echo
+        sleep 5
+    elif [ "${MIRROR_VERSION:0:2}" == "14" ];then
+        echo "FATAL:    You have selected a mirror for Slackware $MIRROR_VERSION!
+            If this is an error please correct your slackpkg configuration.
+            If you really wants to install Slackware $MIRROR_VERSION be sure
+            to downgrade slackpkg+ to 1.7.0 since $SPKGPLUS_VERSION does not
+            support Slackware $MIRROR_VERSION!"|tee -a $TMPDIR/fatal.log
+        echo
+        EXIT_CODE=1
+        cleanup
+    elif [ ! -e ${WORKDIR}/current ]&&[ -e ${WORKDIR}/currentplus ];then
+        if [ "$SLACKWARE_VERSION" == "15.0+" ];then
+            echo "WARNING:  You have changed the mirror from Slackware current to $MIRROR_VERSION;
+            You are running Slackware $SLACKWARE_VERSION; this means a system DOWNGRADE!
+
+            Be careful! If that's not what you want please check and fix your configuration!
+            "|tee -a $TMPDIR/error.log
+            sleep 5
+        else
+            echo "INFO:     You have changed the mirror from Slackware current to $MIRROR_VERSION;
+            You are running Slackware $SLACKWARE_VERSION; if you are upgrading slackware be
+            sure to run following steps:
+            # slackpkg update
+            # slackpkg install-new$MULTILIB_ACTION
+            # slackpkg upgrade-all
+            # slackpkg clean-system"|tee -a $TMPDIR/info.log
+        fi
+        echo
+    elif [ -e ${WORKDIR}/current ]&&[ ! -e ${WORKDIR}/currentplus ];then
+        echo "INFO:     You have changed the mirror to Slackware current;
+            You are running Slackware $SLACKWARE_VERSION; if you are upgrading slackware be
+            sure to run following steps:
+            # slackpkg update
+            # slackpkg install-new$MULTILIB_ACTION
+            # slackpkg upgrade
+            # slackpkg clean-system"|tee -a $TMPDIR/info.log
+        echo
+        sleep 5
+    fi
+
+    # 14. sync the 'current' flag of slackpkg+ and slackpkg
+    [ ! -e ${WORKDIR}/current ] && rm -f ${WORKDIR}/currentplus 2>/dev/null ||touch ${WORKDIR}/currentplus 2>/dev/null
+
+    # 15. previous slackpkg update running without slackpkg+ (possibly a previous slackpkg upgrade made)
+    [ ! -s $WORKDIR/pkglist ] && rm -f $WORKDIR/CHECKSUMS.md5.asc
+    if ! grep -q "slackpkgplus repositories" $WORKDIR/CHECKSUMS.md5.asc 2>/dev/null &&
        [ "$CMD" != "update" ] && [ "$CMD" != "new-config" ] && [ "$CMD" != "help" ];then
-    echo "========================================================="
-    echo "slackpkg was upgrades or slackpkg+ was temporary disabled"
-    echo "We need to force 'slackpkg update' to re-enable slackpkg+"
-    echo "Then you can re-run '$CMD' command                       "
-    echo "========================================================="
-    echo
-    echo "slackpkg forced to rebuild pkglist database" >> $TMPDIR/info.log
-    echo "Please may try 'slackpkg $CMD $INPUTLIST' now" >> $TMPDIR/info.log
-    CMD="update"
-  fi
+            echo "========================================================="
+            echo "slackpkg was upgrades or slackpkg+ was temporary disabled"
+            echo "We need to force 'slackpkg update' to re-enable slackpkg+"
+            echo "Then you can re-run '$CMD' command                       "
+            echo "========================================================="
+            echo
+            echo "slackpkg forced to rebuild pkglist database" >> $TMPDIR/info.log
+            echo "Please may try 'slackpkg $CMD $INPUTLIST' now" >> $TMPDIR/info.log
+            CMD="update"
+    fi
 
-  if [ ! -e $WORKDIR/install.log ];then
-    touch $WORKDIR/install.log
-  fi
+    # 16. init install.log
+    if [ ! -e $WORKDIR/install.log ];then
+        touch $WORKDIR/install.log
+    fi
 
-  if [ -e $TEMP ]&&[ -z "$PURGECACHE" ];then
-    # clean cache from packages without gpg signature
-    find $TEMP ! -type d|sort|tac|awk '{if($1~/\.asc$/)f[$1]++;if($1~/\.t.z$/ && !f[$1".asc"])print $1}' |xargs -r rm -f
-  fi
+    # 17. purge package cache
+    if [ -e $TEMP ]&&[ -z "$PURGECACHE" ];then
+        # clean cache from packages without gpg signature
+        find $TEMP ! -type d|sort|tac|awk '{if($1~/\.asc$/)f[$1]++;if($1~/\.t.z$/ && !f[$1".asc"])print $1}' |xargs -r rm -f
+    fi
 
-  #if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&&[ "$STRICTGPG" = "on" ] && ! ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1;then
-  if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&&[ "$STRICTGPG" = "on" ];then
-    ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1 || GPGFIRSTTIME=0
+    # 18. Force to run slackpkg update gpg
+    if [ "$UPARG" != "gpg" ]&&[ "$CHECKGPG" = "on" ]&&[ "$STRICTGPG" = "on" ];then
+        ls -l $WORKDIR/gpg/GPG-KEY-slackware*.gpg >/dev/null 2>&1 || GPGFIRSTTIME=0
+        for PREPO in "${!MIRRORPLUS[@]}" ; do
+            if ! echo "${MIRRORPLUS[$PREPO]}"|grep -q -e "^dir:/" -e "^httpdir://" -e "^httpsdir://" -e "^ftpdir://" 2>/dev/null ; then
+                ls -l $WORKDIR/gpg/GPG-KEY-${PREPO}.gpg >/dev/null 2>&1 || GPGFIRSTTIME=0
+            fi
+        done
+    fi
+
+  } # END function setup_checkup()
+
+  function setup_repositories(){
+
+    # 19. Ensure each repository url has a trailing slash...
     for PREPO in "${!MIRRORPLUS[@]}" ; do
-      if ! echo "${MIRRORPLUS[$PREPO]}"|grep -q -e "^dir:/" -e "^httpdir://" -e "^httpsdir://" -e "^ftpdir://" 2>/dev/null ; then
-        ls -l $WORKDIR/gpg/GPG-KEY-${PREPO}.gpg >/dev/null 2>&1 || GPGFIRSTTIME=0
-      fi
+        MIRRORPLUS[$PREPO]="${MIRRORPLUS[$PREPO]%/}/"
     done
-  fi
-
-    # Ensure each repository url has a trailing slash...
-    #
-  for PREPO in "${!MIRRORPLUS[@]}" ; do
-    MIRRORPLUS[$PREPO]="${MIRRORPLUS[$PREPO]%/}/"
-  done
-
-  touch $TMPDIR/greylist.1
-  if [ -e $CONF/greylist ];then
-    cat $CONF/greylist|sed -e 's/#.*//'|grep -v -e '^#' -e '^$'|awk '{print $1}'|sort -u >$TMPDIR/greylist.1
-    cat $TMPDIR/greylist.1|sed 's/^/SLACKPKGPLUS_/' >$TMPDIR/greylist.2
-  fi
-
-  INDEX=0
-  PURE_PKGSPRIORITY=""
-  for pp in ${PKGS_PRIORITY[@]} ; do
-    repository=$(echo "$pp" | cut -f1 -d":")
-
-    if [ "$pp" == "$repository" ] && grep -q "^SLACKPKGPLUS_${repository}[ ]" $WORKDIR/pkglist 2>/dev/null ; then
-      pp="$repository:.*"
-      PKGS_PRIORITY[$INDEX]="$repository:.*"
-    fi
-
-    if ! echo "$repository" | grep -qwE "$SLACKDIR_REGEXP" ; then
-      PURE_PKGSPRIORITY=( ${PURE_PKGSPRIORITY[*]} $pp )
-    fi
-    ((INDEX++))
-  done
-
-  REPOPLUS=( $(echo "${REPOPLUS[*]} ${PURE_PKGSPRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}') )
-  if [ ! -z "${REPOPLUS[*]}" ];then
-    PRIORITY=( ${PRIORITY[*]} SLACKPKGPLUS_$(echo ${REPOPLUS[*]}|sed 's/ / SLACKPKGPLUS_/g') )
-  fi
-
-  # Test repositories
-  for pp in ${REPOPLUS[*]};do
-    echo "${MIRRORPLUS[$pp]}"|grep -q -e ^http:// -e ^https:// -e ^ftp:// -e ^file:// -e ^dir:/ -e ^httpdir:// -e ^httpsdir:// -e ^ftpdir://
-    if [ $? -ne 0 ];then
-      echo "Repository '$pp' not configured." >> $TMPDIR/error.log
-      echo "Add:" >> $TMPDIR/error.log
-      echo "MIRRORPLUS['$pp']=http://repoaddres/..." >> $TMPDIR/error.log
-      echo "See documentation in /usr/doc/slackpkg+-* for details" >> $TMPDIR/error.log
-      cleanup
-    fi
-  done
-
-  if [ "$CMD" != "update" -a "$CMD" != "check-updates" ];then
-    if [ $[$(date +%s)-$(date -d "$(ls -l --full-time $WORKDIR/pkglist 2>/dev/null|awk '{print $6,$7,$8}')" +%s)] -gt 86400 ];then
-      echo
-      echo "NOTICE: pkglist is older than 24h; you are encouraged to re-run 'slackpkg update'"
-      echo
-    fi
-  fi
-  if [ "$CMD" == "update" ];then
-    if [ $CONF/slackpkgplus.conf -nt $WORKDIR/CHECKSUMS.md5.asc ];then
-      BATCH=on
-      DEFAULT_ANSWER=Y
-    fi
-  fi
-  if [ "$CMD" != "update" -a "$CMD" != "check-updates" ];then
-    if [ $CONF/slackpkgplus.conf -nt $WORKDIR/CHECKSUMS.md5.asc ];then
-      echo
-      echo "NOTICE: remember to re-run 'slackpkg update' after modifying slackpkgplus.conf"
-      echo
-    fi
-  fi
 
 
-  # -- merge priorities from PKGS_PRIORITY with PRIORITY, as needed ...
+    # 21. Normalize PKGS_PRIORITY
+    INDEX=0
+    PURE_PKGSPRIORITY=""
+    for pp in ${PKGS_PRIORITY[@]} ; do
+        repository=$(echo "$pp" | cut -f1 -d":")
 
-  if [ ! -z "$PKGS_PRIORITY" -a "$CMD" != "update" ] ; then
-    PREFIX=""
-
-    for pp in ${PKGS_PRIORITY[*]} ; do
-      repository=$(echo "$pp" | cut -f1 -d":")
-      package=$(echo "$pp" | cut -f2- -d":")
-
-      if [ ! -z "$repository" ] && [ ! -z "$package" ] ; then
+        if [ "$pp" == "$repository" ] && grep -q "^SLACKPKGPLUS_${repository}[ ]" $WORKDIR/pkglist 2>/dev/null ; then
+            pp="$repository:.*"
+            PKGS_PRIORITY[$INDEX]="$repository:.*"
+        fi
 
         if ! echo "$repository" | grep -qwE "$SLACKDIR_REGEXP" ; then
-          repository="SLACKPKGPLUS_${repository}"
+            PURE_PKGSPRIORITY=( ${PURE_PKGSPRIORITY[*]} $pp )
         fi
-
-        if [ -z "$PREFIX" ] ; then
-          PREFIX=( ${repository}:$package )
-        else
-          PREFIX=( ${PREFIX[*]} ${repository}:$package )
-        fi
-      fi
+        ((INDEX++))
     done
 
-    [ ! -z "$PREFIX" ] && PRIORITY=( ${PREFIX[*]} ${PRIORITY[*]} )
-  fi
+    # 23. Verify mirror syntax
+    for pp in ${REPOPLUS[*]};do
+        echo "${MIRRORPLUS[$pp]}"|grep -q -e ^http:// -e ^https:// -e ^ftp:// -e ^file:// -e ^dir:/ -e ^httpdir:// -e ^httpsdir:// -e ^ftpdir://
+        if [ $? -ne 0 ];then
+            echo "Repository '$pp' not configured." >> $TMPDIR/error.log
+            echo "Add:" >> $TMPDIR/error.log
+            echo "MIRRORPLUS['$pp']=http://repoaddres/..." >> $TMPDIR/error.log
+            echo "See documentation in /usr/doc/slackpkg+-* for details" >> $TMPDIR/error.log
+            cleanup
+        fi
+    done
 
-  # -- This flag is set when running slackpkg to manage the multilib :
-  #
-  #      slackpkg install|upgrade|reinstall|remove <multilib_repository_name>
-  #
-  #    This is used by applyblacklist() to prevent silent exclusion of
-  #    multilib package aaa_elflibs-compat32 when /etc/slackpkg/blacklist
-  #    contains the pattern aaa_elflibs.
-  #
-  MLREPO_SELELECTED=false
+    # 22. Merge REPOPLUS and PRIORITY
+    REPOPLUS=( $(echo "${REPOPLUS[*]} ${PURE_PKGSPRIORITY[*]} ${!MIRRORPLUS[*]}"|sed 's/ /\n/g'|sed 's/:.*//'|awk '{if(!a[$1]++)print $1}') )
+    if [ ! -z "${REPOPLUS[*]}" ];then
+        PRIORITY=( ${PRIORITY[*]} SLACKPKGPLUS_$(echo ${REPOPLUS[*]}|sed 's/ / SLACKPKGPLUS_/g') )
+    fi
 
-  # -- Ensures the internal blacklist is empty
-  #
-  echo -n "" > ${TMPDIR}/blacklist.slackpkgplus
+    # 27. merge priorities from PKGS_PRIORITY with PRIORITY, as needed ...
+    if [ ! -z "$PKGS_PRIORITY" -a "$CMD" != "update" ] ; then
+        PREFIX=""
 
-  if [ "$CMD" != "download" ];then
-    internal_blacklist "^SBO_"
-  fi
+        for pp in ${PKGS_PRIORITY[*]} ; do
+            repository=$(echo "$pp" | cut -f1 -d":")
+            package=$(echo "$pp" | cut -f2- -d":")
 
-  if [ ! -z "$DOWNLOADCMD" ];then
-    DOWNLOADER="$DOWNLOADCMD"
-  else
-    if [ "$VERBOSE" = "3" ];then
-      DOWNLOADER="wgetdebug"
+            if [ ! -z "$repository" ] && [ ! -z "$package" ] ; then
+
+                if ! echo "$repository" | grep -qwE "$SLACKDIR_REGEXP" ; then
+                    repository="SLACKPKGPLUS_${repository}"
+                fi
+
+                if [ -z "$PREFIX" ] ; then
+                    PREFIX=( ${repository}:$package )
+                else
+                    PREFIX=( ${PREFIX[*]} ${repository}:$package )
+                fi
+            fi
+        done
+
+        [ ! -z "$PREFIX" ] && PRIORITY=( ${PREFIX[*]} ${PRIORITY[*]} )
+    fi
+
+    # 34. Init dir:/ repositories
+    touch ${TMPDIR}/pkglist-pre
+    for PREPO in ${REPOPLUS[*]};do
+        pref=${MIRRORPLUS[$PREPO]}
+        if [ "${pref:0:5}" = "dir:/" ];then
+            localpath=$(echo "$pref" | cut -f2- -d":"|sed -e 's_/$__' -e 's_//_/_')
+            MIRRORPLUS[$PREPO]="dir:$localpath/"
+            if [ ! -d "$localpath" ];then
+                continue
+            fi
+            ( cd $localpath
+                find . -type f -name '*.t[blxg]z'|sed "s,^./,./SLACKPKGPLUS_$PREPO/,"|awk -f /usr/libexec/slackpkg/pkglist.awk|sort -k6 -rn >> ${TMPDIR}/pkglist-pre
+            )
+        fi
+    done
+
+    # 33. Global variable required by givepriority()
+    PRIORITYIDX=1
+
+    # 37. Init priority.filters
+    touch ${TMPDIR}/priority.filters
+
+  } #END function setup_repositories()
+
+  function setup_bglist(){
+    # 20. Itit greylist
+    touch $TMPDIR/greylist.1
+    if [ -e $CONF/greylist ];then
+        cat $CONF/greylist|sed -e 's/#.*//'|grep -v -e '^#' -e '^$'|awk '{print $1}'|sort -u >$TMPDIR/greylist.1
+        cat $TMPDIR/greylist.1|sed 's/^/SLACKPKGPLUS_/' >$TMPDIR/greylist.2
+    fi
+
+    # 28. -- This flag is set when running slackpkg to manage the multilib :
+    #
+    #      slackpkg install|upgrade|reinstall|remove <multilib_repository_name>
+    #
+    #    This is used by applyblacklist() to prevent silent exclusion of
+    #    multilib package aaa_elflibs-compat32 when /etc/slackpkg/blacklist
+    #    contains the pattern aaa_elflibs.
+    #
+    MLREPO_SELELECTED=false
+
+    # 29. -- Ensures the internal blacklist is empty
+    #
+    echo -n "" > ${TMPDIR}/blacklist.slackpkgplus
+
+    # 30. blacklist sbo metadata
+    if [ "$CMD" != "download" ];then
+        internal_blacklist "^SBO_"
+    fi
+
+    # 35. Use blacklist as regex
+    if [ -e $TMPDIR/blacklist ];then
+        sed -i 's/^/^/' $TMPDIR/blacklist
+    fi
+
+    # 36. Use legacy blacklist system
+    if [ "$LEGACYBL" == "on" ];then
+        BLKLOPT=-w
+        grep -vE "(^#|^[[:blank:]]*$)" ${CONF}/blacklist > ${TMPDIR}/blacklist
+    fi
+
+    # 38. greylist 32bit packages in a x86_64 distribution
+    if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]] && [ "$ALLOW32BIT" == "on" ] ; then
+        ARCH="\($ARCH\)\|\([i]*[3456x]86[^_]*\)"
+        echo -e "i[3456]86\nx86" > $TMPDIR/greylist.32bit
+    fi
+
+  } # END function setup_bglist()
+
+  function setup_downloader(){
+
+    # 31. Init downloader
+    if [ ! -z "$DOWNLOADCMD" ];then
+        DOWNLOADER="$DOWNLOADCMD"
     else
-      FLAG=""
-      if [ "$CMD" = "update" ];then
-        [ $VERBOSE -lt 2 ]&&FLAG="-nv"
-        [ $VERBOSE -lt 2 ]&&[ "$CACHEUPDATE" = "on" ]&&FLAG="-q"
-      else
-        [ $VERBOSE -lt 1 ]&&FLAG="-nv"
-      fi
-      DOWNLOADER="wget $WGETOPTS --no-check-certificate $FLAG --passive-ftp -O"
+        if [ "$VERBOSE" = "3" ];then
+            DOWNLOADER="wgetdebug"
+        else
+            FLAG=""
+            if [ "$CMD" = "update" ];then
+                [ $VERBOSE -lt 2 ]&&FLAG="-nv"
+                [ $VERBOSE -lt 2 ]&&[ "$CACHEUPDATE" = "on" ]&&FLAG="-q"
+            else
+                [ $VERBOSE -lt 1 ]&&FLAG="-nv"
+            fi
+            DOWNLOADER="wget $WGETOPTS --no-check-certificate $FLAG --passive-ftp -O"
+        fi
     fi
-  fi
 
-  if [ "$CACHEUPDATE" == "on" ]&&[ "$CMD" == "update" -o "$CMD" == "check-updates" ];then
-    CACHEDOWNLOADER=$DOWNLOADER
-    CACHEDIR=$WORKDIR/cache
-    mkdir -p $CACHEDIR
-    find $CACHEDIR -mtime +30 -type f -exec rm -f {} \;
-    DOWNLOADER="cached_downloader"
-  fi
-
-
-  # Global variable required by givepriority()
-  #
-  PRIORITYIDX=1
-
-  touch ${TMPDIR}/pkglist-pre
-  for PREPO in ${REPOPLUS[*]};do
-    pref=${MIRRORPLUS[$PREPO]}
-    if [ "${pref:0:5}" = "dir:/" ];then
-      localpath=$(echo "$pref" | cut -f2- -d":"|sed -e 's_/$__' -e 's_//_/_')
-      MIRRORPLUS[$PREPO]="dir:$localpath/"
-      if [ ! -d "$localpath" ];then
-        continue
-      fi
-      ( cd $localpath
-        find . -type f -name '*.t[blxg]z'|sed "s,^./,./SLACKPKGPLUS_$PREPO/,"|awk -f /usr/libexec/slackpkg/pkglist.awk|sort -k6 -rn >> ${TMPDIR}/pkglist-pre
-      )
+    # 32. Init cache update
+    if [ "$CACHEUPDATE" == "on" ]&&[ "$CMD" == "update" -o "$CMD" == "check-updates" ];then
+        CACHEDOWNLOADER=$DOWNLOADER
+        CACHEDIR=$WORKDIR/cache
+        mkdir -p $CACHEDIR
+        find $CACHEDIR -mtime +30 -type f -exec rm -f {} \;
+        DOWNLOADER="cached_downloader"
     fi
-  done
 
-  if [ -e $TMPDIR/blacklist ];then
-    sed -i 's/^/^/' $TMPDIR/blacklist
-  fi
-  if [ "$LEGACYBL" == "on" ];then
-    BLKLOPT=-w
-    grep -vE "(^#|^[[:blank:]]*$)" ${CONF}/blacklist > ${TMPDIR}/blacklist
-  fi
+  } # END function setup_downloader()
 
-  touch ${TMPDIR}/priority.filters
+  #### ===== END PREPARE ==== ######
 
-  if [[ "$CMD" == "upgrade" || "$CMD" == "upgrade-all" ]] && [ "$ALLOW32BIT" == "on" ] ; then
-    ARCH="\($ARCH\)\|\([i]*[3456x]86[^_]*\)"
-    echo -e "i[3456]86\nx86" > $TMPDIR/greylist.32bit
-  fi
+  #### ===== ACTIONS ==== ######
 
-  if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] || [ "$CMD" == "remove" ] ; then
+  function slackpkg_inst() {
+
+    # 39. Parse INPUTLIST in slackpkg install/upgrade/reinstall/remove
 
     NEWINPUTLIST=""
     PRIORITYLIST=""
@@ -2648,9 +2705,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         fi
       done
     fi
-  fi # "$CMD" == "install" / "upgrade" / "reinstall" / "remove"
 
-  if [ "$CMD" == "search" ] || [ "$CMD" == "file-search" ] ; then
+  } # END function slackpkg_inst()
+
+  function slackpkg_search() {
+    # 40. override slackpkg search action
+
     PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g' -e 's/^\///')
     [[ "$PATTERN" =~ , ]]&&{ PATTERN="${PATTERN/\*}" ; PATTERN="${PATTERN/,}," ; }
     searchPackages $PATTERN
@@ -2779,9 +2839,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     esac
 
     cleanup
-  fi # "$CMD" == "search" / "file-search"
 
-  if [ "$CMD" == "check-updates" ] ; then
+  } # END function slackpkg_search()
+
+  function slackpkg_checkupdate() {
+
+    # 41. Improve slackpkg check-updates
 
     [ ! -e ~/.slackpkg ] && mkdir ~/.slackpkg
     echo -n "" > ~/.slackpkg/updated-repos.txt
@@ -2875,9 +2938,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     cleanup
-  fi # "$CMD" == "check-updates"
 
-  if [ "$CMD" == "download" ];then
+  } # END function slackpkg_checkupdate()
+
+  function slackpkg_download() {
+
+    # 42. override slackpkg download action
+
     printf "%s\n" $ROOT/var/log/packages/* |
       awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
 
@@ -2909,14 +2976,34 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       EXIT_CODE=20
     fi
     cleanup
-  fi
-  if [ "$CMD" == "info" ];then
+
+  } # END function slackpkg_download()
+
+  function slackpkg_info() {
+    # 43. override slackpkg info command
     more_info
-      cleanup
-  fi
+    cleanup
+  } # END function slackpkg_info()
 
+  #### ===== END ACTIONS ==== ######
 
-fi
+  ### =========================== MAIN ============================ ###
+
+  setup_settings
+  setup_checkup
+  setup_repositories
+  setup_bglist
+  setup_downloader
+
+  case "$CMD" in
+    install|upgrade|reinstall|remove) slackpkg_inst        ;;   # 39. Create   the new INPUTLIST
+    search|file-search)               slackpkg_search      ;;   # 40. Override search
+    check-updates)                    slackpkg_checkupdate ;;   # 41. Improve  check-updates
+    download)                         slackpkg_download    ;;   # 42. Override download
+    info)                             slackpkg_info        ;;   # 43. Override info
+  esac
+
+fi # [ -e $CONF/slackpkgplus.conf ]
 
 INPROGRESS=0
 
