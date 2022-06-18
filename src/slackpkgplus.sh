@@ -233,7 +233,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         updatedeps
       fi
     fi
-    [ "$TTYREDIRECTION" ] && exec 1>&3 2>&4
     if [ "$DELALL" = "on" ] && [ "$NAMEPKG" != "" ]; then
       rm $CACHEPATH/$NAMEPKG &>/dev/null
     fi
