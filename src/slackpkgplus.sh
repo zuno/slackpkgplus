@@ -1,4 +1,4 @@
-# vim: set tabstop=2 shiftwidth=2 expandtab 
+# vim: set tabstop=2 shiftwidth=2 expandtab
 
 # Thanks to AlienBob and phenixia2003 (on LQ) for contributing
 # A special thanks to all packagers that make slackpkg+ useful
@@ -132,13 +132,25 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function searchPackages()
   #### ===== SHOWLIST FUNCTIONS ====== ######
   # function searchlistEX()
-  # function more_info()
   # function showChangeLogInfo()
   # function showlist() // dialog=on
   # function showlist() // dialog=off
   #### ===== OTHER ====== ######
   # function debug()
   # function updatedeps()
+  #### ===== PREPARE ======== ######
+  # function setup_settings()
+  # function setup_checkup()
+  # function setup_repositories()
+  # function setup_bglist()
+  # function setup_downloader()
+  #### ===== ACTIONS ==== ######
+  # function slackpkg_inst()
+  # function slackpkg_search()
+  # function slackpkg_checkupdate()
+  # function slackpkg_download()
+  # function slackpkg_info()
+
 
 
   ##### ===== BLACKLIST FUNCTIONS === #####
@@ -253,7 +265,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       retval=2
       echo
       echo "=============================================================================="
-      echo 
+      echo
       echo "                        !!! F A T A L !!!"
       echo "          Some operation has failed and need attention!!"
       echo
@@ -324,7 +336,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     if [ "$EVENT" == "remove" ] ; then
       echo "$SHOWLIST" | tr " " "\n"  | sort > ${TMPDIR}/showlist.tmp
-      
+
       comm -1 ${TMPDIR}/installed.tmp ${TMPDIR}/showlist.tmp | rev | cut -f4- -d"-" | rev > ${TMPDIR}/basenames.tmp
     else
       echo "$SHOWLIST" | tr " " "\n" | rev | cut -f2- -d"." | rev | sort > ${TMPDIR}/showlist.tmp
@@ -341,7 +353,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                       sed -e "s/,$//" -e "s/^/(&/" -e "s/,/)|(/g" -e "s/$/&)/")
 
       NV_MATCHPKGS=$(grep -E "$EXPR" ${TMPDIR}/basenames.tmp | tr "\n" "," | sed -e "s/,$//")
-      
+
       if [ ! -z "$NV_MATCHPKGS" ] ; then
         MSG=$(eval "echo \"${NOTIFYMSG[$KEY]}\"")
         [ -z "MSGLIST" ] && MSGLIST="$MSG\n" || MSGLIST="$MSGLIST\n$MSG"
@@ -424,7 +436,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # Overrides original install_pkg(). Required by the notification mechanism.
   function install_pkg() {
     local i
-    
+
     if [ "$DOWNLOAD_ALL" = "on" ]; then
       OLDDEL="$DELALL"
       DELALL="off"
@@ -1589,56 +1601,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     }|column -t -s '#' -o ' '|( [[  "$CMD" == "search" ]]&&grep -E -i --color -e ^ -e "${PATTERN%,*}"||cat )
   } # END function searchlistEX()
 
-    # Show detailed info for slackpkg info
-    #
-  function more_info(){
-    PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g')
-    NAME=$(cutpkg $PATTERN)
-    awk  "/PACKAGE NAME:.* ${NAME}-[^-]+-(${ARCH}|fw|noarch)-[^-]+/,/^$/ "'{ found=1; print $0 } END {
-            if(found!=1) {print "No packages found! Try:\n\n\tslackpkg search '$PATTERN'\n\nand choose one (and ONLY one package).\n"}
-          }' ${WORKDIR}/PACKAGES.TXT 2>/dev/null
-    echo
-
-    cat $WORKDIR/pkglist|grep -E "^[^ ]* $NAME "|while read repository name version arch tag namepkg fullpath ext;do
-      echo "Package:    $namepkg"
-      echo "Repository: ${repository/SLACKPKGPLUS_/}"
-      if echo $repository|grep -q SBO_;then
-        fullpath=${fullpath/*$repository\//}
-        if [ "$repository" == "SBO_current" ];then
-          fullpath="plain/$fullpath/"
-        else
-          fullpath="$fullpath/"
-        fi
-        URLFILE=${SBO[${repository/SBO_}]%/}/$fullpath
-        echo "Path:       ./${fullpath}"
-        echo "Url:        ${URLFILE}"
-      else
-        echo "Path:       ${fullpath/\/SLACKPKGPLUS_${repository/SLACKPKGPLUS_/}/}/$namepkg.$ext"
-        URLFILE=${SOURCE}${fullpath}/${namepkg}.${ext}
-        if echo $URLFILE|grep -q /SLACKPKGPLUS_;then
-          PREPO=$(echo $URLFILE|sed -r 's#^.*/SLACKPKGPLUS_([^/]+)/.*$#\1#')
-          URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
-        fi
-        echo "Url:        ${URLFILE/.\//}"
-        if ! echo $repository|grep -q ^SBO;then
-          DEPS=$(cat $WORKDIR/deplist|grep ^${repository/SLACKPKGPLUS_/}:$name:$namepkg:)
-          echo "Deps:       $(echo "$DEPS"|cut -f4 -d:|sed 's/,/ /g')"
-          echo "To install:$(echo "$DEPS"|cut -f5 -d:|sed -r -e "s/(^|,)([^,]+)/ ${repository/SLACKPKGPLUS_/}:\2,/g") ${repository/SLACKPKGPLUS_/}:$name,"
-        fi
-        if [ "$DETAILED_INFO" == "filelist" ];then
-          FILELIST="$(zgrep ^${fullpath/\/${repository}/}/$namepkg.$ext $WORKDIR/$repository-filelist.gz 2>/dev/null)"
-          if [ -z "$FILELIST" ];then
-            echo "Filelist:   no file list available"
-          else
-            echo "Filelist:"
-            echo "$FILELIST"|sed "s/ /\n/g"|tail +2|sed 's/^/  /'
-          fi
-        fi
-      fi
-      echo
-    done
-  } # END function more_info()
-
   if [ "$DIALOG" = "on" ] || [ "$DIALOG" = "ON" ]; then
     # Slackpkg+ Dialog functions
     # Original functions from slackpkg modified by Marek Wodzinski (majek@mamy.to)
@@ -1667,7 +1629,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
       for Cpkg in $(<$TMPDIR/dialog.out) ; do
 
-        #  get infos about the current package from *.idx files in WORKDIR/ChangeLogs, 
+        #  get infos about the current package from *.idx files in WORKDIR/ChangeLogs,
         #  if any. The  variable CpkgInfos is a string formatted as below:
         #    path/<reponame>.idx:<clogidx>:<pathname>:<status>
         #
@@ -1681,16 +1643,16 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           Pathname=${CpkgInfos[2]}
           Status=$(echo ${CpkgInfos[3]} | tr --delete " .")
 
-          # Get the repository name containing a changelog entry about the current 
-          # package (ie Cpkg). 
+          # Get the repository name containing a changelog entry about the current
+          # package (ie Cpkg).
           #
           Repository=$(basename $CLogIdxFile .idx)
 
           echo "$Repository::$Pathname ($Status)" >> $TMPDIR/Packages.clog
 
           # extra information on package Cpkg can be found in file
-          # WORKDIR/ChangeLogs/${Repository}.txt starting at line 
-          # CLogStartIdx+1 and ending the line before the first line matching 
+          # WORKDIR/ChangeLogs/${Repository}.txt starting at line
+          # CLogStartIdx+1 and ending the line before the first line matching
           # the regular expression CLOG_SEPREGEX or CLOG_PKGREGEX.
           #
           # CLOG_SEPREGEX match the "standard" changelog separator entry, ie. a string
@@ -2676,7 +2638,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
       # -- only insert "package" if not in NEWINPUTLIST
       echo "$NEWINPUTLIST" | grep -qw "${package}" || NEWINPUTLIST="$NEWINPUTLIST $package"
-      
+
     done # pref in $INPUTLIST
 
     INPUTLIST=$NEWINPUTLIST
@@ -2869,7 +2831,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       exec 1>&3 2>&4
     fi
     if [ $ERR -ne 0 ]; then
-    
+
         # -- Note:
         #     checkchangelog() download the CHECKSUMS.md5.asc and stores it
         #     in ${TMPDIR}
@@ -2880,11 +2842,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         #
       grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/CHECKSUMS.md5.asc > ${TMPDIR}/CHECKSUMS.md5.asc.old
       grep -v "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/CHECKSUMS.md5.asc > ${TMPDIR}/CHECKSUMS.md5.asc.new
-      
+
       if ! diff --brief ${TMPDIR}/CHECKSUMS.md5.asc.old ${TMPDIR}/CHECKSUMS.md5.asc.new >/dev/null ; then
               echo "slackware" > ${TMPDIR}/updated-repos.txt
       fi
-      
+
         # -- get the list of the repositories configured before this call to check-updates
         #
       grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/CHECKSUMS.md5.asc | sed 's/^SLACKPKGPLUS_//; s/\[MD5\]//' | cut -f1 -d" "> ${TMPDIR}/selected.3pr
@@ -2893,7 +2855,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         #
       grep "^SLACKPKGPLUS_.*\[MD5\] " ${WORKDIR}/CHECKSUMS.md5.asc | sort  > "${TMPDIR}/3rp-CHECKSUMS.old"
       grep "^SLACKPKGPLUS_.*\[MD5\] " ${TMPDIR}/CHECKSUMS.md5.asc | sort > "${TMPDIR}/3rp-CHECKSUMS.new"
-      
+
         # from the pseudo checksums, find the updated 3rd party repositories and add them
         # to the updates report file
         #
@@ -2909,17 +2871,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
               #  at this point, updated-repos.txt can be empty when user
               #  has added a repository in REPOPLUS and run "slackpkg check-updates"
               #  instead (or prior to) "slackpkg update"
-              
+
       [ -s "${TMPDIR}/updated-repos.txt" ] && UPDATES=true
     fi
     rm -f ${TMPDIR}/waiting
-    
+
     if $UPDATES ; then
       echo "Slackpkg: Updated packages are available since last check." >&2
       EXIT_CODE=100
-      
+
       printf "\n  [ %-24s ] [ %-20s ]\n" "Repository" "Status"
-      
+
       for REPO in slackware ${REPOPLUS[*]}; do
         if grep -q "^${REPO}$"  ${TMPDIR}/updated-repos.txt ; then
           printf "    %-24s     %-20s \n" "$REPO" "AVAILABLE UPDATES"
@@ -2979,11 +2941,57 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   } # END function slackpkg_download()
 
-  function slackpkg_info() {
-    # 43. override slackpkg info command
-    more_info
+  function slackpkg_info(){
+    # 43. Show detailed info for slackpkg info
+
+    PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g')
+    NAME=$(cutpkg $PATTERN)
+    awk  "/PACKAGE NAME:.* ${NAME}-[^-]+-(${ARCH}|fw|noarch)-[^-]+/,/^$/ "'{ found=1; print $0 } END {
+            if(found!=1) {print "No packages found! Try:\n\n\tslackpkg search '$PATTERN'\n\nand choose one (and ONLY one package).\n"}
+          }' ${WORKDIR}/PACKAGES.TXT 2>/dev/null
+    echo
+
+    cat $WORKDIR/pkglist|grep -E "^[^ ]* $NAME "|while read repository name version arch tag namepkg fullpath ext;do
+      echo "Package:    $namepkg"
+      echo "Repository: ${repository/SLACKPKGPLUS_/}"
+      if echo $repository|grep -q SBO_;then
+        fullpath=${fullpath/*$repository\//}
+        if [ "$repository" == "SBO_current" ];then
+          fullpath="plain/$fullpath/"
+        else
+          fullpath="$fullpath/"
+        fi
+        URLFILE=${SBO[${repository/SBO_}]%/}/$fullpath
+        echo "Path:       ./${fullpath}"
+        echo "Url:        ${URLFILE}"
+      else
+        echo "Path:       ${fullpath/\/SLACKPKGPLUS_${repository/SLACKPKGPLUS_/}/}/$namepkg.$ext"
+        URLFILE=${SOURCE}${fullpath}/${namepkg}.${ext}
+        if echo $URLFILE|grep -q /SLACKPKGPLUS_;then
+          PREPO=$(echo $URLFILE|sed -r 's#^.*/SLACKPKGPLUS_([^/]+)/.*$#\1#')
+          URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
+        fi
+        echo "Url:        ${URLFILE/.\//}"
+        if ! echo $repository|grep -q ^SBO;then
+          DEPS=$(cat $WORKDIR/deplist|grep ^${repository/SLACKPKGPLUS_/}:$name:$namepkg:)
+          echo "Deps:       $(echo "$DEPS"|cut -f4 -d:|sed 's/,/ /g')"
+          echo "To install:$(echo "$DEPS"|cut -f5 -d:|sed -r -e "s/(^|,)([^,]+)/ ${repository/SLACKPKGPLUS_/}:\2,/g") ${repository/SLACKPKGPLUS_/}:$name,"
+        fi
+        if [ "$DETAILED_INFO" == "filelist" ];then
+          FILELIST="$(zgrep ^${fullpath/\/${repository}/}/$namepkg.$ext $WORKDIR/$repository-filelist.gz 2>/dev/null)"
+          if [ -z "$FILELIST" ];then
+            echo "Filelist:   no file list available"
+          else
+            echo "Filelist:"
+            echo "$FILELIST"|sed "s/ /\n/g"|tail +2|sed 's/^/  /'
+          fi
+        fi
+      fi
+      echo
+    done
     cleanup
   } # END function slackpkg_info()
+
 
   #### ===== END ACTIONS ==== ######
 
