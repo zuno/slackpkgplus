@@ -351,7 +351,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
       if [ ! -z "$NV_MATCHPKGS" ] ; then
         MSG=$(eval "echo \"${NOTIFYMSG[$KEY]}\"")
-        [ -z "MSGLIST" ] && MSGLIST="$MSG\n" || MSGLIST="$MSGLIST\n$MSG"
+        [ -z "$MSGLIST" ] && MSGLIST="$MSG\n" || MSGLIST="$MSGLIST\n$MSG"
       fi
     done
 
