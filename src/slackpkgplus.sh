@@ -389,11 +389,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   if [ "$DOWNLOADONLY" == "on" ];then
     function installpkg() {
-      echo "            Download only.. `basename $1` not installed!"
+      echo "            Download only.. $(basename $1) not installed!"
       DELALL=off
     } # END function installpkg()
     function upgradepkg() {
-      echo "            Download only.. `basename $1` not upgraded!"
+      echo "            Download only.. $(basename $1) not upgraded!"
       DELALL=off
     } # END function upgradepkg()
   fi
@@ -709,7 +709,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
     if [ $? -ne 0 ];then
       if echo $2|grep -q SLACKPKGPLUS;then
-        if [ "`basename $URLFILE`" != "MANIFEST.bz2" ];then
+        if [ "$(basename $URLFILE)" != "MANIFEST.bz2" ];then
           echo -e "\n$URLFILE:\tdownload error" >> $TMPDIR/error.log
           if echo $2|grep -q .asc$;then
             echo "  Retry using 'slackpkg -checkgpg=off $CMD ...'" >> $TMPDIR/error.log
@@ -811,17 +811,17 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO.asc|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
           continue
         fi
-        $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc `echo $URLFILE|sed 's/\.asc$/.gz.asc/'`
+        $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc $(echo $URLFILE|sed 's/\.asc$/.gz.asc/')
         if [ $? -eq 0 ];then
           md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz.asc|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
           continue
         fi
-        $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz `echo $URLFILE|sed 's/\.asc$/.gz/'`
+        $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz $(echo $URLFILE|sed 's/\.asc$/.gz/')
         if [ $? -eq 0 ];then
           md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO.gz|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
           continue
         fi
-        $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO `echo $URLFILE|sed 's/\.asc$//'`
+        $DOWNLOADER ${TMPDIR}/CHECKSUMS.md5-$PREPO $(echo $URLFILE|sed 's/\.asc$//')
         if [ $? -eq 0 ];then
           md5sum ${TMPDIR}/CHECKSUMS.md5-$PREPO|awk '{print $1}' >> ${TMPDIR}/CHECKSUMS.md5.asc
           continue
