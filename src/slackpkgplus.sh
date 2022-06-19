@@ -93,10 +93,10 @@ if [ -e $CONF/slackpkgplus.conf ];then
   export TERSE
 
   USEBLACKLIST=true
-  if [ "$USEBL" == "off" -o "$USEBL" == "0" ];then
+  if [ "$USEBL" == "off" ] || [ "$USEBL" == "0" ];then
     USEBLACKLIST=false
   fi
-  if [ "$ENABLENOTIFY" = "on" -a -e $CONF/notifymsg.conf ];then
+  if [ "$ENABLENOTIFY" = "on" ] && [ -e $CONF/notifymsg.conf ];then
     . $CONF/notifymsg.conf
   fi
 fi
@@ -238,7 +238,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo "The temp directory $TMPDIR will NOT be removed!" >>$TMPDIR/info.log
       echo
     fi
-    if [ -s $TMPDIR/error.log -o -s $TMPDIR/info.log -o -s $TMPDIR/fatal.log ];then
+    if [ -s $TMPDIR/error.log ] || [ -s $TMPDIR/info.log ] || [ -s $TMPDIR/fatal.log ];then
       echo -e "\n\n=============================================================================="
     fi
     if [ -e $TMPDIR/error.log ]; then
@@ -272,7 +272,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     [ ! -e $WORKDIR/CHECKSUMS.md5 ]&&touch $WORKDIR/CHECKSUMS.md5
     echo
     rm -f /var/lock/slackpkg.$$
-    if [ $VERBOSE -lt 3 -a -z "$DEBUG" ];then
+    if [ $VERBOSE -lt 3 ] && [ -z "$DEBUG" ];then
       rm -rf $TMPDIR
     fi
     exit $retval
@@ -541,7 +541,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       CURREPO=slackware
     fi
 
-    [ $SRCBASE != "ChangeLog.txt" ]||[ -z "$LEVEL" -o "$LEVEL" == "1" ]&&printf "    File: %-20s -> %-20s .." "$CURREPO" "$SRCBASE"
+    [ $SRCBASE != "ChangeLog.txt" ]||[ -z "$LEVEL" ]||[ "$LEVEL" == "1" ]&&printf "    File: %-20s -> %-20s .." "$CURREPO" "$SRCBASE"
     [ $VERBOSE -eq 3 ]&&echo -n " ($CACHEFILE) "
     if [ $TOCACHE -eq 1 ];then
       curl --max-time 10 --location --head $SRCURL 2>/dev/null|tac|sed '/^HTTP/q'|tac|grep -v -i -e ^Date: -e ^Set-Cookie: -e ^Expires: -e ^X-Varnish:|sed $'s/\r//' > $TMPDIR/cache.head
@@ -555,7 +555,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         fi
         return 8 # wget return 8 if server return error so we return 8
       fi
-      if [ -e $CACHEDIR/$CACHEFILE -a -e $CACHEDIR/$CACHEFILE.head ];then
+      if [ -e $CACHEDIR/$CACHEFILE ] && [ -e $CACHEDIR/$CACHEFILE.head ];then
         [ $VERBOSE -eq 3 ]&&(echo;cat $CACHEDIR/$CACHEFILE.head|sed 's/^/  /')
         if diff $CACHEDIR/$CACHEFILE.head $TMPDIR/cache.head >/dev/null;then
           [ $VERBOSE -eq 3 ]&&echo "Cache valid!   If not please remove manually $CACHEDIR/$CACHEFILE !"
@@ -774,7 +774,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       sed -i -e "1i===== START REPO: $PREPO : URL:$URLFILE  =====" -e "\$a===== END REPO: $PREPO =====" $2
     fi
 
-    if [ $(basename $1) = "CHECKSUMS.md5.asc" -a ! -e $TMPDIR/signaturedownloaded ];then
+    if [ $(basename $1) = "CHECKSUMS.md5.asc" ] && [ ! -e $TMPDIR/signaturedownloaded ];then
       if ! grep -q PGP ${TMPDIR}/CHECKSUMS.md5.asc 2>/dev/null;then
           echo >&2
           echo "                        !!! F A T A L !!!" >&2
@@ -1879,7 +1879,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         echo "No packages selected for $2, exiting."
         cleanup
       fi
-      if [ "$2" != "remove" -a "$CHECKDISKSPACE" == "on" ];then
+      if [ "$2" != "remove" ] && [ "$CHECKDISKSPACE" == "on" ];then
         COUNTLIST=$(echo $SHOWLIST|wc -w)
         compressed=0
         uncompressed=0
@@ -1949,7 +1949,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       countpkg "$1"
       echo -e "Do you wish to $2 selected packages (Y/n)? \c"
       answer
-      if [ "$ANSWER" = "N" -o "$ANSWER" = "n" ]; then
+      if [ "$ANSWER" = "N" ] || [ "$ANSWER" = "n" ]; then
         cleanup
       else
         SHOWLIST="$1"
@@ -2097,7 +2097,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     # 06. Database problems
-    if [ "$CMD" == "upgrade" -o "$CMD" == "upgrade-all" ]&&ls $ROOT/var/log/packages/*:* >/dev/null 2>&1;then
+    if { [ "$CMD" == "upgrade" ] || [ "$CMD" == "upgrade-all" ]; } && ls $ROOT/var/log/packages/*:* >/dev/null 2>&1;then
         echo "FATAL! There is some problem in packages database"
         echo "       or maybe an installation or upgrade in progress:"
         echo
@@ -2141,7 +2141,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     # 24. Advicef too old
-    if [ "$CMD" != "update" -a "$CMD" != "check-updates" ];then
+    if [ "$CMD" != "update" ] && [ "$CMD" != "check-updates" ];then
         if [ $[$(date +%s)-$(date -d "$(ls -l --full-time $WORKDIR/pkglist 2>/dev/null|awk '{print $6,$7,$8}')" +%s)] -gt 86400 ];then
             echo
             echo "NOTICE: pkglist is older than 24h; you are encouraged to re-run 'slackpkg update'"
@@ -2151,7 +2151,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
 
     # 26. Advice for slackpkgplus.conf modified
-    if [ "$CMD" != "update" -a "$CMD" != "check-updates" ];then
+    if [ "$CMD" != "update" ] && [ "$CMD" != "check-updates" ];then
         if [ $CONF/slackpkgplus.conf -nt $WORKDIR/CHECKSUMS.md5.asc ];then
             echo
             echo "NOTICE: remember to re-run 'slackpkg update' after modifying slackpkgplus.conf"
@@ -2329,7 +2329,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     # 27. merge priorities from PKGS_PRIORITY with PRIORITY, as needed ...
-    if [ ! -z "$PKGS_PRIORITY" -a "$CMD" != "update" ] ; then
+    if [ ! -z "$PKGS_PRIORITY" ] && [ "$CMD" != "update" ] ; then
         PREFIX=""
 
         for pp in ${PKGS_PRIORITY[*]} ; do
@@ -2444,7 +2444,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     # 32. Init cache update
-    if [ "$CACHEUPDATE" == "on" ]&&[ "$CMD" == "update" -o "$CMD" == "check-updates" ];then
+    if [ "$CACHEUPDATE" == "on" ]&&{ [ "$CMD" == "update" ] || [ "$CMD" == "check-updates" ]; };then
         CACHEDOWNLOADER=$DOWNLOADER
         CACHEDIR=$WORKDIR/cache
         mkdir -p $CACHEDIR
