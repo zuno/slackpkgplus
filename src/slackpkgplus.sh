@@ -2079,6 +2079,74 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   } #END function setup_settings()
 
+  function setup_parameters(){
+    local CMDLINE
+    local cntline
+    local ispar
+    local par
+    local k
+    local v
+    local HELP
+    HELP="Allowed parameter:
+  -help               show this message
+
+  -verbose=<n>        set VERBOSE=<n> (0..3)
+  -debug              set DEBUG=1
+  -terse=<v>          set USETERSE=<v> (on/off) and TERSESEARCH=<v> (on/off/tiny)
+  -usebl=<v>          set USEBL=<v> (on/off)
+  -legacybl=<v>       set LEGACYBL=<v> (on/off)
+  -checkdiskspace=<v> set CHECKDISKSPACE=<v> (on/off)
+  -downloadonly=<v>   set DOWNLOADONLY=<v> (on/off)
+  -greylist=<v>       set GREYLIST=<v> (on/off)
+
+  -info=<v>           set DETAILED_INFO=<v> (none/basic/filelist)
+  -filelist           set DETAILED_INFO=filelist"
+    PARAMETERS=""
+    CMDLINE=( $(cat -A /proc/$$/cmdline|sed 's/\^@/ /g'|grep -o -E " $CMD .*"|sed "s/ $CMD //") )
+    cntline=${#CMDLINE[*]}
+    while [ $cntline -gt 0 ];do
+      let cntline--
+      if [ "${CMDLINE[$cntline]:0:1}" == "-" ];then
+        if [ "$ispar" = "" ];then
+          PARAMETERS="${CMDLINE[$cntline]} $PARAMETERS"
+        else
+          echo "Parameter '${CMDLINE[$cntline]}' position invalid. Put it at the end of the line"
+          cleanup
+        fi
+      else
+        ispar="no"
+      fi
+    done
+    CMDLINE=$(echo $CMDLINE|sed 's,[%/], ,g')
+    PARAMETERS=$(echo $PARAMETERS)
+    INPUTLIST=$(echo " $INPUTLIST "|sed -r -e 's,-[^ ]*,,g')
+    for par in $PARAMETERS;do
+      k=${par/=*}
+      v=${par#$k=}
+      case $k in
+        -verbose)   VERBOSE=$v ;;
+        -debug)     DEBUG=1 ;;
+        -terse)     USETERSE=$v
+                    TERSESEARCH=$v
+                    ;;
+        -usebl)     USEBL=$v ;;
+        -legacybl)  LEGACYBL=$v ;;
+        -checkdiskspace) CHECKDISKSPACE=$v ;;
+        -downloadonly) DOWNLOADONLY=$v ;;
+        -greylist) GREYLIST=$v ;;
+        -info)     DETAILED_INFO=$v
+                   if ! [[ "$v" =~ ^(none|basic|filelist)$ ]];then
+                     echo "Parameter '$k': '$v' invalid (allowed none|basic|filelist)"
+                     cleanup
+                   fi
+                   ;;
+        -filelist) DETAILED_INFO=filelist ;;
+        -help) echo "$HELP" ; cleanup ;;
+        *) echo "Parameter '$par' invalid (use -help)" ;;
+      esac
+    done
+  }
+
   function setup_checkup(){
 
     # 10. create $WORKDIR
@@ -2974,6 +3042,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   ### =========================== MAIN ============================ ###
 
   setup_settings
+  setup_parameters
   setup_checkup
   setup_repositories
   setup_bglist
