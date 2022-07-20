@@ -2087,20 +2087,23 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local k
     local v
     local HELP
-    HELP="Allowed parameter:
+    HELP="Allowed parameter (not available in 'update' command):
+
   -help               show this message
 
   -verbose=<n>        set VERBOSE=<n> (0..3)
   -debug              set DEBUG=1
+
   -terse=<v>          set USETERSE=<v> (on/off) and TERSESEARCH=<v> (on/off/tiny)
-  -usebl=<v>          set USEBL=<v> (on/off)
-  -legacybl=<v>       set LEGACYBL=<v> (on/off)
-  -checkdiskspace=<v> set CHECKDISKSPACE=<v> (on/off)
-  -downloadonly=<v>   set DOWNLOADONLY=<v> (on/off)
+  -usebl=<v>          select blacklist type (on/off/legacy/new) [on=according configuration]
   -greylist=<v>       set GREYLIST=<v> (on/off)
+  -downloadonly=<v>   set DOWNLOADONLY=<v> (on/off)
+  -checkdiskspace=<v> set CHECKDISKSPACE=<v> (on/off)
 
   -info=<v>           set DETAILED_INFO=<v> (none/basic/filelist)
-  -filelist           set DETAILED_INFO=filelist"
+  -filelist           set DETAILED_INFO=filelist
+
+For details see 'man slackpkgplus.conf'"
     PARAMETERS=""
     CMDLINE=( $(cat -A /proc/$$/cmdline|sed 's/\^@/ /g'|grep -o -E " $CMD .*"|sed "s/ $CMD //") )
     cntline=${#CMDLINE[*]}
@@ -2123,26 +2126,33 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     for par in $PARAMETERS;do
       k=${par/=*}
       v=${par#$k=}
-      case $k in
-        -verbose)   VERBOSE=$v ;;
-        -debug)     DEBUG=1 ;;
-        -terse)     USETERSE=$v
-                    TERSESEARCH=$v
-                    ;;
-        -usebl)     USEBL=$v ;;
-        -legacybl)  LEGACYBL=$v ;;
-        -checkdiskspace) CHECKDISKSPACE=$v ;;
-        -downloadonly) DOWNLOADONLY=$v ;;
-        -greylist) GREYLIST=$v ;;
-        -info)     DETAILED_INFO=$v
-                   if ! [[ "$v" =~ ^(none|basic|filelist)$ ]];then
-                     echo "Parameter '$k': '$v' invalid (allowed none|basic|filelist)"
-                     cleanup
-                   fi
-                   ;;
-        -filelist) DETAILED_INFO=filelist ;;
-        -help) echo "$HELP" ; cleanup ;;
-        *) echo "Parameter '$par' invalid (use -help)" ;;
+      case $par in
+        -verbose=[0-3])
+                   VERBOSE=$v ;;
+        -debug)
+                   DEBUG=1 ;;
+        -terse=on|-terse=off|-terse=tiny)
+                   USETERSE=$v ; TERSESEARCH=$v ;;
+        -usebl=on)
+                   USEBL=on ;;
+        -usebl=legacy)
+                   USEBL=on ; LEGACYBL=on ;;
+        -usebl=new)
+                   USEBL=on ; LEGACYBL=off ;;
+        -checkdiskspace=on,-checkdiskspace=off)
+                   CHECKDISKSPACE=$v ;;
+        -downloadonly=on|-downloadonly=off)
+                   DOWNLOADONLY=$v ;;
+        -greylist=on|-greylist=off)
+                   GREYLIST=$v ;;
+        -info=none|-info=basic|-info=filelist)
+                   DETAILED_INFO=$v ;;
+        -filelist)
+                   DETAILED_INFO=filelist ;;
+        -help)
+                   echo "$HELP" ; cleanup ;;
+        *)
+                   echo -e "Parameter '$par' invalid\n\n$HELP" ; cleanup ;;
       esac
     done
   }
