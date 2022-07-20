@@ -2787,10 +2787,12 @@ For details see 'man slackpkgplus.conf'"
           searchlistEX "$LIST"
           echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"
         fi
+        > ${TMPDIR}/blacklist.slackpkgplus
+        cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
         if [[ "${PATTERN}" =~ , ]];then
-          SBORESULT="$(grep -E $GREPOPTS "^SBO_[^ ]* ${PATTERN%,*} " $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+          SBORESULT="$(grep -E $GREPOPTS "^SBO_[^ ]* ${PATTERN%,*} " $TMPDIR/pkglist 2>/dev/null|awk '{print $6}')"
         else
-          SBORESULT="$(grep -E $GREPOPTS "^SBO_[^ ]* [^ ]*${PATTERN}" $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+          SBORESULT="$(grep -E $GREPOPTS "^SBO_[^ ]* [^ ]*${PATTERN}" $TMPDIR/pkglist 2>/dev/null|awk '{print $6}')"
         fi
         if [ ! -z "$SBORESULT" ];then
             echo
