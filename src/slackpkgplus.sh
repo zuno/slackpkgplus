@@ -2095,13 +2095,16 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   -debug              set DEBUG=1
 
   -terse=<v>          set USETERSE=<v> (on/off) and TERSESEARCH=<v> (on/off/tiny)
-  -usebl=<v>          select blacklist type (on/off/legacy/new) [on=according configuration]
+  -blacklist=<v>      select blacklist type (on/off/legacy/new) [on=according configuration]
   -greylist=<v>       set GREYLIST=<v> (on/off)
   -downloadonly=<v>   set DOWNLOADONLY=<v> (on/off)
   -checkdiskspace=<v> set CHECKDISKSPACE=<v> (on/off)
 
   -info=<v>           set DETAILED_INFO=<v> (none/basic/filelist)
   -filelist           set DETAILED_INFO=filelist
+
+  -slakfinder=<n>     limit search results number from slakfinder (0-50) [0=off]
+  -description=<n>    limit search results from description (number) [0=off]
 
 For details see 'man slackpkgplus.conf'"
     PARAMETERS=""
@@ -2122,7 +2125,8 @@ For details see 'man slackpkgplus.conf'"
     done
     CMDLINE=$(echo $CMDLINE|sed 's,[%/], ,g')
     PARAMETERS=$(echo $PARAMETERS)
-    INPUTLIST=$(echo " $INPUTLIST "|sed -r -e 's,-[^ ]*,,g')
+    INPUTLIST=$(echo " $INPUTLIST "|sed -r -e 's,-[^ ]*,,g' -e 's/^ *//' -e 's/ *$//')
+    ARG=$(echo " $ARG "|sed -r -e 's,-[^ ]*,,g'|sed -e 's/^ *//' -e 's/ *$//')
     for par in $PARAMETERS;do
       k=${par/=*}
       v=${par#$k=}
@@ -2133,11 +2137,13 @@ For details see 'man slackpkgplus.conf'"
                    DEBUG=1 ;;
         -terse=on|-terse=off|-terse=tiny)
                    USETERSE=$v ; TERSESEARCH=$v ;;
-        -usebl=on)
+        -blacklist=off)
+                   USEBL=off ;;
+        -blacklist=on)
                    USEBL=on ;;
-        -usebl=legacy)
+        -blacklist=legacy)
                    USEBL=on ; LEGACYBL=on ;;
-        -usebl=new)
+        -blacklist=new)
                    USEBL=on ; LEGACYBL=off ;;
         -checkdiskspace=on,-checkdiskspace=off)
                    CHECKDISKSPACE=$v ;;
@@ -2149,6 +2155,22 @@ For details see 'man slackpkgplus.conf'"
                    DETAILED_INFO=$v ;;
         -filelist)
                    DETAILED_INFO=filelist ;;
+        -slakfinder=[0-9]*)
+                   if [ "$v" == "0" ];then
+                     SLAKFINDER=off
+                   else
+                     SLAKFINDER=on
+                     SLAKFINDER_MAXRES=$v
+                   fi
+                   ;;
+        -description=[0-9]*)
+                   if [ "$v" == "0" ];then
+                     SEARCH_DESCRIPTION=off
+                   else
+                     SEARCH_DESCRIPTION=on
+                     SEARCH_DESCRIPTION_LIMITS=$v
+                   fi
+                   ;;
         -help)
                    echo "$HELP" ; cleanup ;;
         *)
@@ -2743,6 +2765,9 @@ For details see 'man slackpkgplus.conf'"
   function slackpkg_search() {
     # 40. override slackpkg search action
 
+    if [ -z "$ARG" ];then
+      usage
+    fi
     PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g' -e 's/^\///')
     [[ "$PATTERN" =~ , ]]&&{ PATTERN="${PATTERN/\*}" ; PATTERN="${PATTERN/,}," ; }
     searchPackages $PATTERN
@@ -2998,6 +3023,9 @@ For details see 'man slackpkgplus.conf'"
   function slackpkg_info(){
     # 43. Show detailed info for slackpkg info
 
+    if [ -z "$ARG" ];then
+      usage
+    fi
     PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g')
     NAME=$(cutpkg $PATTERN)
     awk  "/PACKAGE NAME:.* ${NAME}-[^-]+-(${ARCH}|fw|noarch)-[^-]+/,/^$/ "'{ found=1; print $0 } END {
