@@ -2066,8 +2066,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     # 07. slackpkg+ version
-    SPKGPLUS_VERSION="1.9.b1"
-    VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
+    SPKGPLUS_VERSION="1.9.b2"
+    SPKGBUILD=1658406167
+    VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
     LINKVI=$(ls -L /usr/bin/vi 2>/dev/null)
