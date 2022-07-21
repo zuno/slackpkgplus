@@ -1,8 +1,8 @@
-Sun Jun 19 15:30:27 CEST 2022
-pkg/slackpkg+-1.9.b1-noarch-1mt.txz: Upgrade
-  - Code reorganization (no significant functional change)
-  - slackpkg check-updates shows output in stderr
-  - small issue in notification events
+Thu Jul 21 14:22:47 CEST 2022
+pkg/slackpkg+-1.9.b2-noarch-1mt.txz: Upgrade
+  - Added slackpkg+ parameters extension (see slackpkg info -help)
+  - Added build release in version (slackpkg+ 1.9.b2-1658406167)
+  - Apply blacklist to SBO search too
 +-------------------------+
 
 Wed Jun 15 23:30:35 CEST 2022
