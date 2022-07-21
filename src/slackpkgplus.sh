@@ -92,10 +92,6 @@ if [ -e $CONF/slackpkgplus.conf ];then
   fi
   export TERSE
 
-  USEBLACKLIST=true
-  if [ "$USEBL" == "off" ] || [ "$USEBL" == "0" ];then
-    USEBLACKLIST=false
-  fi
   if [ "$ENABLENOTIFY" = "on" ] && [ -e $CONF/notifymsg.conf ];then
     . $CONF/notifymsg.conf
   fi
@@ -2067,7 +2063,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.b2"
-    SPKGBUILD=1658406167
+    SPKGBUILD=1658407426
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
@@ -2076,6 +2072,12 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # 04. VERBOSE=1 by default
     if [ -z "$VERBOSE" ];then
         VERBOSE=1
+    fi
+
+    # USEBL vs USEBLACKLIST
+    USEBLACKLIST=true
+    if [ "$USEBL" == "off" ] || [ "$USEBL" == "0" ];then
+      USEBLACKLIST=false
     fi
 
   } #END function setup_settings()
@@ -3082,8 +3084,8 @@ For details see 'man slackpkgplus.conf'"
 
   ### =========================== MAIN ============================ ###
 
-  setup_settings
   setup_parameters
+  setup_settings
   setup_checkup
   setup_repositories
   setup_bglist
