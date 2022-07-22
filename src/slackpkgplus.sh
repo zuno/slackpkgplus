@@ -36,6 +36,8 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTUSETERSE=$USETERSE
   EXTTERSESEARCH=$TERSESEARCH
   EXTPROXY=$PROXY
+  EXTSLAKFINDER=$SLAKFINDER
+  EXTSEARCH_DESCRIPTION=$SEARCH_DESCRIPTION
 
   # Color escape codes
   c_blk='\033[1;30m'
@@ -76,21 +78,23 @@ if [ -e $CONF/slackpkgplus.conf ];then
   TERSESEARCH=${EXTTERSESEARCH:-$TERSESEARCH}
   PROXY=${EXTPROXY:-$PROXY}
 
-  if [ "$PROXY" == "off" ];then
-    unset http_proxy
-    unset https_proxy
+  if [ "$EXTSLAKFINDER" == "off" ] || [ "$EXTSLAKFINDER" == "0" ];then
+    SLAKFINDER=off
+  elif [[ "$EXTSLAKFINDER" =~ ^[0-9] ]];then
+    SLAKFINDER_MAXRES=$EXTSLAKFINDER
+    SLAKFINDER=on
   else
-    http_proxy=$PROXY
-    https_proxy=$PROXY
-    export http_proxy https_proxy
+    SLAKFINDER=on
   fi
 
-  if [ "$USETERSE" == "on" ];then
-    TERSE=0    # note that TERSE=0 means TERSE ENABLED; undocumentated feature in installpkg(8)
+  if [ "$EXTSEARCH_DESCRIPTION" == "off" ] || [ "$EXTSEARCH_DESCRIPTION" == "0" ];then
+    SEARCH_DESCRIPTION=off
+  elif [[ "$EXTSEARCH_DESCRIPTION" =~ ^[0-9] ]];then
+    SEARCH_DESCRIPTION_LIMITS=$EXTSEARCH_DESCRIPTION
+    SEARCH_DESCRIPTION=on
   else
-    TERSE=
+    SEARCH_DESCRIPTION=on
   fi
-  export TERSE
 
   if [ "$ENABLENOTIFY" = "on" ] && [ -e $CONF/notifymsg.conf ];then
     . $CONF/notifymsg.conf
@@ -136,6 +140,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function updatedeps()
   #### ===== PREPARE ======== ######
   # function setup_settings()
+  # function setup_parameters()
   # function setup_checkup()
   # function setup_repositories()
   # function setup_bglist()
@@ -2063,7 +2068,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.b2"
-    SPKGBUILD=1658407426
+    SPKGBUILD=1658492640
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
@@ -2078,6 +2083,24 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     USEBLACKLIST=true
     if [ "$USEBL" == "off" ] || [ "$USEBL" == "0" ];then
       USEBLACKLIST=false
+    fi
+
+    # USETERSE
+    if [ "$USETERSE" == "on" ];then
+      TERSE=0    # note that TERSE=0 means TERSE ENABLED; undocumentated feature in installpkg(8)
+    else
+      TERSE=
+    fi
+    export TERSE
+
+    # PROXY
+    if [ "$PROXY" == "off" ];then
+      unset http_proxy
+      unset https_proxy
+    else
+      http_proxy=$PROXY
+      https_proxy=$PROXY
+      export http_proxy https_proxy
     fi
 
   } #END function setup_settings()
