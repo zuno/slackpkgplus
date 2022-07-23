@@ -2080,6 +2080,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   -slakfinder=<n>     limit search results number from slakfinder (0-50) [0=off]
   -description=<n>    limit search results from description (number) [0=off]
 
+Please ignore the message 'info: Ignoring extra arguments: -help' at the top.
+It just means that slackpkg will not look for '-help' package.
+
 For details see 'man slackpkgplus.conf'"
     PARAMETERS=""
     CMDLINE=( $(cat -A /proc/$$/cmdline|sed 's/\^@/ /g'|grep -o -E " $CMD .*"|sed "s/ $CMD //") )
@@ -2169,7 +2172,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.b2"
-    SPKGBUILD=1658611607
+    SPKGBUILD=1658612238
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
