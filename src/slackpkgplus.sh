@@ -139,8 +139,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function debug()
   # function updatedeps()
   #### ===== PREPARE ======== ######
-  # function setup_settings()
   # function setup_parameters()
+  # function setup_settings()
   # function setup_checkup()
   # function setup_repositories()
   # function setup_bglist()
@@ -2052,58 +2052,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   #### ===== PREPARE ======== ######
 
-  function setup_settings(){
-
-    # 02. English output for all commands
-    export LC_ALL=C
-
-    # 01. Disable Spinning (use progress)
-    SPINNING=off
-
-    # 03. Avoid to clear package cache at end if DOWNLOADONLY=on
-    if [ "$DOWNLOADONLY" == "on" ];then
-        DELALL=off
-        DOWNLOAD_ALL=on
-    fi
-
-    # 07. slackpkg+ version
-    SPKGPLUS_VERSION="1.9.b2"
-    SPKGBUILD=1658492640
-    VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
-
-    # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
-    LINKVI=$(ls -L /usr/bin/vi 2>/dev/null)
-
-    # 04. VERBOSE=1 by default
-    if [ -z "$VERBOSE" ];then
-        VERBOSE=1
-    fi
-
-    # USEBL vs USEBLACKLIST
-    USEBLACKLIST=true
-    if [ "$USEBL" == "off" ] || [ "$USEBL" == "0" ];then
-      USEBLACKLIST=false
-    fi
-
-    # USETERSE
-    if [ "$USETERSE" == "on" ];then
-      TERSE=0    # note that TERSE=0 means TERSE ENABLED; undocumentated feature in installpkg(8)
-    else
-      TERSE=
-    fi
-    export TERSE
-
-    # PROXY
-    if [ "$PROXY" == "off" ];then
-      unset http_proxy
-      unset https_proxy
-    else
-      http_proxy=$PROXY
-      https_proxy=$PROXY
-      export http_proxy https_proxy
-    fi
-
-  } #END function setup_settings()
 
   function setup_parameters(){
     local CMDLINE
@@ -2203,7 +2151,60 @@ For details see 'man slackpkgplus.conf'"
                    echo -e "Parameter '$par' invalid\n\n$HELP" ; cleanup ;;
       esac
     done
-  }
+  } # END function setup_parameters()
+
+  function setup_settings(){
+
+    # 02. English output for all commands
+    export LC_ALL=C
+
+    # 01. Disable Spinning (use progress)
+    SPINNING=off
+
+    # 03. Avoid to clear package cache at end if DOWNLOADONLY=on
+    if [ "$DOWNLOADONLY" == "on" ];then
+        DELALL=off
+        DOWNLOAD_ALL=on
+    fi
+
+    # 07. slackpkg+ version
+    SPKGPLUS_VERSION="1.9.b2"
+    SPKGBUILD=1658611607
+    VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
+
+    # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
+    LINKVI=$(ls -L /usr/bin/vi 2>/dev/null)
+
+    # 04. VERBOSE=1 by default
+    if [ -z "$VERBOSE" ];then
+        VERBOSE=1
+    fi
+
+    # USEBL vs USEBLACKLIST
+    USEBLACKLIST=true
+    if [ "$USEBL" == "off" ] || [ "$USEBL" == "0" ];then
+      USEBLACKLIST=false
+    fi
+
+    # USETERSE
+    if [ "$USETERSE" == "on" ];then
+      TERSE=0    # note that TERSE=0 means TERSE ENABLED; undocumentated feature in installpkg(8)
+    else
+      TERSE=
+    fi
+    export TERSE
+
+    # PROXY
+    if [ "$PROXY" == "off" ];then
+      unset http_proxy
+      unset https_proxy
+    else
+      http_proxy=$PROXY
+      https_proxy=$PROXY
+      export http_proxy https_proxy
+    fi
+
+  } #END function setup_settings()
 
   function setup_checkup(){
 
