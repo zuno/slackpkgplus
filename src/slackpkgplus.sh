@@ -2126,57 +2126,57 @@ For details see 'man slackpkgplus.conf'"
       v=${par#$k=}
       case $par in
         -verbose=[0-3])
-                   VERBOSE=$v ;;
+                VERBOSE=$v ;;
         -debug)
-                   DEBUG=1 ;;
+                DEBUG=1 ;;
         -terse)
-                   USETERSE=on ; TERSESEARCH=tiny ;;
+                USETERSE=on ; TERSESEARCH=tiny ;;
         -terse=on|-terse=off|-terse=tiny)
-                   USETERSE=$v ; TERSESEARCH=$v ;;
+                USETERSE=$v ; TERSESEARCH=$v ;;
         -blacklist=off|-noblacklist)
-                   USEBL=off ;;
+                USEBL=off ;;
         -blacklist=on|-blacklist)
-                   USEBL=on ;;
+                USEBL=on ;;
         -blacklist=legacy)
-                   USEBL=on ; LEGACYBL=on ;;
+                USEBL=on ; LEGACYBL=on ;;
         -blacklist=new)
-                   USEBL=on ; LEGACYBL=off ;;
+                USEBL=on ; LEGACYBL=off ;;
         -checkdiskspace=on|-checkdiskspace=off)
-                   CHECKDISKSPACE=$v ;;
+                CHECKDISKSPACE=$v ;;
         -downloadonly=on|-downloadonly=off)
-                   DOWNLOADONLY=$v ;;
+                DOWNLOADONLY=$v ;;
         -greylist=on|-greylist)
-                   GREYLIST=on ;;
+                GREYLIST=on ;;
         -greylist=on|-nogreylist)
-                   GREYLIST=off ;;
+                GREYLIST=off ;;
         -info=none|-info=basic|-info=filelist)
-                   DETAILED_INFO=$v ;;
+                DETAILED_INFO=$v ;;
         -filelist)
-                   DETAILED_INFO=filelist ;;
+                DETAILED_INFO=filelist ;;
         -slakfinder)
-                   SLAKFINDER=on ;;
+                SLAKFINDER=on ;;
         -slakfinder=[0-9]*)
-                   if [ "$v" == "0" ];then
-                     SLAKFINDER=off
-                   else
-                     SLAKFINDER=on
-                     SLAKFINDER_MAXRES=$v
-                   fi
-                   ;;
+                if [ "$v" == "0" ];then
+                  SLAKFINDER=off
+                else
+                  SLAKFINDER=on
+                  SLAKFINDER_MAXRES=$v
+                fi
+                ;;
         -description)
-                   SEARCH_DESCRIPTION=on ;;
+                SEARCH_DESCRIPTION=on ;;
         -description=[0-9]*)
-                   if [ "$v" == "0" ];then
-                     SEARCH_DESCRIPTION=off
-                   else
-                     SEARCH_DESCRIPTION=on
-                     SEARCH_DESCRIPTION_LIMITS=$v
-                   fi
-                   ;;
+                if [ "$v" == "0" ];then
+                  SEARCH_DESCRIPTION=off
+                else
+                  SEARCH_DESCRIPTION=on
+                  SEARCH_DESCRIPTION_LIMITS=$v
+                fi
+                ;;
         -help)
-                   echo "$HELP" ; cleanup ;;
+                echo "$HELP" ; cleanup ;;
         *)
-                   echo -e "Parameter '$par' invalid\n\n$HELP" ; cleanup ;;
+                echo -e "Parameter '$par' invalid\n\n$HELP" ; cleanup ;;
       esac
     done
   } # END function setup_parameters()
