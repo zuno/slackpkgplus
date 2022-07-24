@@ -2063,22 +2063,39 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local HELP
     HELP="Allowed parameter (not available in 'update' command):
 
-  -help               show this message
+    -help               show this message
 
-  -verbose=<n>        set VERBOSE=<n> (0..3)
-  -debug              set DEBUG=1
+  Info options:
+    -filelist           set DETAILED_INFO=filelist
 
-  -terse=<v>          set USETERSE=<v> (on/off) and TERSESEARCH=<v> (on/off/tiny)
-  -blacklist=<v>      select blacklist type (on/off/legacy/new) [on=according configuration]
-  -greylist=<v>       set GREYLIST=<v> (on/off)
-  -downloadonly=<v>   set DOWNLOADONLY=<v> (on/off)
-  -checkdiskspace=<v> set CHECKDISKSPACE=<v> (on/off)
+  Search options:
+    -slakfinder         search via remote slakfinder service (limits from configuration)
+    -description        search in package description (limits from configuration)
+    -terse              use a compact output
 
-  -info=<v>           set DETAILED_INFO=<v> (none/basic/filelist)
-  -filelist           set DETAILED_INFO=filelist
+  Blacklist options:
+    -blacklist          enable blacklist (type from configuration)
+    -noblacklist        disable blacklist
+    -greylist           enable greylist
+    -nogreylist         disable greylist
 
-  -slakfinder=<n>     limit search results number from slakfinder (0-50) [0=off]
-  -description=<n>    limit search results from description (number) [0=off]
+  Install/Upgrade/Remove options:
+    -terse              use a compact output for pkgtools
+
+  General configuration override:
+    -verbose=<n>        set VERBOSE=<n> (0..3)
+    -debug              set DEBUG=1
+
+    -terse=<v>          set USETERSE=<v> (on/off) and TERSESEARCH=<v> (on/off/tiny)
+    -blacklist=<v>      select blacklist type (on/off/legacy/new) [on=according configuration]
+    -greylist=<v>       set GREYLIST=<v> (on/off)
+    -downloadonly=<v>   set DOWNLOADONLY=<v> (on/off)
+    -checkdiskspace=<v> set CHECKDISKSPACE=<v> (on/off)
+
+    -info=<v>           set DETAILED_INFO=<v> (none/basic/filelist)
+
+    -slakfinder=<n>     limit search results number from slakfinder (0-50) [0=off]
+    -description=<n>    limit search results from description (number) [0=off]
 
 Please ignore the message 'info: Ignoring extra arguments: -help' at the top.
 It just means that slackpkg will not look for '-help' package.
@@ -2112,26 +2129,32 @@ For details see 'man slackpkgplus.conf'"
                    VERBOSE=$v ;;
         -debug)
                    DEBUG=1 ;;
+        -terse)
+                   USETERSE=on ; TERSESEARCH=tiny ;;
         -terse=on|-terse=off|-terse=tiny)
                    USETERSE=$v ; TERSESEARCH=$v ;;
-        -blacklist=off)
+        -blacklist=off|-noblacklist)
                    USEBL=off ;;
-        -blacklist=on)
+        -blacklist=on|-blacklist)
                    USEBL=on ;;
         -blacklist=legacy)
                    USEBL=on ; LEGACYBL=on ;;
         -blacklist=new)
                    USEBL=on ; LEGACYBL=off ;;
-        -checkdiskspace=on,-checkdiskspace=off)
+        -checkdiskspace=on|-checkdiskspace=off)
                    CHECKDISKSPACE=$v ;;
         -downloadonly=on|-downloadonly=off)
                    DOWNLOADONLY=$v ;;
-        -greylist=on|-greylist=off)
-                   GREYLIST=$v ;;
+        -greylist=on|-greylist)
+                   GREYLIST=on ;;
+        -greylist=on|-nogreylist)
+                   GREYLIST=off ;;
         -info=none|-info=basic|-info=filelist)
                    DETAILED_INFO=$v ;;
         -filelist)
                    DETAILED_INFO=filelist ;;
+        -slakfinder)
+                   SLAKFINDER=on ;;
         -slakfinder=[0-9]*)
                    if [ "$v" == "0" ];then
                      SLAKFINDER=off
@@ -2140,6 +2163,8 @@ For details see 'man slackpkgplus.conf'"
                      SLAKFINDER_MAXRES=$v
                    fi
                    ;;
+        -description)
+                   SEARCH_DESCRIPTION=on ;;
         -description=[0-9]*)
                    if [ "$v" == "0" ];then
                      SEARCH_DESCRIPTION=off
@@ -2172,7 +2197,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.b2"
-    SPKGBUILD=1658612238
+    SPKGBUILD=1658667147
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
