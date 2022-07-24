@@ -38,6 +38,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTPROXY=$PROXY
   EXTSLAKFINDER=$SLAKFINDER
   EXTSEARCH_DESCRIPTION=$SEARCH_DESCRIPTION
+  EXTSEARCH_SBO=$SEARCH_SBO
 
   # Color escape codes
   c_blk='\033[1;30m'
@@ -77,13 +78,12 @@ if [ -e $CONF/slackpkgplus.conf ];then
   USETERSE=${EXTUSETERSE:-$USETERSE}
   TERSESEARCH=${EXTTERSESEARCH:-$TERSESEARCH}
   PROXY=${EXTPROXY:-$PROXY}
+  SEARCH_SBO=${EXTSEARCH_SBO:-$SEARCH_SBO}
 
   if [ "$EXTSLAKFINDER" == "off" ] || [ "$EXTSLAKFINDER" == "0" ];then
     SLAKFINDER=off
   elif [[ "$EXTSLAKFINDER" =~ ^[0-9] ]];then
     SLAKFINDER_MAXRES=$EXTSLAKFINDER
-    SLAKFINDER=on
-  else
     SLAKFINDER=on
   fi
 
@@ -91,8 +91,6 @@ if [ -e $CONF/slackpkgplus.conf ];then
     SEARCH_DESCRIPTION=off
   elif [[ "$EXTSEARCH_DESCRIPTION" =~ ^[0-9] ]];then
     SEARCH_DESCRIPTION_LIMITS=$EXTSEARCH_DESCRIPTION
-    SEARCH_DESCRIPTION=on
-  else
     SEARCH_DESCRIPTION=on
   fi
 
@@ -2066,21 +2064,31 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     -help               show this message
 
   Info options:
-    -filelist           set DETAILED_INFO=filelist
+    -filelist           list file in the package too
 
   Search options:
     -slakfinder         search via remote slakfinder service (limits from configuration)
     -description        search in package description (limits from configuration)
-    -terse              use a compact output
+    -sbo                search in SBo (repositories in configuration)
+    -terse              show a compact output
+    -w                  search Whole Word in file-search
+    -i                  search case-insensitive
+    -noslakfinder       don't search in slakfinder
+    -nodescription      don't search in description
+    -nosbo              don't search in SBo
+    -noterse            don't show a compact output
+    -now                don't search whole word in file-search
+    -noi                search case-sensitive
 
   Blacklist options:
     -blacklist          enable blacklist (type from configuration)
-    -noblacklist        disable blacklist
     -greylist           enable greylist
+    -noblacklist        disable blacklist
     -nogreylist         disable greylist
 
   Install/Upgrade/Remove options:
     -terse              use a compact output for pkgtools
+    -noterse            do not use a compact output for pkgtools
 
   General configuration override:
     -verbose=<n>        set VERBOSE=<n> (0..3)
@@ -2094,8 +2102,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
     -info=<v>           set DETAILED_INFO=<v> (none/basic/filelist)
 
+    -sbo=<v>            set SEARCH_SBO=<v>
     -slakfinder=<n>     limit search results number from slakfinder (0-50) [0=off]
     -description=<n>    limit search results from description (number) [0=off]
+    -ww=<v>             set WW_FILE_SEARCH=<v> (on/off)
+    -ss=<v>             set SENSITIVE_SEARCH=<v> (on/off)
 
 Please ignore the message 'info: Ignoring extra arguments: -help' at the top.
 It just means that slackpkg will not look for '-help' package.
@@ -2129,6 +2140,8 @@ For details see 'man slackpkgplus.conf'"
                 VERBOSE=$v ;;
         -debug)
                 DEBUG=1 ;;
+        -noterse)
+                USETERSE=off ; TERSESEARCH=off ;;
         -terse)
                 USETERSE=on ; TERSESEARCH=tiny ;;
         -terse=on|-terse=off|-terse=tiny)
@@ -2153,8 +2166,22 @@ For details see 'man slackpkgplus.conf'"
                 DETAILED_INFO=$v ;;
         -filelist)
                 DETAILED_INFO=filelist ;;
+        -i|-ss=on)
+                SENSITIVE_SEARCH=off ;;
+        -noi|-ss=off)
+                SENSITIVE_SEARCH=on ;;
+        -w|-ww=on)
+                WW_FILE_SEARCH=on ;;
+        -now|-ww=off)
+                WW_FILE_SEARCH=off ;;
+        -sbo|-sbo=on)
+                SEARCH_SBO=on ;;
+        -nosbo|-sbo=off)
+                SEARCH_SBO=off ;;
         -slakfinder)
                 SLAKFINDER=on ;;
+        -slakfinder=off|-noslakfinder)
+                SLAKFINDER=off ;;
         -slakfinder=[0-9]*)
                 if [ "$v" == "0" ];then
                   SLAKFINDER=off
@@ -2165,6 +2192,8 @@ For details see 'man slackpkgplus.conf'"
                 ;;
         -description)
                 SEARCH_DESCRIPTION=on ;;
+        -description=off|-nodescription)
+                SEARCH_DESCRIPTION=off ;;
         -description=[0-9]*)
                 if [ "$v" == "0" ];then
                   SEARCH_DESCRIPTION=off
@@ -2197,7 +2226,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.b2"
-    SPKGBUILD=1658667147
+    SPKGBUILD=1658700323
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
@@ -2849,7 +2878,7 @@ For details see 'man slackpkgplus.conf'"
         else
           SBORESULT="$(grep -E $GREPOPTS "^SBO_[^ ]* [^ ]*${PATTERN}" $TMPDIR/pkglist 2>/dev/null|awk '{print $6}')"
         fi
-        if [ ! -z "$SBORESULT" ];then
+        if [ "$SEARCH_SBO" != "off" ]&&[ ! -z "$SBORESULT" ];then
             echo
             echo "Also found in SBo (download it with 'slackpkg download <package>'):"
             echo
@@ -3091,6 +3120,7 @@ For details see 'man slackpkgplus.conf'"
     echo
 
     cat $WORKDIR/pkglist|grep -E "^[^ ]* $NAME "|while read repository name version arch tag namepkg fullpath ext;do
+      [ "$SEARCH_SBO" == "off" ] && echo $repository|grep -q SBO_ && continue
       echo "Package:    $namepkg"
       echo "Repository: ${repository/SLACKPKGPLUS_/}"
       if echo $repository|grep -q SBO_;then
