@@ -1,12 +1,19 @@
+Sun Jun 19 15:30:27 CEST 2022
+pkg/slackpkg+-1.9.b-noarch-1mt.txz: Upgrade
+  - Code reorganization (no significant functional change)
+  - slackpkg check-updates shows output in stderr
+  - small issue in notification events
++-------------------------+
+
 Wed Jun 15 23:30:35 CEST 2022
-pkg/slackpkg+-1.9.a-noarch-2mt.txz: Upgrade
+pkg/slackpkg+-1.9.a-noarch-2mt.txz: Rebuilt
   - Allow option SENSITIVE_SEARCH in sbo, description, remote searches
   - Manage errors in remote searching
   - 'slackpkg info' code embedded in slackpkg+ for future improvment
 +-------------------------+
 
 Sat May 28 13:17:34 CEST 2022
-pkg/slackpkg+-1.9.a-noarch-1mt.txz: Rebuilt
+pkg/slackpkg+-1.9.a-noarch-1mt.txz: Upgrade
   - Draft dependency support (in slackpkg info)
   - Draft search in package description (slack-desc)
   - Draft remote search (using slakfinder.org)
