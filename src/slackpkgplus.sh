@@ -2225,8 +2225,8 @@ For details see 'man slackpkgplus.conf'"
     fi
 
     # 07. slackpkg+ version
-    SPKGPLUS_VERSION="1.9.b2"
-    SPKGBUILD=1658700323
+    SPKGPLUS_VERSION="1.9.c"
+    SPKGBUILD=1658944029
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
