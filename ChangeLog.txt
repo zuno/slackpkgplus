@@ -1,3 +1,13 @@
+Wed Jul 27 19:47:09 CEST 2022
+pkg/slackpkg+-1.9.c-noarch-1mt.txz: Upgrade
+  - Allow override SLAKFINDER and SEARCH_DESCRIPTION
+  - Added slackpkg+ parameters extension (see slackpkg info -help)
+    That currently allow to override the configuration via commandline
+    parameters
+  - Added build release in version (slackpkg+ 1.9.c-1658944029)
+  - Apply blacklist to SBO search too
++-------------------------+
+
 Sun Jun 19 15:30:27 CEST 2022
 pkg/slackpkg+-1.9.b-noarch-1mt.txz: Upgrade
   - Code reorganization (no significant functional change)

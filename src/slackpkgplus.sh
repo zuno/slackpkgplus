@@ -36,6 +36,9 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTUSETERSE=$USETERSE
   EXTTERSESEARCH=$TERSESEARCH
   EXTPROXY=$PROXY
+  EXTSLAKFINDER=$SLAKFINDER
+  EXTSEARCH_DESCRIPTION=$SEARCH_DESCRIPTION
+  EXTSEARCH_SBO=$SEARCH_SBO
 
   # Color escape codes
   c_blk='\033[1;30m'
@@ -75,27 +78,22 @@ if [ -e $CONF/slackpkgplus.conf ];then
   USETERSE=${EXTUSETERSE:-$USETERSE}
   TERSESEARCH=${EXTTERSESEARCH:-$TERSESEARCH}
   PROXY=${EXTPROXY:-$PROXY}
+  SEARCH_SBO=${EXTSEARCH_SBO:-$SEARCH_SBO}
 
-  if [ "$PROXY" == "off" ];then
-    unset http_proxy
-    unset https_proxy
-  else
-    http_proxy=$PROXY
-    https_proxy=$PROXY
-    export http_proxy https_proxy
+  if [ "$EXTSLAKFINDER" == "off" ] || [ "$EXTSLAKFINDER" == "0" ];then
+    SLAKFINDER=off
+  elif [[ "$EXTSLAKFINDER" =~ ^[0-9] ]];then
+    SLAKFINDER_MAXRES=$EXTSLAKFINDER
+    SLAKFINDER=on
   fi
 
-  if [ "$USETERSE" == "on" ];then
-    TERSE=0    # note that TERSE=0 means TERSE ENABLED; undocumentated feature in installpkg(8)
-  else
-    TERSE=
+  if [ "$EXTSEARCH_DESCRIPTION" == "off" ] || [ "$EXTSEARCH_DESCRIPTION" == "0" ];then
+    SEARCH_DESCRIPTION=off
+  elif [[ "$EXTSEARCH_DESCRIPTION" =~ ^[0-9] ]];then
+    SEARCH_DESCRIPTION_LIMITS=$EXTSEARCH_DESCRIPTION
+    SEARCH_DESCRIPTION=on
   fi
-  export TERSE
 
-  USEBLACKLIST=true
-  if [ "$USEBL" == "off" ] || [ "$USEBL" == "0" ];then
-    USEBLACKLIST=false
-  fi
   if [ "$ENABLENOTIFY" = "on" ] && [ -e $CONF/notifymsg.conf ];then
     . $CONF/notifymsg.conf
   fi
@@ -139,6 +137,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function debug()
   # function updatedeps()
   #### ===== PREPARE ======== ######
+  # function setup_parameters()
   # function setup_settings()
   # function setup_checkup()
   # function setup_repositories()
@@ -2051,6 +2050,166 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   #### ===== PREPARE ======== ######
 
+
+  function setup_parameters(){
+    local CMDLINE
+    local cntline
+    local ispar
+    local par
+    local k
+    local v
+    local HELP
+    HELP="Allowed parameter (not available in 'update' command):
+
+    -help               show this message
+
+  Info options:
+    -filelist           list file in the package too
+
+  Search options:
+    -slakfinder         search via remote slakfinder service (limits from configuration)
+    -description        search in package description (limits from configuration)
+    -sbo                search in SBo (repositories in configuration)
+    -terse              show a compact output
+    -w                  search Whole Word in file-search
+    -i                  search case-insensitive
+    -noslakfinder       don't search in slakfinder
+    -nodescription      don't search in description
+    -nosbo              don't search in SBo
+    -noterse            don't show a compact output
+    -now                don't search whole word in file-search
+    -noi                search case-sensitive
+
+  Blacklist options:
+    -blacklist          enable blacklist (type from configuration)
+    -greylist           enable greylist
+    -noblacklist        disable blacklist
+    -nogreylist         disable greylist
+
+  Install/Upgrade/Remove options:
+    -terse              use a compact output for pkgtools
+    -noterse            do not use a compact output for pkgtools
+
+  General configuration override:
+    -verbose=<n>        set VERBOSE=<n> (0..3)
+    -debug              set DEBUG=1
+
+    -terse=<v>          set USETERSE=<v> (on/off) and TERSESEARCH=<v> (on/off/tiny)
+    -blacklist=<v>      select blacklist type (on/off/legacy/new) [on=according configuration]
+    -greylist=<v>       set GREYLIST=<v> (on/off)
+    -downloadonly=<v>   set DOWNLOADONLY=<v> (on/off)
+    -checkdiskspace=<v> set CHECKDISKSPACE=<v> (on/off)
+
+    -info=<v>           set DETAILED_INFO=<v> (none/basic/filelist)
+
+    -sbo=<v>            set SEARCH_SBO=<v>
+    -slakfinder=<n>     limit search results number from slakfinder (0-50) [0=off]
+    -description=<n>    limit search results from description (number) [0=off]
+    -ww=<v>             set WW_FILE_SEARCH=<v> (on/off)
+    -ss=<v>             set SENSITIVE_SEARCH=<v> (on/off)
+
+Please ignore the message 'info: Ignoring extra arguments: -help' at the top.
+It just means that slackpkg will not look for '-help' package.
+
+For details see 'man slackpkgplus.conf'"
+    PARAMETERS=""
+    CMDLINE=( $(cat -A /proc/$$/cmdline|sed 's/\^@/ /g'|grep -o -E " $CMD .*"|sed "s/ $CMD //") )
+    cntline=${#CMDLINE[*]}
+    while [ $cntline -gt 0 ];do
+      let cntline--
+      if [ "${CMDLINE[$cntline]:0:1}" == "-" ];then
+        if [ "$ispar" = "" ];then
+          PARAMETERS="${CMDLINE[$cntline]} $PARAMETERS"
+        else
+          echo "Parameter '${CMDLINE[$cntline]}' position invalid. Put it at the end of the line"
+          cleanup
+        fi
+      else
+        ispar="no"
+      fi
+    done
+    CMDLINE=$(echo $CMDLINE|sed 's,[%/], ,g')
+    PARAMETERS=$(echo $PARAMETERS)
+    INPUTLIST=$(echo " $INPUTLIST "|sed -r -e 's,-[^ ]*,,g' -e 's/^ *//' -e 's/ *$//')
+    ARG=$(echo " $ARG "|sed -r -e 's,-[^ ]*,,g'|sed -e 's/^ *//' -e 's/ *$//')
+    for par in $PARAMETERS;do
+      k=${par/=*}
+      v=${par#$k=}
+      case $par in
+        -verbose=[0-3])
+                VERBOSE=$v ;;
+        -debug)
+                DEBUG=1 ;;
+        -noterse)
+                USETERSE=off ; TERSESEARCH=off ;;
+        -terse)
+                USETERSE=on ; TERSESEARCH=tiny ;;
+        -terse=on|-terse=off|-terse=tiny)
+                USETERSE=$v ; TERSESEARCH=$v ;;
+        -blacklist=off|-noblacklist)
+                USEBL=off ;;
+        -blacklist=on|-blacklist)
+                USEBL=on ;;
+        -blacklist=legacy)
+                USEBL=on ; LEGACYBL=on ;;
+        -blacklist=new)
+                USEBL=on ; LEGACYBL=off ;;
+        -checkdiskspace=on|-checkdiskspace=off)
+                CHECKDISKSPACE=$v ;;
+        -downloadonly=on|-downloadonly=off)
+                DOWNLOADONLY=$v ;;
+        -greylist=on|-greylist)
+                GREYLIST=on ;;
+        -greylist=on|-nogreylist)
+                GREYLIST=off ;;
+        -info=none|-info=basic|-info=filelist)
+                DETAILED_INFO=$v ;;
+        -filelist)
+                DETAILED_INFO=filelist ;;
+        -i|-ss=on)
+                SENSITIVE_SEARCH=off ;;
+        -noi|-ss=off)
+                SENSITIVE_SEARCH=on ;;
+        -w|-ww=on)
+                WW_FILE_SEARCH=on ;;
+        -now|-ww=off)
+                WW_FILE_SEARCH=off ;;
+        -sbo|-sbo=on)
+                SEARCH_SBO=on ;;
+        -nosbo|-sbo=off)
+                SEARCH_SBO=off ;;
+        -slakfinder)
+                SLAKFINDER=on ;;
+        -slakfinder=off|-noslakfinder)
+                SLAKFINDER=off ;;
+        -slakfinder=[0-9]*)
+                if [ "$v" == "0" ];then
+                  SLAKFINDER=off
+                else
+                  SLAKFINDER=on
+                  SLAKFINDER_MAXRES=$v
+                fi
+                ;;
+        -description)
+                SEARCH_DESCRIPTION=on ;;
+        -description=off|-nodescription)
+                SEARCH_DESCRIPTION=off ;;
+        -description=[0-9]*)
+                if [ "$v" == "0" ];then
+                  SEARCH_DESCRIPTION=off
+                else
+                  SEARCH_DESCRIPTION=on
+                  SEARCH_DESCRIPTION_LIMITS=$v
+                fi
+                ;;
+        -help)
+                echo "$HELP" ; cleanup ;;
+        *)
+                echo -e "Parameter '$par' invalid\n\n$HELP" ; cleanup ;;
+      esac
+    done
+  } # END function setup_parameters()
+
   function setup_settings(){
 
     # 02. English output for all commands
@@ -2066,8 +2225,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     fi
 
     # 07. slackpkg+ version
-    SPKGPLUS_VERSION="1.9.b"
-    VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION"
+    SPKGPLUS_VERSION="1.9.c"
+    SPKGBUILD=1658944029
+    VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
     LINKVI=$(ls -L /usr/bin/vi 2>/dev/null)
@@ -2075,6 +2235,30 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     # 04. VERBOSE=1 by default
     if [ -z "$VERBOSE" ];then
         VERBOSE=1
+    fi
+
+    # USEBL vs USEBLACKLIST
+    USEBLACKLIST=true
+    if [ "$USEBL" == "off" ] || [ "$USEBL" == "0" ];then
+      USEBLACKLIST=false
+    fi
+
+    # USETERSE
+    if [ "$USETERSE" == "on" ];then
+      TERSE=0    # note that TERSE=0 means TERSE ENABLED; undocumentated feature in installpkg(8)
+    else
+      TERSE=
+    fi
+    export TERSE
+
+    # PROXY
+    if [ "$PROXY" == "off" ];then
+      unset http_proxy
+      unset https_proxy
+    else
+      http_proxy=$PROXY
+      https_proxy=$PROXY
+      export http_proxy https_proxy
     fi
 
   } #END function setup_settings()
@@ -2665,6 +2849,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   function slackpkg_search() {
     # 40. override slackpkg search action
 
+    if [ -z "$ARG" ];then
+      usage
+    fi
     PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g' -e 's/ /\|/g' -e 's/^\///')
     [[ "$PATTERN" =~ , ]]&&{ PATTERN="${PATTERN/\*}" ; PATTERN="${PATTERN/,}," ; }
     searchPackages $PATTERN
@@ -2684,12 +2871,14 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           searchlistEX "$LIST"
           echo -e "\nYou can search specific files using \"slackpkg file-search file\".\n"
         fi
+        > ${TMPDIR}/blacklist.slackpkgplus
+        cat ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
         if [[ "${PATTERN}" =~ , ]];then
-          SBORESULT="$(grep -E $GREPOPTS "^SBO_[^ ]* ${PATTERN%,*} " $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+          SBORESULT="$(grep -E $GREPOPTS "^SBO_[^ ]* ${PATTERN%,*} " $TMPDIR/pkglist 2>/dev/null|awk '{print $6}')"
         else
-          SBORESULT="$(grep -E $GREPOPTS "^SBO_[^ ]* [^ ]*${PATTERN}" $WORKDIR/pkglist 2>/dev/null|awk '{print $6}')"
+          SBORESULT="$(grep -E $GREPOPTS "^SBO_[^ ]* [^ ]*${PATTERN}" $TMPDIR/pkglist 2>/dev/null|awk '{print $6}')"
         fi
-        if [ ! -z "$SBORESULT" ];then
+        if [ "$SEARCH_SBO" != "off" ]&&[ ! -z "$SBORESULT" ];then
             echo
             echo "Also found in SBo (download it with 'slackpkg download <package>'):"
             echo
@@ -2920,6 +3109,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   function slackpkg_info(){
     # 43. Show detailed info for slackpkg info
 
+    if [ -z "$ARG" ];then
+      usage
+    fi
     PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g')
     NAME=$(cutpkg $PATTERN)
     awk  "/PACKAGE NAME:.* ${NAME}-[^-]+-(${ARCH}|fw|noarch)-[^-]+/,/^$/ "'{ found=1; print $0 } END {
@@ -2928,6 +3120,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     echo
 
     cat $WORKDIR/pkglist|grep -E "^[^ ]* $NAME "|while read repository name version arch tag namepkg fullpath ext;do
+      [ "$SEARCH_SBO" == "off" ] && echo $repository|grep -q SBO_ && continue
       echo "Package:    $namepkg"
       echo "Repository: ${repository/SLACKPKGPLUS_/}"
       if echo $repository|grep -q SBO_;then
@@ -2973,6 +3166,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   ### =========================== MAIN ============================ ###
 
+  setup_parameters
   setup_settings
   setup_checkup
   setup_repositories
