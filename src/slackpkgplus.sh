@@ -2130,8 +2130,8 @@ For details see 'man slackpkgplus.conf'"
     done
     CMDLINE=$(echo $CMDLINE|sed 's,[%/], ,g')
     PARAMETERS=$(echo $PARAMETERS)
-    INPUTLIST=$(echo " $INPUTLIST "|sed -r -e 's,-[^ ]*,,g' -e 's/^ *//' -e 's/ *$//')
-    ARG=$(echo " $ARG "|sed -r -e 's,-[^ ]*,,g'|sed -e 's/^ *//' -e 's/ *$//')
+    INPUTLIST=$(echo " $INPUTLIST "|sed -r -e 's, -[^ ]*, ,g' -e 's/^ *//' -e 's/ *$//')
+    ARG=$(echo " $ARG "|sed -r -e 's, -[^ ]*,,g'|sed -e 's/^ *//' -e 's/ *$//')
     for par in $PARAMETERS;do
       k=${par/=*}
       v=${par#$k=}
