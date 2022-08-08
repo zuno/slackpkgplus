@@ -3112,17 +3112,25 @@ For details see 'man slackpkgplus.conf'"
     if [ -z "$ARG" ];then
       usage
     fi
-    PATTERN=$(echo $ARG | sed -e 's/\+/\\\+/g' -e 's/\./\\\./g')
+    REPO=$(echo $ARG|grep :|cut -f1 -d:)
+    if [ ! -z "$REPO" ];then
+      ARG=$(echo $ARG|cut -f2- -d:)
+      REPO="^($REPO|SLACKPKGPLUS_$REPO)"
+    else
+      REPO="^[^ ]*"
+    fi
+    PATTERN=$(echo $ARG | sed -e 's/\.t.z$//' -e 's/\+/\\\+/g' -e 's/\./\\\./g')
     NAME=$(cutpkg $PATTERN)
-    awk  "/PACKAGE NAME:.* ${NAME}-[^-]+-(${ARCH}|fw|noarch)-[^-]+/,/^$/ "'{ found=1; print $0 } END {
-            if(found!=1) {print "No packages found! Try:\n\n\tslackpkg search '$PATTERN'\n\nand choose one (and ONLY one package).\n"}
-          }' ${WORKDIR}/PACKAGES.TXT 2>/dev/null
-    echo
+    if [ "$PATTERN" == "$NAME" ];then
+      QUERY="$REPO $PATTERN "
+    else
+      QUERY="$REPO [^ ]* [^ ]* [^ ]* [^ ]* $PATTERN "
+    fi
 
-    cat $WORKDIR/pkglist|grep -E "^[^ ]* $NAME "|while read repository name version arch tag namepkg fullpath ext;do
+    cat $WORKDIR/pkglist|grep -E "$QUERY"|while read repository name version arch tag namepkg fullpath ext;do
       [ "$SEARCH_SBO" == "off" ] && echo $repository|grep -q SBO_ && continue
-      echo "Package:    $namepkg"
-      echo "Repository: ${repository/SLACKPKGPLUS_/}"
+      echo "Package:      $namepkg"
+      echo "  Repository: ${repository/SLACKPKGPLUS_/}"
       if echo $repository|grep -q SBO_;then
         fullpath=${fullpath/*$repository\//}
         if [ "$repository" == "SBO_current" ];then
@@ -3131,20 +3139,27 @@ For details see 'man slackpkgplus.conf'"
           fullpath="$fullpath/"
         fi
         URLFILE=${SBO[${repository/SBO_}]%/}/$fullpath
-        echo "Path:       ./${fullpath}"
-        echo "Url:        ${URLFILE}"
+        echo "  Path:       ./${fullpath}"
+        echo "  Url:        ${URLFILE}"
       else
-        echo "Path:       ${fullpath/\/SLACKPKGPLUS_${repository/SLACKPKGPLUS_/}/}/$namepkg.$ext"
+        echo "  Path:       ${fullpath/\/SLACKPKGPLUS_${repository/SLACKPKGPLUS_/}/}/$namepkg.$ext"
         URLFILE=${SOURCE}${fullpath}/${namepkg}.${ext}
         if echo $URLFILE|grep -q /SLACKPKGPLUS_;then
           PREPO=$(echo $URLFILE|sed -r 's#^.*/SLACKPKGPLUS_([^/]+)/.*$#\1#')
           URLFILE=$(echo $URLFILE|sed "s#^.*/SLACKPKGPLUS_$PREPO/#${MIRRORPLUS[$PREPO]}#")
         fi
-        echo "Url:        ${URLFILE/.\//}"
+        echo "  Url:        ${URLFILE/.\//}"
         if ! echo $repository|grep -q ^SBO;then
           DEPS=$(cat $WORKDIR/deplist|grep ^${repository/SLACKPKGPLUS_/}:$name:$namepkg:)
-          echo "Deps:       $(echo "$DEPS"|cut -f4 -d:|sed 's/,/ /g')"
-          echo "To install:$(echo "$DEPS"|cut -f5 -d:|sed -r -e "s/(^|,)([^,]+)/ ${repository/SLACKPKGPLUS_/}:\2,/g") ${repository/SLACKPKGPLUS_/}:$name,"
+          echo "  Deps:       $(echo "$DEPS"|cut -f4 -d:|sed 's/,/ /g')"
+          echo "  To install:$(echo "$DEPS"|cut -f5 -d:|sed -r -e "s/(^|,)([^,]+)/ ${repository/SLACKPKGPLUS_/}:\2,/g") ${repository/SLACKPKGPLUS_/}:$name,"
+        fi
+        METAD="$(cat ${WORKDIR}/PACKAGES.TXT|sed -e "0,/===== START REPO: ${repository/SLACKPKGPLUS_/} /d"|awk  "/PACKAGE NAME:.* (${NAME}-[^-]+-(${ARCH}|fw|noarch)-[^-]+|${PATTERN}).txz/,/^$/ "'{ print $0; if (!$0)exit }')"
+        if [ ! -z "$METAD" ];then
+          echo "Metadata:"
+          echo "$METAD"|sed 's/^/  /'
+        else
+          echo "Metadata:   no metadata available"
         fi
         if [ "$DETAILED_INFO" == "filelist" ];then
           FILELIST="$(zgrep ^${fullpath/\/${repository}/}/$namepkg.$ext $WORKDIR/$repository-filelist.gz 2>/dev/null)"
@@ -3157,7 +3172,11 @@ For details see 'man slackpkgplus.conf'"
         fi
       fi
       echo
+      echo
     done
+    if [ ${PIPESTATUS[1]} -ne 0 ];then
+      echo -e "No packages found! Try:\n\n\tslackpkg search '$PATTERN'\n\nand choose one (and ONLY one package)."
+    fi
     cleanup
   } # END function slackpkg_info()
 
