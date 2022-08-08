@@ -85,8 +85,8 @@ WW_FILE_SEARCH=off
 # Select the show order in dialog box. Available "package" "repository" "tag" "path" "arch"
 SHOWORDER=package
 
-# Allow to show more details of the package in 'slackpkg info <package>'. Accepts "none", "basic", "filelist"
-DETAILED_INFO=basic
+# Allow 'slackpkg info <package>' to always show package filelist; this replace DETAILED_INFO
+INFO_FILELIST=off
 
 # Enable (on) / Disable (off) a Strict GPG Check. A repository should contains packages signed
 # with the only original GPG-KEY. In some custom repository may be wanted to mix heterogeneous
@@ -146,6 +146,11 @@ MIRRORPLUS['slackpkgplus']=https://slakfinder.org/slackpkg+15/
 # Remote packages (you do not need metadata)
 #MIRRORPLUS['slackpkgbeta']=httpsdir://slackpkg.org/beta/
 
+
+# Enable/Disable SBo SlackBuilds in 'slackpkg search/info'. You can uncomment SBO repositories
+# below and keep this setting off to avoid slackpkg using it. Then you can override it
+# on commandline to locally enable it.
+SEARCH_SBO=off
 
 # SBo SlackBuilds. Uncomment it to allow slackpkg to search SlackBuilds on SlackBuilds.org
 # This does not replace sbopkg; slackpkg just report the package, version and url; you may

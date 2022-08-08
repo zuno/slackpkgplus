@@ -1,3 +1,11 @@
+Mon Aug  8 15:12:48 CEST 2022
+pkg/slackpkg+-1.9.d-noarch-1mt.txz: Upgrade
+  - 'slackpkg info' rewritten for a better output
+  - 'slackpkg info' allow full-package-name and repository:name to limit results
+  - Deprecated DETAILED_INFO with new setting INFO_FILELIST
+  - Added setting SEARCH_SBO to enable/disable sbo repositories in info&search
++-------------------------+
+
 Wed Jul 27 19:47:09 CEST 2022
 pkg/slackpkg+-1.9.c-noarch-1mt.txz: Upgrade
   - Allow override SLAKFINDER and SEARCH_DESCRIPTION

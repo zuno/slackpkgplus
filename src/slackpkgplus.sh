@@ -32,6 +32,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTDOWNLOADONLY=$DOWNLOADONLY
   EXTSTRICTGPG=$STRICTGPG
   EXTDETAILED_INFO=$DETAILED_INFO
+  EXTINFO_FILELIST=$INFO_FILELIST
   EXTWW_FILE_SEARCH=$WW_FILE_SEARCH
   EXTUSETERSE=$USETERSE
   EXTTERSESEARCH=$TERSESEARCH
@@ -74,6 +75,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   DOWNLOADONLY=${EXTDOWNLOADONLY:-$DOWNLOADONLY}
   STRICTGPG=${EXTSTRICTGPG:-$STRICTGPG}
   DETAILED_INFO=${EXTDETAILED_INFO:-$DETAILED_INFO}
+  INFO_FILELIST=${EXTINFO_FILELIST:-$INFO_FILELIST}
   WW_FILE_SEARCH=${EXTWW_FILE_SEARCH:-$WW_FILE_SEARCH}
   USETERSE=${EXTUSETERSE:-$USETERSE}
   TERSESEARCH=${EXTTERSESEARCH:-$TERSESEARCH}
@@ -92,6 +94,10 @@ if [ -e $CONF/slackpkgplus.conf ];then
   elif [[ "$EXTSEARCH_DESCRIPTION" =~ ^[0-9] ]];then
     SEARCH_DESCRIPTION_LIMITS=$EXTSEARCH_DESCRIPTION
     SEARCH_DESCRIPTION=on
+  fi
+
+  if [ -z "$INFO_FILELIST" ] && [ "$DETAILED_INFO" == "filelist" ];then
+    INFO_FILELIST=on
   fi
 
   if [ "$ENABLENOTIFY" = "on" ] && [ -e $CONF/notifymsg.conf ];then
@@ -2100,7 +2106,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     -downloadonly=<v>   set DOWNLOADONLY=<v> (on/off)
     -checkdiskspace=<v> set CHECKDISKSPACE=<v> (on/off)
 
-    -info=<v>           set DETAILED_INFO=<v> (none/basic/filelist)
+    -filelist=<v>       set INFO_FILELIST=<v> (on/off)
 
     -sbo=<v>            set SEARCH_SBO=<v>
     -slakfinder=<n>     limit search results number from slakfinder (0-50) [0=off]
@@ -2162,10 +2168,10 @@ For details see 'man slackpkgplus.conf'"
                 GREYLIST=on ;;
         -greylist=on|-nogreylist)
                 GREYLIST=off ;;
-        -info=none|-info=basic|-info=filelist)
-                DETAILED_INFO=$v ;;
-        -filelist)
-                DETAILED_INFO=filelist ;;
+        -filelist=off)
+                INFO_FILELIST=off ;;
+        -filelist|-filelist=on)
+                INFO_FILELIST=on ;;
         -i|-ss=on)
                 SENSITIVE_SEARCH=off ;;
         -noi|-ss=off)
@@ -2225,8 +2231,8 @@ For details see 'man slackpkgplus.conf'"
     fi
 
     # 07. slackpkg+ version
-    SPKGPLUS_VERSION="1.9.c"
-    SPKGBUILD=1658944029
+    SPKGPLUS_VERSION="1.9.d"
+    SPKGBUILD=1659964368
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
@@ -3161,7 +3167,7 @@ For details see 'man slackpkgplus.conf'"
         else
           echo "Metadata:   no metadata available"
         fi
-        if [ "$DETAILED_INFO" == "filelist" ];then
+        if [ "$INFO_FILELIST" == "on" ];then
           FILELIST="$(zgrep ^${fullpath/\/${repository}/}/$namepkg.$ext $WORKDIR/$repository-filelist.gz 2>/dev/null)"
           if [ -z "$FILELIST" ];then
             echo "Filelist:   no file list available"
