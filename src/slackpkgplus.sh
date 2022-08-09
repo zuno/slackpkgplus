@@ -2071,6 +2071,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   Info options:
     -filelist           list file in the package too
+    -sbo                search in SBo (repositories in configuration)
+    -nosbo              don't search in SBo
 
   Search options:
     -slakfinder         search via remote slakfinder service (limits from configuration)
@@ -3095,7 +3097,7 @@ For details see 'man slackpkgplus.conf'"
           LIST="$LIST $(grep " ${i} " ${TMPDIR}/pkglist |grep -w -- "${ARGUMENT}" | cut -f6,8 -d\  --output-delimiter=.)"
         done
       fi
-      LIST="$(echo -e $LIST | sort -u)"
+      LIST="$(echo -e $LIST | applyblacklist | sort -u)"
     done
     echo -e "DONE\n"
     DELALL="off"
