@@ -2071,8 +2071,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
   Info options:
     -filelist           list file in the package too
-    -sbo                search in SBo (repositories in configuration)
-    -nosbo              don't search in SBo
 
   Search options:
     -slakfinder         search via remote slakfinder service (limits from configuration)
@@ -2091,8 +2089,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   Blacklist options:
     -blacklist          enable blacklist (type from configuration)
     -greylist           enable greylist
+    -sbo                enable SBo (search/info/download commands)
     -noblacklist        disable blacklist
     -nogreylist         disable greylist
+    -nosbo              disable SBo
 
   Install/Upgrade/Remove options:
     -terse              use a compact output for pkgtools
@@ -2592,7 +2592,7 @@ For details see 'man slackpkgplus.conf'"
     echo -n "" > ${TMPDIR}/blacklist.slackpkgplus
 
     # 30. blacklist sbo metadata
-    if [ "$CMD" != "download" ];then
+    if [ "$CMD" != "download" ]||[ "$SEARCH_SBO" != "on" ];then
         internal_blacklist "^SBO_"
     fi
 
@@ -2888,7 +2888,7 @@ For details see 'man slackpkgplus.conf'"
         fi
         if [ "$SEARCH_SBO" != "off" ]&&[ ! -z "$SBORESULT" ];then
             echo
-            echo "Also found in SBo (download it with 'slackpkg download <package>'):"
+            echo "Also found in SBo (download it with 'slackpkg download <package> -sbo'):"
             echo
             echo -e "[package]\n$SBORESULT"|sed -e 's/  /    /' -e 's/^/  /' -e 's/  \[/[ /g' -e 's/\]/ ]/g'|grep --color -E $GREPOPTS -e "${PATTERN%,*}" -e ^
             echo
