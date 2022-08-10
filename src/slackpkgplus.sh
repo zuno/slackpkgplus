@@ -2234,7 +2234,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.d"
-    SPKGBUILD=1659964368
+    SPKGBUILD=1660151504
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
@@ -3097,7 +3097,7 @@ For details see 'man slackpkgplus.conf'"
           LIST="$LIST $(grep " ${i} " ${TMPDIR}/pkglist |grep -w -- "${ARGUMENT}" | cut -f6,8 -d\  --output-delimiter=.)"
         done
       fi
-      LIST="$(echo -e $LIST | applyblacklist | sort -u)"
+      LIST=$( printf "%s\n" $LIST | applyblacklist | sort | uniq )
     done
     echo -e "DONE\n"
     DELALL="off"

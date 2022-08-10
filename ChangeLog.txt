@@ -1,3 +1,10 @@
+Wed Aug 10 19:11:44 CEST 2022
+pkg/slackpkg+-1.9.d-noarch-2mt.txz: Rebuilt
+  - fixed blacklist in slackpkg download
+  - extends SEARCH_SBO to slackpkg download
+  - use explicitly -sbo parameter to enable sbo
++-------------------------+
+
 Mon Aug  8 15:12:48 CEST 2022
 pkg/slackpkg+-1.9.d-noarch-1mt.txz: Upgrade
   - 'slackpkg info' rewritten for a better output
