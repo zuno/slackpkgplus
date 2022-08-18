@@ -228,8 +228,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       cp -p $WORKDIR/install.log $TMPDIR/install.log
         # copy slackpkg.trace if you run slackpkg ... > slackpkg.trace
       [ -L /proc/$$/fd/$XTRACEFD ]&& cat /proc/$$/fd/$XTRACEFD > $TMPDIR/slackpkg.trace 2>/dev/null
-      ls -ltra >tmpdir.list
       ( cd $TMPDIR || exit 1
+        ls -ltra >tmpdir.list
         # avoid to copy big downloaded metadata files
         for fl in $(ls *.TXT *.gz CHECKSUMS.md5-* *.bz2 2>/dev/null);do
           > $fl
@@ -2323,7 +2323,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.e"
-    SPKGBUILD=1660752401
+    SPKGBUILD=1660833361
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
