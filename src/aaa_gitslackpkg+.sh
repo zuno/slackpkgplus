@@ -2,8 +2,8 @@
 if [ ! -z "$GITSLACKPKG" ]&&[ "$GITSLACKPKG" != "off" ]&&[ "$CMD" == "update" ];then
 
   CWD=`pwd`
-  [ ! -e /usr/libexec/slackpkg/gislackpkg ]&&mkdir /usr/libexec/slackpkg/gislackpkg
-  cd /usr/libexec/slackpkg/gislackpkg
+  [ ! -e /usr/libexec/slackpkg/gitslackpkg ]&&mkdir /usr/libexec/slackpkg/gitslackpkg
+  cd /usr/libexec/slackpkg/gitslackpkg
   if [ ! -e slackpkgplus ];then
     git clone https://github.com/zuno/slackpkgplus
   fi
