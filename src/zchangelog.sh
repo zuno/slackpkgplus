@@ -31,8 +31,10 @@
 
 if [ "$PLUGIN_ZCHANGELOG" == "enable" ];then
 
+set +x
 test -n "$(declare -f cleanup)" # || return
 eval "${_/cleanup/cleanup_orig}"
+set ${XTRACE:-+x}
 
 function pkglistdiff (){
   diff $WORKDIR/pkglist.copy $WORKDIR/pkglist|grep -v " SBO_"|

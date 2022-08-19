@@ -7,8 +7,14 @@ SLACKPKGPLUS=on
 # set to '0' to never show the download progress bar
 # set to '1' to show the bar only in download packages (default)
 # set to '2' to always show the download bar
-# set to '3' for a debug mode
+# set to '3' for a debug downloader mode
 VERBOSE=1
+
+# set to '1' to avoid slackpkg delete tmpdir; also add a trace file
+# set to '2' to generate extensive debug information in tmpdir
+#   you just should use it via cmdline 'DEBUG=2 slackpkg ...'
+#   for troubleshooting
+#DEBUG=0
 
 # Enable TERSE to use a smaller output in installpkg/upgradepkg
 USETERSE=on

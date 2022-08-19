@@ -3,6 +3,9 @@
 # Thanks to AlienBob and phenixia2003 (on LQ) for contributing
 # A special thanks to all packagers that make slackpkg+ useful
 
+export PS4='+[$EPOCHREALTIME] ${LINENO}> \011${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
+[[ "$SHELLOPTS" =~ xtrace ]]&&XTRACE=-x||XTRACE=+x
+
 declare -A MIRRORPLUS
 declare -A SBO
 declare -A NOTIFYMSG
@@ -23,6 +26,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   EXTALLOW32BIT=$ALLOW32BIT
   EXTSLACKPKGPLUS=$SLACKPKGPLUS
   EXTVERBOSE=$VERBOSE
+  EXTDEBUG=$DEBUG
   EXTUSEBL=$USEBL
   EXTWGETOPTS=$WGETOPTS
   EXTDOWNLOADCMD=$DOWNLOADCMD
@@ -66,6 +70,7 @@ if [ -e $CONF/slackpkgplus.conf ];then
   ALLOW32BIT=${EXTALLOW32BIT:-$ALLOW32BIT}
   SLACKPKGPLUS=${EXTSLACKPKGPLUS:-$SLACKPKGPLUS}
   VERBOSE=${EXTVERBOSE:-$VERBOSE}
+  DEBUG=${EXTDEBUG:-$DEBUG}
   USEBL=${EXTUSEBL:-$USEBL}
   WGETOPTS=${EXTWGETOPTS:-$WGETOPTS}
   DOWNLOADCMD=${EXTDOWNLOADCMD:-$DOWNLOADCMD}
@@ -88,7 +93,9 @@ if [ -e $CONF/slackpkgplus.conf ];then
     SLAKFINDER_MAXRES=$EXTSLAKFINDER
     SLAKFINDER=on
   fi
+fi
 
+if [ "$SLACKPKGPLUS" = "on" ];then
   if [ "$EXTSEARCH_DESCRIPTION" == "off" ] || [ "$EXTSEARCH_DESCRIPTION" == "0" ];then
     SEARCH_DESCRIPTION=off
   elif [[ "$EXTSEARCH_DESCRIPTION" =~ ^[0-9] ]];then
@@ -103,11 +110,12 @@ if [ -e $CONF/slackpkgplus.conf ];then
   if [ "$ENABLENOTIFY" = "on" ] && [ -e $CONF/notifymsg.conf ];then
     . $CONF/notifymsg.conf
   fi
-fi
-
-if [ "$SLACKPKGPLUS" = "on" ];then
 
 
+  ##### ===== DEBUG FUNCTIONS === #####
+  # function debug()
+  # function debug_init()
+  # function debug_end()
   ##### ===== BLACKLIST FUNCTIONS === #####
   # patching makelist()
   # function internal_blacklist()
@@ -140,7 +148,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function showlist() // dialog=on
   # function showlist() // dialog=off
   #### ===== OTHER ====== ######
-  # function debug()
   # function updatedeps()
   #### ===== PREPARE ======== ######
   # function setup_parameters()
@@ -157,15 +164,99 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   # function slackpkg_info()
 
 
+  ##### ===== DEBUG FUNCTIONS === #####
+
+  function debug(){
+    set +x
+    [ "$DEBUG" == "1" ]||[ "$VERBOSE" == "3" ]            && echo "DEBUG $(date +%H:%M:%S.%N) (${BASH_LINENO[*]}): $@" >&2
+    [ ! -z "$BASH_XTRACEFD" ]&&[ "$BASH_XTRACEFD" != "2" ]&& echo "DEBUG $(date +%H:%M:%S.%N) (${BASH_LINENO[*]}): $@" >&$BASH_XTRACEFD
+    set $XTRACE
+  } # END function debug()
+
+  function debug_init(){
+    DEBUG=${DEBUG:-0}
+    exec {DIALOGFD}>&1                   # dialog send outcode to stderr and ncurses code to stdout
+                                         # debug function trap stdout with 'tee' command so we use a fake stdout
+    XTRACE="+x"
+    if [[ "$SHELLOPTS" =~ xtrace ]];then # if the user run bash -x slackpkg ...
+      XTRACEFD=${XTRACEFD:-2}            # the user can select the xtrace file descriptor with
+      BASH_XTRACEFD=$XTRACEFD            #    XTRACEFD=3 bash -x slackpkg ... 3>/tmp/slackpkg.trace (default=2=stderr)
+      XTRACE="-x"                        # don't forgot 3>something if you set XTRACEFD
+    elif [ "$DEBUG" == "1" ]||[ "$VERBOSE" == "3" ];then
+      if [ -z "$XTRACEFD" ];then         # if you are a tester always put DEBUG=1 in configuration
+        exec {XTRACEFD}>>$TMPDIR/xtrace  # remember to manually empty /tmp/slackpkg.* periodically
+      fi                                 # it will run it with a silent set -x in $TMPDIR/xtrace
+      BASH_XTRACEFD=$XTRACEFD
+      XTRACE="-x"
+    fi
+    if [ "$DEBUG" == "2" ];then          # never put DEBUG=2 unless you need to send debug information
+                                         # to ask for support; in that case you may also
+                                         # prefer DEBUG=2 slackpkg ...
+                                         # at the end send /tmp/slackpkg.XXXXXX.tar.xz or upload it on
+                                         # a file sharing service like filesharing24.com, easyupload.io, ...
+      echo "Start slackpkg+ trace" >>$TMPDIR/xtrace
+      exec   > >(tee -ia $TMPDIR/xtrace)       # some advanced fd redirection; uses tee to duplicate file descriptors
+      exec  2> >(tee -ia $TMPDIR/xtrace >& 2)
+      if [ -z "$XTRACEFD" ];then
+        exec {XTRACEFD}>>$TMPDIR/xtrace
+      fi
+      BASH_XTRACEFD=$XTRACEFD
+      XTRACE="-x"
+        # Collect a lot of informations in /tmp/slackpkg.XXXXXX
+      date > $TMPDIR/start-date
+      ls -ltr --full-time /var/log/packages/ > $TMPDIR/packages-start
+      ls -ltr --full-time $WORKDIR/ > $TMPDIR/workdir-start
+      cp -p $WORKDIR/pkglist $TMPDIR/pkglist-start
+      ps -ef > $TMPDIR/ps-ef
+      cat -A /proc/$$/cmdline|sed 's/\^@/ /g' > $TMPDIR/proc-cmdline
+      cp -a $CONF/ $TMPDIR
+      env > $TMPDIR/env
+      echo "VERSION: $VERSION" > $TMPDIR/ver
+      ls -l --full-time /usr/libexec/slackpkg/functions.d/slackpkgplus.sh >> $TMPDIR/ver
+      md5sum /usr/libexec/slackpkg/functions.d/slackpkgplus.sh >> $TMPDIR/ver
+      cat /usr/libexec/slackpkg/functions.d/slackpkgplus.sh > $TMPDIR/slackpkgplus.sh
+    fi
+    set $XTRACE                         # start set -x if needed
+  } # END debug_init()
+
+  function debug_end(){
+    if [ "$DEBUG" == "2" ];then
+      echo "Collecting debug informations..."
+      echo $retval > $TMPDIR/retval
+      ls -ltr --full-time $WORKDIR/ > $TMPDIR/workdir-end
+      ls -ltr --full-time /var/log/packages/ > $TMPDIR/packages-end
+      ls -ltr --full-time /var/log/removed_packages/ > $TMPDIR/removed_packages
+      cp -p $WORKDIR/install.log $TMPDIR/install.log
+        # copy slackpkg.trace if you run slackpkg ... > slackpkg.trace
+      [ -L /proc/$$/fd/$XTRACEFD ]&& cat /proc/$$/fd/$XTRACEFD > $TMPDIR/slackpkg.trace 2>/dev/null
+      ( cd $TMPDIR || exit 1
+        ls -ltra >tmpdir.list
+        # avoid to copy big downloaded metadata files
+        for fl in $(ls *.TXT *.gz CHECKSUMS.md5-* *.bz2 2>/dev/null);do
+          > $fl
+        done
+      )
+      cp -p $WORKDIR/pkglist $TMPDIR/pkglist-end
+      date > $TMPDIR/end-date
+      tar cJf $TMPDIR.tar.xz $TMPDIR >/dev/null 2>&1
+      echo
+      echo "+---------------------------------------------------------------------------------+"
+      echo "Please send $TMPDIR.tar.xz, output and informations to obtain support."
+      echo "You can upload it on a file sharing service like easyupload.io or send it via mail."
+      echo "NOTE: it may contains personal datas; inspect it before publish it!"
+      echo "+---------------------------------------------------------------------------------+"
+    fi
+  } # END debug_end()
 
   ##### ===== BLACKLIST FUNCTIONS === #####
 
     # Patching makelist() original function to accept pkglist-pre
+  set +x
   eval "$(type makelist | sed -e $'1d;2c\\\nmakelist()\n' \
                               -e "/in package list/s/tr -d '\\\\\\\\'/tr -d '\\\\\\\\*'/" \
                               -e 's,cat ${WORKDIR}/pkglist > ${TMPDIR}/pkglist,cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist,' \
          )"
-
+  set $XTRACE
     # Adds the pattern given by $(1) into the internal blacklist
     # ${TMPDIR}/blacklist.slackpkgplus
     #
@@ -276,10 +367,11 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     [ ! -e $WORKDIR/pkglist ]&&touch $WORKDIR/pkglist
     [ ! -e $WORKDIR/CHECKSUMS.md5 ]&&touch $WORKDIR/CHECKSUMS.md5
     echo
-    rm -f /var/lock/slackpkg.$$
-    if [ $VERBOSE -lt 3 ] && [ -z "$DEBUG" ];then
+    if [ $VERBOSE -lt 3 ] && [ "$DEBUG" == "0" ];then
       rm -rf $TMPDIR
     fi
+    debug_end
+    rm -f /var/lock/slackpkg.$$
     exit $retval
   } # END function cleanup()
 
@@ -363,7 +455,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     if [ ! -z "$MSGLIST" ] ; then
 
       if [ "$DIALOG" = "on" ] || [ "$DIALOG" = "ON" ] ; then
-        dialog --title "post-$EVENT notifications" --backtitle "slackpkg $VERSION" --msgbox "$MSGLIST" 12 70
+        dialog --title "post-$EVENT notifications" --backtitle "slackpkg $VERSION" --msgbox "$MSGLIST" 12 70 >&$DIALOGFD
       else
         MSGLIST="====[ POST-${EVENT} NOTIFICATIONS ]===================================== \n${MSGLIST}\n======================================================================="
         echo -e "\n$MSGLIST" | more
@@ -595,7 +687,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   ##### ====== CORE FUNCTION ====== ######
     # Extends getpkg() original function
     # (rename getpkg -> getpkg_old, then redefine getpkg to call it)
+  set +x
   eval "$(type getpkg | sed -e $'1d;2c\\\ngetpkg_old()\n' -e 's/Upgrading /Upgrading $5 => [$4]:/' -e 's/Installing /Installing [$4]:/' -e 's/nPackage/tPackage/g')"
+  set $XTRACE
   function getpkg(){
     local c
     local q
@@ -1680,7 +1774,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
       dialog --title "ChangeLog" \
         --backtitle "slackpkg $VERSION" $HINT \
-        --textbox $TMPDIR/Packages.clog 19 70
+        --textbox $TMPDIR/Packages.clog 19 70 >&$DIALOGFD
     } # END function showChangeLogInfo()
 
 
@@ -1810,23 +1904,23 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             --backtitle "slackpkg $VERSION" $HINT \
             --checklist "Choose packages to $2:" \
             19 70 13 \
-            --file $TMPDIR/dialog.tmp 2>$TMPDIR/dialog.out
+            --file $TMPDIR/dialog.tmp >&$DIALOGFD 2>$TMPDIR/dialog.out
         else
           dialog  --title "$DTITLE" \
             --backtitle "slackpkg $VERSION" $HINT \
             --checklist "Choose packages to $2:" \
             19 70 13 \
-            --file $TMPDIR/dialog.tmp 2>$TMPDIR/dialog.out
+            --file $TMPDIR/dialog.tmp >&$DIALOGFD 2>$TMPDIR/dialog.out
         fi
 
         case $? in
           0|1)
             EXIT=true
-                  dialog --clear
+                  dialog --clear >&$DIALOGFD
           ;;
 
           3)
-            dialog --clear
+            dialog --clear >&$DIALOGFD
 
             if $CLOGopt ; then
 
@@ -1854,7 +1948,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
                 fi
 
               else
-                dialog --title "ChangeLog" --msgbox "Please, select at least one package." 5 40
+                dialog --title "ChangeLog" --msgbox "Please, select at least one package." 5 40 >&$DIALOGFD
                 # all packages are deselected ...
                 cat $TMPDIR/dialog.tmp.off > $TMPDIR/dialog.tmp
               fi
@@ -1865,7 +1959,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
           -1|124|125|126|127)
             EXIT=true
-            dialog --clear
+            dialog --clear >&$DIALOGFD
             echo -e "DIALOG ERROR:\n-------------" >> $TMPDIR/error.log
             cat $TMPDIR/dialog.out >> $TMPDIR/error.log
             echo "-------------" >> $TMPDIR/error.log
@@ -1968,10 +2062,6 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   #### ===== END SHOWLIST FUNCTIONS ====== ######
 
   #### ===== OTHER ====== ######
-
-  function debug(){
-    echo "DEBUG $(date +%H:%M:%S.%N) (${BASH_LINENO[*]}): $@" >&2
-  } # END function debug()
 
   function updatedeps(){
     cat /var/lib/slackpkg/PACKAGES.TXT|sed 's/ //g'|sed -e $'s/\r//'|awk -F: '{
@@ -2233,8 +2323,8 @@ For details see 'man slackpkgplus.conf'"
     fi
 
     # 07. slackpkg+ version
-    SPKGPLUS_VERSION="1.9.d"
-    SPKGBUILD=1660151504
+    SPKGPLUS_VERSION="1.9.e"
+    SPKGBUILD=1660934354
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
@@ -3192,6 +3282,8 @@ For details see 'man slackpkgplus.conf'"
   #### ===== END ACTIONS ==== ######
 
   ### =========================== MAIN ============================ ###
+
+  debug_init
 
   setup_parameters
   setup_settings
