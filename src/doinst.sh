@@ -38,6 +38,7 @@ copy_config_file
 config etc/slackpkg/slackpkgplus.conf.new
 config etc/slackpkg/greylist.new
 config etc/slackpkg/notifymsg.conf.new
+config etc/slackpkg/gitslackpkg+.conf.new
 
 if [ -d var/lib/slackpkg ];then
   WORKDIR=var/lib/slackpkg

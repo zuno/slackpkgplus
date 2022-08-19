@@ -71,9 +71,11 @@ cp $CWD/setupmultilib.sh usr/doc/slackpkg+-$VERSION/
 cp $CWD/checkrepos.sh usr/doc/slackpkg+-$VERSION/
 cp $CWD/zchangelog.sh usr/libexec/slackpkg/functions.d/zchangelog.sh
 cp $CWD/zlookkernel.sh usr/libexec/slackpkg/functions.d/zlookkernel.sh
+cp $CWD/aaa_gitslackpkg+.sh usr/libexec/slackpkg/functions.d/
 cp $CWD/slackpkg+.SlackBuild usr/doc/slackpkg+-$VERSION/
 cp $CWD/slackpkgplus.*.sample usr/doc/slackpkg+-$VERSION/
 cp $CWD/greylist etc/slackpkg/greylist.new
+cp $CWD/gitslackpkg+.conf etc/slackpkg/gitslackpkg+.conf.new
 cp $CWD/slack-desc install/
 gzip -9c $CWD/slackpkgplus.conf.5 > usr/man/man5/slackpkgplus.conf.5.gz
 gzip -9c $CWD/slackpkgplus.conf.5.it > usr/man/it/man5/slackpkgplus.conf.5.gz

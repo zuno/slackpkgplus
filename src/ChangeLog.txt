@@ -1,3 +1,10 @@
+Fri Aug 19 20:39:14 CEST 2022
+pkg/slackpkg+-1.9.e-noarch-1mt.txz: Upgrade
+  - Added debug methods. Run "DEBUG=2 slackpkg ..." it will create a tar.xz in /tmp
+  - Added aaa_gitslackpkg+.sh to keep slackpkg+ update from git (for tester)
+  - Fixed email in manpage
++-------------------------+
+
 Wed Aug 10 19:11:44 CEST 2022
 pkg/slackpkg+-1.9.d-noarch-2mt.txz: Rebuilt
   - fixed blacklist in slackpkg download

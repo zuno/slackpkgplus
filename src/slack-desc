@@ -14,6 +14,6 @@ slackpkg+: Slackpkg+ is a plugin for slackpkg.
 slackpkg+:   It adds support for third-party repositories.
 slackpkg+:   You can install, upgrade and search from multiple repositories.
 slackpkg+:
-slackpkg+:
-slackpkg+:
+slackpkg+:   Also it allow to find packages on SBo (and download slackbuild)
+slackpkg+:   find in package descriptions and online via slakfinder service
 slackpkg+:
