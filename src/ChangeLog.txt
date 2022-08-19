@@ -1,3 +1,8 @@
+Sat Aug 20 00:39:44 CEST 2022
+pkg/slackpkg+-1.9.e-noarch-2mt.txz: Rebuilt
+  - gitslackpkg+ now disabled by default. sorry
++-------------------------+
+
 Fri Aug 19 20:39:14 CEST 2022
 pkg/slackpkg+-1.9.e-noarch-1mt.txz: Upgrade
   - Added debug methods. Run "DEBUG=2 slackpkg ..." it will create a tar.xz in /tmp
