@@ -1,6 +1,16 @@
 [ -e /etc/slackpkg/gitslackpkg+.conf ]&&source /etc/slackpkg/gitslackpkg+.conf
 if [ ! -z "$GITSLACKPKG" ]&&[ "$GITSLACKPKG" != "off" ]&&[ "$CMD" == "update" ];then
 
+ if [ "${GITSLACKPKG:0:1}" = "/" ];then
+  for fl in slackpkgplus.sh zchangelog.sh zlookkernel.sh aaa_gitslackpkg+.sh;do
+    if [ -e "$GITSLACKPKG/$fl" ];then
+      if ! ls -l /usr/libexec/slackpkg/functions.d/$fl|grep -q " $GITSLACKPKG/$fl$";then
+        rm -f /usr/libexec/slackpkg/functions.d/$fl
+        ln -sv $GITSLACKPKG/$fl /usr/libexec/slackpkg/functions.d/$fl
+      fi
+    fi
+  done
+ else
   CWD=`pwd`
   [ ! -e /usr/libexec/slackpkg/gitslackpkg ]&&mkdir /usr/libexec/slackpkg/gitslackpkg
   cd /usr/libexec/slackpkg/gitslackpkg
@@ -37,7 +47,7 @@ if [ ! -z "$GITSLACKPKG" ]&&[ "$GITSLACKPKG" != "off" ]&&[ "$CMD" == "update" ];
     for fl in slackpkgplus.sh zchangelog.sh zlookkernel.sh aaa_gitslackpkg+.sh;do
       if [ ! -e $fl ];then continue;fi
       if ! diff -q $fl /usr/libexec/slackpkg/functions.d/$fl;then
-        rm /usr/libexec/slackpkg/functions.d/$fl
+        rm -f /usr/libexec/slackpkg/functions.d/$fl
         cp -v $fl /usr/libexec/slackpkg/functions.d/$fl
       fi
     done
@@ -49,8 +59,6 @@ if [ ! -z "$GITSLACKPKG" ]&&[ "$GITSLACKPKG" != "off" ]&&[ "$CMD" == "update" ];
     echo "INFO: slackpkg+ update from github. You need to rerun 'slackpkg update' again"
     cleanup
   fi
-
-
   cd $CWD
-
+ fi
 fi
