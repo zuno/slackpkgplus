@@ -174,6 +174,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   } # END function debug()
 
   function debug_init(){
+    DEBUG=${DEBUG:-0}
     exec {DIALOGFD}>&1                   # dialog send outcode to stderr and ncurses code to stdout
                                          # debug function trap stdout with 'tee' command so we use a fake stdout
     XTRACE="+x"
@@ -366,7 +367,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     [ ! -e $WORKDIR/pkglist ]&&touch $WORKDIR/pkglist
     [ ! -e $WORKDIR/CHECKSUMS.md5 ]&&touch $WORKDIR/CHECKSUMS.md5
     echo
-    if [ $VERBOSE -lt 3 ] && [ -z "$DEBUG" ];then
+    if [ $VERBOSE -lt 3 ] && [ "$DEBUG" == "0" ];then
       rm -rf $TMPDIR
     fi
     debug_end
@@ -2323,7 +2324,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.e"
-    SPKGBUILD=1660833361
+    SPKGBUILD=1660934354
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
