@@ -1897,8 +1897,13 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
       while ! $EXIT ; do
 
+        SolveDeps=""
+        if [ "$2" == "install" ] && [ -z "$NO_SOLVE_DEP" ]; then
+            SolveDeps='--help-button --help-status --help-label SolveDeps'
+        fi
+        unset DEPSSOLVE
         if $CLOGopt ; then
-          dialog --extra-button \
+          dialog $SolveDeps --extra-button \
             --extra-label "ChangeLog" \
             --title "$DTITLE" \
             --backtitle "slackpkg $VERSION" $HINT \
@@ -1906,7 +1911,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             19 70 13 \
             --file $TMPDIR/dialog.tmp >&$DIALOGFD 2>$TMPDIR/dialog.out
         else
-          dialog  --title "$DTITLE" \
+          dialog $SolveDeps --title "$DTITLE" \
             --backtitle "slackpkg $VERSION" $HINT \
             --checklist "Choose packages to $2:" \
             19 70 13 \
@@ -1917,6 +1922,21 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           0|1)
             EXIT=true
                   dialog --clear >&$DIALOGFD
+          ;;
+
+          2)
+            dialog --clear >&$DIALOGFD
+            SHOWLIST=$(cat $TMPDIR/dialog.out | tr -d \" |cut -f3- -d" ")
+            if [ -z "$SHOWLIST" ]; then
+              echo "No packages selected for $2, exiting."
+              cleanup
+            fi
+            DEPSSOLVE=$(solve_deps $( for i in $SHOWLIST;do r=$(cat $TMPDIR/dialog.tmp|grep ^$i|cut -f2 -d'"'); echo $r:$i; done ))
+            rm /var/lock/slackpkg.$$
+            echo "Restarting slackpkg to install dependencies..."
+            NO_SOLVE_DEP=1 slackpkg $CMD $DEPSSOLVE
+            touch /var/lock/slackpkg.$$
+            cleanup
           ;;
 
           3)
@@ -1978,6 +1998,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         echo "No packages selected for $2, exiting."
         cleanup
       fi
+
       if [ "$2" != "remove" ] && [ "$CHECKDISKSPACE" == "on" ];then
         COUNTLIST=$(echo $SHOWLIST|wc -w)
         compressed=0
@@ -2141,6 +2162,29 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         ' > $WORKDIR/deplist
 
   } # END updatedeps()
+
+  function solve_deps(){
+    # input: list of repository:package where package must match full-package-name (extention optional) or package-name
+    local deps
+    local repository
+    local argument
+    local name
+    local DEP
+    deps=""
+    for argument in $*;do
+      repository=${argument/:*/}
+      name=${argument/*:/}
+      name=${name%.t?z}
+      if echo $name|grep -E -- "-[^-]+-(${ARCH}|fw|noarch)-[^-]+";then
+        name=${name%-*-*-*}
+      fi
+      DEP=$(cat $WORKDIR/deplist|grep ^${repository/SLACKPKGPLUS_/}:$name:)
+      deps="$deps $(echo "$DEP"|cut -f5 -d:|sed -r -e "s/(^|,)([^,]+)/ ${repository/SLACKPKGPLUS_/}:\2,/g") ${repository/SLACKPKGPLUS_/}:$name, "
+    done
+    deps=$(printf "%s\n" $deps|grep -v ^$|sort -u)
+    echo $deps
+
+  }
 
   #### ===== END OTHER ====== ######
 
@@ -2323,8 +2367,8 @@ For details see 'man slackpkgplus.conf'"
     fi
 
     # 07. slackpkg+ version
-    SPKGPLUS_VERSION="1.9.e"
-    SPKGBUILD=1660934354
+    SPKGPLUS_VERSION="1.9.f"
+    SPKGBUILD=1661089194
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
