@@ -1801,7 +1801,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       q=$(echo $1|wc -w)
       c=1
       echo -n "Preparing list "
-      if [ "$2" = "upgrade" ]; then
+      if [ "$2" = "upgrade" ]||[ "$2" = "instupg" ]; then
         ls -1 $ROOT/var/log/packages/ > $TMPDIR/tmplist
         for i in $1; do
           printf "%11s\b\b\b\b\b\b\b\b\b\b\b" "[$c/$q]"
@@ -1815,7 +1815,23 @@ if [ "$SLACKPKGPLUS" = "on" ];then
           ALLFOUND=$(echo $(grep " ${BASENAME} " $TMPDIR/pkglist|sed -r -e 's/SLACKPKGPLUS_//' -e 's/^([^ ]*) [^ ]* ([^ ]*) [^ ]* ([^ ]*) .*/\2-\3(\1) ,/')|sed 's/,$//')
 
           ( echo $PKGFOUND ; grep -m1 " ${BASENAME} " $TMPDIR/pkglist ) |grep -q -Ew -f $TMPDIR/greylist && TMPONOFF="off"
-          echo "$REPOPOSFULL $i \"$REPOPOS\" $TMPONOFF \"installed: $PKGFOUND  -->  available: $ALLFOUND\"" >>$TMPDIR/dialog.tmp.1
+
+          if [ "$PKGFOUND" = "${i%.t?z}" ];then
+            TMPONOFF="off"
+            echo "$REPOPOSFULL \"R $i\" \"$REPOPOS\" $TMPONOFF \"Reinstall: $i from '$REPOPOS'\"" >>$TMPDIR/dialog.tmp.1
+          elif [ -z "$PKGFOUND" ];then
+            echo "$REPOPOSFULL \"I $i\" \"$REPOPOS\" $TMPONOFF \"Install: $i from '$REPOPOS'\"" >>$TMPDIR/dialog.tmp.1
+          else
+            TAGFN=${i##*-[0-9]}; TAGFN=${TAGFN%.t[blxg]z}; TAGFN=${TAGFN%_slack1[0-9].[0-9]}
+            TAGVRFY=${PKGFOUND##*-[0-9]}; TAGVRFY=${TAGVRFY%_slack1[0-9].[0-9]}
+            if [ "$TAGFN" == "$TAGVRFY" ];then
+              echo "$REPOPOSFULL \"U $i\" \"$REPOPOS\" $TMPONOFF \"Upgrade: $i from '$REPOPOS' (was: $PKGFOUND)\"" >>$TMPDIR/dialog.tmp.1
+            else
+              echo "$REPOPOSFULL \"C $i\" \"$REPOPOS\" $TMPONOFF \"ChangeRepo: $i from '$REPOPOS' (was: $PKGFOUND)\"" >>$TMPDIR/dialog.tmp.1
+            fi
+          fi
+
+
         done
 
         # 1    2       3      4    5 6                     7         8   9 1011                    12-
@@ -1830,6 +1846,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         esac
         cat $TMPDIR/dialog.tmp.1 | awk '{print $'$SHOWORDER',$0}'|sort|cut -f13- -d" " >$TMPDIR/dialog.tmp
         HINT="--item-help"
+
 
       else # other than 'upgrade'
 
@@ -1934,7 +1951,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             DEPSSOLVE=$(solve_deps $( for i in $SHOWLIST;do r=$(cat $TMPDIR/dialog.tmp|grep ^$i|cut -f2 -d'"'); echo $r:$i; done ))
             rm /var/lock/slackpkg.$$
             echo "Restarting slackpkg to install dependencies..."
-            NO_SOLVE_DEP=1 slackpkg $CMD $DEPSSOLVE
+            NO_SOLVE_DEP=1 DOWNLOAD_ACT=1 slackpkg download $DEPSSOLVE
             touch /var/lock/slackpkg.$$
             cleanup
           ;;
@@ -1993,7 +2010,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       done
       echo
       echo
-      SHOWLIST=$(cat $TMPDIR/dialog.out | tr -d \")
+      SHOWLISTFULL=$(cat $TMPDIR/dialog.out )
+      SHOWLIST=$(echo "$SHOWLISTFULL" | tr '"' "\n"|grep -v ^[[:blank:]]*$|sed 's/^[UCRI] //')
       if [ -z "$SHOWLIST" ]; then
         echo "No packages selected for $2, exiting."
         cleanup
@@ -2368,7 +2386,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.f"
-    SPKGBUILD=1661089194
+    SPKGBUILD=1661282843
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
@@ -2884,7 +2902,7 @@ For details see 'man slackpkgplus.conf'"
       # You can specify 'slackpkg install reponame:packagename'
       elif echo "$pref" | grep -q "^[-_[:alnum:]]\+[:][a-zA-Z0-9]\+" ; then
 
-        if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] ; then
+        if [ "$CMD" == "install" ] || [ "$CMD" == "upgrade" ] || [ "$CMD" == "reinstall" ] || [ "$CMD" == "download" ] ; then
           repository=$(echo "$pref" | cut -f1 -d":")
           package=$(echo "$pref" | cut -f2- -d":")
 
@@ -3210,6 +3228,63 @@ For details see 'man slackpkgplus.conf'"
 
   } # END function slackpkg_checkupdate()
 
+  function slackpkg_instupg() {
+
+    internal_blacklist "^SBO_"
+    slackpkg_inst
+
+    printf "%s\n" $ROOT/var/log/packages/* |
+      awk -f /usr/libexec/slackpkg/pkglist.awk > ${TMPDIR}/tmplist
+
+    cat $TMPDIR/pkglist-pre ${WORKDIR}/pkglist | applyblacklist > ${TMPDIR}/pkglist
+
+    echo -n "Looking for $(echo $INPUTLIST | tr -d '\\*') in package list. Please wait... "
+    for ARGUMENT in $(echo $INPUTLIST); do
+      if [[ "$ARGUMENT" =~ , ]];then
+        ARGUMENT=${ARGUMENT/\*} ; ARGUMENT=${ARGUMENT/,}
+        for i in $(grep " ${ARGUMENT%,*} " ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u); do
+          givepriority $i
+          [ ! "$FULLNAME" ] && continue
+          LIST="$LIST $(grep -m1 " ${i} " ${TMPDIR}/pkglist |grep " ${ARGUMENT%,*} " | cut -f6,8 -d\  --output-delimiter=.)"
+        done
+      else
+        for i in $(grep -w -- "${ARGUMENT}" ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u); do
+          givepriority $i
+          [ ! "$FULLNAME" ] && continue
+          LIST="$LIST $(grep -m1 " ${i} " ${TMPDIR}/pkglist |grep -w -- "${ARGUMENT}" | cut -f6,8 -d\  --output-delimiter=.)"
+        done
+      fi
+      LIST=$( printf "%s\n" $LIST | applyblacklist | sort | uniq )
+    done
+    echo -e "DONE\n"
+    DELALL="off"
+    CMD=instupg
+    if ! [ "$LIST" = "" ]; then
+      showlist "$LIST" instupg
+      SHOWLISTFULL=$(echo "$SHOWLISTFULL"|sed -e 's/ /:/g' -e 's/":"/" "/g' -e 's/"/ /g')
+      INSTLIST=""
+      for i in $SHOWLISTFULL; do
+        case "${i:0:1}" in
+          R|I) INSTLIST="$INSTLIST ${i:2}";;
+          U|C) UPGRLIST="$UPGRLIST ${i:2}";;
+        esac
+      done
+      if [ ! -z "$INSTLIST" ];then
+        SHOWLIST="$INSTLIST"
+        install_pkg
+      fi
+      if [ ! -z "$UPGRLIST" ];then
+        SHOWLIST="$UPGRLIST"
+        upgrade_pkg
+      fi
+    else
+      echo -e "No packages match the pattern for download."
+      EXIT_CODE=20
+    fi
+    cleanup
+
+  } # END function slackpkg_instupg()
+
   function slackpkg_download() {
 
     # 42. override slackpkg download action
@@ -3335,6 +3410,10 @@ For details see 'man slackpkgplus.conf'"
   setup_repositories
   setup_bglist
   setup_downloader
+  if [ "$CMD" == "download" ]&&[ ! -z "$DOWNLOAD_ACT" ];then
+    slackpkg_instupg
+    CMD=""
+  fi
 
   case "$CMD" in
     install|upgrade|reinstall|remove) slackpkg_inst        ;;   # 39. Create   the new INPUTLIST
