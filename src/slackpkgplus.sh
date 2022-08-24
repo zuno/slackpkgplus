@@ -1816,7 +1816,9 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
           ( echo $PKGFOUND ; grep -m1 " ${BASENAME} " $TMPDIR/pkglist ) |grep -q -Ew -f $TMPDIR/greylist && TMPONOFF="off"
 
-          if [ "$PKGFOUND" = "${i%.t?z}" ];then
+          if [ "$2" = "upgrade" ];then
+            echo "$REPOPOSFULL $i \"$REPOPOS\" $TMPONOFF \"installed: $PKGFOUND  -->  available: $ALLFOUND\"" >>$TMPDIR/dialog.tmp.1
+          elif [ "$PKGFOUND" = "${i%.t?z}" ];then
             TMPONOFF="off"
             echo "$REPOPOSFULL \"R $i\" \"$REPOPOS\" $TMPONOFF \"Reinstall: $i from '$REPOPOS'\"" >>$TMPDIR/dialog.tmp.1
           elif [ -z "$PKGFOUND" ];then
@@ -1913,9 +1915,8 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       fi
 
       while ! $EXIT ; do
-
         SolveDeps=""
-        if [ "$2" == "install" ] && [ -z "$NO_SOLVE_DEP" ]; then
+        if [ "$2" != "remove" ] && [ -z "$NO_SOLVE_DEP" ]; then
             SolveDeps='--help-button --help-status --help-label SolveDeps'
         fi
         unset DEPSSOLVE
@@ -1943,15 +1944,15 @@ if [ "$SLACKPKGPLUS" = "on" ];then
 
           2)
             dialog --clear >&$DIALOGFD
-            SHOWLIST=$(cat $TMPDIR/dialog.out | tr -d \" |cut -f3- -d" ")
+            SHOWLIST=$(cat $TMPDIR/dialog.out |sed -e 's/^HELP "[^"]*" //' -e 's/^HELP [^ ]* //' -e $'s/" "/\\n/g' -e 's/"//g'|sed -e 's/^[RUIC] //g';echo)
             if [ -z "$SHOWLIST" ]; then
-              echo "No packages selected for $2, exiting."
+              echo "No packages selected for check deps, exiting."
               cleanup
             fi
-            DEPSSOLVE=$(solve_deps $( for i in $SHOWLIST;do r=$(cat $TMPDIR/dialog.tmp|grep ^$i|cut -f2 -d'"'); echo $r:$i; done ))
+            DEPSSOLVE=$(solve_deps $( for i in $SHOWLIST;do r=$(cat $TMPDIR/dialog.tmp|sed -e 's/"//g'|sed -e 's/^[RUIC] //g'|grep "^$i "|cut -f2 -d' '); echo $r:$i; done ))
             rm /var/lock/slackpkg.$$
             echo "Restarting slackpkg to install dependencies..."
-            NO_SOLVE_DEP=1 DOWNLOAD_ACT=1 slackpkg download $DEPSSOLVE
+            NO_SOLVE_DEP=1 DOWNLOAD_ACT=$CMD slackpkg download $DEPSSOLVE
             touch /var/lock/slackpkg.$$
             cleanup
           ;;
@@ -2103,7 +2104,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   #### ===== OTHER ====== ######
 
   function updatedeps(){
-    cat /var/lib/slackpkg/PACKAGES.TXT|sed 's/ //g'|sed -e $'s/\r//'|awk -F: '{
+    cat $WORKDIR/PACKAGES.TXT|sed 's/ //g'|sed -e $'s/\r//'|awk -F: '{
               if($1 == "=====STARTREPO"){
                 repo=$2;
                 pname="";
@@ -2250,6 +2251,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     -terse              use a compact output for pkgtools
     -noterse            do not use a compact output for pkgtools
 
+  Download options:
+    -install            'slackpkg download' acts as slackpkg install&upgrade
+    -reinstall          'slackpkg download' acts as slackpkg install&upgrade&&reinstall
+
   General configuration override:
     -verbose=<n>        set VERBOSE=<n> (0..3)
     -debug              set DEBUG=1
@@ -2318,6 +2323,10 @@ For details see 'man slackpkgplus.conf'"
                 CHECKDISKSPACE=$v ;;
         -downloadonly=on|-downloadonly=off)
                 DOWNLOADONLY=$v ;;
+        -install)
+                DOWNLOAD_ACT=${DOWNLOAD_ACT:-install} ;;
+        -reinstall)
+                DOWNLOAD_ACT=reinstall ;;
         -greylist=on|-greylist)
                 GREYLIST=on ;;
         -greylist=on|-nogreylist)
@@ -2386,7 +2395,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.f"
-    SPKGBUILD=1661282843
+    SPKGBUILD=1661350526
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
@@ -3245,12 +3254,14 @@ For details see 'man slackpkgplus.conf'"
         for i in $(grep " ${ARGUMENT%,*} " ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u); do
           givepriority $i
           [ ! "$FULLNAME" ] && continue
+          [ -e "/var/log/packages/${FULLNAME%.t?z}" ]&&[ "$DOWNLOAD_ACT" != "reinstall" ] && continue
           LIST="$LIST $(grep -m1 " ${i} " ${TMPDIR}/pkglist |grep " ${ARGUMENT%,*} " | cut -f6,8 -d\  --output-delimiter=.)"
         done
       else
         for i in $(grep -w -- "${ARGUMENT}" ${TMPDIR}/pkglist | cut -f2 -d\  | sort -u); do
           givepriority $i
           [ ! "$FULLNAME" ] && continue
+          [ -e "/var/log/packages/${FULLNAME%.t?z}" ]&&[ "$DOWNLOAD_ACT" != "reinstall" ] && continue
           LIST="$LIST $(grep -m1 " ${i} " ${TMPDIR}/pkglist |grep -w -- "${ARGUMENT}" | cut -f6,8 -d\  --output-delimiter=.)"
         done
       fi
