@@ -1952,7 +1952,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
             DEPSSOLVE=$(solve_deps $( for i in $SHOWLIST;do r=$(cat $TMPDIR/dialog.tmp|sed -e 's/"//g'|sed -e 's/^[RUIC] //g'|grep "^$i "|cut -f2 -d' '); echo $r:$i; done ))
             rm /var/lock/slackpkg.$$
             echo "Restarting slackpkg to install dependencies..."
-            NO_SOLVE_DEP=1 DOWNLOAD_ACT=$CMD slackpkg download $DEPSSOLVE
+            NO_SOLVE_DEP=1 DOWNLOAD_ACT=${DOWNLOAD_ACT:-$CMD} slackpkg download $DEPSSOLVE
             touch /var/lock/slackpkg.$$
             cleanup
           ;;
@@ -2250,6 +2250,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
   Install/Upgrade/Remove options:
     -terse              use a compact output for pkgtools
     -noterse            do not use a compact output for pkgtools
+    -reinstall          allow reinstall dependencies
 
   Download options:
     -install            'slackpkg download' acts as slackpkg install&upgrade
@@ -2395,7 +2396,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.f"
-    SPKGBUILD=1661351118
+    SPKGBUILD=1661361558
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
