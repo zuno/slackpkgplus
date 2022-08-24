@@ -2395,7 +2395,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.f"
-    SPKGBUILD=1661350960
+    SPKGBUILD=1661351118
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
@@ -3289,6 +3289,9 @@ For details see 'man slackpkgplus.conf'"
         upgrade_pkg
       fi
       if [ "$POSTINST" != "off" ]; then
+        if [ -x /usr/libexec/slackpkg/functions.d/zlookkernel.sh ];then
+          source /usr/libexec/slackpkg/functions.d/zlookkernel.sh
+        fi
         lookkernel
         looknew
       fi
