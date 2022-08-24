@@ -2395,7 +2395,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.f"
-    SPKGBUILD=1661350526
+    SPKGBUILD=1661350960
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
@@ -3287,6 +3287,10 @@ For details see 'man slackpkgplus.conf'"
       if [ ! -z "$UPGRLIST" ];then
         SHOWLIST="$UPGRLIST"
         upgrade_pkg
+      fi
+      if [ "$POSTINST" != "off" ]; then
+        lookkernel
+        looknew
       fi
     else
       echo -e "No packages match the pattern for download."
