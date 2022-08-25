@@ -1,3 +1,19 @@
+Thu Aug 25 16:37:33 CEST 2022
+pkg/slackpkg+-1.9.f-noarch-1mt.txz: Upgrade
+  - Fixed a bug that did not allow two packages in the input list under
+    some circumstances
+  - Added special "slackpkg download" action; it's "instupg"
+      append -install to install/upgrade packages
+      append -reinstall to install/upgrade/reinstall packages
+  - Added dependencies support in install/upgrade/reinstall stage.
+      don't worry, we don't break slackware philosofy; you can continue
+      to install packages without install dependencies.
+      You just have a "<SolveDeps>" button in dialogbox to know what you
+      need to install.
+      Note: it just works with thirdy-party repositories that declare
+            dependencies
++-------------------------+
+
 Sat Aug 20 00:39:44 CEST 2022
 pkg/slackpkg+-1.9.e-noarch-2mt.txz: Rebuilt
   - gitslackpkg+ now disabled by default. sorry
