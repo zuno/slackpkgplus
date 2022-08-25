@@ -2983,7 +2983,7 @@ For details see 'man slackpkgplus.conf'"
       [ ! -z "${PRIORITY_FILTER_RULE}" ] && echo "${PRIORITY_FILTER_RULE}" >> ${TMPDIR}/priority.filters
 
       # -- only insert "package" if not in NEWINPUTLIST
-      echo "$NEWINPUTLIST" | grep -qw "${package}" || NEWINPUTLIST="$NEWINPUTLIST $package"
+      echo " $NEWINPUTLIST " | grep -qF " ${package} " || NEWINPUTLIST="$NEWINPUTLIST $package"
 
     done # pref in $INPUTLIST
 
