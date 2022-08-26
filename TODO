@@ -1,0 +1,13 @@
+- After SolveDeps it seems not working free space calculation
+      Total space required to download: 0 KB; Available: 17105 MB
+- After instupg dialog explicts that will be different stages
+  for install/reinstall and upgrades
+- Dependencies for official repositories
+- Dependencies in -dialog=off
+- -deps parameter
+- some configuration for dependency
+- inherit parameters and overrided options in SolveDeps dialog
+- help
+- Documentation
+- Deny slackware downgrade
+
