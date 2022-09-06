@@ -4,19 +4,129 @@
 
 *Configuration file:
 
+- SENSITIVE_SEARCH now works in SBo, description ad remote searches too
+
+- SLAKFINDER, SLAKFINDER_REPOS, SLAKFINDER_MAXRES; manage remote search:
+    SLAKFINDER=on/off enable or disable remote find; you can override
+                      it via parameter -slakfinder
+    SLAKFINDER_REPOS="class1,class2,..."
+        class is a string like "64150" 64=64bit 32=32bit no=noarch
+                                       150=15.0 cur=current
+    SLAKFINDER_MAXRES=10     results number limits (max 50)
+
+- SEARCH_DESCRIPTION, SEARCH_DESCRIPTION_LIMITS
+    SEARCH_DESCRIPTION=on/off enable or disable find in slack-desc
+                      you can override it via parameter -description
+    SEARCH_DESCRIPTION_LIMITS=10   result number limits
+
+- SEARCH_SBO=on/off   enable or disable search package; you can configure
+                      SBo repositories and choose to not have results
+                      in slackpkg search unless you specify the 
+                      -sbo parameter
+
+- deprecated DETAILED_INFO (replaced via INFO_FILELIST)
+
+- INFO_FILELIST=on/off; if 'on' slackpkg info always return full files list
+                        in the package; you can override it via parameter
+                        -filelist
+
+- DEBUG, for tester; put it to 1 to avoid automatic tempdir removal
+
 *New features:
 
-- Added french manpage for slackpkgplus.conf
+- Added French manpage for slackpkgplus.conf
   to read the french manpage be sure to export LANG=fr_FR@euro and use the
   ISO8859-15 charset in console.
+
+- Added remote packages search. It uses slakfinder.org service to search in
+  a bigger list of repository. Notice that you can't install or download the
+  package from a remote repository, but you will know in which repository
+  you can find the package; also you will have a direct link for the
+  manual download.
+
+- Added ability to find strings in package description if you do not know
+  the name of the package.
+
+- Added parameters in command line to override some options and other things.
+  For example, 'slackpkg search aaa_base -slakfinder' look for aaa_base allow
+  to find aaa_base via remote package search.
+  Run 'slackpkg info -help' for full list.
+  It doesn't work in 'slackpkg update' command
+  Note: ignore the message "search: Ignoring extra arguments: -slakfinder"
+        simply it means "I will not look for the '-slakfinder' package"
+
+- Added dependencies support
+    This is a big improvement that some people may not like since slackware
+    never introduced it. Really, some repository have dependencies support.
+    You can see it before slackpkg+ 1.9 by running slackpkg info package.
+    slackpkg+ 1.9 introduces
+      1) indirect dependencies resolution in slackpkg info
+      2) a button in slackpkg install/... "<SolveDeps>"; it rerun slackpkg+
+         with a new box that allow you to install/reinstall/upgrade
+         dependencies
+    If you dislike dependencies support, simply do not press the button :)
+    Note: it just works with third-party repositories, and only with that
+          repositories that declare dependencies in metadata
+    You can see a detailed documentation in dependencies.txt
+
+- Added a new install/upgrade/reinstall box, called "instupg" box/function.
+  Unlike slackpkg install that just allow new installation or slackpkg upgrade
+  that just allow upgrade, the instupg box allow to install/upgrade/reinstall
+  in a single step.
+  You can access to this feature via
+    slackpkg download <package> <package> -install (allow install/upgrade)
+    slackpkg download <package> <package> -reinstall (allow install/upgrade/reinstall)
+  Dependencies resolution uses this feature to (re)install dependencies and
+  upgrade needed packages
 
 *Bug Fixes:
 
 - Manage '+' in $TEMP path
 
+- Issue in notification events.
+
+- slackpkg+ did not accept two packages in command line under some circumstance
+  'slackpkg upgrade openssl-solibs openssl' did not upgrade openssl
+
+- slackpkg download did not correctly honor blacklist
+
+- slackpkg did update metadata even if ctrl+c pressed
+
 *Improvements:
 
 - Supports wget2
+
+- slackpkg check-updates shows output in stderr
+
+- slackpkg version includes build number; useful for debugging
+    slackpkg - version 15.0.10 / slackpkg+ 1.9.f-b1.1
+
+- blacklist system affects SBo search too
+
+- 'slackpkg info' rewritten for a better output
+
+- 'slackpkg info' allow full-package-name and repository:name to limit results
+
+
+*For tester:
+
+- Added aaa_gitslackpkg+.sh to automatically download latest release of slackpkg+
+  from github or from a local repository.
+  Put /etc/slackpkg/gitslackpkg+.conf
+    GITSLACKPKG=/path/to/slackpkg+/src
+  or
+    GITSLACKPKG=test (branch 'test' from github)
+  every time you run slackpkg update it will download latest release even if it is
+  not yet packaged
+
+- A better way to debug. Run slackpkg with export DEBUG=1 will not delete the
+  /tmp/slackpkg.XXXXX directory and add a 'xtrace' file in that dir (output of
+  bash -x). You can also put DEBUG=1 in configuration to always not delete the
+  temp directory; clean /tmp manually.
+  Run slackpkg with export DEBUG=2 will collect a lot of other information in
+  temp directory, then generate a /tmp/slackpkg.XXXXX.tar.xz to send for support.
+  Do NOT put it in configuration.
+
 
 
 == From 1.7 to 1.8 ==

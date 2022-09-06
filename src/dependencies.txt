@@ -1,0 +1,31 @@
+A partire dalla versione 1.9.f, slackpkg+ supporta la gestione delle dipendenze.
+
+In slackware questo è un tema molto discusso. E' infatti una delle poche 
+distribuzioni che - per scelta - non ha mai introdotto la gestione delle
+dipendenze in via ufficiale.
+La filosofia di slackware è quella di consentire all'utente di installare
+ciò che lui vuole, non quello che la distribuzione costringe ad installare.
+Di contro si rischia che l'utente, soprattutto se non esperto, si ritrova
+nel sistema pacchetti non funzionanti perchè non sapeva che doveva installare
+una dipendenza per poter funzionare.
+
+Riguardo i pacchetti sul repository ufficiale, la tendenza è quella di 
+considerare supportata solamente una installazione full e non selettiva dei
+pacchetti. Questo implica che tutte le dipendenze sono automaticamente risolte
+senza avere quindi la necessità di aggiungere un sistema di risoluzione 
+dipendenze.
+
+Tuttavia per i repository di terze parti ci si aspetta che l'utente non 
+installi tutti i pacchetti presenti, ed alcune di questi pacchetti necessita
+l'installazione di dipendenze, tipicamente risolte all'interno dello stesso
+repository. A meno che l'utente non conosca già il pacchetto, l'utente finale
+non sa quali dipendenze il pacchetto vuole. Inoltre i repository sono fatti
+da persone eterogenee con standard eterogenei (non c'è un vero e proprio
+standard dichiarato per i repository di terze parti) quindi potrebbero non
+essere disponibili README o SlackBuild da leggere.
+Fortunatamente diversi pacchettizzatori hanno cominciato a dichiarare, in
+modo automatico o manuale, le dipendenze in un file slack-required.
+Questo comprende dipendenze presenti nello stesso repository e talvolta
+dipendenze presenti nei repository ufficiali; in alcuni casi vengono dichiarate
+dipendenze alternative; per esempio per la maggior parte dei pacchetti che
+usano java, è possibile installare indistintamente jdk o jre.
