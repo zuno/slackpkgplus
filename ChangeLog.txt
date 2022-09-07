@@ -1,3 +1,8 @@
+Wed Sep  7 09:38:41 CEST 2022
+pkg/slackpkg+-1.9.f-noarch-2mt.txz: Rebuilt
+  - egrep deprecated. thx to ma marav
++-------------------------+
+
 Thu Aug 25 16:37:33 CEST 2022
 pkg/slackpkg+-1.9.f-noarch-1mt.txz: Upgrade
   - Fixed a bug that did not allow two packages in the input list under

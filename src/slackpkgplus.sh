@@ -769,7 +769,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
       echo "                ChangeLogs"
     fi
 
-    if echo $1|egrep -q '/SLACKPKGPLUS_(file|dir|http|https|ftp)[0-9].*\.asc$';then
+    if echo $1|grep -E -q '/SLACKPKGPLUS_(file|dir|http|https|ftp)[0-9].*\.asc$';then
       return 0
     fi
 
@@ -1041,10 +1041,10 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         elif echo $URLFILE | grep -q -e "^httpdir://" -e "^httpsdir://" -e "^ftpdir://" ; then
           if [ "$CACHEUPDATE" == "on" ];then
             printf "    File: %-20s -> %-20s .. Downloading...\n" "$PREPO" "CHECKSUMS.md5"
-            lftp $(echo ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}|sed 's/dir//') -e "ls;quit" 2>/dev/null|awk '{print $NF}'|egrep '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|sort -rn| \
+            lftp $(echo ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}|sed 's/dir//') -e "ls;quit" 2>/dev/null|awk '{print $NF}'|grep -E '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|sort -rn| \
               awk '{print "00000000000000000000000000000000  ./"$NF}' > ${TMPDIR}/CHECKSUMS.md5-$PREPO
           else
-            lftp $(echo ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}|sed 's/dir//') -e "ls;quit" |awk '{print $NF}'|egrep '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|sort -rn| \
+            lftp $(echo ${MIRRORPLUS[${PREPO/SLACKPKGPLUS_}]}|sed 's/dir//') -e "ls;quit" |awk '{print $NF}'|grep -E '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|sort -rn| \
               awk '{print "00000000000000000000000000000000  ./"$NF}' > ${TMPDIR}/CHECKSUMS.md5-$PREPO
           fi
         else
@@ -1086,8 +1086,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         else
           FILTEREXCLUDE="-(x86|i[3456]86|arm)-"
         fi
-        egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "$FILTEREXCLUDE" |sed -r -e "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5-merged
-        #egrep -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|egrep -v -- "$FILTEREXCLUDE" |sed -r -e "s# \./# ./SLACKPKGPLUS_$PREPO/#" -e 's#^(.*)/([^/]+)$#\2 \1/\2#'|sort -rn|cut -f2- -d" " >> ${TMPDIR}/CHECKSUMS.md5
+        grep -E -e ^[a-f0-9]{32} ${TMPDIR}/CHECKSUMS.md5-$PREPO|grep -E -v -- "$FILTEREXCLUDE" |sed -r -e "s# \./# ./SLACKPKGPLUS_$PREPO/#" >> ${TMPDIR}/CHECKSUMS.md5-merged
       done
       if [ "$CHECKGPG" != "on" ];then
         mv ${TMPDIR}/CHECKSUMS.md5-merged ${TMPDIR}/CHECKSUMS.md5
@@ -1159,7 +1158,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local REPO
     local PREPO
 
-    if echo $1|egrep -q -e "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]" -e "/SBO_";then
+    if echo $1|grep -E -q -e "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]" -e "/SBO_";then
       echo 1
       return
     fi
@@ -1242,7 +1241,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
     local PREPO
     local ARG
 
-    if echo $1|egrep -q -e "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]" -e "/SBO_";then
+    if echo $1|grep -E -q -e "/SLACKPKGPLUS_(file|dir|http|ftp|https)[0-9]" -e "/SBO_";then
       echo 1
       return
     fi
@@ -1517,7 +1516,7 @@ if [ "$SLACKPKGPLUS" = "on" ];then
         #  for the fields: version(3) arch(4) build(5), path(7),
         #  extension(8)
         #
-        zegrep ${GREPOPTS} "${SEARCHSTR}" ${WORKDIR}/${DIR}-filelist.gz | \
+        zgrep -E ${GREPOPTS} "${SEARCHSTR}" ${WORKDIR}/${DIR}-filelist.gz | \
           cut -d" " -f 1 | rev | cut -f2- -d"." | cut -f1 -d"/" | rev |\
           awk '{
                   l_pname=$0
@@ -2396,7 +2395,7 @@ For details see 'man slackpkgplus.conf'"
 
     # 07. slackpkg+ version
     SPKGPLUS_VERSION="1.9.f"
-    SPKGBUILD=b1.1
+    SPKGBUILD=b1.2
     VERSION="$VERSION / slackpkg+ $SPKGPLUS_VERSION-$SPKGBUILD"
 
     # 09. Be sure upgrade 14.2 to 15 does not delete /usr/bin/vi
@@ -2842,7 +2841,7 @@ For details see 'man slackpkgplus.conf'"
 
       # You can specify 'slackpkg install file:package-1.0-noarch-1my.txz' on local disk;
       # optionally you can add absolute or relative path.
-      if echo "$pref" | egrep -q "file:.*\.t.z$" ; then
+      if echo "$pref" | grep -E -q "file:.*\.t.z$" ; then
         package=$(echo "$pref" | cut -f2- -d":")
         localpath=$(dirname $package)
         package=$(basename $package)
@@ -2882,7 +2881,7 @@ For details see 'man slackpkgplus.conf'"
 
       # You can specify 'slackpkg install http://mysite.org/myrepo/package-1.0-noarch-1my.txz' to install a package from remote path
       # without manual download. You can use http,https,ftp repositories
-      elif echo "$pref" | egrep -q "^(https?|ftp)://.*/.*-[^-]+-[^-]+-[^\.]+\.t.z$" ;then
+      elif echo "$pref" | grep -E -q "^(https?|ftp)://.*/.*-[^-]+-[^-]+-[^\.]+\.t.z$" ;then
         repository=$(echo "$pref" | cut -f1 -d":")
         repository=$repository$(grep ^SLACKPKGPLUS_$repository[0-9] ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
         MIRRORPLUS[$repository]=$(dirname $pref)"/"
@@ -2896,10 +2895,10 @@ For details see 'man slackpkgplus.conf'"
         PRIORITY_FILTER_RULE="${repository} ${package}"
 
       # You can specify 'slackpkg install http://mysite.org/myrepo' to list remote directory
-      elif echo "$pref" | egrep -q "^(https?|ftp)://.*/.*" ;then
+      elif echo "$pref" | grep -E -q "^(https?|ftp)://.*/.*" ;then
         repository=$(echo "$pref" | cut -f1 -d":")
         repository=$repository$(grep ^SLACKPKGPLUS_$repository[0-9] ${TMPDIR}/pkglist-pre|awk '{print $1}'|uniq|wc -l)
-        lftp $pref -e "ls;quit" 2>/dev/null|awk '{print $NF}'|egrep '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|sort -rn| \
+        lftp $pref -e "ls;quit" 2>/dev/null|awk '{print $NF}'|grep -E '^.*-[^-]+-[^-]+-[^\.]+\.t.z$'|sort -rn| \
           awk '{print "./SLACKPKGPLUS_'$repository'/"$NF}'|awk -f /usr/libexec/slackpkg/pkglist.awk >> ${TMPDIR}/pkglist-pre
         MIRRORPLUS[$repository]=$(echo "$pref" |sed 's_/$__')"/"
         PRIORITYLIST=( ${PRIORITYLIST[*]} SLACKPKGPLUS_${repository}:.* )
