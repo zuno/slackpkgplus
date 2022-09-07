@@ -21,7 +21,7 @@ if [ -z "$SVER" ];then
   echo "Which Slackware version are you running? (current/15.0)"
   read $SVER
 fi
-if ! echo $SVER|egrep -q '^(current|15.0)$';then
+if ! echo $SVER|grep -E -q '^(current|15.0)$';then
   echo "Invalid Slackware version ($SVER)"
   exit 1
 fi

@@ -1,3 +1,8 @@
+Wed Sep  7 09:24:29 CEST 2022
+pkg/slackpkg+-1.8.0-noarch-7mt.txz: Rebuilt
+  - egrep deprecated. thx to ma marav
++-------------------------+
+
 Sat May  7 01:31:38 CEST 2022
 pkg/slackpkg+-1.8.0-noarch-6mt.txz: Rebuilt
   - wget2 did print CWD
