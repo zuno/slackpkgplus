@@ -57,9 +57,9 @@ if [ "$1" == "-v" ];then
 fi
 
 if [ -f "$1" ];then
-  REPOS=$(cat $1|egrep -o -e 'http://[^ ]*' -e 'https://[^ ]*')
+  REPOS=$(cat $1|grep -E -o -e 'http://[^ ]*' -e 'https://[^ ]*')
 else
-  REPOS=$(echo $*|egrep -o -e 'http://[^ ]*' -e 'https://[^ ]*')
+  REPOS=$(echo $*|grep -E -o -e 'http://[^ ]*' -e 'https://[^ ]*')
 fi
 
 REPOS=$(eval echo $REPOS|sed -e 's/{//g' -e 's/}//g')
@@ -80,12 +80,12 @@ for R in $REPOS;do
 
   HOST=$(echo $REPO|cut -f3 -d/)
   [ $V ]&&echo -en "\n  Host: $HOST\n  Check IP: "||echo -n .
-  if echo $HOST|egrep -q '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$';then
+  if echo $HOST|grep -E -q '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$';then
     IP=$HOST
   else
     IP=$(host $HOST 2>/dev/null|grep 'has address'|head -1|awk '{print $NF}')
   fi
-  echo $IP|egrep -q '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
+  echo $IP|grep -E -q '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
   if [ $? -ne 0 ];then
     [ $V ]&&echo -e "  unable to resolve\nInvalid repository"|grep --color .||echo " Invalid (unable to resolve address)"|grep --color .
     continue
