@@ -141,7 +141,7 @@ Si vous souhaitez désactiver le logiciel slackpkg+ sans le désinstaller, régl
 .TP 5
 \fBMIRRORPLUS\fP
 .br
-C'est la principale variable (et la seule vraiment nécessaire) de configuration à définir pour \%slackpkg+.
+C'est la principale variable de configuration (et la seule vraiment nécessaire) à définir pour \%slackpkg+.
 Elle est utilisée pour spécifier les dépôts à partir desquels installer les paquets tiers.
 Vous pouvez spécifier plus d'un dépôt en ajoutant plusieurs lignes.
 Chaque dépôt a un nom qui doit être spécifié entre crochets.
